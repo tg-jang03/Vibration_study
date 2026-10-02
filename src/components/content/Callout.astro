@@ -1,0 +1,79 @@
+---
+/**
+ * 본문 강조 상자. 페이지마다 제각각이던 💡·⚠️ 인용문을 대신한다 (D-026).
+ * type: idea 핵심 / try 따라 하기 / warn 주의 / example 숫자 예 / term 용어 풀이 / field 현장에서는
+ * 사용: <Callout type="warn" title="…">본문(마크다운)</Callout>
+ */
+interface Props {
+  type?: 'idea' | 'try' | 'warn' | 'example' | 'term' | 'field';
+  title?: string;
+}
+
+const { type = 'idea', title } = Astro.props;
+const LABEL: Record<NonNullable<Props['type']>, string> = {
+  idea: '핵심',
+  try: '따라 하기',
+  warn: '주의',
+  example: '숫자 예',
+  term: '용어 풀이',
+  field: '현장에서는',
+};
+---
+
+<aside class={`callout callout-${type}`}>
+  <div class="callout-head">
+    <span class="callout-kind">{LABEL[type]}</span>
+    {title && <span class="callout-title">{title}</span>}
+  </div>
+  <div class="callout-body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    --c: var(--accent);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--c);
+    background: var(--surface);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 0.65rem 1rem 0.4rem;
+    margin: 1.25rem 0;
+  }
+
+  .callout-idea { --c: var(--accent); }
+  .callout-try { --c: var(--status-done); }
+  .callout-warn { --c: var(--status-wip); }
+  .callout-example { --c: var(--status-review); }
+  .callout-term { --c: var(--status-planned); }
+  .callout-field { --c: var(--plot-2); }
+
+  .callout-head {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 0.15rem;
+  }
+
+  .callout-kind {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--c);
+    border: 1px solid var(--c);
+    border-radius: 999px;
+    padding: 0 0.5rem;
+  }
+
+  .callout-title {
+    font-weight: 700;
+  }
+
+  .callout-body :global(p:first-child) {
+    margin-top: 0.3rem;
+  }
+
+  .callout-body :global(p:last-child),
+  .callout-body :global(ul:last-child),
+  .callout-body :global(ol:last-child) {
+    margin-bottom: 0.4rem;
+  }
+</style>

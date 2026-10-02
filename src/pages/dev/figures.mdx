@@ -1,0 +1,36 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 그림 갤러리
+description: 개발용 — 본문 예시 그림(정적 SVG)과 강조 상자 확인
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import * as F0 from '../../figures/p1-0';
+
+# 그림 갤러리 (개발용)
+
+본문 그림은 `src/figures/*.ts`에서 계산하고 `Figure` 컴포넌트가 빌드할 때 SVG로 그린다 (D-026).
+
+<Callout type="idea" title="강조 상자 예">
+본문 **마크다운**도 쓸 수 있다.
+</Callout>
+
+<Callout type="warn">주의 상자</Callout>
+<Callout type="example">숫자 예 상자</Callout>
+<Callout type="term" title="1X">용어 풀이 상자</Callout>
+<Callout type="try">따라 하기 상자</Callout>
+<Callout type="field">현장 상자</Callout>
+
+## P1-0
+
+<Figure {...F0.machineWaveform} />
+<Figure {...F0.threeMeasures} />
+<Figure {...F0.sineAnatomy} />
+<Figure {...F0.phaseShift} />
+<Figure {...F0.ordersFigure} />
+<Figure {...F0.amplitudeMeasures} />
+<Figure {...F0.crestFactorFigure} />
+<Figure {...F0.mixToSpectrum} />
+<Figure {...F0.samplesFigure} />
+<Figure {...F0.enoughSamples} />

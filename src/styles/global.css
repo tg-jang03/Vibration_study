@@ -197,6 +197,13 @@ main.container {
   max-width: 76ch;
 }
 
+/* 구분선은 브라우저 기본(margin auto)이면 넓은 컨테이너 가운데로 밀린다 */
+.prose > hr {
+  margin: 2.25rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
 .prose .katex-display {
   overflow-x: auto;
   overflow-y: hidden;

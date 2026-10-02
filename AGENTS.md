@@ -99,7 +99,12 @@
 - 랩은 `docs/Contents.md`의 랩 사양을 먼저 채우고 구현한다. 구조: 조작 → 플롯 → 수식(현재 값 대입) → 실험 과제.
 - 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
 - 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다. 이론상 0인 값의 부동소수점 잡음(1e-15 수준)도 그대로 표시하지 않고 0으로 보여준다 (hydration 오류, I-019).
-- **페이지 작성 기준 (D-025, 스토리텔링 & 랩 밀착형)**: `docs/Contents.md` §1을 따른다 — 생생한 실무 의문·당혹스러운 순간에서 출발, [의문] → [미니 랩 조작] → [Aha! 원리 발견] → [직관적 수식 및 실무 판단]의 유기적 결합. 위키백과식 사전 나열과 딱딱한 강의계획서 포맷(선수개념 표, 학습목표 나열)을 지양하고, 친절한 선배 멘토의 구어체와 생생한 비유(창살 틈새 피켓펜스 등)를 쓴다. **"학교 vs 현장" 식의 인위적 이분법을 피하고**, 신호와 물리 현상의 본질에 집중하여 누구나 편안하게 이해할 수 있는 보편적인 톤을 유지한다. push 전 체크리스트(§1-4) 확인.
+- **페이지 작성 기준 (D-025 톤 + D-026 구조)**: `docs/Contents.md` §1을 따른다.
+  - 톤: 질문에서 출발하는 구어체, 정확한 비유만, **"학교 vs 현장" 이분법 금지**, 과장 금지.
+  - 개념 순서: 앞 페이지까지 설명한 개념만 쓴다. 처음 나오는 용어는 그 자리에서 한 줄로 푼다 (개념 척추 표 §1-2).
+  - 예시 그림: 개념마다 `Figure`(빌드 시 정적 SVG). 데이터는 `src/figures/p{Part}-{절}.ts`에서 `lib/dsp`로 계산, 형식은 `src/lib/figure.ts`. 아스키 그림 금지. 확인은 `/dev/figures/` 갤러리.
+  - 강조 상자: `Callout`(`src/components/content/`) 6종만. 랩 앞에 `try` 상자로 조작 단계, 랩 뒤에 해석.
+  - push 전 체크리스트(§1-5) 확인.
 - 새 절 페이지는 `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 목차 `src/data/curriculum.ts`의 `href`·`status`도 고친다. 예시: `src/pages/p1-1.mdx`.
 - KaTeX는 `package.json` `overrides`로 한 버전만 쓴다. 수식 관련 패키지를 바꾸면 `npm ls katex`로 확인한다 (I-021).
 - 성능 측정은 `scripts/bench/plot-bench.mjs`(실시간). 헤드리스 캡처의 가상 시간 모드에서는 시간이 0으로 나온다 (I-020).
