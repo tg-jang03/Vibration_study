@@ -23,6 +23,7 @@
 | I-014 | F_max 선정·측정 설정 조합표의 관례값 출처 | 콘텐츠 | 중간 | 열림 | — | 2026-10-02 |
 | I-015 | npm 11 설치 스크립트 승인 경고 (esbuild) | 환경 | 낮음 | 해결 | — | 2026-10-02 |
 | I-016 | 랩이 MDX 본문 폭(76ch)에 갇힘 | 설계 | 낮음 | 열림 | M1.3 담당 | 2026-10-02 |
+| I-017 | 개발 서버에서 랩이 "그래프 불러오는 중…"에 멈춤 | 버그 | 중간 | 해결 | Claude | 2026-10-02 |
 
 ---
 
@@ -134,3 +135,15 @@
 - 등록: 2026-10-02 · Claude (M0.4)
 - 현상: `MdxLayout`의 `.prose { max-width: 76ch }` 안에 랩이 들어가서, 화면이 넓어도 랩(플롯·컨트롤)이 본문 폭만큼만 쓴다. 글 읽기에는 맞지만 스펙트럼처럼 가로가 긴 플롯에는 좁다.
 - 제안: M1.3(공통 랩 UI)에서 `LabFrame`이 본문 폭을 벗어나 컨테이너 폭(최대 1120px)까지 넓어지게 할지 결정한다.
+
+## I-017 [버그] 개발 서버에서 랩이 "그래프 불러오는 중…"에 멈춤
+- 등록: 2026-10-02 · Claude (사용자 제보)
+- 현상: `npm run dev`로 `/dev/math-plot/`를 열면 슬라이더·수식은 보이지만 그래프가 "불러오는 중…"에서 멈춤. 콘솔: `Error hydrating SineDemo.tsx — Failed to fetch dynamically imported module`, `katex.js?v=… 504 (Outdated Optimize Dep)`.
+- 원인: 개발 서버가 켜진 상태에서 에이전트가 패키지 설치·`astro check`·`astro build`를 돌리면서 Vite 의존성 사전 번들 캐시(`node_modules/.vite`)를 다시 만들었다. 개발 서버가 들고 있던 버전과 캐시가 어긋나 KaTeX 모듈이 504 → 랩 컴포넌트 hydration 실패. 빌드본(`astro preview`)은 영향 없음.
+- 처리 (`astro.config.mjs`)
+  1. `vite.cacheDir`를 나눔: 개발 서버는 `node_modules/.vite`, build/check는 `node_modules/.vite-tasks` → 서로 덮어쓰지 않음
+  2. `optimizeDeps.include`에 `katex`, `plotly.js-cartesian-dist-min` → 실행 중 새 의존성 발견으로 인한 재최적화 방지
+  3. `Plot`: 라이브러리 로드 실패 시 "불러오지 못했습니다" 문구 표시 (무한 로딩 방지)
+- 확인: 사용자 개발 서버에서 헤드리스 Edge로 플롯 렌더 확인. 그 뒤 `astro check`·`astro build`를 돌려도 개발 캐시 해시 불변, hydration 오류 0.
+- 그래도 개발 화면이 깨지면: 개발 서버 재시작, 필요하면 `npm run dev -- --force` (캐시 재생성)
+- **해결**: 2026-10-02

@@ -37,7 +37,12 @@ type PlotlyModule = typeof import('plotly.js-cartesian-dist-min').default;
 
 let plotlyPromise: Promise<PlotlyModule> | undefined;
 function loadPlotly(): Promise<PlotlyModule> {
-  plotlyPromise ??= import('plotly.js-cartesian-dist-min').then((m) => m.default);
+  plotlyPromise ??= import('plotly.js-cartesian-dist-min')
+    .then((m) => m.default)
+    .catch((err: unknown) => {
+      plotlyPromise = undefined; // 다음 렌더에서 다시 시도
+      throw err;
+    });
   return plotlyPromise;
 }
 
@@ -76,7 +81,7 @@ const CONFIG: Partial<Config> = {
 
 export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [themeVersion, setThemeVersion] = useState(0);
 
   // 라이트/다크 전환 시 다시 그린다
@@ -116,7 +121,10 @@ export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProp
         hovermode: 'closest',
       };
       Plotly.react(el, data, layout, CONFIG);
-      setReady(true);
+      setStatus('ready');
+    }).catch((err: unknown) => {
+      console.error('[Plot] 플롯 라이브러리를 불러오지 못했습니다', err);
+      if (!cancelled) setStatus('error');
     });
     return () => {
       cancelled = true;
@@ -133,7 +141,8 @@ export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProp
 
   return (
     <div className="plot" style={{ minHeight: height }} role="img" aria-label={ariaLabel}>
-      {!ready && <p className="plot-loading">그래프 불러오는 중…</p>}
+      {status === 'loading' && <p className="plot-loading">그래프 불러오는 중…</p>}
+      {status === 'error' && <p className="plot-loading">그래프를 불러오지 못했습니다. 페이지를 새로고침해 주세요.</p>}
       <div ref={ref} />
     </div>
   );
