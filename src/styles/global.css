@@ -413,3 +413,35 @@ main.container {
   padding: 0.25rem 0.7rem;
   cursor: pointer;
 }
+
+/* 절 페이지 이전/다음 이동 (MdxLayout) */
+.section-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.pager-soon {
+  color: var(--text-muted);
+}
+
+/* 본문 표 */
+.prose table:not(.readout-table) {
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.prose table:not(.readout-table) th,
+.prose table:not(.readout-table) td {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+}
+
+.prose table:not(.readout-table) th {
+  background: var(--surface-2);
+}

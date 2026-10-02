@@ -16,6 +16,14 @@ export interface PlotSeries {
   dash?: 'solid' | 'dash' | 'dot';
   width?: number;
   markerSize?: number;
+  /** 'bar'면 막대 (스펙트럼 bin, 곱의 부호 등). 기본 'line' */
+  kind?: 'line' | 'bar';
+  /** 막대 폭 (x축 단위). 생략하면 자동 */
+  barWidth?: number;
+  /** 0~1 */
+  opacity?: number;
+  /** 범례에서 숨기기 */
+  hideInLegend?: boolean;
 }
 
 export interface PlotAxis {
@@ -107,24 +115,37 @@ export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered
       const el = ref.current;
       if (cancelled || !el) return;
       const theme = readTheme();
-      const data: Data[] = series.map((s, i) => ({
-        type: 'scatter',
-        x: s.x as unknown as number[],
-        y: s.y as unknown as number[],
-        name: s.name,
-        mode: s.mode ?? 'lines',
-        line: { color: s.color ?? theme.palette[i % PALETTE_SIZE], dash: s.dash, width: s.width ?? 2 },
-        marker: { color: s.color ?? theme.palette[i % PALETTE_SIZE], size: s.markerSize ?? 6 },
-        hovertemplate: '%{x:.4g}, %{y:.4g}<extra>%{fullData.name}</extra>',
-      }));
+      const data: Data[] = series.map((s, i): Data => {
+        const color = s.color ?? theme.palette[i % PALETTE_SIZE];
+        const common = {
+          x: s.x as unknown as number[],
+          y: s.y as unknown as number[],
+          name: s.name,
+          opacity: s.opacity,
+          showlegend: s.hideInLegend ? false : undefined,
+          hovertemplate: '%{x:.4g}, %{y:.4g}<extra>%{fullData.name}</extra>',
+        };
+        if (s.kind === 'bar') {
+          return { ...common, type: 'bar', width: s.barWidth, marker: { color } };
+        }
+        return {
+          ...common,
+          type: 'scatter',
+          mode: s.mode ?? 'lines',
+          line: { color, dash: s.dash, width: s.width ?? 2 },
+          marker: { color, size: s.markerSize ?? 6 },
+        };
+      });
       const layout: Partial<Layout> = {
         height,
         margin: { l: 56, r: 16, t: 16, b: 48 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         font: { color: theme.text, family: 'inherit' },
-        showlegend: series.length > 1,
+        showlegend: series.filter((s) => !s.hideInLegend).length > 1,
         legend: { orientation: 'h', y: 1.12, x: 0 },
+        bargap: 0.4,
+        barmode: 'overlay',
         xaxis: axisLayout(x, theme),
         yaxis: axisLayout(y, theme),
         hovermode: 'closest',

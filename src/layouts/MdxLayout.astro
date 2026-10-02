@@ -1,18 +1,59 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import { PARTS } from '../data/curriculum';
+import { withBase } from '../lib/site';
 
 interface Props {
   frontmatter: {
     title?: string;
     description?: string;
+    /** 커리큘럼 절 ID (예: 'P1-1'). 있으면 경로 표시와 이전/다음 절 이동을 붙인다 */
+    sectionId?: string;
   };
 }
 
 const { frontmatter } = Astro.props;
+
+const sections = PARTS.flatMap((part) => part.sections.map((section) => ({ ...section, part })));
+const index = frontmatter.sectionId ? sections.findIndex((s) => s.id === frontmatter.sectionId) : -1;
+const current = index >= 0 ? sections[index] : undefined;
+const prev = index > 0 ? sections[index - 1] : undefined;
+const next = index >= 0 ? sections[index + 1] : undefined;
 ---
 
 <BaseLayout title={frontmatter.title} description={frontmatter.description}>
+  {
+    current && (
+      <div class="breadcrumb">
+        <a href={withBase('/')}>커리큘럼</a> › <a href={withBase(`/parts/${current.part.num}/`)}>Part {current.part.num}. {current.part.title}</a> › {current.id}
+      </div>
+    )
+  }
   <article class="prose">
     <slot />
   </article>
+  {
+    current && (
+      <nav class="section-pager" aria-label="절 이동">
+        {prev ? (
+          prev.href ? (
+            <a href={withBase(prev.href)}>← {prev.id} {prev.title}</a>
+          ) : (
+            <span class="pager-soon">← {prev.id} {prev.title} (준비 중)</span>
+          )
+        ) : (
+          <span />
+        )}
+        {next ? (
+          next.href ? (
+            <a href={withBase(next.href)}>{next.id} {next.title} →</a>
+          ) : (
+            <span class="pager-soon">{next.id} {next.title} (준비 중) →</span>
+          )
+        ) : (
+          <span />
+        )}
+      </nav>
+    )
+  }
 </BaseLayout>
