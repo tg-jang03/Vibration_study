@@ -27,7 +27,7 @@
   - 본문 수식은 MDX에서 `$…$`, `$$…$$`
 - push 후 Actions 탭에서 `CI & Deploy` 성공을 확인한다 (실패하면 사이트는 바뀌지 않음).
 - 화면 확인: `npm run build` → `npx astro preview` 후 Edge 헤드리스 캡처 (AGENTS.md §6).
-- 열린 이슈: I-018 (Actions Ubuntu 26 전환, 깨지면 대응). 사용자 확인 대기: D-010 (Plotly 확정)
+- 열린 이슈: I-018 (Actions Ubuntu 26 전환, 깨지면 대응)
 
 ## 큰 마일스톤 현황
 
