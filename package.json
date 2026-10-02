@@ -9,6 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "astro": "astro"
   },
   "dependencies": {
@@ -30,6 +32,7 @@
     "@astrojs/check": "^0.9.10",
     "@types/node": "^24.19.1",
     "@types/plotly.js": "^3.0.14",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.3"
   }
 }

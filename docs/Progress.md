@@ -8,16 +8,16 @@
 | 항목 | 값 |
 |---|---|
 | 큰 마일스톤 | M0 기반 구축 |
-| 세부 마일스톤 | M0.4 수식 · 플롯 검증 → 완료, 다음 **M0.5 테스트 · CI · 배포** |
-| 담당 | Claude (다음 담당은 사용자가 지정) |
+| 세부 마일스톤 | **M0.5 테스트 · CI · 배포** → 진행 중 (1~2단계 완료, 3단계부터 사용자) |
+| 담당 | **사용자** (1~2단계는 Claude가 수행) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **다음: M0.5 테스트 · CI · 배포** (`Roadmap.md` §6-2)
-  - Vitest 설정 + 첫 테스트 (`src/lib/format.ts`의 `texNumber` 등)
+- **진행 중: M0.5 테스트 · CI · 배포** (`Roadmap.md` §6-2) — 사용자가 직접 진행
+  - 완료: Vitest 5 설정(`vitest.config.ts`, `npm test`), 첫 DSP 함수 `aliasFrequency`(`src/lib/dsp/sampling.ts`) + 테스트 3개
+  - 남은 일 (사용자): `.github/workflows/deploy.yml` 작성 → Settings › Pages › Source "GitHub Actions" → 커밋·push → Actions·배포 사이트 확인 → 문서 정리
   - GitHub Actions: `npm ci` → `npm run check` → `npm test` → `npm run build` → GitHub Pages 배포
-  - 저장소 Settings → Pages → Source를 "GitHub Actions"로 바꿔야 한다. 사용자에게 직접 할지, `gh api`로 할지 먼저 묻는다.
 - M0.4에서 만든 것: 본문 수식은 MDX에서 `$…$`, `$$…$$`로 쓴다 (Astro 7 `unified()` 처리기 + remark-math + rehype-katex). 랩용 컴포넌트는 `components/ui/`의 `Formula`(살아있는 수식), `Plot`(Plotly 래퍼), `ParamSlider`. 숫자 대입은 `texNumber()`. 사용 예는 `src/components/labs/SineDemo.tsx`, 확인 페이지는 `/Vibration_study/dev/math-plot/`.
 - 화면 확인: `npm run build` → `npx astro preview` 후 Edge 헤드리스 캡처 (AGENTS.md §6).
 - 열린 설계 이슈: I-016 (랩 폭, M1.3에서 결정).
@@ -48,9 +48,15 @@
 | M0.2 | 저장소 연결 · 초기 커밋 | 완료 | Claude | `b2a4e16` | 2026-10-02 |
 | M0.3 | 사이트 골격 | 완료 | Claude | `ce07ee2` (PR #1, 병합 `e7b620c`) | 2026-10-02 |
 | M0.4 | 수식 · 플롯 검증 | 완료 | Claude | main | 2026-10-02 |
-| M0.5 | 테스트 · CI · 배포 | 대기 | 미배정 | — | — |
+| M0.5 | 테스트 · CI · 배포 | 진행 중 | 사용자 (1~2단계 Claude) | — | — |
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-02 · Claude · M0.5 (1~2단계) Vitest · 첫 DSP 테스트
+- 요청: 사용자 — "3번부터 직접 해보고 싶으니 2번까지 해달라"
+- 한 일: Vitest 5.0.3 설치, `npm test`·`npm run test:watch` 스크립트, `vitest.config.ts`(캐시 `node_modules/.vite-tasks`, I-017), 첫 DSP 함수 `aliasFrequency()`와 테스트 3개(Contents §6 기준값: 60 Hz·760 Hz)
+- 확인: `npm test` 3 passed, `npm run check` 0 errors, `npm run build` 12페이지
+- 다음: 사용자가 3단계(GitHub Actions)부터 진행
 
 ### 2026-10-02 · Claude · M0.4 후속: 개발 서버 플롯 멈춤 수정 (I-017)
 - 사용자 제보: 개발 서버에서 그래프가 "불러오는 중…"에 멈춤
