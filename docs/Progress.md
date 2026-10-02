@@ -7,9 +7,9 @@
 
 | 항목 | 값 |
 |---|---|
-| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 3 / 15 |
-| 세부 마일스톤 | M1.2 (Codex), M1.3 (Claude) 완료 → 다음 **M1.4 푸리에 기초 (P1-1, LAB-FOU-01)** |
-| 담당 | 다음 담당은 사용자가 지정 |
+| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 4 / 15 |
+| 세부 마일스톤 | M1.2·M1.3·M1.9 완료 → Claude가 **M1.4 푸리에 기초 (P1-1, LAB-FOU-01)** 병렬 진행 중 (D-021) |
+| 담당 | 다음 담당은 사용자가 지정 (M1.4는 Claude worktree) |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
@@ -20,7 +20,8 @@
   - `src/lib/dsp/signal.ts`: `SignalSpec`(sine·harmonics·noise), `evaluate()`, `evaluateRange()` — 정현파는 `A·cos(2πft + φ)` (Contents §3)
   - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()` / `src/lib/dsp/random.ts`: `createRng(seed)` (uniform, normal)
   - `src/lib/dsp/fft.ts`: `fft(real, imag?)`(비정규화 전방 복소 DFT), `zeroPad(values, fftSize)` — 입력 보존
-  - `src/lib/dsp/spectrum.ts`: `singleSidedSpectrum(samples, {fftSize?})` → frequency·amplitude(Pk)·phase(rad), n·fftSize·binSpacing·resolution·duration. 위상은 첫 샘플 기준, 정확한 0 bin은 NaN. UI는 작은 진폭의 위상을 가린다. 패딩 후 진폭 분모는 원래 N, DC·나이퀴스트는 두 배 제외. 윈도우 보정은 M1.9에서 추가
+  - `src/lib/dsp/window.ts`: 주기형(DFT-even) 윈도우 8종(`uniform`, `hann`, `hamming`, `blackmanHarris`, `flatTop`, `kaiser`, `exponential`, `force`), 특성 계수 계산 `windowProperties(w)`(S₁, S₂, CG, ACF, ECF, ENBW, scallopLossDb/Ratio), `applyWindow(x, w)`, 팩토리 `createWindow(type, n, opts)` (M1.9)
+  - `src/lib/dsp/spectrum.ts`: `singleSidedSpectrum(samples, {fftSize?, window?, windowOptions?})` → frequency·amplitude(Pk)·phase(rad)·s1. 위상은 첫 샘플 기준, 진폭 분모는 S₁(윈도우 합, 미적용 시 N과 동일). bin 중심 톤은 ACF로 피크 진폭 A 보존. I-010(Flat top 5항 계수) 결정 완료 (D-022)
   - `components/ui/`: `LabFrame`(랩 틀: controls·plots·formulas·readouts·tasks), `ParamSlider`(프레임당 1회 갱신)·`ParamSelect`·`ParamToggle`, `ReadoutTable`(측정·이론·오차), `Formula`, `Plot`(`onRendered`로 그리기 시간) / `src/lib/format.ts`: `texNumber()`, `formatNumber()`, `formatError()`
   - 예시 `src/components/labs/SineDemo.tsx`(가장 작은 랩), `LabUiDemo.tsx`(모든 부품 + 벤치마크) / 확인 페이지 `/dev/math-plot/`, `/dev/lab-ui/`
   - 랩 규칙 (AGENTS.md §6): 서버(빌드)와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다 (I-019). 성능은 `scripts/bench/plot-bench.mjs`로 잰다 (I-020)
@@ -34,7 +35,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) | 진행 중 | 3 / 15 | — |
+| M1 | 신호처리 기초 (Part 1) | 진행 중 | 4 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -59,7 +60,7 @@
 | M1.6 | AAF · ADC (LAB-SMP-02, 03) | 대기 | 미배정 | — | — |
 | M1.7 | 분해능 · Smearing (LAB-RES-01, 02) | 대기 | 미배정 | — | — |
 | M1.8 | Zoom FFT (LAB-ZOOM-01) | 대기 | 미배정 | — | — |
-| M1.9 | 윈도우 라이브러리 | 대기 | 미배정 | — | — |
+| M1.9 | 윈도우 라이브러리 | 완료 | Codex (M1.4와 병렬, D-021) | main | 2026-10-02 |
 | M1.10 | 윈도우 랩 (LAB-WIN-01~03) | 대기 | 미배정 | — | — |
 | M1.11 | 평균화 (LAB-AVG-01) | 대기 | 미배정 | — | — |
 | M1.12 | TSA (LAB-AVG-02) | 대기 | 미배정 | — | — |
@@ -93,6 +94,21 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Codex · M1.9 윈도우 라이브러리 (M1.4와 병렬)
+- 진행 방식: Claude가 M1.4(푸리에 랩)를 별도 worktree에서 진행 중이므로, UI 파일(src/components, src/pages, curriculum.ts)을 전혀 건드리지 않고 DSP 코어와 문서만 작업 (AGENTS §4, D-021)
+- 한 일:
+  - `src/lib/dsp/window.ts`: 주기형(DFT-even) 윈도우 8종(`uniformWindow`, `hannWindow`, `hammingWindow`, `blackmanHarrisWindow`, `flatTopWindow`, `kaiserWindow`, `exponentialWindow`, `forceWindow`), `createWindow`, `applyWindow`, `besselI0`
+  - 특성 계수 계산 `windowProperties(w)`: S₁, S₂, CG, ACF, ECF, ENBW, scallopLossDb/Ratio
+  - `src/lib/dsp/spectrum.ts`: `window` 옵션 추가 (`Float64Array` 또는 `WindowType`), 진폭 분모를 S₁(윈도우 합)으로 정규화 (미적용 시 N과 동일하여 기존 100% 호환)
+  - I-010 해결 (D-022): Flat top 5항 코사인 표준 계수(ISO 18431-2, SciPy `flattop`, MATLAB `flattopwin`, D'Antona & Ferrero 2006) 채택 및 출처 명시
+  - `Contents.md` §6 Flat top 수치 확정 및 출처 추가
+- 확인:
+  - 새 테스트 20개(`window.test.ts`) + `spectrum.test.ts` 4개 추가. 전체 75개 테스트 100% 통과
+  - Contents §6 문헌값 검증: Uniform(CG 1, ENBW 1, SL 3.92 dB), Hann(CG 0.5, ENBW 1.5, SL 1.42 dB), Hamming(CG 0.54, ENBW 1.363, SL 1.78 dB), Blackman-Harris(CG 0.359, ENBW 2.004, SL 0.83 dB), Flat top(CG 0.2156, ENBW 3.77 bin, SL < 0.01 dB)
+  - bin 중심 톤 피크 진폭 보존(A=1.000) 및 bin 사이(δ=0.5) 스캘럽 손실 검증
+  - `npm run check` 0 errors/0 warnings, `npm run build` 13페이지 통과
+- 다음: Claude의 M1.4(푸리에 랩) 완료 후 M1.5(샘플링) 또는 M1.10(윈도우 랩)
+
 ### 2026-10-02 · Claude · M1.3 공통 랩 UI (M1.2와 병렬)
 - 진행 방식: 사용자 요청으로 Codex의 M1.2와 병렬. 별도 worktree(`../진동공부-claude`)에서 코드 파일이 겹치지 않게 작업하고, Codex가 push한 뒤 rebase해서 문서와 함께 push (D-021)
 - 한 일: `LabFrame`, `ParamSlider`(useRafCallback, 프레임당 1회)·`ParamSelect`·`ParamToggle`, `ReadoutTable`, `formatNumber`·`formatError`(+테스트 8), `Plot.onRendered`·축 설정 내용 비교, 랩 폭(I-016 해결), `/dev/lab-ui/` + 벤치마크, SineDemo를 LabFrame으로, `scripts/bench/plot-bench.mjs`
@@ -111,15 +127,4 @@
 - 확인: 새 테스트 23개, 전체 43개 통과 (직접 DFT, 복소 음의 주파수, 켤레 대칭, Parseval, 사각파 홀수 하모닉, 진폭·위상·t₀, 제로패딩, DC·나이퀴스트). `npm run check` 오류·경고 0, `npm run build` 12페이지 통과
 - 환경 메모: 이 Codex 셸의 PATH에는 Node가 없어 프로세스 PATH에 `C:\Program Files\nodejs`를 추가했다. 테스트·빌드의 자식 프로세스 실행은 샌드박스 밖에서 검증 (EPERM). 프로젝트 설정·의존성 변경 없음
 - 다음: M1.3 공통 랩 UI (I-016 랩 폭, N=4096 성능 확인)
-
-### 2026-10-02 · Claude · M1.1 DSP 코어 ① 신호 모델
-- 한 일
-  - `random.ts`: 시드 고정 난수 `createRng` (mulberry32 균등, Box–Muller 정규)
-  - `signal.ts`: `SignalSpec` = sine / harmonics / noise 성분의 합, `evaluate(t)`(참 신호, 잡음 제외), `evaluateRange()`
-  - `sampling.ts`: `acquire(spec, {fs, n, t0})` — 샘플 시각 t0 + i/fs, 잡음은 샘플 번호 기준 시드 생성
-  - 정현파 표기를 `A·cos(2πft + φ)`로 통일 (FFT 위상과 φ가 바로 대응). SineDemo도 신호 모델을 쓰도록 변경
-  - Contents §3(신호 표기·성분 목록), §6(에일리어스 위상 반전, 난수 기준값) 갱신
-- 확인: 테스트 20개 통과 (난수 통계, 하모닉 = 정현파 합, 선형성, 940 Hz(φ) = 60 Hz(−φ) 위상 반전, 잡음 rms·재현성), `astro check` 0 errors, 빌드 12페이지, SSR 수식에 `cos` 연산자 정상
-- 메모: 셸 heredoc으로 코드를 쓰면 백슬래시가 사라지는 일이 있었다 → 백슬래시가 있는 코드는 Write 도구로 쓴다
-- 다음: M1.2
 

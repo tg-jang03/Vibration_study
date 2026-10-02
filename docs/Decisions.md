@@ -28,6 +28,7 @@
 | D-019 | main 단일 브랜치 작업 (브랜치·PR 없음) | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-020 | Progress 세션 로그는 최근 3개만, 나머지는 보관 파일로 | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-021 | 사용자 요청 시 두 에이전트 병렬 작업 (별도 worktree) | 확정(사용자 요청) / 제안(절차) | 2026-10-02 | 사용자 / Claude |
+| D-022 | Flat top 윈도우 계수 정의 선택 (I-010) | 제안 | 2026-10-02 | Codex |
 
 ---
 
@@ -209,3 +210,13 @@
   5. 끝나면 worktree를 지운다: `git worktree remove ../진동공부-<에이전트>`.
 - 첫 적용: M1.2(Codex, 기본 폴더) ∥ M1.3(Claude, worktree) — 충돌 없음.
 - 영향: `AGENTS.md` §4
+
+## D-022 Flat top 윈도우 계수 정의 선택 (I-010)
+- 상태: 제안 · 2026-10-02 · Codex
+- 맥락: Flat top 윈도우는 여러 계수 정의(MATLAB `flattopwin`, Heinzel 2002 HFT 계열, ISO 18431-2 등)가 존재하며 정의마다 대역폭(ENBW)과 스캘럽 손실이 달라 단일 표준을 정해야 했다 (I-010).
+- 결정: ISO 18431-2, SciPy(`scipy.signal.windows.flattop`), MATLAB(`flattopwin`), D'Antona & Ferrero (2006)에서 널리 쓰이는 표준 5항 코사인 정의를 채택한다.
+  - 형태: $w[n] = a_0 - a_1\cos(2\pi n/N) + a_2\cos(4\pi n/N) - a_3\cos(6\pi n/N) + a_4\cos(8\pi n/N)$
+  - 계수: $a = [0.21557895, 0.41663158, 0.277263158, 0.083578947, 0.006947368]$
+  - 특성: CG ≈ 0.2156, ACF ≈ 4.639, ECF ≈ 2.389, ENBW ≈ 3.77 bin (≈ 3.8 bin), 스캘럽 손실 < 0.01 dB (≈ 0.005 dB), 메인로브 ±5 bin
+- 대안: Heinzel 2002의 HFT70/90D 등. 범용 분석기 및 Python/MATLAB 생태계와의 호환성을 고려해 ISO/SciPy/MATLAB 표준을 선택함.
+- 영향: `src/lib/dsp/window.ts`, `src/lib/dsp/window.test.ts`, `Contents.md` §6, `Issues.md` I-010 해결.

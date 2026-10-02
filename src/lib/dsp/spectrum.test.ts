@@ -136,4 +136,62 @@ describe('singleSidedSpectrum', () => {
     }
     expect(() => singleSidedSpectrum({ fs: 8, x: new Float64Array([Infinity, 0]) })).toThrow(RangeError);
   });
+
+  describe('윈도우 옵션 및 S₁ 정규화 (Contents §3, §6)', () => {
+    it('bin 중심 톤(A=1): 모든 윈도우 적용 시 피크 진폭이 1.000으로 보정된다', () => {
+      const fs = 1024;
+      const n = 1024;
+      const freq = 64; // bin 중심
+      const samples = acquire({ components: [{ type: 'sine', freq, amp: 1.0, phase: 0 }] }, { fs, n });
+
+      const windows = ['uniform', 'hann', 'hamming', 'blackmanHarris', 'flatTop', 'kaiser'] as const;
+      for (const win of windows) {
+        const spec = singleSidedSpectrum(samples, { window: win });
+        // 실수 cos 신호는 음의 주파수 성분의 작은 간섭이 있으므로 1e-5 허용오차 적용
+        expect(spec.amplitude[freq]).toBeCloseTo(1.0, 5);
+        expect(spec.s1).toBeGreaterThan(0);
+      }
+    });
+
+    it('bin 사이 톤(δ=0.5): 스캘럽 손실이 Contents §6 기대값과 일치한다', () => {
+      const fs = 1024;
+      const n = 1024;
+      const freq = 64.5; // δ = 0.5 bin 오프셋
+      const samples = acquire({ components: [{ type: 'sine', freq, amp: 1.0, phase: 0 }] }, { fs, n });
+
+      // Uniform: 2/π ≈ 0.637 (-36.3%)
+      const uniformSpec = singleSidedSpectrum(samples, { window: 'uniform' });
+      const uniformPeak = Math.max(uniformSpec.amplitude[64], uniformSpec.amplitude[65]);
+      expect(uniformPeak).toBeCloseTo(2 / Math.PI, 2); // 0.639 ≈ 0.64 (음의 주파수 간섭 포함)
+
+      // Hann: 8/(3π) ≈ 0.8488 (-15.1%)
+      const hannSpec = singleSidedSpectrum(samples, { window: 'hann' });
+      const hannPeak = Math.max(hannSpec.amplitude[64], hannSpec.amplitude[65]);
+      expect(hannPeak).toBeCloseTo(8 / (3 * Math.PI), 3); // ≈ 0.849
+
+      // Flat top: 스캘럽 손실 < 0.01 dB (진폭 > 0.998)
+      const flatTopSpec = singleSidedSpectrum(samples, { window: 'flatTop' });
+      const flatTopPeak = Math.max(flatTopSpec.amplitude[64], flatTopSpec.amplitude[65]);
+      expect(flatTopPeak).toBeGreaterThan(0.998);
+      expect(flatTopPeak).toBeCloseTo(1.0, 2);
+    });
+
+    it('Float64Array 직접 전달과 윈도우 이름 전달의 결과가 완전히 일치한다', () => {
+      const samples = acquire({ components: [{ type: 'sine', freq: 40, amp: 2.5 }] }, { fs: 512, n: 512 });
+      const byName = singleSidedSpectrum(samples, { window: 'hann' });
+      const wArray = new Float64Array(512);
+      for (let i = 0; i < 512; i++) wArray[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / 512);
+      const byArray = singleSidedSpectrum(samples, { window: wArray });
+
+      expect(byName.amplitude).toEqual(byArray.amplitude);
+      expect(byName.s1).toBeCloseTo(byArray.s1, 12);
+    });
+
+    it('윈도우 길이가 샘플 길이와 다르면 RangeError를 던진다', () => {
+      const samples = { fs: 64, x: new Float64Array(64) };
+      const badWindow = new Float64Array(32);
+      expect(() => singleSidedSpectrum(samples, { window: badWindow })).toThrow(RangeError);
+    });
+  });
 });
+
