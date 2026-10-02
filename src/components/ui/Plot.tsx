@@ -31,6 +31,8 @@ interface PlotProps {
   height?: number;
   /** 화면 낭독기용 그래프 설명 */
   ariaLabel?: string;
+  /** 그리기가 끝날 때마다 걸린 시간 [ms]을 알려준다 (성능 측정용) */
+  onRendered?: (ms: number) => void;
 }
 
 type PlotlyModule = typeof import('plotly.js-cartesian-dist-min').default;
@@ -79,10 +81,17 @@ const CONFIG: Partial<Config> = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
 };
 
-export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProps) {
+export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [themeVersion, setThemeVersion] = useState(0);
+  const onRenderedRef = useRef(onRendered);
+  useEffect(() => {
+    onRenderedRef.current = onRendered;
+  });
+  // 축 설정은 보통 매 렌더 새 객체로 넘어오므로 내용으로 비교한다
+  const xKey = JSON.stringify(x ?? {});
+  const yKey = JSON.stringify(y ?? {});
 
   // 라이트/다크 전환 시 다시 그린다
   useEffect(() => {
@@ -120,7 +129,10 @@ export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProp
         yaxis: axisLayout(y, theme),
         hovermode: 'closest',
       };
-      Plotly.react(el, data, layout, CONFIG);
+      const start = performance.now();
+      void Plotly.react(el, data, layout, CONFIG).then(() => {
+        if (!cancelled) onRenderedRef.current?.(performance.now() - start);
+      });
       setStatus('ready');
     }).catch((err: unknown) => {
       console.error('[Plot] 플롯 라이브러리를 불러오지 못했습니다', err);
@@ -129,7 +141,8 @@ export default function Plot({ series, x, y, height = 320, ariaLabel }: PlotProp
     return () => {
       cancelled = true;
     };
-  }, [series, x, y, height, themeVersion]);
+    // x, y는 xKey, yKey(내용)로 비교한다
+  }, [series, xKey, yKey, height, themeVersion]);
 
   // 언마운트 시 Plotly 정리
   useEffect(() => {

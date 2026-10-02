@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import Formula from '../ui/Formula';
+import LabFrame from '../ui/LabFrame';
 import ParamSlider from '../ui/ParamSlider';
 import Plot from '../ui/Plot';
 import { texNumber } from '../../lib/format';
@@ -7,7 +8,7 @@ import { evaluateRange } from '../../lib/dsp/signal';
 
 /**
  * M0.4 검증용 데모: 슬라이더 → 플롯 → 살아있는 수식.
- * 랩 구조(조작 → 플롯 → 수식 → 과제)의 시제품이다.
+ * 랩 구조(조작 → 플롯 → 수식 → 과제)의 가장 작은 예다.
  */
 
 const DURATION = 0.5; // s
@@ -25,23 +26,28 @@ export default function SineDemo() {
   const period = 1 / freq;
 
   return (
-    <section className="lab" aria-label="정현파 데모">
-      <div className="lab-controls">
-        <ParamSlider label="주파수 f" value={freq} min={1} max={50} step={0.5} unit="Hz" onChange={setFreq} />
-        <ParamSlider label="진폭 A" value={amp} min={0.1} max={2} step={0.1} format={(v) => v.toFixed(1)} onChange={setAmp} />
-      </div>
-
+    <LabFrame
+      id="DEMO"
+      title="정현파: 조작 → 플롯 → 살아있는 수식"
+      controls={
+        <>
+          <ParamSlider label="주파수 f" value={freq} min={1} max={50} step={0.5} unit="Hz" onChange={setFreq} />
+          <ParamSlider label="진폭 A" value={amp} min={0.1} max={2} step={0.1} format={(v) => v.toFixed(1)} onChange={setAmp} />
+        </>
+      }
+      formulas={
+        <>
+          <Formula display tex={`x(t) = A\\cos(2\\pi f t) = ${texNumber(amp, 2)}\\,\\cos(2\\pi \\cdot ${texNumber(freq)}\\,t)`} />
+          <Formula display tex={`T = \\dfrac{1}{f} = \\dfrac{1}{${texNumber(freq)}} = ${texNumber(period)}\\ \\mathrm{s}`} />
+        </>
+      }
+    >
       <Plot
         series={series}
         x={{ label: '시간 t [s]', range: [0, DURATION] }}
         y={{ label: '진폭', range: [-2.2, 2.2] }}
         ariaLabel={`진폭 ${amp}, 주파수 ${freq} Hz 정현파`}
       />
-
-      <div className="lab-formulas">
-        <Formula display tex={`x(t) = A\\cos(2\\pi f t) = ${texNumber(amp, 2)}\\,\\cos(2\\pi \\cdot ${texNumber(freq)}\\,t)`} />
-        <Formula display tex={`T = \\dfrac{1}{f} = \\dfrac{1}{${texNumber(freq)}} = ${texNumber(period)}\\ \\mathrm{s}`} />
-      </div>
-    </section>
+    </LabFrame>
   );
 }
