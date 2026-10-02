@@ -53,7 +53,7 @@ export const PARTS: Part[] = [
       { id: 'P1-0', title: '신호와 스펙트럼의 기본', status: 'review', href: '/p1-0/' },
       { id: 'P1-1', title: '푸리에 기초: 신호를 주파수로 보는 법', status: 'review', href: '/p1-1/' },
       { id: 'P1-2', title: '샘플링 · 에일리어싱 · AAF · ADC', status: 'review', href: '/p1-2/' },
-      { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'wip', href: '/p1-3/' },
+      { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'done', href: '/p1-3/' },
       { id: 'P1-4', title: '윈도우', status: 'spec' },
       { id: 'P1-5', title: '평균화와 TSA', status: 'spec' },
       { id: 'P1-6', title: '스펙트럼 스케일링과 진동 단위', status: 'spec' },

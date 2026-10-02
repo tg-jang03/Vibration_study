@@ -7,6 +7,7 @@ sectionId: P1-3
 
 import ResolutionLab from '../components/labs/ResolutionLab';
 import SmearingLab from '../components/labs/SmearingLab';
+import ZoomLab from '../components/labs/ZoomLab';
 
 # 1-3 주파수 분해능 · 측정 시간 · Smearing
 
@@ -124,17 +125,25 @@ $$
 
 ---
 
-## 6. Zoom FFT (대역 확대 분석)의 개념
+## 6. Zoom FFT (대역 확대 분석)과 인터랙티브 랩
 
 광대역(예: $0 \sim 5000\ \mathrm{Hz}$)을 전체적으로 보면서도 특정 고주파(예: $1200\ \mathrm{Hz}$ 근처의 기어 물림 측대역)를 $0.1\ \mathrm{Hz}$ 초고분해능으로 보고 싶다면 어떻게 해야 할까요?
-일반 FFT로 이를 달성하려면 $\mathrm{LOR} = 50000$ 라인이라는 비현실적으로 방대한 계산량이 필요합니다.
+일반 FFT로 전체 대역을 이 분해능으로 보려면 $\mathrm{LOR} = 50000$ 라인이라는 비현실적으로 방대한 메모리와 계산량이 필요합니다.
 
 이를 해결하는 고전적인 기법이 **Zoom FFT(복소 복조 FFT)**입니다:
-1. **주파수 이동 (Frequency Shifting)**: 관심 중심 주파수 $f_c$의 복소 지수 $e^{-j 2\pi f_c t}$를 곱해 관심 대역을 DC($0\ \mathrm{Hz}$) 부근으로 끌어내립니다.
-2. **디지털 저역통과 필터(LPF) 및 데시메이션(Decimation)**: 관심 대역폭 $B$만 남기고 나머지 고주파를 차단한 뒤 다운샘플링합니다.
-3. **작은 $N$으로 고분해능 FFT 수행**: 축소된 데이터에 보통 크기($N=1024$)의 FFT를 수행하여 관심 대역만 초정밀하게 관찰합니다.
+1. **주파수 이동 (Complex Demodulation)**: 관심 중심 주파수 $f_c$의 복소 지수 $e^{-j 2\pi f_c t}$를 곱해 관심 대역을 DC($0\ \mathrm{Hz}$) 부근으로 끌어내립니다.
+2. **디지털 저역통과 필터(LPF)**: 관심 대역폭 $B$만 남기고 나머지 고주파 성분을 깨끗이 차단합니다.
+3. **데시메이션(Decimation)**: 축소된 대역폭에 맞춰 $1/Z$로 다운샘플링합니다.
+4. **기본 크기 FFT 수행**: 작은 크기($N = 1024$)의 FFT만으로 관심 대역을 초정밀 고분해능으로 관찰합니다.
 
-> **단, Zoom FFT도 물리적 측정 시간 $T = 1/\Delta f$를 단축할 수는 없습니다.** 공짜 분해능은 물리학적으로 존재하지 않습니다 (M1.8에서 LAB-ZOOM-01로 상세 구현).
+### 인터랙티브 랩: LAB-ZOOM-01 Zoom FFT
+
+아래 랩에서 기어 물림 주파수(GMF $1200\ \mathrm{Hz}$) 주변의 $\pm 5\ \mathrm{Hz}$ 회전 측대역을 Zoom 확대 배율 $Z$를 바꾸어가며 분리해 보세요.
+
+<ZoomLab client:load />
+
+> **불변의 법칙: Zoom FFT도 측정 시간 $T = 1/\Delta f$는 줄일 수 없다!**
+> 위 랩의 수식과 읽음값 표에서 확인하듯, $Z = 8$배 확대 시 분해능은 $0.625\ \mathrm{Hz}$로 8배 정밀해지지만, 필요한 측정 시간 역시 $0.2\ \mathrm{s}$에서 $1.6\ \mathrm{s}$로 **정확히 8배 늘어납니다**. Zoom FFT는 계산 효율과 화면 표시를 도와줄 뿐, 정보 이론상 물리적 계측 시간은 절대로 단축할 수 없습니다.
 
 ---
 
