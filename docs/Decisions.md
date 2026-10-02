@@ -28,7 +28,7 @@
 | D-019 | main 단일 브랜치 작업 (브랜치·PR 없음) | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-020 | Progress 세션 로그는 최근 3개만, 나머지는 보관 파일로 | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-021 | 사용자 요청 시 두 에이전트 병렬 작업 (별도 worktree) | 확정(사용자 요청) / 제안(절차) | 2026-10-02 | 사용자 / Claude |
-| D-022 | Flat top 윈도우 계수 정의 선택 (I-010) | 제안 | 2026-10-02 | Codex |
+| D-022 | Flat top 윈도우 계수 정의 선택 (I-010) | 제안 | 2026-10-02 | Antigravity |
 
 ---
 
@@ -212,7 +212,7 @@
 - 영향: `AGENTS.md` §4
 
 ## D-022 Flat top 윈도우 계수 정의 선택 (I-010)
-- 상태: 제안 · 2026-10-02 · Codex
+- 상태: 제안 · 2026-10-02 · Antigravity
 - 맥락: Flat top 윈도우는 여러 계수 정의(MATLAB `flattopwin`, Heinzel 2002 HFT 계열, ISO 18431-2 등)가 존재하며 정의마다 대역폭(ENBW)과 스캘럽 손실이 달라 단일 표준을 정해야 했다 (I-010).
 - 결정: ISO 18431-2, SciPy(`scipy.signal.windows.flattop`), MATLAB(`flattopwin`), D'Antona & Ferrero (2006)에서 널리 쓰이는 표준 5항 코사인 정의를 채택한다.
   - 형태: $w[n] = a_0 - a_1\cos(2\pi n/N) + a_2\cos(4\pi n/N) - a_3\cos(6\pi n/N) + a_4\cos(8\pi n/N)$

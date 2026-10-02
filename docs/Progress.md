@@ -60,7 +60,7 @@
 | M1.6 | AAF · ADC (LAB-SMP-02, 03) | 대기 | 미배정 | — | — |
 | M1.7 | 분해능 · Smearing (LAB-RES-01, 02) | 대기 | 미배정 | — | — |
 | M1.8 | Zoom FFT (LAB-ZOOM-01) | 대기 | 미배정 | — | — |
-| M1.9 | 윈도우 라이브러리 | 완료 | Codex (M1.4와 병렬, D-021) | main | 2026-10-02 |
+| M1.9 | 윈도우 라이브러리 | 완료 | Antigravity (M1.4와 병렬, D-021) | main | 2026-10-02 |
 | M1.10 | 윈도우 랩 (LAB-WIN-01~03) | 대기 | 미배정 | — | — |
 | M1.11 | 평균화 (LAB-AVG-01) | 대기 | 미배정 | — | — |
 | M1.12 | TSA (LAB-AVG-02) | 대기 | 미배정 | — | — |
@@ -94,7 +94,7 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
-### 2026-10-02 · Codex · M1.9 윈도우 라이브러리 (M1.4와 병렬)
+### 2026-10-02 · Antigravity · M1.9 윈도우 라이브러리 (M1.4와 병렬)
 - 진행 방식: Claude가 M1.4(푸리에 랩)를 별도 worktree에서 진행 중이므로, UI 파일(src/components, src/pages, curriculum.ts)을 전혀 건드리지 않고 DSP 코어와 문서만 작업 (AGENTS §4, D-021)
 - 한 일:
   - `src/lib/dsp/window.ts`: 주기형(DFT-even) 윈도우 8종(`uniformWindow`, `hannWindow`, `hammingWindow`, `blackmanHarrisWindow`, `flatTopWindow`, `kaiserWindow`, `exponentialWindow`, `forceWindow`), `createWindow`, `applyWindow`, `besselI0`
