@@ -36,7 +36,7 @@ export const PARTS: Part[] = [
   {
     num: 0,
     title: '출발점: MCK에서 회전체로',
-    question: '학교에서 배운 것이 현장 플롯의 어디에 있나?',
+    question: '기초 진동 모델(MCK)이 실제 계측 플롯에서 어떻게 나타나는가?',
     sections: [
       { id: 'P0-1', title: '순문제와 역문제: 현장 사고방식', status: 'planned' },
       { id: 'P0-2', title: '1자유도 강제진동을 Bode/Polar로 다시 보기', status: 'spec' },

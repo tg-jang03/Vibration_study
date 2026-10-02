@@ -3,6 +3,16 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Antigravity · M1.8 Zoom FFT (P1-3, LAB-ZOOM-01)
+- 한 일:
+  - `src/lib/dsp/zoom.ts`: Zoom FFT 메트릭 계산 함수 `calculateZoomMetrics()` ($B = F_{\max}/Z$, $\Delta f = F_{\max}/(Z \cdot \mathrm{LOR})$, $T = Z \cdot T_{\text{base}}$), Zoom 대역 슬라이스 및 고분해능 스펙트럼 계산 `computeZoomSpectrum()` 구현
+  - `src/lib/dsp/zoom.test.ts`: 단위 테스트 3개 추가 (F_max 2000 Hz, LOR 400, Z=8, fc=1200 Hz $\rightarrow \Delta f = 0.625\text{ Hz}, T = 1.6\text{ s}, B = 250\text{ Hz}$ 검증, GMF 1200 Hz 및 5 Hz 측대역 톤 진폭 보존 검증)
+  - `src/components/labs/ZoomLab.tsx`: `LAB-ZOOM-01` Zoom FFT 랩 구현
+  - `src/pages/p1-3.mdx`: Section 6에 `LAB-ZOOM-01` 임베드
+  - `src/data/curriculum.ts`: P1-3 상태 `done`으로 갱신
+  - `docs/Contents.md`: P1-3 `완료`, LAB-ZOOM-01 `완료`로 갱신
+- 확인: 전체 단위 테스트 110개 통과, `astro check` 0 errors, `astro build` 16개 정적 페이지 빌드
+
 ### 2026-10-02 · Claude · M1.0 기초 페이지 P1-0 + P1-1 본문 보강 (D-024)
 - 요청: 사용자 — P1-1에서 "하모닉 개수가 갑자기 왜 나오나, 사각파를 만들라는 건가, 5개인데 성분은 왜 3개인가", "설명 자체가 너무 부실하고 앞에 없는 내용이 많다". 사용자 선택: P1-0 추가, 본문 먼저 → 확인 → 랩, P1-2는 Claude가 보강
 - 한 일

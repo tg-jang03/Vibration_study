@@ -1,6 +1,6 @@
 # 진동공부 (Vibration Study)
 
-학교에서 배운 MCK·모드해석에서 출발해 현장 회전체(GT/ST) 진동 진단까지 공부하는 개인 학습 사이트입니다.
+기초 진동 역학(MCK·모드해석)에서 대형 회전기계(GT/ST) 진동 진단까지 공부하는 개인 학습 사이트입니다.
 신호처리는 가상 신호를 직접 조작하는 인터랙티브 랩과 수식으로 익힙니다.
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (`main`에 push하면 GitHub Actions가 검사 후 자동 배포)
