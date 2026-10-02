@@ -26,7 +26,25 @@ export interface NoiseComponent {
   seed: number;
 }
 
-export type DeterministicComponent = SineComponent | HarmonicsComponent;
+/**
+ * 선형 주파수 처프(Linear Chirp) 성분: 가속 또는 감속(코스트다운) 시 주파수 변화를 모사한다.
+ * f(t) = f0 + rate * t [Hz]  (rate = a / 60 [Hz/s])
+ * 위상 적분: φ(t) = 2π * (f0 * t + 0.5 * rate * t^2) + phase0
+ * x(t) = amp * cos(φ(t))
+ */
+export interface ChirpComponent {
+  type: 'chirp';
+  /** 시작 주파수 f0 [Hz] */
+  f0: number;
+  /** 주파수 변화율 rate = df/dt [Hz/s] (양수: 가속, 음수: 감속) */
+  rate: number;
+  /** 피크 진폭 (Pk) */
+  amp: number;
+  /** t=0 기준 초기 위상 [rad] */
+  phase?: number;
+}
+
+export type DeterministicComponent = SineComponent | HarmonicsComponent | ChirpComponent;
 export type SignalComponent = DeterministicComponent | NoiseComponent;
 
 export interface SignalSpec {
@@ -51,6 +69,11 @@ export function evaluate(spec: SignalSpec, t: number): number {
           x += c.amps[i] * Math.cos(TWO_PI * (i + 1) * c.f0 * t + (c.phases?.[i] ?? 0));
         }
         break;
+      case 'chirp': {
+        const phi = TWO_PI * (c.f0 * t + 0.5 * c.rate * t * t) + (c.phase ?? 0);
+        x += c.amp * Math.cos(phi);
+        break;
+      }
       case 'noise':
         break;
       default: {

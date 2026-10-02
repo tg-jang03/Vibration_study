@@ -46,6 +46,18 @@ describe('evaluate', () => {
     };
     expect(evaluate(spec, 0)).toBe(1);
   });
+
+  it('처프 성분: t=0에서 A·cos(phase), 순간 주파수 f(t) = f0 + rate*t에 맞춰 진동', () => {
+    const spec: SignalSpec = {
+      components: [{ type: 'chirp', f0: 10, rate: 20, amp: 2, phase: Math.PI / 4 }],
+    };
+    // t=0 -> 2 * cos(pi/4) = sqrt(2)
+    expect(evaluate(spec, 0)).toBeCloseTo(Math.SQRT2, 12);
+
+    // t=0.5 -> phi = 2*pi*(10*0.5 + 0.5*20*0.25) + pi/4 = 2*pi*(5 + 2.5) + pi/4 = 2*pi*7.5 + pi/4 = 15*pi + pi/4
+    // cos(15*pi + pi/4) = -cos(pi/4) = -sqrt(2)/2 -> amp*cos = -sqrt(2)
+    expect(evaluate(spec, 0.5)).toBeCloseTo(-Math.SQRT2, 12);
+  });
 });
 
 describe('evaluateRange', () => {
