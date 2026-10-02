@@ -3,6 +3,10 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Claude · M0 마무리 기록
+- 한 일: M0.5·M0 완료 처리와 회고, AGENTS.md(`npm test` 명령, push 후 Actions 확인), README(사이트 주소·테스트 명령), I-018 등록
+- 다음: M1.1
+
 ### 2026-10-02 · 사용자 · M0.5 (3~5단계) GitHub Actions · Pages 배포
 - 한 일: `.github/workflows/deploy.yml` 작성(checkout → setup-node 24 → `npm ci` → check → test → build → upload-pages-artifact → deploy-pages), Settings › Pages › Source "GitHub Actions"
 - 경과: 첫 커밋 `f98e472`은 파일이 저장되지 않은 빈 상태로 올라가 0초 만에 실패 → 내용을 저장해 `ca771c1`로 다시 push → 실행 36970127342 성공 (build 21 s, deploy 9 s)

@@ -49,6 +49,7 @@
 - 마일스톤은 2단계다: 큰 마일스톤 `M{n}`(커리큘럼의 큰 범위) → 세부 마일스톤 `M{n}.{m}`(실제 작업 단위). 목록은 `docs/Roadmap.md` §6.
 - **모든 작업은 `main`에서 한다.** 브랜치와 PR은 만들지 않는다 (D-019).
 - **한 번에 한 에이전트, 하나의 세부 마일스톤만 "진행 중"**. 시작 전에 `Progress.md`의 담당을 확인한다. 다른 에이전트가 진행 중이면 기다린다.
+- 예외 — 병렬 작업 (D-021): 사용자가 요청하면 두 번째 에이전트는 별도 worktree(`git worktree add --detach ../진동공부-<에이전트> main`)에서 파일이 겹치지 않는 세부 마일스톤을 한다. 공유 문서는 먼저 시작한 쪽이 push한 뒤 `git rebase origin/main`으로 받아서 고치고 `git push origin HEAD:main`한다.
 - 작업 순서: `git pull --ff-only` → 작업 → 커밋 → `git push`. push가 거절되면 `git pull --rebase` 후 다시 push한다 (아직 push하지 않은 자기 커밋만 rebase).
 - 커밋 메시지: `[M{n}.{m}] {type}: {요약}` — type은 `feat` `fix` `docs` `test` `refactor` `chore`
   - 예: `[M0.3] feat: Astro 사이트 골격`, `[M1.5] feat: 샘플링 랩(LAB-SMP-01) 추가`
@@ -95,6 +96,9 @@
 - 새 DSP 함수에는 **해석해 또는 문헌값으로 검증하는 테스트**를 함께 넣는다 (예: Hann ENBW = 1.5 bin, bin 중심 톤의 진폭 = 입력 진폭). 기준값은 `docs/Contents.md` §6.
 - 기호·수식 표기는 `docs/Contents.md` §3을 단일 기준으로 쓴다.
 - 랩은 `docs/Contents.md`의 랩 사양을 먼저 채우고 구현한다. 구조: 조작 → 플롯 → 수식(현재 값 대입) → 실험 과제.
+- 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
+- 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다 (hydration 오류, I-019).
+- 성능 측정은 `scripts/bench/plot-bench.mjs`(실시간). 헤드리스 캡처의 가상 시간 모드에서는 시간이 0으로 나온다 (I-020).
 
 ## 7. 하지 말 것
 

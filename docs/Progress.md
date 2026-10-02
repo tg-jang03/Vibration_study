@@ -7,33 +7,34 @@
 
 | 항목 | 값 |
 |---|---|
-| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 2 / 15 |
-| 세부 마일스톤 | M1.2 FFT · 스펙트럼 → 완료, 다음 **M1.3 공통 랩 UI** |
-| 담당 | Codex |
+| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 3 / 15 |
+| 세부 마일스톤 | M1.2 (Codex), M1.3 (Claude) 완료 → 다음 **M1.4 푸리에 기초 (P1-1, LAB-FOU-01)** |
+| 담당 | 다음 담당은 사용자가 지정 |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **다음: M1.3 공통 랩 UI** (`Roadmap.md` §6-3): ParamSlider/Select, ReadoutTable, LabFrame, rAF 스로틀. N=4096에서 드래그 성능 확인 후 D-010 확정, I-016(랩 폭) 처리.
+- **다음: M1.4 푸리에 기초** (`Roadmap.md` §6-3): 페이지 P1-1 + LAB-FOU-01 (사양: Contents §5-1). 본문은 `Curriculum.md` 1-1, 랩은 `LabFrame`으로 만든다.
 - 이미 있는 것
   - `src/lib/dsp/signal.ts`: `SignalSpec`(sine·harmonics·noise), `evaluate()`, `evaluateRange()` — 정현파는 `A·cos(2πft + φ)` (Contents §3)
   - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()` / `src/lib/dsp/random.ts`: `createRng(seed)` (uniform, normal)
   - `src/lib/dsp/fft.ts`: `fft(real, imag?)`(비정규화 전방 복소 DFT), `zeroPad(values, fftSize)` — 입력 보존
   - `src/lib/dsp/spectrum.ts`: `singleSidedSpectrum(samples, {fftSize?})` → frequency·amplitude(Pk)·phase(rad), n·fftSize·binSpacing·resolution·duration. 위상은 첫 샘플 기준, 정확한 0 bin은 NaN. UI는 작은 진폭의 위상을 가린다. 패딩 후 진폭 분모는 원래 N, DC·나이퀴스트는 두 배 제외. 윈도우 보정은 M1.9에서 추가
-  - `components/ui/`: `Formula`(살아있는 수식), `Plot`(Plotly 래퍼), `ParamSlider` / `src/lib/format.ts`: `texNumber()`
-  - 예시 `src/components/labs/SineDemo.tsx`, 확인 페이지 `/Vibration_study/dev/math-plot/`
+  - `components/ui/`: `LabFrame`(랩 틀: controls·plots·formulas·readouts·tasks), `ParamSlider`(프레임당 1회 갱신)·`ParamSelect`·`ParamToggle`, `ReadoutTable`(측정·이론·오차), `Formula`, `Plot`(`onRendered`로 그리기 시간) / `src/lib/format.ts`: `texNumber()`, `formatNumber()`, `formatError()`
+  - 예시 `src/components/labs/SineDemo.tsx`(가장 작은 랩), `LabUiDemo.tsx`(모든 부품 + 벤치마크) / 확인 페이지 `/dev/math-plot/`, `/dev/lab-ui/`
+  - 랩 규칙 (AGENTS.md §6): 서버(빌드)와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다 (I-019). 성능은 `scripts/bench/plot-bench.mjs`로 잰다 (I-020)
   - 본문 수식은 MDX에서 `$…$`, `$$…$$`
 - push 후 Actions 탭에서 `CI & Deploy` 성공을 확인한다 (실패하면 사이트는 바뀌지 않음).
 - 화면 확인: `npm run build` → `npx astro preview` 후 Edge 헤드리스 캡처 (AGENTS.md §6).
-- 열린 이슈: I-016 (랩 폭, M1.3), I-018 (Actions Ubuntu 26 전환, 깨지면 대응)
+- 열린 이슈: I-018 (Actions Ubuntu 26 전환, 깨지면 대응). 사용자 확인 대기: D-010 (Plotly 확정)
 
 ## 큰 마일스톤 현황
 
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) | 진행 중 | 2 / 15 | — |
+| M1 | 신호처리 기초 (Part 1) | 진행 중 | 3 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -52,7 +53,7 @@
 |---|---|---|---|---|---|
 | M1.1 | DSP 코어 ① 신호 모델 | 완료 | Claude | main | 2026-10-02 |
 | M1.2 | DSP 코어 ② FFT · 스펙트럼 | 완료 | Codex | main | 2026-10-02 |
-| M1.3 | 공통 랩 UI | 대기 | 미배정 | — | — |
+| M1.3 | 공통 랩 UI | 완료 | Claude (M1.2와 병렬, D-021) | main | 2026-10-02 |
 | M1.4 | 푸리에 기초 (P1-1, LAB-FOU-01) | 대기 | 미배정 | — | — |
 | M1.5 | 샘플링 · 에일리어싱 (LAB-SMP-01) | 대기 | 미배정 | — | — |
 | M1.6 | AAF · ADC (LAB-SMP-02, 03) | 대기 | 미배정 | — | — |
@@ -92,6 +93,15 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Claude · M1.3 공통 랩 UI (M1.2와 병렬)
+- 진행 방식: 사용자 요청으로 Codex의 M1.2와 병렬. 별도 worktree(`../진동공부-claude`)에서 코드 파일이 겹치지 않게 작업하고, Codex가 push한 뒤 rebase해서 문서와 함께 push (D-021)
+- 한 일: `LabFrame`, `ParamSlider`(useRafCallback, 프레임당 1회)·`ParamSelect`·`ParamToggle`, `ReadoutTable`, `formatNumber`·`formatError`(+테스트 8), `Plot.onRendered`·축 설정 내용 비교, 랩 폭(I-016 해결), `/dev/lab-ui/` + 벤치마크, SineDemo를 LabFrame으로, `scripts/bench/plot-bench.mjs`
+- 측정 (헤드리스 Edge 실시간, 30회): N=1024 평균 7.6 ms / 4096 9.4 ms (최대 16.8) / 16384 12.9 ms (최대 28.4) → 60 fps 예산 안 → D-010 확정 제안
+- 발견: 서버·브라우저 값 불일치로 hydration 오류 #418 (I-019), 헤드리스 가상 시간에서 시간 0·rAF 정지 (I-020)
+- 교차 리뷰: Codex M1.2(`fft.ts`, `spectrum.ts`) 확인 — 문제 없음
+- 확인: 테스트 51개 통과(M1.2 포함), `astro check` 0 errors, 빌드 13페이지, 화면 캡처
+- 다음: M1.4
+
 ### 2026-10-02 · Codex · M1.2 DSP 코어 ② FFT · 스펙트럼
 - 한 일
   - `fft.ts`: radix-2 전방 FFT(실수·복소 입력, 비정규화, 입력 보존), 명시적 `zeroPad`
@@ -112,8 +122,4 @@
 - 확인: 테스트 20개 통과 (난수 통계, 하모닉 = 정현파 합, 선형성, 940 Hz(φ) = 60 Hz(−φ) 위상 반전, 잡음 rms·재현성), `astro check` 0 errors, 빌드 12페이지, SSR 수식에 `cos` 연산자 정상
 - 메모: 셸 heredoc으로 코드를 쓰면 백슬래시가 사라지는 일이 있었다 → 백슬래시가 있는 코드는 Write 도구로 쓴다
 - 다음: M1.2
-
-### 2026-10-02 · Claude · M0 마무리 기록
-- 한 일: M0.5·M0 완료 처리와 회고, AGENTS.md(`npm test` 명령, push 후 Actions 확인), README(사이트 주소·테스트 명령), I-018 등록
-- 다음: M1.1
 
