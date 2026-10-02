@@ -10,6 +10,35 @@ export function aliasFrequency(f: number, fs: number): number {
   return Math.abs(f - k * fs);
 }
 
+export interface AliasComponent {
+  /** 에일리어스(겉보기) 주파수 f_a [Hz], 0 <= f_a <= fs/2 */
+  freq: number;
+  /** 겉보기 위상 φ_a [rad], -π ~ π (상향 접힘 시 부호 반전) */
+  phase: number;
+  /** fs 단위 존 인덱스 k = round(f / fs) */
+  zone: number;
+  /** 나이퀴스트 너머 위쪽에서 접혀 내려와 위상이 반전되었는지 여부 */
+  inverted: boolean;
+}
+
+/**
+ * 정현파 A·cos(2πft + φ)를 fs로 샘플링했을 때 생기는 겉보기(에일리어스) 정현파 성분을 계산한다 (Contents §3, §6).
+ * f = k·fs ± fa 일 때:
+ * - f = k·fs + fa: 위상 유지 (+φ)
+ * - f = k·fs - fa: 위상 반전 (-φ, 위쪽에서 접혀 내려옴)
+ * 이 겉보기 정현파의 샘플 x_a[n] = A·cos(2π fa (n/fs) + φ_a)는 참 신호의 샘플 x[n]과 정확히 일치한다.
+ */
+export function aliasComponent(f: number, phase: number, fs: number): AliasComponent {
+  if (fs <= 0) throw new RangeError('fs는 0보다 커야 한다');
+  const k = Math.round(f / fs);
+  const diff = f - k * fs;
+  const fa = Math.abs(diff);
+  const inverted = diff < 0;
+  let wrappedPhase = inverted ? -phase : phase;
+  wrappedPhase = Math.atan2(Math.sin(wrappedPhase), Math.cos(wrappedPhase));
+  return { freq: fa, phase: wrappedPhase, zone: k, inverted };
+}
+
 export interface AcquireOptions {
   /** 샘플링 주파수 [Hz] */
   fs: number;

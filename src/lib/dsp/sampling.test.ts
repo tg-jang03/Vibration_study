@@ -1,20 +1,48 @@
 import { describe, expect, it } from 'vitest';
-import { acquire, aliasFrequency } from './sampling';
+import { acquire, aliasComponent, aliasFrequency } from './sampling';
 import { evaluate, type SignalSpec } from './signal';
 
-describe('aliasFrequency', () => {
+describe('aliasFrequency & aliasComponent', () => {
   it('나이퀴스트 아래 성분은 그대로 보인다', () => {
     expect(aliasFrequency(60, 1000)).toBeCloseTo(60);
+    const comp = aliasComponent(60, 0.4, 1000);
+    expect(comp.freq).toBe(60);
+    expect(comp.phase).toBeCloseTo(0.4);
+    expect(comp.inverted).toBe(false);
+    expect(comp.zone).toBe(0);
   });
 
   it('fs 1000 Hz에서 940·1060·1940 Hz는 모두 60 Hz로 보인다 (Contents §6)', () => {
     for (const f of [940, 1060, 1940]) {
       expect(aliasFrequency(f, 1000)).toBeCloseTo(60);
     }
+    // 940 Hz: 1000 - 60 (위쪽에서 접힘 -> 위상 반전)
+    const c940 = aliasComponent(940, 0.5, 1000);
+    expect(c940.freq).toBe(60);
+    expect(c940.phase).toBeCloseTo(-0.5);
+    expect(c940.inverted).toBe(true);
+    expect(c940.zone).toBe(1);
+
+    // 1060 Hz: 1000 + 60 (아래쪽에서 나감 -> 위상 유지)
+    const c1060 = aliasComponent(1060, 0.5, 1000);
+    expect(c1060.freq).toBe(60);
+    expect(c1060.phase).toBeCloseTo(0.5);
+    expect(c1060.inverted).toBe(false);
+    expect(c1060.zone).toBe(1);
+
+    // 1940 Hz: 2000 - 60 (위쪽에서 접힘 -> 위상 반전)
+    const c1940 = aliasComponent(1940, 0.5, 1000);
+    expect(c1940.freq).toBe(60);
+    expect(c1940.phase).toBeCloseTo(-0.5);
+    expect(c1940.inverted).toBe(true);
+    expect(c1940.zone).toBe(2);
   });
 
   it('AAF 없는 1.8·F_max 성분: F_max 1000 Hz, fs 2560 Hz → 760 Hz', () => {
     expect(aliasFrequency(1800, 2560)).toBeCloseTo(760);
+    const comp = aliasComponent(1800, 0.3, 2560);
+    expect(comp.freq).toBe(760);
+    expect(comp.inverted).toBe(true);
   });
 });
 

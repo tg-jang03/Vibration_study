@@ -7,17 +7,21 @@
 
 | 항목 | 값 |
 |---|---|
-| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 5 / 15 |
-| 세부 마일스톤 | M1.4 (Claude)·M1.9 (Antigravity) 완료 → 다음 **M1.5 샘플링 · 에일리어싱 (P1-2, LAB-SMP-01)** |
+| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 6 / 15 |
+| 세부 마일스톤 | M1.5 (Antigravity) 완료 → 다음 **M1.6 AAF · ADC (P1-2, LAB-SMP-02, 03)** 또는 **M1.10 윈도우 랩 (P1-4, LAB-WIN-01~03)** |
 | 담당 | 다음 담당은 사용자가 지정 |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **다음: M1.5 샘플링 · 에일리어싱** (`Roadmap.md` §6-3): 페이지 P1-2 + LAB-SMP-01 (사양: Contents §5-1). 본문은 `Curriculum.md` 1-2. 페이지·랩 만드는 법은 M1.4의 `src/pages/p1-1.mdx`와 `components/labs/` 3개를 그대로 따라 하면 된다 (D-023).
-- 병렬 후보 (D-021): M1.5 ∥ M1.7(분해능 — 처프 성분은 `signal.ts`, 랩은 새 파일). M1.6(AAF·ADC)은 M1.5와 같은 `sampling.ts`를 고치므로 순서대로.
+- **다음 마일스톤 후보**:
+  - `M1.6 AAF · ADC` (`Roadmap.md` §6-3): P1-2 후반부 완성 + LAB-SMP-02(AAF 2.56), LAB-SMP-03(ADC 입력 레인지·양자화).
+  - `M1.10 윈도우 랩` (`Roadmap.md` §6-3): M1.9에서 윈도우 8종 라이브러리가 이미 완료되었으므로, 바로 P1-4 페이지와 LAB-WIN-01~03 랩을 만들어 화면에 반영 가능!
 - 이미 있는 것
+  - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()`, `aliasComponent(f, phase, fs)` (M1.5)
+  - `components/labs/SamplingLab.tsx`: `LAB-SMP-01` 샘플링 & 에일리어싱 랩 (참 신호 vs 샘플 점 vs 겉보기 정현파, 단일측 스펙트럼 피크, 위상 반전, 프리셋 6종) (M1.5)
+  - 페이지 `/p1-2/`: 1-2 샘플링 정리와 에일리어싱 본문 + LAB-SMP-01 + 현장 에일리어스 피크 감별법 (M1.5)
   - `src/lib/dsp/signal.ts`: `SignalSpec`(sine·harmonics·noise), `evaluate()`, `evaluateRange()` — 정현파는 `A·cos(2πft + φ)` (Contents §3)
   - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()` / `src/lib/dsp/random.ts`: `createRng(seed)` (uniform, normal)
   - `src/lib/dsp/fft.ts`: `fft(real, imag?)`(비정규화 전방 복소 DFT), `zeroPad(values, fftSize)` — 입력 보존
@@ -65,7 +69,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) | 진행 중 | 5 / 15 | — |
+| M1 | 신호처리 기초 (Part 1) | 진행 중 | 6 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -86,7 +90,7 @@
 | M1.2 | DSP 코어 ② FFT · 스펙트럼 | 완료 | Codex | main | 2026-10-02 |
 | M1.3 | 공통 랩 UI | 완료 | Claude (M1.2와 병렬, D-021) | main | 2026-10-02 |
 | M1.4 | 푸리에 기초 (P1-1, LAB-FOU-01) | 완료 | Claude (M1.9와 병렬, D-021) | main | 2026-10-02 |
-| M1.5 | 샘플링 · 에일리어싱 (LAB-SMP-01) | 대기 | 미배정 | — | — |
+| M1.5 | 샘플링 · 에일리어싱 (LAB-SMP-01) | 완료 | Antigravity | main | 2026-10-02 |
 | M1.6 | AAF · ADC (LAB-SMP-02, 03) | 대기 | 미배정 | — | — |
 | M1.7 | 분해능 · Smearing (LAB-RES-01, 02) | 대기 | 미배정 | — | — |
 | M1.8 | Zoom FFT (LAB-ZOOM-01) | 대기 | 미배정 | — | — |
@@ -124,6 +128,25 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Antigravity · M1.5 샘플링 · 에일리어싱 (P1-2, LAB-SMP-01)
+- 한 일:
+  - `src/lib/dsp/sampling.ts`: `aliasComponent(f, phase, fs)` 함수 추가 (에일리어스 주파수, 상향 접힘 시 위상 부호 반전, 존 인덱스) 및 테스트
+  - `src/components/labs/SamplingLab.tsx`: `LAB-SMP-01` 랩 컴포넌트 구현
+    - 조작: 신호 주파수(10~2000 Hz), 샘플링 주파수(100~3000 Hz), 위상(-180~180°), 표시 시간(10~100 ms), 참 신호/샘플 점/겉보기 신호 토글
+    - 프리셋 6종: 정상 샘플링(60 Hz), 1차 상향 접힘(940 Hz), 1차 하향 접힘(1060 Hz), 2차 접힘(1940 Hz), 나이퀴스트 한계(500 Hz 0°), 나이퀴스트 소멸(500 Hz 90° → 샘플 0 소멸)
+    - 플롯: 시간영역 파형(참 신호 곡선, 샘플 점 마커, 겉보기 정현파 점선) + 단일측 스펙트럼 피크 바 그래프
+    - 수식: 나이퀴스트 $f_N$, 에일리어스 $f_a$, 겉보기 신호 $x_a(t)$
+    - 읽음값: 입력 $f$, $f_s$, $f_N$, 이론 $f_a$, 스펙트럼 측정 피크 주파수·진폭
+    - 실험 과제 4종: 60/940/1060 Hz 비교, 위상 반전 원리, 500 Hz 90° 소멸 원리, 고차 접힘
+  - `src/pages/p1-2.mdx`: 1-2 샘플링 정리와 에일리어싱 본문 + 수식 + LAB-SMP-01 랩 + 현장 에일리어스 감별법(샘플링 주파수 변경법 등)
+  - `src/data/curriculum.ts`: P1-2 `href: '/p1-2/'`, 상태 `wip`
+- 확인:
+  - 전체 테스트 87개 100% 통과 (`npm test`)
+  - `astro check` 0 errors / 0 warnings / 0 hints
+  - `astro build` 15페이지 정상 생성
+  - Edge 헤드리스 캡처(`screenshot-p1-2-full.png`)로 KaTeX 수식, 컨트롤, 플롯 2종, 읽음값 표, 감별법 표 화면 검증 완료
+- 다음: M1.6(AAF·ADC) 또는 M1.10(윈도우 랩)
+
 ### 2026-10-02 · Claude · M1.4 푸리에 기초 (M1.9와 병렬)
 - 진행: Antigravity의 M1.9와 병렬, 별도 worktree. Antigravity push 후 rebase (D-021). 교차 리뷰: `window.ts`(주기형 8종, Flat top 5항 출처 명시)·`spectrum.ts` window 옵션(기존 호출 호환) — 문제 없음
 - 한 일: 페이지 P1-1(`/p1-1/`, Curriculum 1-1 본문 + 현장 판단 기준·흔한 실수), LAB-FOU-01을 페이지 흐름에 맞춰 (a) 하모닉 쌓기·Parseval (b) DFT = 템플릿 상관·k 스윕 (c) 제로패딩 vs 측정 시간(N 비교)으로 구성, `fourier.ts`·`stats.ts` + 테스트 12, `MdxLayout` 경로 표시·이전/다음 절, `Plot` 막대
@@ -145,13 +168,4 @@
   - bin 중심 톤 피크 진폭 보존(A=1.000) 및 bin 사이(δ=0.5) 스캘럽 손실 검증
   - `npm run check` 0 errors/0 warnings, `npm run build` 13페이지 통과
 - 다음: Claude의 M1.4(푸리에 랩) 완료 후 M1.5(샘플링) 또는 M1.10(윈도우 랩)
-
-### 2026-10-02 · Claude · M1.3 공통 랩 UI (M1.2와 병렬)
-- 진행 방식: 사용자 요청으로 Codex의 M1.2와 병렬. 별도 worktree(`../진동공부-claude`)에서 코드 파일이 겹치지 않게 작업하고, Codex가 push한 뒤 rebase해서 문서와 함께 push (D-021)
-- 한 일: `LabFrame`, `ParamSlider`(useRafCallback, 프레임당 1회)·`ParamSelect`·`ParamToggle`, `ReadoutTable`, `formatNumber`·`formatError`(+테스트 8), `Plot.onRendered`·축 설정 내용 비교, 랩 폭(I-016 해결), `/dev/lab-ui/` + 벤치마크, SineDemo를 LabFrame으로, `scripts/bench/plot-bench.mjs`
-- 측정 (헤드리스 Edge 실시간, 30회): N=1024 평균 7.6 ms / 4096 9.4 ms (최대 16.8) / 16384 12.9 ms (최대 28.4) → 60 fps 예산 안 → D-010 확정 제안
-- 발견: 서버·브라우저 값 불일치로 hydration 오류 #418 (I-019), 헤드리스 가상 시간에서 시간 0·rAF 정지 (I-020)
-- 교차 리뷰: Codex M1.2(`fft.ts`, `spectrum.ts`) 확인 — 문제 없음
-- 확인: 테스트 51개 통과(M1.2 포함), `astro check` 0 errors, 빌드 13페이지, 화면 캡처
-- 다음: M1.4
 
