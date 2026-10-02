@@ -48,6 +48,7 @@
 | Δf | 주파수 분해능 (bin 간격) | Hz | Δf = f_s / N = F_max / LOR |
 | n, k | 시간 샘플 / 주파수 bin 인덱스 | — | |
 | δ | 톤의 bin 오프셋 | bin | f = (k₀ + δ) Δf |
+| x(t) | 참(연속) 신호 — 정현파 성분은 A·cos(2π f t + φ) | SI | A: 피크 진폭, φ: 위상 [rad]. 모든 랩 공통 (M1.1, `lib/dsp/signal.ts`) |
 | x[n] | 샘플된 신호 | SI | |
 | w[n] | 윈도우 (주기형, DFT-even) | — | n = 0 … N−1 |
 | X[k] | 윈도우를 적용한 DFT | | X[k] = Σ w[n] x[n] e^(−j2πkn/N) |
@@ -69,6 +70,8 @@
 | AF | 증폭계수 (Amplification Factor) | — | |
 | G_xy | 교차 스펙트럼 | | |
 | γ² | 코히어런스 | — | 0~1 |
+
+**신호 성분** (`SignalSpec`, `src/lib/dsp/signal.ts`): `sine`(f, A, φ), `harmonics`(f₀, 차수별 A·φ), `noise`(백색 가우시안, rms, seed) — M1.1. 이후 AM/FM(M1.14), 처프·런업(M1.7), 감쇠 임펄스열을 추가한다.
 
 **핵심 식 (KaTeX 원문)** — 페이지와 랩은 이 표기를 그대로 쓴다.
 
@@ -452,6 +455,8 @@
 | 사각파 하모닉 | 진폭 1 | n차(홀수) 진폭 4/(nπ), 짝수 0 |
 | 제로패딩 | 정수배 P | 원래 bin k 값 = 패딩 후 bin P·k 값 |
 | 에일리어스 | f_s 1000 Hz, f = 940 / 1060 / 1940 Hz | 모두 60 Hz |
+| 에일리어스 위상 | f_s 1000 Hz, 위상 φ | 940 Hz(φ)의 샘플 = 60 Hz(−φ), 1060 Hz(φ)의 샘플 = 60 Hz(+φ) — 위쪽에서 접히면 위상 반전 |
+| 시드 난수 | `createRng(seed).normal()` 10만 개 | 평균 0 ± 0.02, 표준편차 1 ± 0.02, 같은 시드 → 같은 수열 |
 | AAF 접힘 | F_max 1000 Hz, f = 1800 Hz | 760 Hz |
 | Butterworth 감쇠 | 8차, f/f_c = 1.8 | 40.8 dB |
 | ADC 양자화 SNR | 풀스케일 정현파, b bit | 6.02b + 1.76 dB (16 bit ≈ 98 dB) |

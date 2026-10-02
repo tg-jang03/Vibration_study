@@ -7,17 +7,18 @@
 
 | 항목 | 값 |
 |---|---|
-| 큰 마일스톤 | **M0 기반 구축 완료** → M1 신호처리 기초 (Part 1) 시작 |
-| 세부 마일스톤 | 다음 **M1.1 DSP 코어 ① 신호 모델** |
+| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 1 / 15 |
+| 세부 마일스톤 | M1.1 신호 모델 → 완료, 다음 **M1.2 DSP 코어 ② FFT · 스펙트럼** |
 | 담당 | Claude |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **다음: M1.1 DSP 코어 ① 신호 모델** (`Roadmap.md` §6-3): SignalSpec(정현파·하모닉·잡음), evaluate, 시드 난수, acquire(fs, N) + 테스트
+- **다음: M1.2 DSP 코어 ② FFT · 스펙트럼** (`Roadmap.md` §6-3): radix-2 FFT, 단일측 진폭·위상, 제로패딩 + 테스트(bin 중심 진폭, Parseval, 사각파). 입력은 M1.1의 `acquire()` 결과(`Samples`)
 - 이미 있는 것
-  - `src/lib/dsp/sampling.ts`: `aliasFrequency()` + 테스트
+  - `src/lib/dsp/signal.ts`: `SignalSpec`(sine·harmonics·noise), `evaluate()`, `evaluateRange()` — 정현파는 `A·cos(2πft + φ)` (Contents §3)
+  - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()` / `src/lib/dsp/random.ts`: `createRng(seed)` (uniform, normal)
   - `components/ui/`: `Formula`(살아있는 수식), `Plot`(Plotly 래퍼), `ParamSlider` / `src/lib/format.ts`: `texNumber()`
   - 예시 `src/components/labs/SineDemo.tsx`, 확인 페이지 `/Vibration_study/dev/math-plot/`
   - 본문 수식은 MDX에서 `$…$`, `$$…$$`
@@ -30,7 +31,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) | 진행 중 | 0 / 15 | — |
+| M1 | 신호처리 기초 (Part 1) | 진행 중 | 1 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -47,7 +48,7 @@
 
 | 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
 |---|---|---|---|---|---|
-| M1.1 | DSP 코어 ① 신호 모델 | 진행 중 | Claude | — | — |
+| M1.1 | DSP 코어 ① 신호 모델 | 완료 | Claude | main | 2026-10-02 |
 | M1.2 | DSP 코어 ② FFT · 스펙트럼 | 대기 | 미배정 | — | — |
 | M1.3 | 공통 랩 UI | 대기 | 미배정 | — | — |
 | M1.4 | 푸리에 기초 (P1-1, LAB-FOU-01) | 대기 | 미배정 | — | — |
@@ -86,6 +87,17 @@
   - push 후 Actions 결과 확인을 습관으로 한다 (AGENTS.md §4에 반영).
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-02 · Claude · M1.1 DSP 코어 ① 신호 모델
+- 한 일
+  - `random.ts`: 시드 고정 난수 `createRng` (mulberry32 균등, Box–Muller 정규)
+  - `signal.ts`: `SignalSpec` = sine / harmonics / noise 성분의 합, `evaluate(t)`(참 신호, 잡음 제외), `evaluateRange()`
+  - `sampling.ts`: `acquire(spec, {fs, n, t0})` — 샘플 시각 t0 + i/fs, 잡음은 샘플 번호 기준 시드 생성
+  - 정현파 표기를 `A·cos(2πft + φ)`로 통일 (FFT 위상과 φ가 바로 대응). SineDemo도 신호 모델을 쓰도록 변경
+  - Contents §3(신호 표기·성분 목록), §6(에일리어스 위상 반전, 난수 기준값) 갱신
+- 확인: 테스트 20개 통과 (난수 통계, 하모닉 = 정현파 합, 선형성, 940 Hz(φ) = 60 Hz(−φ) 위상 반전, 잡음 rms·재현성), `astro check` 0 errors, 빌드 12페이지, SSR 수식에 `cos` 연산자 정상
+- 메모: 셸 heredoc으로 코드를 쓰면 백슬래시가 사라지는 일이 있었다 → 백슬래시가 있는 코드는 Write 도구로 쓴다
+- 다음: M1.2
 
 ### 2026-10-02 · Claude · M0 마무리 기록
 - 한 일: M0.5·M0 완료 처리와 회고, AGENTS.md(`npm test` 명령, push 후 Actions 확인), README(사이트 주소·테스트 명령), I-018 등록
