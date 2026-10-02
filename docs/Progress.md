@@ -8,16 +8,17 @@
 | 항목 | 값 |
 |---|---|
 | 큰 마일스톤 | M0 기반 구축 |
-| 세부 마일스톤 | M0.2 저장소 연결·초기 커밋 → 완료, 다음 M0.3 사이트 골격 |
+| 세부 마일스톤 | M0.3 사이트 골격 → **리뷰 대기** (PR #1) |
 | 담당 | Claude |
-| 브랜치 | `main` (초기 커밋) |
+| 브랜치 | `m0.3-scaffold` |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6 세부 마일스톤 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가) |
 
 ## 핸드오프 (다음 작업자에게)
 
-- 다음 세부 마일스톤: **M0.3 사이트 골격** (`Roadmap.md` §6-2의 완료 기준)
-- 브랜치는 최신 `main`에서 `m0.3-scaffold`로 만든다.
-- 페이지 ID는 `Curriculum.md` 절 번호 기준이다 (예: 윈도우 = P1-4).
+- **사용자**: PR #1(M0.3) 확인 후 병합. 로컬 확인은 `npm install` → `npm run dev` → http://localhost:4321/Vibration_study/
+- **다음 세부 마일스톤: M0.4 수식 · 플롯 검증** (`Roadmap.md` §6-2). PR #1 병합 후 최신 `main`에서 `m0.4-math-plot` 브랜치로 시작한다. 시작할 때 이 문서에서 M0.3을 `완료`로 바꾼다.
+- 사이트는 `/Vibration_study/` 하위 경로로 빌드된다. 내부 링크는 `withBase()`를 쓴다 (AGENTS.md §6).
+- 사이트 목차 데이터는 `src/data/curriculum.ts`. Curriculum.md·Contents.md §4와 함께 고친다.
 - 사용자 피드백이 오면 Curriculum/Roadmap/Decisions에 먼저 반영한다 (확정된 결정은 상태를 `확정`으로).
 
 ## 큰 마일스톤 현황
@@ -44,7 +45,7 @@
 |---|---|---|---|---|---|
 | M0.1 | 문서 체계 · 상세 커리큘럼 초안 | 완료 | Claude | main (초기 커밋에 포함) | 2026-10-02 |
 | M0.2 | 저장소 연결 · 초기 커밋 | 완료 | Claude | main | 2026-10-02 |
-| M0.3 | 사이트 골격 | 대기 | Claude | `m0.3-scaffold` | — |
+| M0.3 | 사이트 골격 | 리뷰 대기 | Claude | `m0.3-scaffold` / [PR #1](https://github.com/taegyu10732/Vibration_study/pull/1) | — |
 | M0.4 | 수식 · 플롯 검증 | 대기 | 미배정 | — | — |
 | M0.5 | 테스트 · CI · 배포 | 대기 | 미배정 | — | — |
 
@@ -53,6 +54,16 @@
 - [ ] I-009 규격 인용 정책 확인 (공개 저장소 기준)
 
 ## 세션 로그 (최신이 위)
+
+### 2026-10-02 · Claude · M0.3 사이트 골격
+- 한 일
+  - Astro 7.3.5 + React 19 + MDX 통합, TypeScript strict(`astro/tsconfigs/strict`), `@astrojs/check`
+  - GitHub Pages용 `site`/`base`(`/Vibration_study`) 설정, 경로 헬퍼 `withBase()`
+  - 레이아웃(헤더·내비·푸터, 라이트/다크 토큰), 홈 커리큘럼 지도(Part 0~9 카드, 진행 막대), Part별 페이지 10개(절 목록 + 상태 배지 + 이전/다음)
+  - 목차 데이터 `src/data/curriculum.ts`, 파비콘, README
+- 확인: `npm run check` 0 errors · `npm run build` 11페이지 · `astro preview`에서 홈·Part 페이지·파비콘 200, 링크에 `/Vibration_study/` 접두 확인. 브라우저 화면은 직접 보지 않음 (HTML/HTTP 수준 확인)
+- 이슈: I-015 등록·해결 (npm 11 설치 스크립트 경고, 영향 없음)
+- 다음: PR #1 병합 후 M0.4
 
 ### 2026-10-02 · Claude · M0.2 저장소 연결 · 2단계 마일스톤
 - 요청: 사용자 — Node.js 설치 완료, 저장소 지정, "마일스톤 한 개 단위가 너무 크다. 큰 범위 → 세부로 나눠라."
