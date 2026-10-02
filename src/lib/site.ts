@@ -9,4 +9,4 @@ export function withBase(path = '/'): string {
 }
 
 export const SITE_NAME = '진동공부';
-export const REPO_URL = 'https://github.com/taegyu10732/Vibration_study';
+export const REPO_URL = 'https://github.com/tg-jang03/Vibration_study';

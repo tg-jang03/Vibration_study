@@ -15,6 +15,12 @@
   --status-review: #6b46c1;
   --status-done: #2f855a;
 
+  /* 플롯 계열 색 (Plot 래퍼가 읽음) */
+  --plot-1: #2b6cb0;
+  --plot-2: #dd6b20;
+  --plot-3: #2f855a;
+  --plot-4: #805ad5;
+
   --radius: 10px;
   --gap: 1rem;
   --max-width: 1120px;
@@ -40,6 +46,11 @@
     --status-wip: #e0a84a;
     --status-review: #a68bea;
     --status-done: #5cc08a;
+
+    --plot-1: #63a4e8;
+    --plot-2: #f0a35e;
+    --plot-3: #5cc08a;
+    --plot-4: #b39ae8;
   }
 }
 
@@ -177,4 +188,72 @@ main.container {
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
+}
+
+/* 본문 (MDX 페이지) */
+.prose {
+  max-width: 76ch;
+}
+
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* 랩 공통 (M1.3에서 LabFrame으로 정리) */
+.lab {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lab-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem 1.5rem;
+}
+
+.lab-formulas {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 0.25rem 1rem;
+  overflow-x: auto;
+}
+
+.param-slider label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.param-slider output {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.param-slider input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.plot {
+  position: relative;
+  width: 100%;
+}
+
+.plot-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }

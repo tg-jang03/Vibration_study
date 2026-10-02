@@ -1,0 +1,31 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 수식·플롯 검증
+description: M0.4 — 본문 KaTeX, 살아있는 수식, 플롯 래퍼가 동작하는지 확인하는 개발용 페이지
+---
+
+import SineDemo from '../../components/labs/SineDemo';
+
+# 수식·플롯 검증 (M0.4)
+
+개발용 확인 페이지다. 본문 수식, 랩의 살아있는 수식, 플롯이 모두 보이면 정상이다.
+
+## 1. 본문 수식 (빌드 시 렌더)
+
+인라인 수식: 분해능은 $\Delta f = F_{max}/\mathrm{LOR}$이고 측정 시간은 $T = 1/\Delta f$이다.
+
+블록 수식 (DFT):
+
+$$
+X[k] = \sum_{n=0}^{N-1} w[n]\,x[n]\,e^{-j 2\pi k n / N}
+$$
+
+중괄호가 많은 식도 MDX와 충돌하지 않아야 한다:
+
+$$
+\frac{X}{m_u e / M} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}
+$$
+
+## 2. 랩 시제품: 조작 → 플롯 → 살아있는 수식
+
+<SineDemo client:load />

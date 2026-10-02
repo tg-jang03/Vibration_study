@@ -11,7 +11,7 @@
 
 | 역할 | 누구 |
 |---|---|
-| 학습자, 최종 결정권자, main 병합 | 사용자 |
+| 학습자, 최종 결정권자 | 사용자 |
 | 작업자 (마일스톤 단위로 담당) | Claude Code, Codex |
 | 공유 수단 | 이 git 저장소와 `docs/` 문서 |
 
@@ -42,24 +42,21 @@
 2. 새 결정 → `Decisions.md`, 새 문제 → `Issues.md`, 콘텐츠 상태 변화 → `Contents.md`
 3. 테스트·빌드가 있다면 통과를 확인한 뒤 커밋 (§4 규칙)
 
-## 4. 마일스톤 & Git 협업 (D-003, D-017, D-018)
+## 4. 마일스톤 & Git 협업 (D-017, D-019)
 
-- 저장소: `origin` = https://github.com/taegyu10732/Vibration_study (**공개**, 기본 브랜치 `main`)
+- 저장소: `origin` = https://github.com/tg-jang03/Vibration_study (**공개**, 기본 브랜치 `main`)
 - 마일스톤은 2단계다: 큰 마일스톤 `M{n}`(커리큘럼의 큰 범위) → 세부 마일스톤 `M{n}.{m}`(실제 작업 단위). 목록은 `docs/Roadmap.md` §6.
-- **한 번에 하나의 세부 마일스톤만 "진행 중"**. 담당 에이전트와 브랜치를 `Progress.md`에 적는다.
-- 세부 마일스톤 1개 = 브랜치 1개 = PR 1개
-  - 브랜치: `m{n}.{m}-{영문-slug}` (예: `m1.2-fft`). 최신 `main`에서 만든다.
-  - 초기 커밋(M0.2)을 빼고는 `main`에 직접 커밋하지 않는다.
+- **모든 작업은 `main`에서 한다.** 브랜치와 PR은 만들지 않는다 (D-019).
+- **한 번에 한 에이전트, 하나의 세부 마일스톤만 "진행 중"**. 시작 전에 `Progress.md`의 담당을 확인한다. 다른 에이전트가 진행 중이면 기다린다.
+- 작업 순서: `git pull --ff-only` → 작업 → 커밋 → `git push`. push가 거절되면 `git pull --rebase` 후 다시 push한다 (아직 push하지 않은 자기 커밋만 rebase).
 - 커밋 메시지: `[M{n}.{m}] {type}: {요약}` — type은 `feat` `fix` `docs` `test` `refactor` `chore`
   - 예: `[M0.3] feat: Astro 사이트 골격`, `[M1.5] feat: 샘플링 랩(LAB-SMP-01) 추가`
-- **main 병합은 사용자만** 한다. 에이전트는 PR 병합, force push, 히스토리 재작성을 하지 않는다.
-- 다른 에이전트가 진행 중인 브랜치는 수정하지 않는다. 필요한 점은 `Issues.md`에 남긴다.
+  - 세부 마일스톤 하나에 커밋 하나가 기본. 크면 여러 개로 나눠도 된다.
+- 금지: force push, 이미 push한 커밋의 히스토리 재작성. 되돌릴 때는 `git revert`.
 - 세부 마일스톤 완료 흐름
-  1. 담당자: Roadmap의 완료 기준 충족 + `npm run check`·`npm run build` 통과(M0.5부터 `npm test` 포함) + 문서 갱신 (Progress, 필요하면 Contents·Issues·Decisions)
-  2. `Progress.md` 상태를 `리뷰 대기`로 바꾸고 커밋
-  3. 브랜치 push → PR 생성 (`gh pr create`). PR 본문에 무엇을 했고 어떻게 확인하는지 적는다.
-  4. (선택) 다른 에이전트가 교차 리뷰 → PR 코멘트, 지적 사항은 `Issues.md`
-  5. 사용자가 PR 병합 → 다음 세션의 담당자가 새 브랜치에서 상태를 `완료`로 바꾸고 다음 세부 마일스톤으로
+  1. 완료 기준 충족 + `npm run check`·`npm run build` 통과(M0.5부터 `npm test` 포함)
+  2. 문서 갱신: `Progress.md`(상태 `완료`, 세션 로그, 핸드오프), 필요하면 Contents·Issues·Decisions
+  3. 커밋 → push. 사용자는 GitHub 커밋 기록이나 배포 사이트로 확인하고, 수정 요청은 다음 작업으로 처리한다.
 - 큰 마일스톤의 마지막 세부가 끝나면 `Progress.md`에 짧은 회고(잘된 점, 바꿀 점)를 남기고, 다음 큰 마일스톤의 세부 목록을 사용자와 확인한다.
 
 ## 5. 문서 작성 규칙
@@ -88,6 +85,7 @@
 
 - 명령: `npm install` → `npm run dev`(개발 서버) · `npm run check`(타입 검사) · `npm run build`(정적 빌드) · `npm test`(M0.5부터)
 - 사이트는 `/Vibration_study/` 하위 경로로 배포된다. 내부 링크와 정적 파일 경로는 반드시 `withBase()`(`src/lib/site.ts`)로 만든다.
+- 화면 확인(Windows): `npm run build` → `npx astro preview` → Edge 헤드리스 캡처 `msedge --headless=new --window-size=1100,1500 --virtual-time-budget=8000 --screenshot=<png> <URL>` (PowerShell `Start-Process -Wait`로 실행). 수식은 `$…$`·`$$…$$`(MDX), 랩 수식은 `Formula`, 플롯은 `Plot` 래퍼만 쓴다.
 - 사이트 목차(`src/data/curriculum.ts`)는 `docs/Curriculum.md`의 절 구성, `docs/Contents.md` §4의 페이지 상태와 같아야 한다. 한쪽을 고치면 다른 쪽도 고친다.
 
 - `src/lib/dsp/`에는 **순수 함수만** 둔다. DOM·React·플롯 라이브러리에 의존하지 않는다.
@@ -100,7 +98,7 @@
 ## 7. 하지 말 것
 
 - `docs/source/curriculum.md` 수정 — 오류나 의문은 `docs/Issues.md`에 유형 `콘텐츠`로 등록
-- 사용자 확인 없는 main 병합, force push, 히스토리 재작성
+- force push, 이미 push한 커밋의 히스토리 재작성
 - **저장소와 사이트는 공개다.** 다음은 커밋하지 않는다.
   - ISO/API 규격의 본문·표·경계값 전재 — 자체 표현으로 요약하고 출처를 밝힌다 (I-009)
   - 회사 현장 데이터, 도면, 비밀정보, 개인 연락처

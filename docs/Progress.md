@@ -1,31 +1,32 @@
 # Progress — 진행 상황
 
 > **매 세션 끝에 갱신한다** (AGENTS.md §3). 세션 로그는 최신 항목을 맨 위에 추가한다.
-> 마일스톤은 2단계다: 큰 마일스톤 `M{n}` → 세부 마일스톤 `M{n}.{m}` (D-017, 목록은 `Roadmap.md` §6).
+> 마일스톤은 2단계다: 큰 마일스톤 `M{n}` → 세부 마일스톤 `M{n}.{m}` (D-017, 목록은 `Roadmap.md` §6). 모든 작업은 `main`에서 한다 (D-019).
 
 ## 현재 상태
 
 | 항목 | 값 |
 |---|---|
 | 큰 마일스톤 | M0 기반 구축 |
-| 세부 마일스톤 | M0.3 사이트 골격 → **리뷰 대기** (PR #1) |
-| 담당 | Claude |
-| 브랜치 | `m0.3-scaffold` |
-| 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6 세부 마일스톤 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가) |
+| 세부 마일스톤 | M0.4 수식 · 플롯 검증 → 완료, 다음 **M0.5 테스트 · CI · 배포** |
+| 담당 | Claude (다음 담당은 사용자가 지정) |
+| 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **사용자**: PR #1(M0.3) 확인 후 병합. 로컬 확인은 `npm install` → `npm run dev` → http://localhost:4321/Vibration_study/
-- **다음 세부 마일스톤: M0.4 수식 · 플롯 검증** (`Roadmap.md` §6-2). PR #1 병합 후 최신 `main`에서 `m0.4-math-plot` 브랜치로 시작한다. 시작할 때 이 문서에서 M0.3을 `완료`로 바꾼다.
-- 사이트는 `/Vibration_study/` 하위 경로로 빌드된다. 내부 링크는 `withBase()`를 쓴다 (AGENTS.md §6).
-- 사이트 목차 데이터는 `src/data/curriculum.ts`. Curriculum.md·Contents.md §4와 함께 고친다.
-- 사용자 피드백이 오면 Curriculum/Roadmap/Decisions에 먼저 반영한다 (확정된 결정은 상태를 `확정`으로).
+- **다음: M0.5 테스트 · CI · 배포** (`Roadmap.md` §6-2)
+  - Vitest 설정 + 첫 테스트 (`src/lib/format.ts`의 `texNumber` 등)
+  - GitHub Actions: `npm ci` → `npm run check` → `npm test` → `npm run build` → GitHub Pages 배포
+  - 저장소 Settings → Pages → Source를 "GitHub Actions"로 바꿔야 한다. 사용자에게 직접 할지, `gh api`로 할지 먼저 묻는다.
+- M0.4에서 만든 것: 본문 수식은 MDX에서 `$…$`, `$$…$$`로 쓴다 (Astro 7 `unified()` 처리기 + remark-math + rehype-katex). 랩용 컴포넌트는 `components/ui/`의 `Formula`(살아있는 수식), `Plot`(Plotly 래퍼), `ParamSlider`. 숫자 대입은 `texNumber()`. 사용 예는 `src/components/labs/SineDemo.tsx`, 확인 페이지는 `/Vibration_study/dev/math-plot/`.
+- 화면 확인: `npm run build` → `npx astro preview` 후 Edge 헤드리스 캡처 (AGENTS.md §6).
+- 열린 설계 이슈: I-016 (랩 폭, M1.3에서 결정).
 
 ## 큰 마일스톤 현황
 
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
-| M0 | 기반 구축 | 진행 중 | 2 / 5 | — |
+| M0 | 기반 구축 | 진행 중 | 4 / 5 | — |
 | M1 | 신호처리 기초 (Part 1) | 대기 | 0 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
@@ -37,24 +38,32 @@
 | M9 | 규격 · 판정 · 진단 절차 (Part 8) | 대기 | 0 / 2 | — |
 | M10 | 종합 진단 연습 + 레퍼런스 (Part 9) | 대기 | 0 / 3 | — |
 
-상태: `대기` → `진행 중` → `리뷰 대기` → `완료`
+상태: `대기` → `진행 중` → `완료`
 
 ## 세부 마일스톤 현황 — M0 기반 구축
 
-| 세부 | 내용 | 상태 | 담당 | 브랜치 / PR | 완료일 |
+| 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
 |---|---|---|---|---|---|
-| M0.1 | 문서 체계 · 상세 커리큘럼 초안 | 완료 | Claude | main (초기 커밋에 포함) | 2026-10-02 |
-| M0.2 | 저장소 연결 · 초기 커밋 | 완료 | Claude | main | 2026-10-02 |
-| M0.3 | 사이트 골격 | 리뷰 대기 | Claude | `m0.3-scaffold` / [PR #1](https://github.com/taegyu10732/Vibration_study/pull/1) | — |
-| M0.4 | 수식 · 플롯 검증 | 대기 | 미배정 | — | — |
+| M0.1 | 문서 체계 · 상세 커리큘럼 초안 | 완료 | Claude | `b2a4e16` (M0.2에 포함) | 2026-10-02 |
+| M0.2 | 저장소 연결 · 초기 커밋 | 완료 | Claude | `b2a4e16` | 2026-10-02 |
+| M0.3 | 사이트 골격 | 완료 | Claude | `ce07ee2` (PR #1, 병합 `e7b620c`) | 2026-10-02 |
+| M0.4 | 수식 · 플롯 검증 | 완료 | Claude | main | 2026-10-02 |
 | M0.5 | 테스트 · CI · 배포 | 대기 | 미배정 | — | — |
-
-### 남은 사용자 확인 사항 (M0 완료 전까지)
-- [ ] 계획 피드백 (Curriculum, Roadmap §6, Decisions 제안 항목)
-- [ ] I-009 규격 인용 정책 확인 (공개 저장소 기준)
 
 ## 세션 로그 (최신이 위)
 
+### 2026-10-02 · Claude · M0.4 수식 · 플롯 검증 (+ 작업 방식·계정명 변경)
+- 요청: 사용자 — "다음 작업 진행", "main 하나에서 다 작업해도 괜찮다", "GitHub 계정명 바꿨다"
+- 한 일
+  - PR #1(M0.3)을 사용자 승인으로 Claude가 병합 (`e7b620c`). 이후 작업 방식을 main 단일 브랜치로 변경 (D-019): AGENTS.md §1·§4·§7, Roadmap §6, Decisions D-003·D-018 상태 갱신. 병합된 `m0.3-scaffold` 브랜치 삭제(로컬·원격)
+  - 계정명 `taegyu10732` → `tg-jang03`: 원격 주소, 커밋 메일, `site`, `REPO_URL`, README·AGENTS·Roadmap 주소 갱신. 과거 기록(D-018, I-002, I-003)에는 갱신 줄을 덧붙임
+  - 수식: Astro 7 기본 처리기(Sätteri) 대신 `unified()` + remark-math + rehype-katex, KaTeX CSS 전역 로드
+  - 컴포넌트: `Formula`(KaTeX 실시간), `Plot`(Plotly cartesian 부분 번들 지연 로드, 라이트/다크 색 토큰), `ParamSlider`, `texNumber()`
+  - 검증 페이지 `/dev/math-plot/`: 본문 인라인·블록 수식, 중괄호 많은 식, `SineDemo`(슬라이더 → 플롯 → 대입 수식)
+- 확인: `npm run check` 0 errors, `tsc --noEmit` 통과, `npm run build` 12페이지, 빌드 HTML에 KaTeX 6곳·오류 0, 폰트·CSS가 `/Vibration_study/` 경로. Edge 헤드리스 캡처로 수식·플롯·홈 화면 확인 (축 제목이 주황빛으로 보인 것은 ClearType 서브픽셀 효과, 실제 색은 회색)
+- 크기: Plotly 청크 1.44 MB(그래프가 있는 페이지에서만 지연 로드), SineDemo 청크 265 KB(KaTeX 포함)
+- 이슈: I-016 등록 (랩 폭)
+- 다음: M0.5
 ### 2026-10-02 · Claude · M0.3 사이트 골격
 - 한 일
   - Astro 7.3.5 + React 19 + MDX 통합, TypeScript strict(`astro/tsconfigs/strict`), `@astrojs/check`
