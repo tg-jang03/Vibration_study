@@ -156,6 +156,14 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 | M1.14 | 변조 · 맥놀이 | P1-7 · LAB-MOD-01 | AM/FM 측대역 테스트 |
 | M1.15 | 측정 설정 종합 · 샌드박스 | P1-8 · LAB-SBX-01, HOME | 모든 Part 1 컨트롤, 설정 도우미, 홈 지도 갱신 |
 
+#### M1.2 산출물·완료 기준 (2026-10-02 구체화 · Codex)
+
+- `src/lib/dsp/fft.ts`: 실수·복소 입력의 radix-2 고속 푸리에 변환(Fast Fourier Transform), 입력을 보존하는 비정규화 전방 DFT, 명시적 제로패딩.
+- `src/lib/dsp/spectrum.ts`: `acquire()`의 `Samples`를 받아 0~나이퀴스트의 단일측 피크 진폭·위상(rad)·주파수(Hz)를 계산한다. DC·나이퀴스트는 두 배 하지 않는다.
+- 패딩 후에도 진폭 분모는 원래 샘플 수 N이다. 표시 bin 간격과 원래 분해능·측정 시간을 별도 반환한다. 위상 기준은 첫 샘플이다.
+- 해석해 검증: 직접 DFT와 복소 출력 비교, 임펄스, bin 중심 톤의 진폭·위상, DC·나이퀴스트, Parseval, 사각파 홀수 하모닉, 제로패딩 전후 원래 bin 보존. 빈 입력·잘못된 크기·비유한값은 오류로 처리한다.
+- `npm run check`·`npm test`·`npm run build` 통과 후 main 커밋·push, GitHub Actions 성공 확인.
+
 ### 6-4. 세부 마일스톤 — M2~M10 (목록만, 시작 시 구체화)
 
 | 큰 M | 세부 |

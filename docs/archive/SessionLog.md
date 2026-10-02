@@ -3,6 +3,12 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · 사용자 · M0.5 (3~5단계) GitHub Actions · Pages 배포
+- 한 일: `.github/workflows/deploy.yml` 작성(checkout → setup-node 24 → `npm ci` → check → test → build → upload-pages-artifact → deploy-pages), Settings › Pages › Source "GitHub Actions"
+- 경과: 첫 커밋 `f98e472`은 파일이 저장되지 않은 빈 상태로 올라가 0초 만에 실패 → 내용을 저장해 `ca771c1`로 다시 push → 실행 36970127342 성공 (build 21 s, deploy 9 s)
+- 확인 (Claude): https://tg-jang03.github.io/Vibration_study/ 홈·`/parts/1/`·`/dev/math-plot/`·파비콘 HTTP 200, 배포 페이지의 KaTeX 렌더 확인
+- 알림: `ubuntu-latest` → Ubuntu 26 전환 예정 (I-018)
+
 ### 2026-10-02 · Claude · M0.5 (1~2단계) Vitest · 첫 DSP 테스트
 - 요청: 사용자 — "3번부터 직접 해보고 싶으니 2번까지 해달라"
 - 한 일: Vitest 5.0.3 설치, `npm test`·`npm run test:watch` 스크립트, `vitest.config.ts`(캐시 `node_modules/.vite-tasks`, I-017), 첫 DSP 함수 `aliasFrequency()`와 테스트 3개(Contents §6 기준값: 60 Hz·760 Hz)

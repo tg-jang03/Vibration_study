@@ -7,18 +7,20 @@
 
 | 항목 | 값 |
 |---|---|
-| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 1 / 15 |
-| 세부 마일스톤 | M1.1 신호 모델 → 완료, 다음 **M1.2 DSP 코어 ② FFT · 스펙트럼** |
-| 담당 | Claude |
+| 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 2 / 15 |
+| 세부 마일스톤 | M1.2 FFT · 스펙트럼 → 완료, 다음 **M1.3 공통 랩 UI** |
+| 담당 | Codex |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
 | 사용자 확인 대기 | `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **다음: M1.2 DSP 코어 ② FFT · 스펙트럼** (`Roadmap.md` §6-3): radix-2 FFT, 단일측 진폭·위상, 제로패딩 + 테스트(bin 중심 진폭, Parseval, 사각파). 입력은 M1.1의 `acquire()` 결과(`Samples`)
+- **다음: M1.3 공통 랩 UI** (`Roadmap.md` §6-3): ParamSlider/Select, ReadoutTable, LabFrame, rAF 스로틀. N=4096에서 드래그 성능 확인 후 D-010 확정, I-016(랩 폭) 처리.
 - 이미 있는 것
   - `src/lib/dsp/signal.ts`: `SignalSpec`(sine·harmonics·noise), `evaluate()`, `evaluateRange()` — 정현파는 `A·cos(2πft + φ)` (Contents §3)
   - `src/lib/dsp/sampling.ts`: `acquire(spec, {fs, n, t0})`, `aliasFrequency()` / `src/lib/dsp/random.ts`: `createRng(seed)` (uniform, normal)
+  - `src/lib/dsp/fft.ts`: `fft(real, imag?)`(비정규화 전방 복소 DFT), `zeroPad(values, fftSize)` — 입력 보존
+  - `src/lib/dsp/spectrum.ts`: `singleSidedSpectrum(samples, {fftSize?})` → frequency·amplitude(Pk)·phase(rad), n·fftSize·binSpacing·resolution·duration. 위상은 첫 샘플 기준, 정확한 0 bin은 NaN. UI는 작은 진폭의 위상을 가린다. 패딩 후 진폭 분모는 원래 N, DC·나이퀴스트는 두 배 제외. 윈도우 보정은 M1.9에서 추가
   - `components/ui/`: `Formula`(살아있는 수식), `Plot`(Plotly 래퍼), `ParamSlider` / `src/lib/format.ts`: `texNumber()`
   - 예시 `src/components/labs/SineDemo.tsx`, 확인 페이지 `/Vibration_study/dev/math-plot/`
   - 본문 수식은 MDX에서 `$…$`, `$$…$$`
@@ -31,7 +33,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) | 진행 중 | 1 / 15 | — |
+| M1 | 신호처리 기초 (Part 1) | 진행 중 | 2 / 15 | — |
 | M2 | 출발점: MCK → 회전체 (Part 0) | 대기 | 0 / 4 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -49,7 +51,7 @@
 | 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
 |---|---|---|---|---|---|
 | M1.1 | DSP 코어 ① 신호 모델 | 완료 | Claude | main | 2026-10-02 |
-| M1.2 | DSP 코어 ② FFT · 스펙트럼 | 대기 | 미배정 | — | — |
+| M1.2 | DSP 코어 ② FFT · 스펙트럼 | 완료 | Codex | main | 2026-10-02 |
 | M1.3 | 공통 랩 UI | 대기 | 미배정 | — | — |
 | M1.4 | 푸리에 기초 (P1-1, LAB-FOU-01) | 대기 | 미배정 | — | — |
 | M1.5 | 샘플링 · 에일리어싱 (LAB-SMP-01) | 대기 | 미배정 | — | — |
@@ -90,6 +92,16 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Codex · M1.2 DSP 코어 ② FFT · 스펙트럼
+- 한 일
+  - `fft.ts`: radix-2 전방 FFT(실수·복소 입력, 비정규화, 입력 보존), 명시적 `zeroPad`
+  - `spectrum.ts`: `Samples` → 단일측 주파수·피크 진폭·위상. DC·나이퀴스트 두 배 제외, 원래 N으로 정규화, 첫 샘플 기준 위상
+  - 제로패딩의 bin 간격과 실제 분해능·측정 시간을 분리 반환. 빈 입력·길이·비유한값 검증
+  - Roadmap에 M1.2 완료 기준 구체화, Contents에 DSP API·검증값·R-12(NumPy 공식 DFT 정의) 기록
+- 확인: 새 테스트 23개, 전체 43개 통과 (직접 DFT, 복소 음의 주파수, 켤레 대칭, Parseval, 사각파 홀수 하모닉, 진폭·위상·t₀, 제로패딩, DC·나이퀴스트). `npm run check` 오류·경고 0, `npm run build` 12페이지 통과
+- 환경 메모: 이 Codex 셸의 PATH에는 Node가 없어 프로세스 PATH에 `C:\Program Files\nodejs`를 추가했다. 테스트·빌드의 자식 프로세스 실행은 샌드박스 밖에서 검증 (EPERM). 프로젝트 설정·의존성 변경 없음
+- 다음: M1.3 공통 랩 UI (I-016 랩 폭, N=4096 성능 확인)
+
 ### 2026-10-02 · Claude · M1.1 DSP 코어 ① 신호 모델
 - 한 일
   - `random.ts`: 시드 고정 난수 `createRng` (mulberry32 균등, Box–Muller 정규)
@@ -104,10 +116,4 @@
 ### 2026-10-02 · Claude · M0 마무리 기록
 - 한 일: M0.5·M0 완료 처리와 회고, AGENTS.md(`npm test` 명령, push 후 Actions 확인), README(사이트 주소·테스트 명령), I-018 등록
 - 다음: M1.1
-
-### 2026-10-02 · 사용자 · M0.5 (3~5단계) GitHub Actions · Pages 배포
-- 한 일: `.github/workflows/deploy.yml` 작성(checkout → setup-node 24 → `npm ci` → check → test → build → upload-pages-artifact → deploy-pages), Settings › Pages › Source "GitHub Actions"
-- 경과: 첫 커밋 `f98e472`은 파일이 저장되지 않은 빈 상태로 올라가 0초 만에 실패 → 내용을 저장해 `ca771c1`로 다시 push → 실행 36970127342 성공 (build 21 s, deploy 9 s)
-- 확인 (Claude): https://tg-jang03.github.io/Vibration_study/ 홈·`/parts/1/`·`/dev/math-plot/`·파비콘 HTTP 200, 배포 페이지의 KaTeX 렌더 확인
-- 알림: `ubuntu-latest` → Ubuntu 26 전환 예정 (I-018)
 

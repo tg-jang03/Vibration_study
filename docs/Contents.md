@@ -43,7 +43,8 @@
 | F_max | 분석 최대 주파수 | Hz | |
 | f_N | 나이퀴스트 주파수 | Hz | f_N = f_s / 2 |
 | LOR | 분해능 라인 수 (Lines of Resolution) | — | 100, 200, 400, 800, 1600, 3200, 6400 |
-| N | 프레임 샘플 수 = FFT 크기 | — | N = 2.56 LOR (LOR 400 → N 1024, 모두 2의 거듭제곱) |
+| N | 프레임 샘플 수 | — | 패딩이 없으면 FFT 크기와 같음. N = 2.56 LOR (LOR 400 → N 1024) |
+| N_FFT | 제로패딩 후 FFT 크기 | — | N_FFT ≥ N, 2의 거듭제곱. 패딩이 없으면 N_FFT = N |
 | T | 프레임 길이 (측정 시간) | s | T = N / f_s = 1 / Δf |
 | Δf | 주파수 분해능 (bin 간격) | Hz | Δf = f_s / N = F_max / LOR |
 | n, k | 시간 샘플 / 주파수 bin 인덱스 | — | |
@@ -104,6 +105,19 @@
 - FRF 추정, 코히어런스: `H_1 = \dfrac{G_{xy}}{G_{xx}},\; H_2 = \dfrac{G_{yy}}{G_{yx}},\; \gamma^2 = \dfrac{|G_{xy}|^2}{G_{xx}G_{yy}}`
 - 영향계수 밸런싱: `H = \dfrac{\vec V_1 - \vec V_0}{\vec W_t},\quad \vec W_c = -\dfrac{\vec V_0}{H}`
 - 베어링 결함 주파수: 원본 4-2 식 사용 (BSF 관례는 I-008)
+
+### 3-1. 공통 DSP 코어 구현 사양
+
+**M1.2 FFT·스펙트럼 — 완료 (Codex, 2026-10-02)**
+
+- `fft(real, imag?)` (`lib/dsp/fft.ts`): 길이가 같은 실수부·허수부 배열, 길이는 1 이상의 2의 거듭제곱. 허수부 생략 시 실신호. 반환 `{ real, imag }`는 전체 양측 DFT, 비정규화·음의 지수·표준 bin 순서(R-12). 입력을 변경하지 않는다.
+- `zeroPad(values, fftSize)` (`lib/dsp/fft.ts`): 원래 값 뒤에 0을 채운 새 `Float64Array`. 축소는 허용하지 않고 목표 크기는 2의 거듭제곱이어야 한다.
+- `singleSidedSpectrum(samples, { fftSize? })` (`lib/dsp/spectrum.ts`): `Samples`의 fs·x 사용. 기본 FFT 크기는 x 길이, 다른 길이는 명시적 패딩 필요. 반환은 `frequency` [Hz], `amplitude` [입력 SI 단위, Pk], `phase` [rad], `fs`, 원래 `n`, `fftSize`, `binSpacing = fs/fftSize`, `resolution = fs/n`, `duration = n/fs`.
+- 위상은 첫 샘플 기준, 정확히 0인 bin은 `NaN`. 매우 작은 bin의 위상 마스킹은 랩 표시 계층에서 처리한다. DC·나이퀴스트의 진폭은 샘플열의 크기이며 일반 톤의 Pk↔RMS 환산을 적용하지 않는다.
+- 패딩 후 표시 주파수는 f_k = k·f_s/N_FFT, 진폭 분모는 원래 N이다. DC·N_FFT/2 bin은 두 배 하지 않는다. 실제 측정 시간·분해능은 패딩 전과 같다.
+- 위상은 atan2(Im X[k], Re X[k]). `acquire`의 t₀가 0이 아니면 bin 중심 톤 위상은 φ + 2πft₀ (2π 주기).
+- 빈 입력, 비유한 샘플, 길이 불일치, 부적절한 크기·fs는 `RangeError`. fs는 유한한 양수. 윈도우 보정은 M1.9, 파워·PSD 스케일링은 M1.13에서 추가한다.
+- 검증 기준은 §6. 페이지·랩 상태 변화는 없음 (P1-1·LAB-FOU-01은 M1.4).
 
 ## 4. 페이지 목록
 
@@ -454,6 +468,12 @@
 |---|---|---|
 | 사각파 하모닉 | 진폭 1 | n차(홀수) 진폭 4/(nπ), 짝수 0 |
 | 제로패딩 | 정수배 P | 원래 bin k 값 = 패딩 후 bin P·k 값 |
+| 단일측 톤 위상 | A·cos(2πft+φ), bin 중심, t₀ = 0 | 피크 진폭 A, 위상 φ (rad, −π~π) |
+| 위상 기준 | bin 중심, 첫 샘플 시각 t₀ ≠ 0 | 위상 φ + 2πft₀ (2π 주기), 진폭 A |
+| DC·나이퀴스트 | x[n] = −2 + 0.75·(−1)ⁿ | DC 진폭 2·위상 ±π, 나이퀴스트 진폭 0.75·위상 0 (두 배 제외) |
+| 패딩과 정규화 | N=128, N_FFT=512, fs=128 Hz | bin 간격 0.25 Hz, 원래 Δf=1 Hz·T=1 s, 원래 bin 진폭·위상 보존 |
+| 실신호 켤레 대칭 | 임의 실수 샘플열, 짝수 N | X[N−k] = conj(X[k]), DC·나이퀴스트 허수부 0 |
+| 단일측 평균제곱 | 윈도우·패딩 없음 | mean(x²) = A₀² + A_{N/2}² + ½Σ A_k² (내부 bin만 합산) |
 | 에일리어스 | f_s 1000 Hz, f = 940 / 1060 / 1940 Hz | 모두 60 Hz |
 | 에일리어스 위상 | f_s 1000 Hz, 위상 φ | 940 Hz(φ)의 샘플 = 60 Hz(−φ), 1060 Hz(φ)의 샘플 = 60 Hz(+φ) — 위쪽에서 접히면 위상 반전 |
 | 시드 난수 | `createRng(seed).normal()` 10만 개 | 평균 0 ± 0.02, 표준편차 1 ± 0.02, 같은 시드 → 같은 수열 |
@@ -491,6 +511,7 @@
 | R-09 | Bently Nevada ORBIT Magazine 아카이브 | GT/ST 사례 | 공개 |
 | R-10 | CWRU Bearing Data Center | 베어링 데이터셋 | 공개, M10.2 |
 | R-11 | J. Antoni, "Fast computation of the kurtogram…" (2007) | Kurtogram (P3-7) | |
+| R-12 | [NumPy DFT 정의·정규화](https://numpy.org/doc/stable/reference/routines.fft.html), [fft 제로패딩](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) | M1.2 FFT의 부호·bin 순서·위상·정규화 검증 | 공식 문서, 2026-10-02 확인 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M10.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
