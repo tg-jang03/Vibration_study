@@ -125,6 +125,8 @@
 
 페이지 ID = `Curriculum.md`의 절 번호 (`P{Part}-{절}`). M 열은 세부 마일스톤 (`Roadmap.md` §6). 상태를 바꾸면 사이트 목차 `src/data/curriculum.ts`도 함께 고친다.
 
+페이지 파일: `src/pages/p{Part}-{절}.mdx` (예: `p1-1.mdx` → `/p1-1/`). frontmatter에 `layout: ../layouts/MdxLayout.astro`, `sectionId: P1-1`을 넣으면 경로 표시와 이전/다음 절 이동이 붙는다. 목차 `src/data/curriculum.ts`의 `href`·`status`도 함께 고친다 (D-023).
+
 | ID | 제목 | 랩 | M | 상태 |
 |---|---|---|---|---|
 | HOME | 홈 · 커리큘럼 지도 | — | M0.3 골격, M1.15 정리 | 구현중 |
@@ -132,7 +134,7 @@
 | P0-2 | 1자유도 강제진동을 Bode/Polar로 | LAB-AF-01 | M2.2 | 사양 |
 | P0-3 | Jeffcott 로터 | LAB-JEF-01 | M2.3 | 계획 |
 | P0-4 | 유막 베어링과 안정성 입문 | LAB-STB-01 | M2.4 | 계획 |
-| P1-1 | 푸리에 기초 | LAB-FOU-01 | M1.4 | 사양 |
+| P1-1 | 푸리에 기초 | LAB-FOU-01 | M1.4 | 완료 |
 | P1-2 | 샘플링 · 에일리어싱 · AAF · ADC | LAB-SMP-01, 02, 03 | M1.5~M1.6 | 사양 |
 | P1-3 | 분해능 · 측정 시간 · Zoom FFT | LAB-RES-01, 02, LAB-ZOOM-01 | M1.7~M1.8 | 사양 |
 | P1-4 | 윈도우 | LAB-WIN-01, 02, 03 | M1.9~M1.10 | 사양 |
@@ -191,7 +193,8 @@
 ### 5-1. Part 1 · Part 0 (상세)
 
 #### LAB-FOU-01 푸리에 기초
-- P1-1 · M1.4 · 사양
+- P1-1 · M1.4 · 완료
+- 구현: 페이지 흐름에 맞춰 랩 셋으로 나눔 — (a) `FourierHarmonicsLab`(f₀ = 10 Hz, 1~15차, 듀티 조절, Parseval 읽음값), (b) `DftCorrelationLab`(N = 32, f_s = 32 Hz → bin = Hz), (c) `ZeroPaddingLab`(f_s = 32 Hz, f₁ = 8.3 Hz, 패딩 ×1~×16, N 32/64/128 비교 추가). 계산: `lib/dsp/fourier.ts`, `lib/dsp/stats.ts`
 - 목적: 신호는 정현파의 합이고, DFT는 정현파 템플릿과의 상관이며, 제로패딩은 분해능을 올리지 않는다는 것을 체감한다.
 - 신호: 기본파 f₀ = 10 Hz + 2~15차 하모닉 (차수별 진폭·위상), 프리셋 [사각파 / 톱니파 / 펄스열 / 임의]
 - 조작 (모드 3개)

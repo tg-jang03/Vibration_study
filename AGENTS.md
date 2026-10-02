@@ -97,7 +97,9 @@
 - 기호·수식 표기는 `docs/Contents.md` §3을 단일 기준으로 쓴다.
 - 랩은 `docs/Contents.md`의 랩 사양을 먼저 채우고 구현한다. 구조: 조작 → 플롯 → 수식(현재 값 대입) → 실험 과제.
 - 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
-- 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다 (hydration 오류, I-019).
+- 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다. 이론상 0인 값의 부동소수점 잡음(1e-15 수준)도 그대로 표시하지 않고 0으로 보여준다 (hydration 오류, I-019).
+- 새 절 페이지는 `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 목차 `src/data/curriculum.ts`의 `href`·`status`도 고친다. 예시: `src/pages/p1-1.mdx`.
+- KaTeX는 `package.json` `overrides`로 한 버전만 쓴다. 수식 관련 패키지를 바꾸면 `npm ls katex`로 확인한다 (I-021).
 - 성능 측정은 `scripts/bench/plot-bench.mjs`(실시간). 헤드리스 캡처의 가상 시간 모드에서는 시간이 0으로 나온다 (I-020).
 
 ## 7. 하지 말 것

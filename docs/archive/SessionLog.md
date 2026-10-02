@@ -3,6 +3,16 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Codex · M1.2 DSP 코어 ② FFT · 스펙트럼
+- 한 일
+  - `fft.ts`: radix-2 전방 FFT(실수·복소 입력, 비정규화, 입력 보존), 명시적 `zeroPad`
+  - `spectrum.ts`: `Samples` → 단일측 주파수·피크 진폭·위상. DC·나이퀴스트 두 배 제외, 원래 N으로 정규화, 첫 샘플 기준 위상
+  - 제로패딩의 bin 간격과 실제 분해능·측정 시간을 분리 반환. 빈 입력·길이·비유한값 검증
+  - Roadmap에 M1.2 완료 기준 구체화, Contents에 DSP API·검증값·R-12(NumPy 공식 DFT 정의) 기록
+- 확인: 새 테스트 23개, 전체 43개 통과 (직접 DFT, 복소 음의 주파수, 켤레 대칭, Parseval, 사각파 홀수 하모닉, 진폭·위상·t₀, 제로패딩, DC·나이퀴스트). `npm run check` 오류·경고 0, `npm run build` 12페이지 통과
+- 환경 메모: 이 Codex 셸의 PATH에는 Node가 없어 프로세스 PATH에 `C:\Program Files\nodejs`를 추가했다. 테스트·빌드의 자식 프로세스 실행은 샌드박스 밖에서 검증 (EPERM). 프로젝트 설정·의존성 변경 없음
+- 다음: M1.3 공통 랩 UI (I-016 랩 폭, N=4096 성능 확인)
+
 ### 2026-10-02 · Claude · M1.1 DSP 코어 ① 신호 모델
 - 한 일
   - `random.ts`: 시드 고정 난수 `createRng` (mulberry32 균등, Box–Muller 정규)

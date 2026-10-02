@@ -29,6 +29,7 @@
 | D-020 | Progress 세션 로그는 최근 3개만, 나머지는 보관 파일로 | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-021 | 사용자 요청 시 두 에이전트 병렬 작업 (별도 worktree) | 확정(사용자 요청) / 제안(절차) | 2026-10-02 | 사용자 / Claude |
 | D-022 | Flat top 윈도우 계수 정의 선택 (I-010) | 제안 | 2026-10-02 | Antigravity |
+| D-023 | 절 페이지 구조: `src/pages/p{Part}-{절}.mdx` | 제안 | 2026-10-02 | Claude |
 
 ---
 
@@ -220,3 +221,13 @@
   - 특성: CG ≈ 0.2156, ACF ≈ 4.639, ECF ≈ 2.389, ENBW ≈ 3.77 bin (≈ 3.8 bin), 스캘럽 손실 < 0.01 dB (≈ 0.005 dB), 메인로브 ±5 bin
 - 대안: Heinzel 2002의 HFT70/90D 등. 범용 분석기 및 Python/MATLAB 생태계와의 호환성을 고려해 ISO/SciPy/MATLAB 표준을 선택함.
 - 영향: `src/lib/dsp/window.ts`, `src/lib/dsp/window.test.ts`, `Contents.md` §6, `Issues.md` I-010 해결.
+
+## D-023 절 페이지 구조: `src/pages/p{Part}-{절}.mdx`
+- 상태: 제안 · 2026-10-02 · Claude (M1.4, 첫 내용 페이지)
+- 결정
+  - 커리큘럼 절 하나 = MDX 파일 하나: `src/pages/p{Part}-{절}.mdx` → 주소 `/p{Part}-{절}/` (예: `/p1-1/`). 페이지 ID(P1-1)와 주소가 같아 찾기 쉽다.
+  - frontmatter: `layout: ../layouts/MdxLayout.astro`, `title`, `description`, `sectionId`. `sectionId`가 있으면 경로 표시(커리큘럼 › Part › 절)와 이전/다음 절 이동이 자동으로 붙는다.
+  - 목차 `src/data/curriculum.ts`의 `href`가 링크의 기준. 페이지를 만들면 `href`와 `status`를 고친다.
+  - 랩은 `src/components/labs/`에 랩(또는 부분 랩) 하나당 파일 하나, 본문에서 `client:load`로 넣는다.
+- 대안: Astro 콘텐츠 컬렉션(`src/content/`) → 목록·필터 기능이 필요해지면 옮긴다. 지금은 단순한 페이지 라우팅이 충분하다.
+- 영향: `AGENTS.md` §6, Contents §4
