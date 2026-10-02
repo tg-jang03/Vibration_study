@@ -8,10 +8,10 @@
 | 항목 | 값 |
 |---|---|
 | 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 9 / 16 (M1.0 추가) |
-| 세부 마일스톤 | **M1.10 윈도우 페이지(P1-4) 본문 작성 완료 → 사용자 검토 대기** (D-024). 확인 후 LAB-WIN-01~03 랩 구현 예정 |
-| 담당 | Antigravity |
+| 세부 마일스톤 | **M1.10 윈도우 페이지(P1-4) 본문 작성 완료 → 사용자 검토 대기** (D-024). 확인 후 LAB-WIN-01~03 랩 구현 예정. **M1.11 평균화(P1-5) 본문 검토 대기**, 랩 초안 미연결 |
+| 담당 | M1.10: Antigravity / M1.11: Codex (별도 worktree) |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
-| 사용자 확인 대기 | **P1-4 윈도우 본문 (D-024)**, **P1-0·P1-1 본문 (D-024)**, `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
+| 사용자 확인 대기 | **P1-4 윈도우 본문 (D-024)**, **P1-0·P1-1·P1-5 본문 (D-024)**, `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
@@ -20,6 +20,8 @@
   - `M1.8 Zoom FFT`: `src/lib/dsp/zoom.ts`, `zoom.test.ts`, `ZoomLab.tsx`, `p1-3.mdx` 완성 및 push 완료 (`fef6e90`).
   - `M1.10 윈도우 랩 (P1-4)`: D-024 기준에 따라 **P1-4 본문(글) 및 랩 가이드 작성 완료** (`src/pages/p1-4.mdx`). 용어집(`docs/Glossary.md`), 목차(`src/data/curriculum.ts` `status: 'review'`), 콘텐츠 사양(`docs/Contents.md`) 갱신 완료. 현재 사용자 검토 대기 중.
   - 사용자가 P1-4 본문을 검토한 후 OK하면 랩 3종(`LAB-WIN-01`, `LAB-WIN-02`, `LAB-WIN-03`)을 구현하여 붙이고 상태를 `done`으로 전환.
+- P1-0·P1-1 본문 검토 대기. 검토 뒤 Claude가 P1-2를 D-024 기준으로 보강한다 (I-022).
+- P1-5 평균화 본문 검토 대기 (M1.11, Codex). average.ts·테스트 17개와 AveragingLab.tsx 초안을 보존하되 본문에서 import·hydrate하지 않는다. 사용자 확인 뒤 연결·보완·완료 검증. TSA는 M1.12.
 - 이미 있는 것
   - `src/pages/p1-4.mdx`: 1-4 윈도우 본문 (스펙트럴 누설 원리, 피켓 펜스 & 스캘럽 손실, 시간영역 곱/주파수영역 합성곱, 윈도우 5대 선택 가이드, 3가지 보정 계수 ACF·ECF·ENBW, 지수 윈도우 감쇠 사후 보정, 랩 3종 가이드, 확인 문제 4개, 현장 판단 기준, 흔한 실수)
   - `src/lib/dsp/window.ts`: 주기형 윈도우 8종(`uniformWindow`, `hannWindow`, `hammingWindow`, `blackmanHarrisWindow`, `flatTopWindow`, `kaiserWindow`, `exponentialWindow`, `forceWindow`) 및 특성 계수 계산(S₁, S₂, CG, ACF, ECF, ENBW, scallopLoss) (M1.9)
@@ -60,7 +62,7 @@
 | M1.8 | Zoom FFT (LAB-ZOOM-01) | 완료 | Antigravity | main | 2026-10-02 |
 | M1.9 | 윈도우 라이브러리 | 완료 | Antigravity (M1.4와 병렬, D-021) | main | 2026-10-02 |
 | M1.10 | 윈도우 랩 (LAB-WIN-01~03) | 검토 대기 (본문, D-024) | Antigravity | main | — |
-| M1.11 | 평균화 (LAB-AVG-01) | 대기 | 미배정 | — | — |
+| M1.11 | 평균화 (LAB-AVG-01) | 검토 대기 (본문, 랩 미연결) | Codex (D-021 별도 worktree) | main | — |
 | M1.12 | TSA (LAB-AVG-02) | 대기 | 미배정 | — | — |
 | M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | 대기 | 미배정 | — | — |
 | M1.14 | 변조 · 맥놀이 (LAB-MOD-01) | 대기 | 미배정 | — | — |
@@ -92,6 +94,16 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Codex · M1.11 평균화 본문 검토안 (D-024)
+
+- 진행: 사용자 승인 D-021 병렬 예외, 별도 detached worktree. origin/main rebase로 Claude의 P1-0 추가·P1-0~P1-2 review·D-024와 Antigravity의 M1.5~M1.8과 P1-4 검토안을 보존.
+- 본문: 선수 개념·흐름 표, 정의와 숫자 예 먼저, RMS와 벡터 평균 구분(I-005), 지수·피크홀드·오버랩, 실험 4단계의 할 일·화면 읽는 법·따라 하기·무엇을 봤나, 숨긴 문제 5개, 용어집.
+- 코드: average.ts + 테스트 17개. RMS·지수·피크홀드·벡터, 연속 수집 오버랩 분할, 독립 잡음 평균 레벨 유지·1/√M 흔들림, 벡터 파워 1/M, Hann 오버랩 근사.
+- 상태: P1-5 review, M1.11 본문 검토 대기. D-024 이전에 준비한 AveragingLab.tsx 초안은 미연결 상태로 보존. TSA 제외.
+- 확인: 전체 테스트 127개 통과 (평균화 17개 포함), astro check 0 errors·warnings·hints, 정적 빌드 19페이지. P1-5 전체 Edge 캡처(답 펼침 포함): 표 7개·수식 22개·확인 문제 5개, 수식 오류·가로 넘침·콘솔 오류 0, 평균화 랩 island 0. 준비된 랩 초안은 기준 변경 전 4모드·트리거·잡음 0·오버랩·재생·M 1/256 화면 동작을 확인했으며 본문 검토 후 연결한다.
+- 다음: 사용자 본문 확인 → LAB-AVG-01 연결·보완·검증 → M1.11 완료 및 I-005·I-011 해결 확인.
+
+
 ### 2026-10-02 · Antigravity · M1.10 윈도우 페이지 P1-4 본문 작성 (D-024)
 - 진행 방식: D-024 신규 페이지 작성 기준(본문 먼저 → 사용자 확인 → 랩) 준수
 - 한 일:
@@ -118,6 +130,7 @@
   - Edge 헤드리스 캡처로 렌더링, 수식, 표, 굵은 글씨(`<strong>`) 시각적 정상 확인
 - 다음: 사용자 P1-4 본문 검토 → 확인 후 LAB-WIN-01~03 랩 인터랙티브 컴포넌트 구현
 
+
 ### 2026-10-02 · Antigravity · M1.8 Zoom FFT (P1-3, LAB-ZOOM-01)
 - 한 일:
   - `src/lib/dsp/zoom.ts`: Zoom FFT 메트릭 계산 함수 `calculateZoomMetrics()` ($B = F_{\max}/Z$, $\Delta f = F_{\max}/(Z \cdot \mathrm{LOR})$, $T = Z \cdot T_{\text{base}}$), Zoom 대역 슬라이스 및 고분해능 스펙트럼 계산 `computeZoomSpectrum()` 구현
@@ -131,14 +144,3 @@
   - `astro check` 0 errors / 0 warnings / 0 hints (총 49개 파일)
   - `astro build` 16개 정적 페이지 정상 빌드
 - 다음: M1.10(윈도우 랩, P1-4) — D-024 새 기준에 따라 본문 먼저 작성 후 검토
-
-### 2026-10-02 · Claude · M1.0 기초 페이지 P1-0 + P1-1 본문 보강 (D-024)
-- 요청: 사용자 — P1-1에서 "하모닉 개수가 갑자기 왜 나오나, 사각파를 만들라는 건가, 5개인데 성분은 왜 3개인가", "설명 자체가 너무 부실하고 앞에 없는 내용이 많다". 사용자 선택: P1-0 추가, 본문 먼저 → 확인 → 랩, P1-2는 Claude가 보강
-- 한 일
-  - P1-0 신설: 시간파형·측정량, 정현파 3요소·위상차, rpm↔Hz·1X·차수, Peak·Pk-Pk·RMS·DC·Crest factor, 스펙트럼이란(FRF와 차이), 샘플링 기본(x[n], Δt, f_s, N, T). 숫자 예 + 확인 문제 5개
-  - P1-1 재작성: 선수 개념 표, 흐름 표, 기본파·하모닉·차수 정의, 사각파 레시피 표를 랩 앞에, 랩마다 할 일·화면 읽는 법·따라 하기·무엇을 봤나, DFT 숫자 예(합 16 → 진폭 1), 복소수는 접는 상자
-  - 랩 (a): 시작 1차, "최고 차수 N", 더한 성분·0인 차수 표시 / 랩 (b): 컨트롤 이름 정리
-  - Contents §1 작성 기준·체크리스트, `docs/Glossary.md` 신설, D-024, I-022
-  - 발견·수정: 괄호로 끝나는 굵은 글씨 뒤 한글 → `**` 노출(`<strong>`으로), 한글 글자 중간 줄바꿈(`word-break: keep-all`)
-- 확인: 테스트 87, `astro check` 0 errors, 빌드 16페이지, 수식 오류 0, P1-0·P1-1 헤드리스 캡처, 콘솔 오류 0
-- 다음: 사용자 검토 → P1-2 보강

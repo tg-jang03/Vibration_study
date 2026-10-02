@@ -55,7 +55,7 @@ export const PARTS: Part[] = [
       { id: 'P1-2', title: '샘플링 · 에일리어싱 · AAF · ADC', status: 'review', href: '/p1-2/' },
       { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'done', href: '/p1-3/' },
       { id: 'P1-4', title: '윈도우', status: 'review', href: '/p1-4/' },
-      { id: 'P1-5', title: '평균화와 TSA', status: 'spec' },
+      { id: 'P1-5', title: '평균화와 TSA', status: 'review', href: '/p1-5/' },
       { id: 'P1-6', title: '스펙트럼 스케일링과 진동 단위', status: 'spec' },
       { id: 'P1-7', title: '변조 · 측대역 · 맥놀이', status: 'spec' },
       { id: 'P1-8', title: '측정 설정 종합: 목적별 의사결정', status: 'planned' },

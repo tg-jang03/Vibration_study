@@ -144,6 +144,15 @@
 - 빈 입력, 비유한 샘플, 길이 불일치, 부적절한 크기·fs는 `RangeError`. fs는 유한한 양수. 윈도우 보정은 M1.9, 파워·PSD 스케일링은 M1.13에서 추가한다.
 - 검증 기준은 §6. 페이지·랩 상태 변화는 없음 (P1-1·LAB-FOU-01은 M1.4).
 
+### M1.11 평균화 코어 · 본문 검토안 (Codex, 2026-10-02)
+
+- P1-5는 D-024 본문 검토 대기. AveragingLab.tsx 초안은 소스에 보존하되 페이지에 연결하지 않는다. 사용자 확인 뒤 연결·보완하며 TSA는 M1.12에서 진행한다.
+- lib/dsp/average.ts: averagePower(frames, mode, alpha) — 파워 [SI²]의 선형·지수·피크홀드. 지수는 첫 프레임 초기화, alpha 기본값 1/M. 반환의 제곱근 표시는 UI 책임.
+- vectorAverage(frames): 같은 기준에 이미 정렬된 복소 스펙트럼의 실수부·허수부 평균. 위상 정렬은 수집/UI 책임.
+- frameLayout(N, M, r): H=N(1-r), 총 샘플 N+(M-1)H. 정수 hop만 허용. splitOverlappingFrames(x, N, r): 연속 수집을 실제로 겹쳐 복사, 불완전 꼬리 제외.
+- overlapPowerCv(w, M, H): 정상 백색 가우시안 잡음 내부 bin의 선형 파워 평균 std/mean 근사. ρ_l=Σw[n]w[n+lH]/Σw[n]², CV²=(1/M)[1+2Σ(1-l/M)ρ_l²]. DC·나이퀴스트 제외, 겹친 구간만 합산. 등가 독립 수=1/CV².
+- 입력을 변경하지 않는 순수 함수. 크기 불일치·비유한 입력·음의 파워·잘못된 M/r/alpha는 RangeError. 기준값은 §6.
+
 ## 4. 페이지 목록
 
 페이지 ID = `Curriculum.md`의 절 번호 (`P{Part}-{절}`). M 열은 세부 마일스톤 (`Roadmap.md` §6). 상태를 바꾸면 사이트 목차 `src/data/curriculum.ts`도 함께 고친다.
@@ -162,7 +171,7 @@
 | P1-2 | 샘플링 · 에일리어싱 · AAF · ADC | LAB-SMP-01, 02, 03 | M1.5~M1.6 | 검토 (D-024 기준 보강 예정, I-022) |
 | P1-3 | 분해능 · 측정 시간 · Zoom FFT | LAB-RES-01, 02, LAB-ZOOM-01 | M1.7~M1.8 | 완료 |
 | P1-4 | 윈도우 | LAB-WIN-01, 02, 03 | M1.9~M1.10 | 검토 (본문, D-024) |
-| P1-5 | 평균화와 TSA | LAB-AVG-01, 02 | M1.11~M1.12 | 사양 |
+| P1-5 | 평균화와 TSA | LAB-AVG-01, 02 | M1.11~M1.12 | 검토 (평균화 본문, 랩 미연결; TSA 사양) |
 | P1-6 | 스펙트럼 스케일링과 진동 단위 | LAB-SPC-01, 02, LAB-UNIT-01 | M1.13 | 사양 |
 | P1-7 | 변조 · 측대역 · 맥놀이 | LAB-MOD-01 | M1.14 | 사양 |
 | P1-8 | 측정 설정 종합 | LAB-SBX-01 | M1.15 | 계획 |
@@ -359,7 +368,9 @@
 - 검증: §6 표 값. Hann + ECF에서 톤 읽음값 = 1/√1.5 = 0.816
 
 #### LAB-AVG-01 평균화
-- P1-5 · M1.11 · 사양
+- P1-5 · M1.11 · 본문 검토 대기 (D-024), 랩 초안 미연결
+- 초안: AveragingLab.tsx + average.ts. N=f_s=512, Δf=1 Hz, 32 Hz 톤 0.025 mm/s Peak + σ=0.4 mm/s RMS 고정 시드 잡음. 변화·과도 사건·20→120 Hz 런업 프리셋. 본문 확인 뒤 연결.
+- 조건: 독립 정상 백색 가우시안 잡음의 내부 bin. RMS는 평균 레벨 유지·파워 std 감소, 벡터는 파워 1/M·RMS 크기 1/√M. 오버랩은 연속 수집의 실제 공유 샘플과 윈도우 상관 보정선·등가 독립 수 사용.
 - 목적: 평균 방식마다 "무엇이 줄어드는지"가 다르다 (I-005).
 - 신호: 작은 톤(트리거와 동기) + 랜덤 잡음 (선택: 서서히 변하는 톤, 과도 이벤트, 런업 1X)
 - 조작: 평균 방식 [RMS(파워) 선형 / 지수 / 피크홀드 / 벡터(트리거 동기)], 평균 횟수 M (1~256), 오버랩 r (0 / 50 / 75 %), 윈도우, 프레임 재생(애니메이션)
@@ -517,7 +528,15 @@
 | bin 사이 톤 | δ = 0.5 | Uniform 0.637 (2/π), Hann 0.849 |
 | Parseval | 윈도우 없음 | Σ x[n]² = (1/N) Σ \|X[k]\|² |
 | 백색 잡음 PSD | 표준편차 σ, 단일측 | 2σ²/f_s, 0~f_N 적분 = σ² |
-| RMS 평균 | 가우시안 잡음, M회 | bin별 std/mean = 1/√M |
+| RMS 파워 평균 | RMS 진폭 1·3 → 파워 1·9 | 평균 파워 5, 표시 √5 (산술 평균 2와 구분) |
+| 지수 평균 | 파워 1·5·9, α=0.25, 첫 프레임 초기화 | 최종 파워 3.75; α=1은 최신 프레임 |
+| 피크홀드 | 파워 1·4·2 | 최대 파워 4 유지 |
+| 벡터 평균 | 벡터 1·j·−1·−j | 벡터 평균 0, 파워 평균 1 |
+| 오버랩 분할 | N=512, M=16, r=0.75, f_s=512 Hz | H=128, 총 2432 샘플, 4.75 s |
+| RMS 독립 잡음의 흔들림 | N=64, bin 11, M=1·4·16·64, 768회 고정 시드 | 평균 파워 2/N ±10%, (std/mean)√M=1 ±12% |
+| 벡터 독립 잡음의 레벨 | 위와 같은 수집 | 파워 2/(NM) ±12%, 위상 정렬된 톤 보존 |
+| Uniform 오버랩 근사 | N=8, M=4, H=4 | CV²=0.34375, CV≈0.5863, 등가 M≈2.91 |
+| Hann 75% 실제 공유 샘플 | N=64, M=16, 연속 잡음의 겹친 FFT | CV 근사 ±12%, 독립 1/√M보다 큼 |
 | 정현파 | — | CF = √2 ≈ 1.414 |
 | 단위 환산 | 25 Hz, 50 µm pp | 2.78 mm/s rms |
 | 단위 환산 | 1 in/s pk | 17.96 mm/s rms |
@@ -543,6 +562,9 @@
 | R-10 | CWRU Bearing Data Center | 베어링 데이터셋 | 공개, M10.2 |
 | R-11 | J. Antoni, "Fast computation of the kurtogram…" (2007) | Kurtogram (P3-7) | |
 | R-12 | [NumPy DFT 정의·정규화](https://numpy.org/doc/stable/reference/routines.fft.html), [fft 제로패딩](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) | M1.2 FFT의 부호·bin 순서·위상·정규화 검증 | 공식 문서, 2026-10-02 확인 |
+
+| R-13 | [NI Spectrum Averaging Mode](https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html) | RMS·피크홀드·벡터 평균과 트리거 조건 (P1-5) | 공식 문서, 2026-10-02 확인 |
+| R-14 | [SciPy Welch](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html) | 겹친 구간의 파워 평균·오버랩 조건 (P1-5) | 공식 문서, 2026-10-02 확인 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M10.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

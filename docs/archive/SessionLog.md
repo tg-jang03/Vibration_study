@@ -3,15 +3,33 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Claude · M1.0 기초 페이지 P1-0 + P1-1 본문 보강 (D-024)
+- 요청: 사용자 — P1-1에서 "하모닉 개수가 갑자기 왜 나오나, 사각파를 만들라는 건가, 5개인데 성분은 왜 3개인가", "설명 자체가 너무 부실하고 앞에 없는 내용이 많다". 사용자 선택: P1-0 추가, 본문 먼저 → 확인 → 랩, P1-2는 Claude가 보강
+- 한 일
+  - P1-0 신설: 시간파형·측정량, 정현파 3요소·위상차, rpm↔Hz·1X·차수, Peak·Pk-Pk·RMS·DC·Crest factor, 스펙트럼이란(FRF와 차이), 샘플링 기본(x[n], Δt, f_s, N, T). 숫자 예 + 확인 문제 5개
+  - P1-1 재작성: 선수 개념 표, 흐름 표, 기본파·하모닉·차수 정의, 사각파 레시피 표를 랩 앞에, 랩마다 할 일·화면 읽는 법·따라 하기·무엇을 봤나, DFT 숫자 예(합 16 → 진폭 1), 복소수는 접는 상자
+  - 랩 (a): 시작 1차, "최고 차수 N", 더한 성분·0인 차수 표시 / 랩 (b): 컨트롤 이름 정리
+  - Contents §1 작성 기준·체크리스트, `docs/Glossary.md` 신설, D-024, I-022
+  - 발견·수정: 괄호로 끝나는 굵은 글씨 뒤 한글 → `**` 노출(`<strong>`으로), 한글 글자 중간 줄바꿈(`word-break: keep-all`)
+- 확인: 테스트 87, `astro check` 0 errors, 빌드 16페이지, 수식 오류 0, P1-0·P1-1 헤드리스 캡처, 콘솔 오류 0
+- 다음: 사용자 검토 → P1-2 보강
+
 ### 2026-10-02 · Antigravity · M1.7 분해능 · Smearing (P1-3, LAB-RES-01, 02)
 - 한 일:
-  - `src/lib/dsp/resolution.ts`: 분해능 3식 계산 함수 `calculateResolution({fmax, lor})`, 두 성분 간격 bin 수 `separatedBins()`, 윈도우별 최소 분리 bin `minSeparationBins()`, 가감속 스미어링 모델 `smearingMetrics()` 구현
+  - `src/lib/dsp/resolution.ts`: 분해능 3식 계산 함수 `calculateResolution({fmax, lor})` ($\Delta f, T, N, f_s$), 두 성분 간격 bin 수 `separatedBins(f1, f2, deltaF)`, 윈도우별 최소 분리 bin `minSeparationBins()`, 가감속 스미어링 모델 `smearingMetrics(a, duration, deltaF)` 구현
   - `src/lib/dsp/signal.ts`: 가속/감속 모사용 선형 처프 `ChirpComponent` (`f(t) = f0 + rate*t`) 및 `evaluate()` 적분 위상 지원 추가
-  - `src/components/labs/ResolutionLab.tsx`: `LAB-RES-01` 분해능 및 두 성분 분리 랩 (현장 프리셋 4종: 1X vs 2LF, 2극 발전기 동기 결함, Oil whirl, 베어링 측대역)
-  - `src/components/labs/SmearingLab.tsx`: `LAB-RES-02` Smearing 랩 (코스트다운 감속률 $a$와 $T^2$ 비례 피크 번짐 시각화)
-  - `src/pages/p1-3.mdx`: 1-3 분해능 본문 초안 작성 및 LAB-RES-01, 02 임베드
-- 확인: 전체 테스트 107개 통과, `astro check` 0 errors, Edge 헤드리스 스크린샷 검증 완료
-- 다음: M1.8(Zoom FFT)
+  - `src/lib/dsp/resolution.test.ts`, `signal.test.ts`: 단위 테스트 10개 추가 (F_max 1000 Hz, LOR 3200 $\rightarrow \Delta f = 0.3125\text{ Hz}, T = 3.2\text{ s}, N = 8192, f_s = 2560\text{ Hz}$, $a = 60\text{ rpm/s} \rightarrow 10.24\text{ bin}$ 스미어링 등 Contents §6 문헌값 검증)
+  - `src/components/labs/ResolutionLab.tsx`: `LAB-RES-01` 분해능 및 두 성분 분리 랩 (F_max 100~5000 Hz, LOR 100~6400, 현장 프리셋 4종: 1X vs 2LF, 2극 발전기 동기 결함 분리불가, Oil whirl 0.42X vs 0.48X, 베어링 BPFI 측대역, 분리 성공/불가 판정 수식 및 읽음값)
+  - `src/components/labs/SmearingLab.tsx`: `LAB-RES-02` Smearing 랩 (초기 회전수, 감속률 $a$, 정속 기준 피크 겹쳐보기, $\Delta f_{1X} = (a/60)T$ 및 $(a/60)T^2$ bin 번짐, 피크 진폭 감소율 시각화)
+  - `src/pages/p1-3.mdx`: 1-3 분해능 3식, 윈도우 메인로브 분리 한계, 현장 4대 사례 상세, Smearing $T^2$ 법칙, Zoom FFT 원리 개요, LAB-RES-01, 02 임베드
+  - `src/data/curriculum.ts`: P1-3 `href: '/p1-3/'`, `status: 'wip'` 등록
+  - `docs/Contents.md`: P1-3 `구현중`, LAB-RES-01, LAB-RES-02 `완료`
+- 확인:
+  - 단위 테스트 전체 107개 100% 통과 (`npm test`)
+  - `astro check` 0 errors / 0 warnings / 0 hints
+  - `astro build` 16페이지 정상 생성 (KaTeX 경고 0)
+  - Edge 헤드리스 스크린샷(`screenshot-p1-3.png`)으로 LAB-RES-01, LAB-RES-02의 플롯, 수식, 컨트롤 화면 검증 완료
+- 다음: M1.8(Zoom FFT)로 P1-3 완성 또는 M1.10(윈도우 랩)
 
 ### 2026-10-02 · Antigravity · M1.6 AAF · ADC (P1-2, LAB-SMP-02, 03)
 - 한 일:
@@ -25,6 +43,7 @@
 - 확인: 전체 테스트 97개 통과, `astro check` 0 errors, 빌드 15페이지, Edge 헤드리스 스크린샷 검증 완료
 - 다음: M1.7(분해능 · Smearing)
 
+
 ### 2026-10-02 · Antigravity · M1.5 샘플링 · 에일리어싱 (P1-2, LAB-SMP-01)
 - 한 일:
   - `src/lib/dsp/sampling.ts`: `aliasComponent(f, phase, fs)` 함수 추가 및 테스트
@@ -34,12 +53,14 @@
 - 확인: 전체 테스트 87개 통과, `astro check` 0 errors, 빌드 15페이지, Edge 헤드리스 스크린샷 검증 완료
 - 다음: M1.6(AAF·ADC) 또는 M1.10(윈도우 랩)
 
+
 ### 2026-10-02 · Claude · M1.4 푸리에 기초 (M1.9와 병렬)
 - 진행: Antigravity의 M1.9와 병렬, 별도 worktree. Antigravity push 후 rebase (D-021). 교차 리뷰: `window.ts`(주기형 8종, Flat top 5항 출처 명시)·`spectrum.ts` window 옵션(기존 호출 호환) — 문제 없음
 - 한 일: 페이지 P1-1(`/p1-1/`, Curriculum 1-1 본문 + 현장 판단 기준·흔한 실수), LAB-FOU-01을 페이지 흐름에 맞춰 (a) 하모닉 쌓기·Parseval (b) DFT = 템플릿 상관·k 스윕 (c) 제로패딩 vs 측정 시간(N 비교)으로 구성, `fourier.ts`·`stats.ts` + 테스트 12, `MdxLayout` 경로 표시·이전/다음 절, `Plot` 막대
 - 발견·수정: (1) rehype-katex가 KaTeX 0.16을 따로 써서 본문 수식 아래첨자가 깨짐 → `overrides`로 0.19 통일 (I-021, M0.4 확인 페이지도 같이 고쳐짐) (2) 이론상 0인 값의 부동소수점 잡음(−2.7e-15)이 서버·브라우저에서 달라 hydration 오류 → 작은 값은 0으로 표시 (I-019 보강)
 - 확인: 테스트 87개 통과(M1.9 포함), `astro check` 0 errors, 빌드 14페이지, 헤드리스 캡처로 페이지 전체·수식 확대 확인, 콘솔 오류 0
 - 다음: M1.5
+
 
 ### 2026-10-02 · Antigravity · M1.9 윈도우 라이브러리 (M1.4와 병렬)
 - 진행 방식: Claude가 M1.4(푸리에 랩)를 별도 worktree에서 진행 중이므로, UI 파일(src/components, src/pages, curriculum.ts)을 전혀 건드리지 않고 DSP 코어와 문서만 작업 (AGENTS §4, D-021)
@@ -56,6 +77,7 @@
   - `npm run check` 0 errors/0 warnings, `npm run build` 13페이지 통과
 - 다음: Claude의 M1.4(푸리에 랩) 완료 후 M1.5(샘플링) 또는 M1.10(윈도우 랩)
 
+
 ### 2026-10-02 · Claude · M1.3 공통 랩 UI (M1.2와 병렬)
 - 진행 방식: 사용자 요청으로 Codex의 M1.2와 병렬. 별도 worktree(`../진동공부-claude`)에서 코드 파일이 겹치지 않게 작업하고, Codex가 push한 뒤 rebase해서 문서와 함께 push (D-021)
 - 한 일: `LabFrame`, `ParamSlider`(useRafCallback, 프레임당 1회)·`ParamSelect`·`ParamToggle`, `ReadoutTable`, `formatNumber`·`formatError`(+테스트 8), `Plot.onRendered`·축 설정 내용 비교, 랩 폭(I-016 해결), `/dev/lab-ui/` + 벤치마크, SineDemo를 LabFrame으로, `scripts/bench/plot-bench.mjs`
@@ -64,6 +86,7 @@
 - 교차 리뷰: Codex M1.2(`fft.ts`, `spectrum.ts`) 확인 — 문제 없음
 - 확인: 테스트 51개 통과(M1.2 포함), `astro check` 0 errors, 빌드 13페이지, 화면 캡처
 - 다음: M1.4
+
 
 ### 2026-10-02 · Codex · M1.2 DSP 코어 ② FFT · 스펙트럼
 - 한 일
@@ -74,6 +97,7 @@
 - 확인: 새 테스트 23개, 전체 43개 통과 (직접 DFT, 복소 음의 주파수, 켤레 대칭, Parseval, 사각파 홀수 하모닉, 진폭·위상·t₀, 제로패딩, DC·나이퀴스트). `npm run check` 오류·경고 0, `npm run build` 12페이지 통과
 - 환경 메모: 이 Codex 셸의 PATH에는 Node가 없어 프로세스 PATH에 `C:\Program Files\nodejs`를 추가했다. 테스트·빌드의 자식 프로세스 실행은 샌드박스 밖에서 검증 (EPERM). 프로젝트 설정·의존성 변경 없음
 - 다음: M1.3 공통 랩 UI (I-016 랩 폭, N=4096 성능 확인)
+
 
 ### 2026-10-02 · Claude · M1.1 DSP 코어 ① 신호 모델
 - 한 일
@@ -86,9 +110,11 @@
 - 메모: 셸 heredoc으로 코드를 쓰면 백슬래시가 사라지는 일이 있었다 → 백슬래시가 있는 코드는 Write 도구로 쓴다
 - 다음: M1.2
 
+
 ### 2026-10-02 · Claude · M0 마무리 기록
 - 한 일: M0.5·M0 완료 처리와 회고, AGENTS.md(`npm test` 명령, push 후 Actions 확인), README(사이트 주소·테스트 명령), I-018 등록
 - 다음: M1.1
+
 
 ### 2026-10-02 · 사용자 · M0.5 (3~5단계) GitHub Actions · Pages 배포
 - 한 일: `.github/workflows/deploy.yml` 작성(checkout → setup-node 24 → `npm ci` → check → test → build → upload-pages-artifact → deploy-pages), Settings › Pages › Source "GitHub Actions"
@@ -96,17 +122,20 @@
 - 확인 (Claude): https://tg-jang03.github.io/Vibration_study/ 홈·`/parts/1/`·`/dev/math-plot/`·파비콘 HTTP 200, 배포 페이지의 KaTeX 렌더 확인
 - 알림: `ubuntu-latest` → Ubuntu 26 전환 예정 (I-018)
 
+
 ### 2026-10-02 · Claude · M0.5 (1~2단계) Vitest · 첫 DSP 테스트
 - 요청: 사용자 — "3번부터 직접 해보고 싶으니 2번까지 해달라"
 - 한 일: Vitest 5.0.3 설치, `npm test`·`npm run test:watch` 스크립트, `vitest.config.ts`(캐시 `node_modules/.vite-tasks`, I-017), 첫 DSP 함수 `aliasFrequency()`와 테스트 3개(Contents §6 기준값: 60 Hz·760 Hz)
 - 확인: `npm test` 3 passed, `npm run check` 0 errors, `npm run build` 12페이지
 - 다음: 사용자가 3단계(GitHub Actions)부터 진행
 
+
 ### 2026-10-02 · Claude · M0.4 후속: 개발 서버 플롯 멈춤 수정 (I-017)
 - 사용자 제보: 개발 서버에서 그래프가 "불러오는 중…"에 멈춤
 - 원인: 개발 서버 실행 중 에이전트의 install·check·build가 Vite 의존성 캐시를 덮어써 KaTeX 모듈 504 → hydration 실패
 - 수정: `vite.cacheDir` 분리(dev ↔ build/check), `optimizeDeps.include`(katex, plotly), `Plot` 로드 실패 문구, `@types/node` 추가
 - 확인: 사용자 개발 서버에서 플롯 렌더(헤드리스 Edge), check·build 후에도 개발 캐시 불변, `astro check` 0 errors, 빌드 12페이지. 사용자 확인 "잘 되는 것 같다"
+
 
 ### 2026-10-02 · Claude · M0.4 수식 · 플롯 검증 (+ 작업 방식·계정명 변경)
 - 요청: 사용자 — "다음 작업 진행", "main 하나에서 다 작업해도 괜찮다", "GitHub 계정명 바꿨다"
@@ -120,6 +149,7 @@
 - 크기: Plotly 청크 1.44 MB(그래프가 있는 페이지에서만 지연 로드), SineDemo 청크 265 KB(KaTeX 포함)
 - 이슈: I-016 등록 (랩 폭)
 - 다음: M0.5
+
 ### 2026-10-02 · Claude · M0.3 사이트 골격
 - 한 일
   - Astro 7.3.5 + React 19 + MDX 통합, TypeScript strict(`astro/tsconfigs/strict`), `@astrojs/check`
@@ -129,6 +159,7 @@
 - 확인: `npm run check` 0 errors · `npm run build` 11페이지 · `astro preview`에서 홈·Part 페이지·파비콘 200, 링크에 `/Vibration_study/` 접두 확인. 브라우저 화면은 직접 보지 않음 (HTML/HTTP 수준 확인)
 - 이슈: I-015 등록·해결 (npm 11 설치 스크립트 경고, 영향 없음)
 - 다음: PR #1 병합 후 M0.4
+
 
 ### 2026-10-02 · Claude · M0.2 저장소 연결 · 2단계 마일스톤
 - 요청: 사용자 — Node.js 설치 완료, 저장소 지정, "마일스톤 한 개 단위가 너무 크다. 큰 범위 → 세부로 나눠라."
@@ -140,6 +171,7 @@
 - 이슈: I-001 해결(Node), I-003 해결(저장소), I-002 해결(git 사용자 설정), I-009 갱신(공개 사이트 → 규격 원문·경계값 미포함 정책)
 - 다음: M0.3 사이트 골격
 
+
 ### 2026-10-02 · Claude · M0.1 (2) 커리큘럼 재구성
 - 요청: 사용자 — "Phase 10은 필요 없고, Phase를 그대로 따를 필요 없다. 보강할 부분은 보강하고 다듬어서 커리큘럼을 더 디테일하게."
 - 한 일
@@ -148,6 +180,7 @@
   - `Roadmap.md` 재작성, `AGENTS.md` 문서 지도에 Curriculum.md 추가.
 - 결정: D-014(재구성, 원칙 확정), D-015(Curriculum.md), D-016(마일스톤, D-013 대체)
 - 이슈: I-011~I-014 등록, I-007·I-008·I-010 참조 갱신
+
 
 ### 2026-10-02 · Claude · M0.1 (1) 문서 체계
 - 한 일: 문서 체계 생성(AGENTS/CLAUDE/docs 6종), 원본 커리큘럼 보존, 로드맵·Phase 1 랩 사양 초안, 원본 콘텐츠 1차 검토, `.gitignore`/`.gitattributes`
