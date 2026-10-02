@@ -195,3 +195,48 @@ describe('singleSidedSpectrum', () => {
   });
 });
 
+
+// P1-1 그림 8·9, LAB-FOU-01 (c)의 본문 주장 (D-026): 제로패딩은 분해능을 올리지 않는다
+describe('제로패딩과 측정 시간 (P1-1 §4)', () => {
+  const FS = 32;
+  /** 구간 안 극댓값 중 최댓값의 50 % 이상인 봉우리 위치 */
+  const peaksIn = (freq: Float64Array, amp: Float64Array, lo: number, hi: number) => {
+    let max = 0;
+    for (let i = 0; i < freq.length; i++) if (freq[i] >= lo && freq[i] <= hi) max = Math.max(max, amp[i]);
+    const at: number[] = [];
+    for (let i = 1; i < freq.length - 1; i++) {
+      if (freq[i] < lo || freq[i] > hi) continue;
+      if (amp[i] >= 0.5 * max && amp[i] > amp[i - 1] && amp[i] >= amp[i + 1]) at.push(freq[i]);
+    }
+    return at;
+  };
+  const twoTones = (n: number, pad: number) =>
+    singleSidedSpectrum(acquire({ components: [{ type: 'sine', freq: 8.3, amp: 1 }, { type: 'sine', freq: 8.8, amp: 1 }] }, { fs: FS, n }), { fftSize: n * pad });
+
+  it('0.5 Hz 간격 두 톤은 1초 측정이면 패딩 ×16을 해도 봉우리 하나(두 톤 사이)다', () => {
+    const s = twoTones(32, 16);
+    const at = peaksIn(s.frequency, s.amplitude, 6, 11);
+    expect(at).toHaveLength(1);
+    expect(at[0]).toBeGreaterThan(8.3);
+    expect(at[0]).toBeLessThan(8.8);
+  });
+
+  it('같은 두 톤을 4초 측정하면 두 봉우리로 갈라진다', () => {
+    const s = twoTones(128, 4);
+    const at = peaksIn(s.frequency, s.amplitude, 6, 11);
+    expect(at).toHaveLength(2);
+    expect(Math.abs(at[0] - 8.3)).toBeLessThan(0.1);
+    expect(Math.abs(at[1] - 8.8)).toBeLessThan(0.1);
+  });
+
+  it('정현파 하나의 둔덕 폭(0점 사이)은 패딩과 무관하게 2/T다', () => {
+    for (const pad of [8, 32]) {
+      const s = singleSidedSpectrum(acquire({ components: [{ type: 'sine', freq: 8, amp: 1 }] }, { fs: FS, n: 32 }), { fftSize: 32 * pad });
+      // bin 중심 톤: 이웃 원래 bin(7, 9 Hz)이 0점 → 0점 사이 폭 2 Hz = 2/T
+      const near = (f: number) => s.amplitude[Math.round(f / s.binSpacing)];
+      expect(near(7)).toBeLessThan(1e-9);
+      expect(near(9)).toBeLessThan(1e-9);
+      expect(near(7.5)).toBeGreaterThan(0.5);
+    }
+  });
+});

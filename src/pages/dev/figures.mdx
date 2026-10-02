@@ -7,6 +7,9 @@ description: 개발용 — 본문 예시 그림(정적 SVG)과 강조 상자 확
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import * as F0 from '../../figures/p1-0';
+import * as F1 from '../../figures/p1-1';
+
+export const byId = (m) => Object.values(m).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
 # 그림 갤러리 (개발용)
 
@@ -24,13 +27,8 @@ import * as F0 from '../../figures/p1-0';
 
 ## P1-0
 
-<Figure {...F0.machineWaveform} />
-<Figure {...F0.threeMeasures} />
-<Figure {...F0.sineAnatomy} />
-<Figure {...F0.phaseShift} />
-<Figure {...F0.ordersFigure} />
-<Figure {...F0.amplitudeMeasures} />
-<Figure {...F0.crestFactorFigure} />
-<Figure {...F0.mixToSpectrum} />
-<Figure {...F0.samplesFigure} />
-<Figure {...F0.enoughSamples} />
+{byId(F0).map((f) => <Figure {...f} />)}
+
+## P1-1
+
+{byId(F1).map((f) => <Figure {...f} />)}
