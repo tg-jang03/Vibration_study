@@ -61,6 +61,8 @@
 }
 
 html {
+  word-break: keep-all; /* 한글을 글자 중간이 아니라 단어(띄어쓰기) 단위로 줄바꿈 */
+  overflow-wrap: break-word;
   font-family: var(--font-sans);
   line-height: 1.6;
   -webkit-text-size-adjust: 100%;
@@ -444,4 +446,23 @@ main.container {
 
 .prose table:not(.readout-table) th {
   background: var(--surface-2);
+}
+
+/* 본문 접는 상자 ("더 깊이 보기") */
+.prose details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  background: var(--surface);
+  margin: 1rem 0;
+}
+
+.prose details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.prose details[open] > summary {
+  margin-bottom: 0.5rem;
 }

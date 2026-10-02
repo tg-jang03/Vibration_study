@@ -6,7 +6,7 @@ import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
-import { texNumber } from '../../lib/format';
+import { formatNumber, texNumber } from '../../lib/format';
 import { harmonicPreset, type HarmonicSeries, type WavePreset } from '../../lib/dsp/fourier';
 import { createRng } from '../../lib/dsp/random';
 import { acquire } from '../../lib/dsp/sampling';
@@ -57,7 +57,8 @@ function coefficientTex(mode: Mode, duty: number, amps: number[]): string {
 
 export default function FourierHarmonicsLab() {
   const [mode, setMode] = useState<Mode>('square');
-  const [orders, setOrders] = useState(5);
+  // 1차 하나에서 시작해 직접 쌓아 올리게 한다 (본문 "따라 하기")
+  const [orders, setOrders] = useState(1);
   const [duty, setDuty] = useState(0.2);
   const [shuffle, setShuffle] = useState(false);
   const [showParts, setShowParts] = useState(true);
@@ -115,6 +116,18 @@ export default function FourierHarmonicsLab() {
   const setCustom = (setter: typeof setCustomAmps, i: number) => (v: number) =>
     setter((prev) => prev.map((old, j) => (j === i ? v : old)));
 
+  // 지금 더한 성분을 글로 보여준다 — "N차까지 더했는데 막대가 왜 적지?"를 바로 알 수 있게
+  const nonzero = series.amps
+    .map((a, i) => ({ n: i + 1, a, ph: series.phases[i] }))
+    .filter((c) => c.a > 1e-9);
+  const zeroOrders = series.amps.flatMap((a, i) => (a > 1e-9 ? [] : [i + 1]));
+  const componentText = nonzero
+    .map((c) => {
+      const negative = !shuffle && Math.abs(Math.abs(c.ph) - Math.PI) < 1e-9;
+      return `${c.n}차(${c.n * F0} Hz) ${formatNumber(c.a, 3)}${negative ? ' (부호 −)' : ''}`;
+    })
+    .join(' · ');
+
   return (
     <LabFrame
       id="LAB-FOU-01 (a)"
@@ -123,7 +136,16 @@ export default function FourierHarmonicsLab() {
         <>
           <ParamSelect label="파형" value={mode} options={MODE_OPTIONS} onChange={setMode} />
           {mode !== 'custom' && (
-            <ParamSlider label="하모닉 개수" value={orders} min={1} max={MAX_ORDERS} step={1} unit="개" onChange={setOrders} />
+            <ParamSlider
+              label="최고 차수 N"
+              value={orders}
+              min={1}
+              max={MAX_ORDERS}
+              step={1}
+              unit="차"
+              hint={`1차(${F0} Hz)부터 N차(${orders * F0} Hz)까지 더한다`}
+              onChange={setOrders}
+            />
           )}
           {mode === 'pulse' && (
             <ParamSlider
@@ -137,7 +159,7 @@ export default function FourierHarmonicsLab() {
             />
           )}
           <ParamToggle label="위상 섞기" checked={shuffle} hint="진폭은 그대로, 위상만 바꾼다" onChange={setShuffle} />
-          <ParamToggle label="성분 표시 (앞 5개)" checked={showParts} onChange={setShowParts} />
+          <ParamToggle label="각 성분(점선) 표시" checked={showParts} hint="0이 아닌 성분 앞 5개" onChange={setShowParts} />
           {mode === 'custom' &&
             customAmps.map((a, i) => (
               <ParamSlider
@@ -188,6 +210,12 @@ export default function FourierHarmonicsLab() {
           ]}
         />
       }
+      footer={
+        <>
+          <strong>지금 더한 성분 {nonzero.length}개</strong>: {componentText || '없음'}
+          {zeroOrders.length > 0 && <> — 진폭 0인 차수: {zeroOrders.join(', ')}차</>}
+        </>
+      }
       tasks={[
         {
           question: '사각파에서 "위상 섞기"를 켜면 진폭 스펙트럼, RMS, 파형, Crest factor 중 무엇이 바뀔까요?',
@@ -221,7 +249,7 @@ export default function FourierHarmonicsLab() {
       <Plot
         series={view.phase}
         x={{ label: '주파수 [Hz]', range: [0, fMax] }}
-        y={{ label: '위상 φₙ [°]', range: [-200, 200] }}
+        y={{ label: '위상 φₙ [°] (180° = 부호 반대)', range: [-200, 200] }}
         height={200}
       />
     </LabFrame>

@@ -140,6 +140,7 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 
 | 세부 | 내용 | 페이지 · 랩 | 완료 기준 |
 |---|---|---|---|
+| M1.0 | 기초 페이지 (2026-10-02 추가, D-024) | P1-0 | 본문 + 확인 문제, 사용자 확인 |
 | M1.1 | DSP 코어 ① 신호 모델 | — | SignalSpec(정현파·하모닉·잡음), evaluate, 시드 난수, acquire(fs, N) + 테스트 |
 | M1.2 | DSP 코어 ② FFT · 스펙트럼 | — | radix-2 FFT, 단일측 진폭·위상, 제로패딩 + 테스트(bin 중심 진폭, Parseval, 사각파) |
 | M1.3 | 공통 랩 UI | — | ParamSlider/Select, ReadoutTable, LabFrame, rAF 스로틀 · N=4096 드래그 성능 확인 → D-010 확정 |

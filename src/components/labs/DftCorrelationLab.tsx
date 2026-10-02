@@ -22,8 +22,8 @@ const TONE2 = { freq: 9, amp: 0.5 };
 
 type Template = 'cos' | 'sin';
 const TEMPLATE_OPTIONS = [
-  { value: 'cos' as Template, label: 'cos 템플릿 → Re X(k)' },
-  { value: 'sin' as Template, label: 'sin 템플릿 → −Im X(k)' },
+  { value: 'cos' as Template, label: 'cos 템플릿 (합 = 실수부 Re)' },
+  { value: 'sin' as Template, label: 'sin 템플릿 (합 = −허수부 Im)' },
 ];
 
 /** 단일측 진폭 배율: DC·나이퀴스트는 1, 나머지는 2 (Contents §3) */
@@ -106,7 +106,7 @@ export default function DftCorrelationLab() {
           <ParamSlider label="신호 주파수 f₁" value={f1} min={0} max={16} step={0.1} unit="Hz (= bin)" format={(v) => v.toFixed(1)} onChange={setF1} />
           <ParamSlider label="신호 위상 φ₁" value={phiDeg} min={-180} max={180} step={5} unit="°" onChange={setPhiDeg} />
           <ParamToggle label={`두 번째 톤 (${TONE2.freq} Hz, 진폭 ${TONE2.amp})`} checked={tone2} onChange={setTone2} />
-          <ParamSlider label="템플릿 주파수 k" value={k} min={0} max={16} step={0.05} unit="bin" format={(v) => v.toFixed(2)} onChange={setK} />
+          <ParamSlider label="비교할 템플릿 주파수 k" value={k} min={0} max={16} step={0.05} unit="bin" format={(v) => v.toFixed(2)} onChange={setK} />
           <ParamSelect label="템플릿" value={template} options={TEMPLATE_OPTIONS} onChange={setTemplate} />
         </>
       }
