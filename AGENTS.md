@@ -54,7 +54,7 @@
   - 세부 마일스톤 하나에 커밋 하나가 기본. 크면 여러 개로 나눠도 된다.
 - 금지: force push, 이미 push한 커밋의 히스토리 재작성. 되돌릴 때는 `git revert`.
 - 세부 마일스톤 완료 흐름
-  1. 완료 기준 충족 + `npm run check`·`npm run build` 통과(M0.5부터 `npm test` 포함)
+  1. 완료 기준 충족 + `npm run check`·`npm test`·`npm run build` 통과 (push하면 GitHub Actions가 같은 검사 후 배포한다. Actions 탭에서 성공을 확인한다)
   2. 문서 갱신: `Progress.md`(상태 `완료`, 세션 로그, 핸드오프), 필요하면 Contents·Issues·Decisions
   3. 커밋 → push. 사용자는 GitHub 커밋 기록이나 배포 사이트로 확인하고, 수정 요청은 다음 작업으로 처리한다.
 - 큰 마일스톤의 마지막 세부가 끝나면 `Progress.md`에 짧은 회고(잘된 점, 바꿀 점)를 남기고, 다음 큰 마일스톤의 세부 목록을 사용자와 확인한다.
@@ -83,7 +83,7 @@
 
 기술 스택은 `docs/Decisions.md` D-006~D-012, 디렉터리 구조는 `docs/Roadmap.md` §4를 따른다.
 
-- 명령: `npm install` → `npm run dev`(개발 서버) · `npm run check`(타입 검사) · `npm run build`(정적 빌드) · `npm test`(M0.5부터)
+- 명령: `npm install` → `npm run dev`(개발 서버) · `npm run check`(타입 검사) · `npm run build`(정적 빌드) · `npm test`(Vitest, `src/**/*.test.ts`) · `npm run test:watch`
 - 사이트는 `/Vibration_study/` 하위 경로로 배포된다. 내부 링크와 정적 파일 경로는 반드시 `withBase()`(`src/lib/site.ts`)로 만든다.
 - 화면 확인(Windows): `npm run build` → `npx astro preview` → Edge 헤드리스 캡처 `msedge --headless=new --window-size=1100,1500 --virtual-time-budget=8000 --screenshot=<png> <URL>` (PowerShell `Start-Process -Wait`로 실행). 수식은 `$…$`·`$$…$$`(MDX), 랩 수식은 `Formula`, 플롯은 `Plot` 래퍼만 쓴다.
 - 사이트 목차(`src/data/curriculum.ts`)는 `docs/Curriculum.md`의 절 구성, `docs/Contents.md` §4의 페이지 상태와 같아야 한다. 한쪽을 고치면 다른 쪽도 고친다.

@@ -24,6 +24,7 @@
 | I-015 | npm 11 설치 스크립트 승인 경고 (esbuild) | 환경 | 낮음 | 해결 | — | 2026-10-02 |
 | I-016 | 랩이 MDX 본문 폭(76ch)에 갇힘 | 설계 | 낮음 | 열림 | M1.3 담당 | 2026-10-02 |
 | I-017 | 개발 서버에서 랩이 "그래프 불러오는 중…"에 멈춤 | 버그 | 중간 | 해결 | Claude | 2026-10-02 |
+| I-018 | GitHub Actions `ubuntu-latest`가 Ubuntu 26으로 바뀜 | 환경 | 낮음 | 열림 | — | 2026-10-02 |
 
 ---
 
@@ -147,3 +148,9 @@
 - 확인: 사용자 개발 서버에서 헤드리스 Edge로 플롯 렌더 확인. 그 뒤 `astro check`·`astro build`를 돌려도 개발 캐시 해시 불변, hydration 오류 0.
 - 그래도 개발 화면이 깨지면: 개발 서버 재시작, 필요하면 `npm run dev -- --force` (캐시 재생성)
 - **해결**: 2026-10-02
+
+## I-018 [환경] GitHub Actions `ubuntu-latest`가 Ubuntu 26으로 바뀜
+- 등록: 2026-10-02 · Claude (첫 CI 실행 알림)
+- 현상: Actions 알림 — "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026."
+- 영향: 지금은 없음. 2026-10-19 이후 빌드가 깨지면 이 이미지 변경을 먼저 의심한다.
+- 대응: 깨지면 `.github/workflows/deploy.yml`의 `runs-on`을 `ubuntu-24.04`로 고정한다.
