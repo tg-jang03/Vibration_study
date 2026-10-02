@@ -27,11 +27,11 @@ import type { WindowType } from '../../lib/dsp/window';
 type PresetKey = 'default60' | 'heavy120' | 'gentle20' | 'steady0' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default60', label: '표준 코스트다운 (감속률 60 rpm/s, LOR 1600)' },
-  { value: 'heavy120', label: '급격한 감속 (감속률 120 rpm/s -> 극심한 번짐)' },
-  { value: 'gentle20', label: '완만한 감속 (감속률 20 rpm/s)' },
-  { value: 'steady0', label: '정속 운전 기준 (감속률 0 rpm/s -> 완벽히 날카로운 1X)' },
-  { value: 'custom', label: '직접 파라미터 조작' },
+  { value: 'default60', label: '감속 중 측정 (60 rpm/s = 1초에 1 Hz씩 느려짐, LOR 1600)' },
+  { value: 'heavy120', label: '빠른 감속 (120 rpm/s)' },
+  { value: 'gentle20', label: '느린 감속 (20 rpm/s)' },
+  { value: 'steady0', label: '정속 운전 (0 rpm/s, 비교 기준)' },
+  { value: 'custom', label: '직접 조작' },
 ];
 
 const FMAX_OPTIONS: ParamOption<number>[] = [
@@ -41,15 +41,15 @@ const FMAX_OPTIONS: ParamOption<number>[] = [
 ];
 
 const LOR_OPTIONS: ParamOption<number>[] = [
-  { value: 400, label: '400 line (짧은 T = 0.4~0.8 s -> 스미어링 억제)' },
+  { value: 400, label: '400 line (T 짧음 → 번짐 작음)' },
   { value: 800, label: '800 line' },
   { value: 1600, label: '1600 line' },
-  { value: 3200, label: '3200 line (긴 T = 3.2 s -> 극심한 스미어링)' },
+  { value: 3200, label: '3200 line (T 김 → 번짐 큼)' },
 ];
 
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
-  { value: 'hann', label: 'Hann (표준 윈도우)' },
-  { value: 'uniform', label: 'Uniform (윈도우 미적용)' },
+  { value: 'hann', label: 'Hann (분석기 기본값)' },
+  { value: 'uniform', label: '윈도우 없음' },
   { value: 'flatTop', label: 'Flat top' },
 ];
 
@@ -169,7 +169,7 @@ export default function SmearingLab() {
       {
         x: specChirp.frequency,
         y: specChirp.amplitude,
-        name: `과도 코스트다운 신호 (감속률 ${rateRpm} rpm/s)`,
+        name: `감속 중 신호 (${rateRpm} rpm/s)`,
         mode: 'lines',
         color: '#dc2626', // red
         width: 2.2,
@@ -221,7 +221,7 @@ export default function SmearingLab() {
   return (
     <LabFrame
       id="LAB-RES-02"
-      title="Smearing(피크 번짐): 회전수가 변할 때의 분해능 역효과"
+      title="스미어링(Smearing): 측정 중에 회전수가 변하면"
       controls={
         <>
           <ParamSelect
@@ -231,7 +231,7 @@ export default function SmearingLab() {
             onChange={applyPreset}
           />
           <ParamSlider
-            label="초기 회전수 rpm0"
+            label="측정 시작 회전수"
             value={rpm0}
             min={1800}
             max={7200}
@@ -346,13 +346,13 @@ export default function SmearingLab() {
           question:
             'F_max = 1000 Hz, LOR = 3200 line (T = 3.2 s)에서 감속률 a = 60 rpm/s로 코스트다운하면 1X 주파수는 프레임 동안 몇 Hz 변하고 몇 bin에 걸쳐 퍼지나요?',
           answer:
-            'Δf_1X = (60 / 60) × 3.2 = 3.2 Hz 이동하며, Δf = 0.3125 Hz이므로 무려 10.24 bin에 걸쳐 넙적하게 번집니다! 이로 인해 날카로운 정현파 피크가 둔덕으로 무너지고 피크 진폭도 40% 이상 하락합니다.',
+            '1X가 (60/60) × 3.2 = 3.2 Hz 움직이고, Δf = 0.3125 Hz이므로 약 10 bin에 걸쳐 넓게 번집니다. 날카로운 막대가 넓은 둔덕이 되고, 에너지가 여러 bin에 나뉘어 가장 높은 막대의 진폭도 크게 낮아집니다(읽음값의 진폭 감소율 확인).',
         },
         {
           question:
             'LOR을 400 line (T = 0.4 s)으로 대폭 낮추면 스미어링 bin 수는 어떻게 변하나요? 왜 그럴까요?',
           answer:
-            '스미어링 공식은 T의 제곱(T²)에 비례합니다. T가 3.2 s에서 0.4 s로 8배 줄어들면, 번짐 bin 수는 8² = 64배나 격감하여 약 0.16 bin(1 bin 미만)으로 억제됩니다! 따라서 회전수가 급변하는 과도 상태에서는 무작정 고분해능(높은 LOR)을 고집하면 오히려 피크가 뭉개지며, 차수추적(Order Tracking)을 사용하거나 LOR을 낮추는 것이 정답입니다.',
+            '번진 bin 수는 T²에 비례합니다. T가 3.2 s → 0.4 s로 8배 줄면 번짐은 8² = 64배 줄어 약 0.16 bin이 됩니다. 회전수가 변하는 동안에는 라인 수를 낮춰 T를 짧게 하거나, 회전 각도에 맞춰 샘플링하는 차수 추적(Order Tracking, P3-5)을 씁니다.',
         },
       ]}
     >

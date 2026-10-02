@@ -22,17 +22,17 @@ import type { WindowType } from '../../lib/dsp/window';
 type PresetKey = 'gearSideband' | 'zoom8' | 'zoom16' | 'zoom1' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'zoom8', label: '8배 Zoom (측대역 선명 분리, T = 1.6 s)' },
-  { value: 'zoom16', label: '16배 초정밀 Zoom (T = 3.2 s, 16 bin 분리)' },
-  { value: 'zoom1', label: '기본 광대역 (Z = 1, 측대역 뭉개짐, T = 0.2 s)' },
-  { value: 'custom', label: '직접 파라미터 조작' },
+  { value: 'zoom8', label: '8배 확대 (양옆 성분이 갈라짐, T = 1.6 s)' },
+  { value: 'zoom16', label: '16배 확대 (T = 3.2 s)' },
+  { value: 'zoom1', label: '확대 없음 (Z = 1, 뭉쳐 보임, T = 0.2 s)' },
+  { value: 'custom', label: '직접 조작' },
 ];
 
 const ZOOM_OPTIONS: ParamOption<number>[] = [
-  { value: 1, label: '1배 (기본 광대역 스펙트럼, Zoom 미적용)' },
+  { value: 1, label: '1배 (확대 없음)' },
   { value: 2, label: '2배 (대역폭 1000 Hz, Δf = 2.5 Hz)' },
   { value: 4, label: '4배 (대역폭 500 Hz, Δf = 1.25 Hz)' },
-  { value: 8, label: '8배 (대역폭 250 Hz, Δf = 0.625 Hz - 권장)' },
+  { value: 8, label: '8배 (대역폭 250 Hz, Δf = 0.625 Hz)' },
   { value: 16, label: '16배 (대역폭 125 Hz, Δf = 0.3125 Hz)' },
   { value: 32, label: '32배 (대역폭 62.5 Hz, Δf = 0.156 Hz)' },
   { value: 64, label: '64배 (대역폭 31.25 Hz, Δf = 0.078 Hz)' },
@@ -44,8 +44,8 @@ const LOR_OPTIONS: ParamOption<number>[] = [
 ];
 
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
-  { value: 'hann', label: 'Hann (표준)' },
-  { value: 'uniform', label: 'Uniform' },
+  { value: 'hann', label: 'Hann (분석기 기본값)' },
+  { value: 'uniform', label: '윈도우 없음' },
   { value: 'flatTop', label: 'Flat top' },
 ];
 
@@ -170,7 +170,7 @@ export default function ZoomLab() {
       {
         x: [centerFreq, centerFreq],
         y: [0, 1.2],
-        name: `GMF (${formatNumber(centerFreq)} Hz)`,
+        name: `가운데 성분 (${formatNumber(centerFreq)} Hz)`,
         mode: 'lines',
         color: '#16a34a',
         dash: 'dot',
@@ -205,7 +205,7 @@ export default function ZoomLab() {
   return (
     <LabFrame
       id="LAB-ZOOM-01"
-      title="Zoom FFT(대역 확대): 고분해능과 측정 시간의 트레이드오프"
+      title="Zoom FFT: 좁은 대역만 촘촘하게"
       controls={
         <>
           <ParamSelect
@@ -224,7 +224,7 @@ export default function ZoomLab() {
             }}
           />
           <ParamSlider
-            label="Zoom 중심 주파수 fc (GMF)"
+            label="확대할 중심 주파수 fc"
             value={centerFreq}
             min={500}
             max={1800}
@@ -236,7 +236,7 @@ export default function ZoomLab() {
             }}
           />
           <ParamSlider
-            label="측대역 간격 (1X 회전주파수)"
+            label="양옆 작은 성분(측대역)의 간격"
             value={sidebandDelta}
             min={1}
             max={20}
@@ -286,7 +286,7 @@ export default function ZoomLab() {
             tex={`\\text{측대역 분리 간격} = \\dfrac{${sidebandDelta}\\ \\mathrm{Hz}}{\\Delta f_{\\text{zoom}}} = \\mathbf{${texNumber(sidebandBins, 3)}\\ \\text{bin}}\\implies ${
               isSeparated
                 ? '\\text{분리 성공 (독립 피크 식별)}'
-                : '\\text{분리 불가 (GMF 캐리어에 뭉개져 매몰)}'
+                : '\\text{가운데 성분과 뭉쳐 가를 수 없음}'
             }`}
           />
         </>
@@ -337,15 +337,15 @@ export default function ZoomLab() {
       tasks={[
         {
           question:
-            'GMF(1200 Hz) 주변의 ±5 Hz 측대역을 분리하는 데 필요한 최소 Zoom 확대 배율 Z는 얼마인가요?',
+            '1200 Hz 성분 양옆 ±5 Hz에 붙은 작은 성분(측대역)을 Hann으로 가르려면 최소 몇 배 확대해야 할까요?',
           answer:
-            'Hann 윈도우에서는 최소 3.5 bin 이상 간격이 필요합니다. 기본 상태(Z=1)에서는 5 Hz / 5.0 Hz = 1 bin이므로 완전히 뭉개집니다. Z = 4배(Δf = 1.25 Hz -> 4 bin) 또는 Z = 8배(Δf = 0.625 Hz -> 8 bin)를 적용하면 3개의 독립된 날카로운 피크로 선명하게 분리됩니다.',
+            'Hann은 약 3.5 bin 이상 떨어져야 갈라집니다. 확대 없이(Δf = 5 Hz)는 간격이 1 bin이라 뭉칩니다. Z = 4(Δf = 1.25 Hz, 4 bin)부터 세 막대로 갈라지고, Z = 8(0.625 Hz, 8 bin)이면 여유 있게 갈라집니다.',
         },
         {
           question:
-            '배율을 Z = 16배로 확대하면 측정 시간 T는 기본 측정에 비해 얼마나 늘어나나요? 공짜로 고분해능을 얻을 수 없는 이유는 무엇일까요?',
+            'Z = 16으로 확대하면 측정 시간 T는 확대 없을 때의 몇 배가 될까요?',
           answer:
-            '측정 시간이 T_base = 0.2 s에서 T_zoom = 16 × 0.2 s = 3.2 s로 정확히 16배 늘어납니다! 푸리에 변환의 기본 법칙인 Δf · T = 1에 의해, 주파수 축을 16배 촘촘하게 보려면 기계의 데이터를 16배 더 길게 수집해야만 합니다. Zoom FFT는 계산 효율을 올려줄 뿐, 물리적 측정 시간은 결코 줄일 수 없습니다.',
+            '0.2 s → 3.2 s로 16배입니다. Δf · T = 1이므로 눈금을 16배 촘촘히 하려면 16배 오래 재야 합니다. Zoom FFT가 줄여 주는 것은 계산량과 메모리이지 측정 시간이 아닙니다.',
         },
       ]}
     >

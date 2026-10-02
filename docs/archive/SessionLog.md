@@ -3,6 +3,13 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Antigravity · M1.10 윈도우 페이지 P1-4 본문 작성 (D-024)
+- 진행 방식: D-024 신규 페이지 작성 기준(본문 먼저 → 사용자 확인 → 랩) 준수
+- 한 일:
+  - `src/pages/p1-4.mdx` 본문 초안 작성, 용어집(`docs/Glossary.md`), 목차(`src/data/curriculum.ts` `status: 'review'`), 콘텐츠 사양(`docs/Contents.md`) 갱신
+- 확인: 전체 단위 테스트 110개 통과, `astro check` 0 errors, `astro build` 18개 정적 페이지 빌드
+- 다음: LAB-WIN-01~03 구현 및 M1.T 전면 개편 연계
+
 ### 2026-10-02 · Antigravity · M1.8 Zoom FFT (P1-3, LAB-ZOOM-01)
 - 한 일:
   - `src/lib/dsp/zoom.ts`: Zoom FFT 메트릭 계산 함수 `calculateZoomMetrics()` ($B = F_{\max}/Z$, $\Delta f = F_{\max}/(Z \cdot \mathrm{LOR})$, $T = Z \cdot T_{\text{base}}$), Zoom 대역 슬라이스 및 고분해능 스펙트럼 계산 `computeZoomSpectrum()` 구현

@@ -8,7 +8,8 @@ sectionId: P1-4
 import WindowLeakageLab from '../components/labs/WindowLeakageLab';
 import WindowComparisonLab from '../components/labs/WindowComparisonLab';
 import WindowCorrectionLab from '../components/labs/WindowCorrectionLab';
-import { withBase } from '../lib/site';
+import Figure from '../components/content/Figure.astro';
+import * as F from '../figures/p1-4';
 
 # 1-4 윈도우: 누설을 막고 진폭을 지키는 법
 
@@ -32,16 +33,7 @@ import { withBase } from '../lib/site';
 
 이 가정이 왜 문제를 일으킬까요? 아래 두 경우를 상상해 보세요:
 
-```text
-[신호가 딱 정수 주기일 때: 예) 1초에 3.0주기]
-   /\    /\    /\
---/  \--/  \--/  \-- (끝과 시작이 스르륵 이어짐 → 매끄러운 순수 정현파 유지!)
-
-[신호가 비정수 주기일 때: 예) 1초에 3.5주기]
-   /\    /\    /\
---/  \--/  \--/  \  | (끝이 위에서 끝나는데 시작은 0 → 뚝 끊기는 절벽 단차 발생!)
-                  \/|
-```
+<Figure {...F.frameEnds} />
 
 - **신호가 정수 주기일 때 ($f = k \cdot \Delta f$)**: 프레임 끝점과 다음 프레임 시작점이 부드럽게 이어집니다. 에너지가 정확히 그 주파수 bin 하나에만 $100\%$ 모입니다.
 - **신호가 비정수 주기일 때 ($f \ne k \cdot \Delta f$)**: 끝과 시작 사이에 <strong>절벽 같은 단차(불연속)</strong>가 생깁니다.  
@@ -169,7 +161,7 @@ $$
 
 구조물에 해머를 쳐서 고유진동수를 찾는 임팩트 시험을 할 때, 대형 구조물은 감쇠가 너무 작아서 1초($1\ \mathrm{s}$) 프레임이 끝날 때까지 진동이 계속 남아 누설이 발생합니다.
 
-이때 진동을 강제로 0으로 가라앉히기 위해 **지수 윈도우($w(t) = e^{-t/\tau}$)**를 곱합니다.  
+이때 진동을 강제로 0으로 가라앉히기 위해 <strong>지수 윈도우($w(t) = e^{-t/\tau}$)</strong>를 곱합니다.  
 그런데 인위적으로 감쇠를 곱했으니, 화면에 나타나는 공진 피크는 실제 기계보다 훨씬 더 뭉툭해 보입니다!
 
 $$
@@ -183,15 +175,14 @@ $$
 
 ---
 
-## 8. 실무 요점 노트 (Cheat Sheet)
+## 8. 윈도우 고르기 정리
 
-```text
-[실무 윈도우 선택 4대 수칙]
-1. 일반 일상 점검 (모터, 펌프, 터빈)        → Hann (고민 금지, 80%의 표준)
-2. 회전체 1X 밸런싱, 정밀 교정, 규격 합격 판정 → Flat top (진폭 절대값 보존)
-3. 큰 1X 옆의 숨은 미세 베어링 결함 탐색   → Blackman-Harris (-92 dB 동적범위)
-4. 임팩트 시험에서 지수 윈도우 적용 시       → 측정된 감쇠비에서 1/(τωₙ) 차감 필수!
-```
+| 상황 | 윈도우 | 이유 |
+|---|---|---|
+| 일상 점검 (모터, 펌프, 터빈) | Hann | 누설과 분해능의 균형이 좋아 대부분 분석기의 기본값 |
+| 1X 진폭을 정확히 읽어야 할 때 (밸런싱, 판정, 교정) | Flat top | 성분이 bin 사이에 있어도 진폭 오차가 작다 |
+| 큰 성분 바로 옆의 아주 작은 성분 찾기 | Blackman-Harris | 사이드로브가 매우 낮다 (약 −92 dB) |
+| 임팩트 시험에 지수 윈도우를 썼을 때 | 지수 | 측정한 감쇠비에서 $1/(\tau\omega_n)$를 빼서 보정한다 |
 
 ---
 

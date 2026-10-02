@@ -21,17 +21,18 @@ import type { WindowType } from '../../lib/dsp/window';
  *
  * 목적:
  * Δf · T = 1의 기본 관계와, "가까운 두 주파수 성분을 분리하려면 측정 시간 T가 길어야 한다"는
- * 신호처리의 대원칙을 현장 사례(1X vs 2LF, Oil whirl, 베어링 측대역)를 통해 체감한다.
+ * 원칙을 사례(간격 3.6 Hz, 유도전동기 2X vs 전원 2배, 동기기의 같은 주파수, 저속 축)로 체감한다.
+ * 2026-10-02 수정: 예전 프리셋의 "1X 59.5 Hz vs 2LF 60 Hz"는 틀림(60 Hz 전력망의 2LF = 120 Hz).
  */
 
 type PresetKey = 'presetA' | 'presetB' | 'presetC' | 'presetD' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'presetA', label: '(a) 3600 rpm: 1X(60 Hz) vs 2×LF(120 Hz) [쉬움]' },
-  { value: 'presetB', label: '(b) 2극 동기발전기: 1X(60 Hz) vs LF(60 Hz) [동일 주파수 분리불가]' },
-  { value: 'presetC', label: '(c) 3600 rpm: Oil whirl 0.42X(25.2 Hz) vs 0.48X(28.8 Hz)' },
-  { value: 'presetD', label: '(d) 300 rpm(5 Hz) 저속축: BPFI(36 Hz) ± 1X(5 Hz) 측대역' },
-  { value: 'custom', label: '직접 파라미터 조작' },
+  { value: 'presetA', label: '(a) 간격 3.6 Hz: 25.2 Hz와 28.8 Hz' },
+  { value: 'presetB', label: '(b) 2극 유도전동기: 2X 119 Hz와 전원 2배 120 Hz (간격 1 Hz)' },
+  { value: 'presetC', label: '(c) 2극 동기기: 2X와 전원 2배가 둘 다 120 Hz (간격 0)' },
+  { value: 'presetD', label: '(d) 저속 축(1X = 5 Hz): 36 Hz와 41 Hz (간격 = 1X)' },
+  { value: 'custom', label: '직접 조작' },
 ];
 
 const FMAX_OPTIONS: ParamOption<number>[] = [
@@ -53,14 +54,15 @@ const LOR_OPTIONS: ParamOption<number>[] = [
   { value: 6400, label: '6400 line' },
 ];
 
+// 윈도우 자체는 P1-4에서 다룬다. 여기서는 "둔덕 폭이 달라져 필요한 간격이 달라진다"만 본다.
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
-  { value: 'hann', label: 'Hann (메인로브 ±2 bin, 범용 권장)' },
-  { value: 'uniform', label: 'Uniform (메인로브 ±1 bin, 좁지만 누설 큼)' },
-  { value: 'flatTop', label: 'Flat top (메인로브 ±5 bin, 진폭정밀, 분해능 나쁨)' },
+  { value: 'hann', label: 'Hann (분석기 기본값, 필요 간격 약 3.5 bin)' },
+  { value: 'uniform', label: '윈도우 없음 (필요 간격 약 2 bin)' },
+  { value: 'flatTop', label: 'Flat top (진폭 측정용, 필요 간격 약 8 bin)' },
 ];
 
 export default function ResolutionLab() {
-  const [preset, setPreset] = useState<PresetKey>('presetC');
+  const [preset, setPreset] = useState<PresetKey>('presetA');
   const [fmax, setFmax] = useState(1000);
   const [lor, setLor] = useState(400);
   const [f1, setF1] = useState(25.2);
@@ -75,30 +77,30 @@ export default function ResolutionLab() {
     setPreset(key);
     switch (key) {
       case 'presetA':
-        setFmax(500);
-        setLor(400);
-        setF1(60);
-        setF2(120);
-        setA1(1.0);
-        setA2(0.5);
-        setZoomRegion(false);
-        break;
-      case 'presetB':
-        setFmax(200);
-        setLor(400);
-        setF1(60);
-        setF2(60);
-        setA1(1.0);
-        setA2(1.0);
-        setZoomRegion(true);
-        break;
-      case 'presetC':
         setFmax(1000);
         setLor(400);
         setF1(25.2);
         setF2(28.8);
         setA1(1.0);
         setA2(0.8);
+        setZoomRegion(true);
+        break;
+      case 'presetB':
+        setFmax(500);
+        setLor(400);
+        setF1(119);
+        setF2(120);
+        setA1(1.0);
+        setA2(0.7);
+        setZoomRegion(true);
+        break;
+      case 'presetC':
+        setFmax(500);
+        setLor(400);
+        setF1(120);
+        setF2(120);
+        setA1(1.0);
+        setA2(1.0);
         setZoomRegion(true);
         break;
       case 'presetD':
@@ -205,7 +207,7 @@ export default function ResolutionLab() {
       controls={
         <>
           <ParamSelect
-            label="현장 사례 프리셋"
+            label="사례 프리셋"
             value={preset}
             options={PRESET_OPTIONS}
             onChange={applyPreset}
@@ -281,10 +283,10 @@ export default function ResolutionLab() {
             display
             tex={`\\text{분리 판정: } ${
               f1 === f2
-                ? '\\text{동일 주파수: FFT로 절대 분리 불가 (전원 차단 시험 등 다른 시험 필요)}'
+                ? '\\text{같은 주파수: 측정 시간을 늘려도 가를 수 없다 (다른 시험이 필요)}'
                 : isSeparable
-                  ? `\\text{분리 성공} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} \\ge \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
-                  : `\\text{분리 불가(하나의 뭉텅이 피크로 병합)} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} < \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
+                  ? `\\text{갈라진다} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} \\ge \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
+                  : `\\text{하나로 뭉친다} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} < \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
             }`}
           />
         </>
@@ -298,29 +300,30 @@ export default function ResolutionLab() {
             { label: '측정 시간 T', value: metrics.duration, unit: 's', sig: 3 },
             { label: '두 성분 주파수 간격', value: Math.abs(f1 - f2), unit: 'Hz', sig: 3 },
             { label: '간격에 해당하는 bin 수', value: binDiff, unit: 'bin', sig: 3 },
-            { label: '필요 최소 bin 수 (윈도우 한계)', value: reqBins, unit: 'bin', sig: 2 },
+            { label: '갈라지는 데 필요한 간격 (윈도우별)', value: reqBins, unit: 'bin', sig: 2 },
             { label: '전체 시간 샘플 수 N', value: metrics.n, unit: 'pts' },
           ]}
         />
       }
       tasks={[
         {
-          question:
-            'F_max = 1000 Hz, LOR = 3200 line일 때 주파수 분해능 Δf와 측정 시간 T는 각각 얼마인가요?',
-          answer:
-            'Δf = 1000 / 3200 = 0.3125 Hz이며, 측정 시간 T = 1 / Δf = 3.2 s입니다! 분해능을 미세하게(0.3 Hz 수준) 쪼개려면 기계가 최소 3.2초 동안 안정적으로 운전되는 신호를 받아야 합니다.',
+          question: 'F_max = 1000 Hz, LOR = 3200 line이면 Δf와 측정 시간 T는 얼마인가요?',
+          answer: 'Δf = 1000 / 3200 = 0.3125 Hz, T = 1 / Δf = 3.2 s입니다. 0.3 Hz 간격으로 보려면 기계가 3.2초 동안 같은 상태로 돌고 있어야 합니다.',
         },
         {
-          question:
-            '프리셋 (c) Oil whirl(25.2 Hz vs 28.8 Hz, 간격 3.6 Hz)에서 LOR = 400일 때 두 피크가 분리되나요? 분리하려면 LOR을 얼마로 올려야 할까요?',
+          question: '프리셋 (a)(간격 3.6 Hz)에서 LOR = 400이면 두 막대가 갈라지나요? 갈라지려면 LOR을 얼마로 올려야 할까요?',
           answer:
-            'LOR = 400일 때 Δf = 2.5 Hz이므로 간격이 1.44 bin에 불과하여 두 피크가 하나의 넓은 둔덕으로 뭉개져 분리되지 않습니다. LOR을 1600(Δf = 0.625 Hz, 5.76 bin) 이상으로 올리면 두 개의 뾰족한 독립 피크로 선명하게 갈라집니다!',
+            'LOR = 400이면 Δf = 2.5 Hz라서 간격이 1.44 bin뿐이라 하나로 뭉칩니다(Hann은 약 3.5 bin 필요). LOR = 1600(Δf = 0.625 Hz, 5.76 bin)이면 갈라집니다. 측정 시간은 0.4 s → 1.6 s로 늘어납니다.',
         },
         {
-          question:
-            '프리셋 (b) 2극 발전기에서 회전 불평형 1X(60 Hz)와 전기적 라인주파수 LF(60 Hz)는 LOR을 6400으로 극대화하면 분리할 수 있나요?',
+          question: '프리셋 (b)(119 Hz와 120 Hz)를 Hann으로 가르려면 Δf가 얼마 이하여야 하나요? F_max = 500 Hz라면 LOR은?',
           answer:
-            '분리할 수 없습니다! 두 성분의 주파수가 수학적으로 완전히 동일하기 때문에 FFT 분해능을 아무리 높여도 하나의 60 Hz 피크로만 보입니다. 현장에서는 발전기 전원을 차단(Trip)했을 때 즉시 사라지면 전기적 결함(LF), 회전수가 서서히 떨어지면서 완만하게 줄면 기계적 불평형(1X)으로 판정합니다.',
+            '간격 1 Hz가 3.5 bin 이상이어야 하므로 Δf ≤ 1/3.5 ≈ 0.29 Hz. F_max = 500 Hz에서는 LOR = 3200(Δf ≈ 0.156 Hz)이면 됩니다(1600은 0.3125 Hz로 조금 모자람). 측정 시간은 6.4 s입니다.',
+        },
+        {
+          question: '프리셋 (c)처럼 두 성분이 정확히 같은 주파수면 LOR을 6400으로 올려 가를 수 있나요?',
+          answer:
+            '가를 수 없습니다. 주파수가 같으면 측정 시간을 아무리 늘려도 막대 하나에 겹칩니다. 전동기라면 전원을 끊는 순간 바로 사라지는 쪽이 전기적 원인, 회전수와 함께 서서히 줄어드는 쪽이 기계적 원인이라는 식으로 다른 시험으로 가립니다.',
         },
       ]}
     >

@@ -72,7 +72,9 @@ export default function WindowLeakageLab() {
     }
 
     // 스캘럽 손실 (참값 1.0 Pk 대비 감쇠 dB)
-    const scallopDb = 20 * Math.log10(Math.max(1e-6, peakAmp / 1.0));
+    // bin 중심(δ = 0)에서는 이론상 0 dB — 1e-15 수준 잡음은 0으로 (I-019)
+    const rawScallop = 20 * Math.log10(Math.max(1e-6, peakAmp / 1.0));
+    const scallopDb = Math.abs(rawScallop) < 1e-9 ? 0 : rawScallop;
 
     // 누설 파워 계산: 중심 ±1 bin 외부에 샌 파워의 비율
     let totalPower = 0;
@@ -175,7 +177,7 @@ export default function WindowLeakageLab() {
         display
       />
       <Formula
-        tex={`\\text{Scallop Loss} = 20\\log_{10}\\left(\\frac{A_{\\mathrm{meas}}}{A_{\\mathrm{true}}}\\right) = 20\\log_{10}\\left(\\frac{${texNumber(data.peakAmp, 3)}}{1.000}\\right) = ${texNumber(data.scallopDb, 2)}\\ \\mathrm{dB}`}
+        tex={`\\text{Scallop Loss} = 20\\log_{10}\\left(\\frac{A_{\\mathrm{meas}}}{A_{\\mathrm{true}}}\\right) = 20\\log_{10}\\left(\\frac{${texNumber(data.peakAmp, 3)}}{1.000}\\right) = ${texNumber(data.scallopDb, 3)}\\ \\mathrm{dB}`}
         display
       />
     </div>
@@ -207,7 +209,7 @@ export default function WindowLeakageLab() {
   return (
     <LabFrame
       id="LAB-WIN-01"
-      title="LAB-WIN-01 누설 & 피켓펜스 (Scallop Loss)"
+      title="누설과 피켓펜스 (Scallop Loss)"
       controls={controls}
       formulas={formulas}
       readouts={readouts}

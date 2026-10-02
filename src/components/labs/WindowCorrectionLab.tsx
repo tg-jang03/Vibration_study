@@ -108,8 +108,10 @@ export default function WindowCorrectionLab() {
     const truePeak = sigMode === 'tone' ? 1.000 : 0.0;
     const trueRms = sigMode === 'tone' ? 1.0 / Math.SQRT2 : 1.000;
 
-    const peakError = sigMode === 'tone' ? ((measPeak - truePeak) / truePeak) * 100 : 0;
-    const rmsError = ((measRms - trueRms) / trueRms) * 100;
+    // 이론상 0인 오차의 부동소수점 잡음(1e-13 수준)은 0으로 — 서버·브라우저 표시가 달라 hydration 오류가 난다 (I-019)
+    const tidy = (v: number) => (Math.abs(v) < 1e-9 ? 0 : v);
+    const peakError = sigMode === 'tone' ? tidy(((measPeak - truePeak) / truePeak) * 100) : 0;
+    const rmsError = tidy(((measRms - trueRms) / trueRms) * 100);
 
     // 플롯 데이터 (0~150 Hz 대역)
     const plotFreqs: number[] = [];
