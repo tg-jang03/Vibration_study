@@ -25,19 +25,19 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 type PresetKey = 'default16' | 'low8' | 'high24' | 'clipping' | 'headroom10' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default16', label: '16 bit 표준 (일반 진동계: 레인지 1.5 V, 미소톤 -60 dBFS)' },
-  { value: 'low8', label: '8 bit 저해상도 (노이즈 바닥 상승 -> -60 dB 미소톤 매몰)' },
-  { value: 'high24', label: '24 bit 고정밀 (24 bit 델타-시그마: 초저잡음 바닥 -140 dB 이하)' },
-  { value: 'clipping', label: '클리핑 포화 왜곡 (신호 1.0 V > 레인지 0.7 V -> 강력한 홀수 하모닉)' },
-  { value: 'headroom10', label: '레인지 과대 (10.0 V 레인지 -> 20 dB 분해능 낭비)' },
+  { value: 'default16', label: '16 bit (레인지 1.5 V, 작은 성분 −60 dBFS)' },
+  { value: 'low8', label: '8 bit (잡음 바닥이 높아 −60 dB 성분이 묻힘)' },
+  { value: 'high24', label: '24 bit (잡음 바닥 −140 dBFS 아래)' },
+  { value: 'clipping', label: '클리핑 (신호 1.0 V > 레인지 0.7 V → 홀수 하모닉)' },
+  { value: 'headroom10', label: '레인지가 너무 큼 (10 V → 20 dB 손해)' },
   { value: 'custom', label: '직접 파라미터 조작' },
 ];
 
 const BIT_OPTIONS: ParamOption<number>[] = [
   { value: 8, label: '8 bit (256 단계, SQNR ≈ 50 dB)' },
   { value: 12, label: '12 bit (4,096 단계, SQNR ≈ 74 dB)' },
-  { value: 16, label: '16 bit (65,536 단계, SQNR ≈ 98 dB - 산업용 표준)' },
-  { value: 24, label: '24 bit (16,777,216 단계, SQNR ≈ 146 dB - 고정밀 DAQ)' },
+  { value: 16, label: '16 bit (65,536 단계, SQNR ≈ 98 dB)' },
+  { value: 24, label: '24 bit (16,777,216 단계, SQNR ≈ 146 dB)' },
 ];
 
 export default function AdcLab() {
@@ -114,7 +114,21 @@ export default function AdcLab() {
       specDbfs[i] = 20 * Math.log10(amp / range);
     }
 
-    return { t, raw, qRes, spec, specDbfs };
+    // 스펙트럼에서 읽은 값: 두 톤의 레벨과, 톤·DC·나이퀴스트를 뺀 bin들의 평균 파워 → 잡음 바닥
+    const k1 = Math.round(f1 / spec.binSpacing);
+    const k2 = Math.round(f2 / spec.binSpacing);
+    let sumSq = 0;
+    let count = 0;
+    for (let k = 1; k < spec.amplitude.length - 1; k++) {
+      if (k === k1 || k === k2) continue;
+      sumSq += spec.amplitude[k] * spec.amplitude[k];
+      count++;
+    }
+    const measuredFloorDbfs = 10 * Math.log10(Math.max(1e-30, sumSq / count) / (range * range));
+    const measuredMainDbfs = 20 * Math.log10(Math.max(1e-12, spec.amplitude[k1]) / range);
+    const measuredSmallDbfs = 20 * Math.log10(Math.max(1e-12, spec.amplitude[k2]) / range);
+
+    return { t, raw, qRes, spec, specDbfs, measuredFloorDbfs, measuredMainDbfs, measuredSmallDbfs };
   }, [bits, range, a1, a2, f1, f2, fs, n]);
 
   // 이론값 계산
@@ -122,7 +136,9 @@ export default function AdcLab() {
   const backoffDb = 20 * Math.log10(range / a1);
   const effSnr = effectiveSnr(bits, range, a1);
   const fftGainDb = 10 * Math.log10(n / 2); // 10 * log10(512) ≈ 27.09 dB
-  const noiseFloorDbfs = -effSnr - fftGainDb;
+  // 0 dBFS = 풀스케일 정현파. 양자화 잡음은 LSB로만 정해지므로 dBFS로는 레인지와 무관하게 일정하다.
+  // 레인지를 키우면 바닥이 오르는 게 아니라 신호가 −20 log(V_fs/A) dBFS로 내려와 간격(SNR_eff)이 줄어든다.
+  const noiseFloorDbfs = -baseSqnr - fftGainDb;
   const smallToneDbfs = 20 * Math.log10(a2 / range);
   const mainToneDbfs = 20 * Math.log10(a1 / range);
 
@@ -193,7 +209,7 @@ export default function AdcLab() {
       {
         x: [0, fs / 2],
         y: [noiseFloorDbfs, noiseFloorDbfs],
-        name: `이론 FFT 잡음 바닥 (${formatNumber(noiseFloorDbfs, 1)} dBFS)`,
+        name: `이론 잡음 바닥 (${formatNumber(noiseFloorDbfs, 4)} dBFS)`,
         mode: 'lines',
         color: '#f59e0b',
         dash: 'dash',
@@ -248,7 +264,7 @@ export default function AdcLab() {
             }}
           />
           <ParamSlider
-            label="미소 결함 톤 레벨 (136 Hz)"
+            label="작은 성분 크기 (136 Hz, 큰 톤 대비 dB)"
             value={smallToneDb}
             min={-120}
             max={-20}
@@ -276,15 +292,15 @@ export default function AdcLab() {
           />
           <Formula
             display
-            tex={`\\mathrm{SQNR}_{\\text{fs}} \\approx 6.02 \\times ${bits} + 1.76 = ${texNumber(baseSqnr, 2)}\\ \\mathrm{dB}\\quad (\\text{풀스케일 정현파 이론비})`}
+            tex={`\\mathrm{SQNR}_{\\text{fs}} \\approx 6.02 \\times ${bits} + 1.76 = ${texNumber(baseSqnr, 4)}\\ \\mathrm{dB}\\quad (\\text{풀스케일 정현파 이론비})`}
           />
           <Formula
             display
-            tex={`\\mathrm{SNR}_{\\text{eff}} = \\mathrm{SQNR} - 20\\log_{10}\\left(\\dfrac{V_{fs}}{A_{pk}}\\right) = ${texNumber(baseSqnr, 1)} - ${texNumber(backoffDb, 1)} = ${texNumber(effSnr, 1)}\\ \\mathrm{dB}`}
+            tex={`\\mathrm{SNR}_{\\text{eff}} = \\mathrm{SQNR} - 20\\log_{10}\\left(\\dfrac{V_{fs}}{A_{pk}}\\right) = ${texNumber(baseSqnr, 4)} - ${texNumber(backoffDb, 4)} = ${texNumber(effSnr, 4)}\\ \\mathrm{dB}`}
           />
           <Formula
             display
-            tex={`\\text{FFT 잡음 바닥} \\approx -\\mathrm{SNR}_{\\text{eff}} - 10\\log_{10}(N/2) = -${texNumber(effSnr, 1)} - ${texNumber(fftGainDb, 1)} = ${texNumber(noiseFloorDbfs, 1)}\\ \\mathrm{dBFS}`}
+            tex={`\\text{bin 하나의 잡음 바닥} \\approx -\\mathrm{SQNR} - 10\\log_{10}(N/2) = -${texNumber(baseSqnr, 4)} - ${texNumber(fftGainDb, 4)} = ${texNumber(noiseFloorDbfs, 4)}\\ \\mathrm{dBFS}`}
           />
         </>
       }
@@ -294,38 +310,26 @@ export default function AdcLab() {
             { label: 'ADC 분해능', value: bits, unit: 'bit' },
             { label: '풀스케일 레인지 V_fs', value: range, unit: 'V' },
             { label: '1 LSB 전압 크기', value: simData.qRes.lsb, unit: 'V', sig: 4 },
+            { label: '풀스케일 SQNR (6.02b + 1.76)', value: baseSqnr, unit: 'dB', sig: 3 },
+            { label: '유효 SNR (레인지 여유 반영)', value: effSnr, unit: 'dB', sig: 3 },
             {
-              label: '이론 풀스케일 SQNR',
-              value: baseSqnr,
-              theory: 6.02 * bits + 1.76,
-              unit: 'dB',
-              sig: 3,
-            },
-            {
-              label: '유효 SNR (여유 마진 반영)',
-              value: effSnr,
-              theory: baseSqnr - backoffDb,
-              unit: 'dB',
-              sig: 3,
-            },
-            {
-              label: 'FFT 잡음 바닥',
-              value: noiseFloorDbfs,
-              theory: -effSnr - fftGainDb,
+              label: '잡음 바닥 (스펙트럼 평균)',
+              value: simData.measuredFloorDbfs,
+              theory: noiseFloorDbfs,
               unit: 'dBFS',
               sig: 3,
             },
             {
               label: '주 톤 레벨 (50 Hz)',
-              value: mainToneDbfs,
-              theory: 20 * Math.log10(a1 / range),
+              value: simData.measuredMainDbfs,
+              theory: mainToneDbfs,
               unit: 'dBFS',
               sig: 3,
             },
             {
-              label: '미소 결함 톤 레벨 (136 Hz)',
-              value: smallToneDbfs,
-              theory: 20 * Math.log10(a2 / range),
+              label: '작은 톤 레벨 (136 Hz)',
+              value: simData.measuredSmallDbfs,
+              theory: smallToneDbfs,
               unit: 'dBFS',
               sig: 3,
             },
@@ -341,21 +345,21 @@ export default function AdcLab() {
       tasks={[
         {
           question:
-            '16 bit 표준 진동계에서 -60 dB, -100 dB 미소 신호가 보이나요? 레인지를 신호 피크 대비 10배(10.0 V)로 잡으면 어떻게 되나요?',
+            '16 bit에서 −60 dB, −100 dB의 작은 성분이 보이나요? 레인지를 신호보다 10배 크게(10 V) 잡으면 어떻게 되나요?',
           answer:
-            '16 bit에서 1024점 FFT를 수행하면 FFT 처리 이득(27 dB) 덕분에 잡음 바닥이 약 -125 dBFS에 위치하여 -60 dB는 물론 -100 dB 신호도 뚜렷이 보입니다. 하지만 레인지를 10 V(10배 여유)로 키우면 20 dB의 헤드룸 손실로 잡음 바닥이 -105 dBFS로 상승하여 -100 dB 미소 신호가 잡음 바닥에 묻히기 직전까지 올라갑니다.',
+            '16 bit, N = 1024이면 양자화 잡음이 512개 bin에 나뉘어 bin 하나의 잡음 바닥이 약 −125 dBFS까지 내려가므로 −100 dB 성분도 보입니다. 레인지를 10배 키우면 잡음 바닥은 −125 dBFS 그대로지만 신호가 칸을 1/10만 쓰게 되어 큰 톤이 −20 dBFS로 내려옵니다. 신호와 잡음 바닥의 간격이 20 dB 줄어, −100 dB 성분(−120 dBFS)이 잡음 바닥에 거의 붙어 버립니다.',
         },
         {
           question:
             '레인지를 신호 진폭보다 작은 0.7 V로 설정하면 파형과 스펙트럼에 어떤 현상이 발생하나요?',
           answer:
-            '신호의 꼭대기가 +0.7 V, -0.7 V에서 잘려 평평해지는 클리핑(포화)이 발생합니다. 이 잘린 파형은 사각파의 성질을 띠게 되므로 스펙트럼에 150 Hz(3X), 250 Hz(5X), 350 Hz(7X)... 등 매우 강력한 홀수 하모닉(고조파) 스퍼가 솟구칩니다. 기계 결함이 없는데도 센서 포화로 인해 심각한 결함 신호로 오인될 수 있습니다.',
+            '신호 꼭대기가 +0.7 V, −0.7 V에서 잘려 평평해집니다(클리핑). 잘린 파형은 사각파에 가까워지므로 스펙트럼에 150 Hz(3X), 250 Hz(5X), 350 Hz(7X) … 홀수 하모닉이 생깁니다. 기계와 상관없이 측정 과정이 만든 성분입니다.',
         },
         {
           question:
             '8 bit ADC와 24 bit ADC의 잡음 바닥 차이는 얼마나 되나요?',
           answer:
-            '비트당 약 6.02 dB 차이가 나므로 16 bit 차이에 의해 무려 96 dB 이상의 잡음 바닥 차이가 발생합니다! 8 bit에서는 잡음 바닥이 약 -77 dBFS에 달해 -60 dB 미소 진동이 거의 잡음과 구별되지 않지만, 24 bit에서는 잡음 바닥이 -170 dBFS 아래로 내려가 극도로 미세한 결함도 선명하게 포착할 수 있습니다.',
+            '1 bit마다 약 6 dB씩 차이가 나므로 16 bit 차이면 약 96 dB입니다. 8 bit에서는 잡음 바닥이 약 −77 dBFS라 −60 dB 성분이 잡음과 잘 구별되지 않고, 24 bit에서는 잡음 바닥이 −170 dBFS 아래로 내려가 아주 작은 성분도 보입니다.',
         },
       ]}
     >

@@ -177,7 +177,7 @@ export default function WindowCorrectionLab() {
         display
       />
       <Formula
-        tex={`\\text{적용 승수} = ${texNumber(data.scaleFactor, 3)}\\quad \\rightarrow \\quad \\text{복원 오차} = ${texNumber(sigMode === 'tone' ? data.peakError : data.rmsError, 1)}\\%`}
+        tex={`\\text{적용 승수} = ${texNumber(data.scaleFactor, 3)}\\quad \\rightarrow \\quad \\text{복원 오차} = ${texNumber(sigMode === 'tone' ? data.peakError : data.rmsError, 4)}\\%`}
         display
       />
     </div>

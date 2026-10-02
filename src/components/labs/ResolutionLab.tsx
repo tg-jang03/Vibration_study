@@ -175,7 +175,7 @@ export default function ResolutionLab() {
       {
         x: [f1, f1],
         y: [0, Math.max(a1, a2) * 1.15],
-        name: `f1 (${formatNumber(f1, 1)} Hz)`,
+        name: `f1 (${formatNumber(f1, 4)} Hz)`,
         mode: 'lines',
         color: '#16a34a',
         dash: 'dash',
@@ -187,7 +187,7 @@ export default function ResolutionLab() {
       list.push({
         x: [f2, f2],
         y: [0, Math.max(a1, a2) * 1.15],
-        name: `f2 (${formatNumber(f2, 1)} Hz)`,
+        name: `f2 (${formatNumber(f2, 4)} Hz)`,
         mode: 'lines',
         color: '#ea580c',
         dash: 'dot',
@@ -275,7 +275,7 @@ export default function ResolutionLab() {
           />
           <Formula
             display
-            tex={`\\text{두 성분 간격} = |f_1 - f_2| = |${texNumber(f1, 1)} - ${texNumber(f2, 1)}| = ${texNumber(Math.abs(f1 - f2), 2)}\\ \\mathrm{Hz}\\implies \\mathbf{${texNumber(binDiff, 2)}\\ \\text{bin}}`}
+            tex={`\\text{두 성분 간격} = |f_1 - f_2| = |${texNumber(f1, 4)} - ${texNumber(f2, 4)}| = ${texNumber(Math.abs(f1 - f2), 3)}\\ \\mathrm{Hz}\\implies \\mathbf{${texNumber(binDiff, 2)}\\ \\text{bin}}`}
           />
           <Formula
             display
@@ -283,8 +283,8 @@ export default function ResolutionLab() {
               f1 === f2
                 ? '\\text{동일 주파수: FFT로 절대 분리 불가 (전원 차단 시험 등 다른 시험 필요)}'
                 : isSeparable
-                  ? `\\text{분리 성공} \\quad (\\text{간격 } ${texNumber(binDiff, 1)}\\ \\text{bin} \\ge \\text{필요 } ${texNumber(reqBins, 1)}\\ \\text{bin})`
-                  : `\\text{분리 불가(하나의 뭉텅이 피크로 병합)} \\quad (\\text{간격 } ${texNumber(binDiff, 1)}\\ \\text{bin} < \\text{필요 } ${texNumber(reqBins, 1)}\\ \\text{bin})`
+                  ? `\\text{분리 성공} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} \\ge \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
+                  : `\\text{분리 불가(하나의 뭉텅이 피크로 병합)} \\quad (\\text{간격 } ${texNumber(binDiff, 4)}\\ \\text{bin} < \\text{필요 } ${texNumber(reqBins, 4)}\\ \\text{bin})`
             }`}
           />
         </>

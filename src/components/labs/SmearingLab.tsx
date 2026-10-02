@@ -192,7 +192,7 @@ export default function SmearingLab() {
     list.push({
       x: [f0, f0],
       y: [0, 1.15],
-      name: `시작 f0 (${formatNumber(f0, 2)} Hz)`,
+      name: `시작 f0 (${formatNumber(f0, 4)} Hz)`,
       mode: 'lines',
       color: '#16a34a',
       dash: 'dot',
@@ -203,7 +203,7 @@ export default function SmearingLab() {
       list.push({
         x: [fEnd, fEnd],
         y: [0, 1.15],
-        name: `종료 f_end (${formatNumber(fEnd, 2)} Hz)`,
+        name: `종료 f_end (${formatNumber(fEnd, 4)} Hz)`,
         mode: 'lines',
         color: '#f97316',
         dash: 'dot',
@@ -302,7 +302,7 @@ export default function SmearingLab() {
           />
           <Formula
             display
-            tex={`\\text{퍼진 bin 수} = \\dfrac{\\Delta f_{1X}}{\\Delta f} = \\dfrac{a}{60} T^2 = \\dfrac{${rateRpm}}{60} \\times (${texNumber(res.duration, 2)})^2 = \\mathbf{${texNumber(smearing.smearedBins, 2)}\\ \\text{bin}}\\quad (${rateRpm > 0 ? '\\text{피크 진폭 ' + texNumber(ampDropPercent, 1) + '\\% 감소}' : '\\text{정속 운전}'})`}
+            tex={`\\text{퍼진 bin 수} = \\dfrac{\\Delta f_{1X}}{\\Delta f} = \\dfrac{a}{60} T^2 = \\dfrac{${rateRpm}}{60} \\times (${texNumber(res.duration, 2)})^2 = \\mathbf{${texNumber(smearing.smearedBins, 2)}\\ \\text{bin}}\\quad (${rateRpm > 0 ? '\\text{피크 진폭 ' + texNumber(ampDropPercent, 4) + '\\% 감소}' : '\\text{정속 운전}'})`}
           />
         </>
       }

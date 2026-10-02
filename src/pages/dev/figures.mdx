@@ -8,6 +8,7 @@ import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import * as F0 from '../../figures/p1-0';
 import * as F1 from '../../figures/p1-1';
+import * as F2 from '../../figures/p1-2';
 
 export const byId = (m) => Object.values(m).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
@@ -32,3 +33,7 @@ export const byId = (m) => Object.values(m).sort((a, b) => a.id.localeCompare(b.
 ## P1-1
 
 {byId(F1).map((f) => <Figure {...f} />)}
+
+## P1-2
+
+{byId(F2).map((f) => <Figure {...f} />)}

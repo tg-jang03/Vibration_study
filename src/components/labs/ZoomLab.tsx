@@ -123,7 +123,7 @@ export default function ZoomLab() {
       {
         x: baseSpectrum.frequency,
         y: baseSpectrum.amplitude,
-        name: `기본 스펙트럼 (Δf = ${formatNumber(metrics.deltaFBase, 2)} Hz, T = ${formatNumber(metrics.durationBase, 2)} s)`,
+        name: `기본 스펙트럼 (Δf = ${formatNumber(metrics.deltaFBase, 4)} Hz, T = ${formatNumber(metrics.durationBase, 4)} s)`,
         mode: 'lines',
         color: '#64748b', // slate
         width: 1.5,
@@ -132,7 +132,7 @@ export default function ZoomLab() {
       {
         x: [metrics.fMin, metrics.fMin],
         y: [0, 1.2],
-        name: `Zoom 대역 (${formatNumber(metrics.fMin, 1)} ~ ${formatNumber(metrics.fMax, 1)} Hz)`,
+        name: `Zoom 대역 (${formatNumber(metrics.fMin, 4)} ~ ${formatNumber(metrics.fMax, 4)} Hz)`,
         mode: 'lines',
         color: '#dc2626',
         dash: 'dash',
@@ -180,7 +180,7 @@ export default function ZoomLab() {
       {
         x: [centerFreq - sidebandDelta, centerFreq - sidebandDelta],
         y: [0, 0.6],
-        name: `-1X 측대역 (${formatNumber(centerFreq - sidebandDelta, 1)} Hz)`,
+        name: `-1X 측대역 (${formatNumber(centerFreq - sidebandDelta, 4)} Hz)`,
         mode: 'lines',
         color: '#ea580c',
         dash: 'dot',
@@ -190,7 +190,7 @@ export default function ZoomLab() {
       {
         x: [centerFreq + sidebandDelta, centerFreq + sidebandDelta],
         y: [0, 0.6],
-        name: `+1X 측대역 (${formatNumber(centerFreq + sidebandDelta, 1)} Hz)`,
+        name: `+1X 측대역 (${formatNumber(centerFreq + sidebandDelta, 4)} Hz)`,
         mode: 'lines',
         color: '#ea580c',
         dash: 'dot',
@@ -271,7 +271,7 @@ export default function ZoomLab() {
         <>
           <Formula
             display
-            tex={`B = \\dfrac{F_{\\max}}{Z} = \\dfrac{${fmax}}{${zoomFactor}} = ${texNumber(metrics.bandwidth, 1)}\\ \\mathrm{Hz},\\quad [f_{\\min}, f_{\\max}] = [${texNumber(metrics.fMin, 1)}, ${texNumber(metrics.fMax, 1)}]\\ \\mathrm{Hz}`}
+            tex={`B = \\dfrac{F_{\\max}}{Z} = \\dfrac{${fmax}}{${zoomFactor}} = ${texNumber(metrics.bandwidth, 4)}\\ \\mathrm{Hz},\\quad [f_{\\min}, f_{\\max}] = [${texNumber(metrics.fMin, 4)}, ${texNumber(metrics.fMax, 4)}]\\ \\mathrm{Hz}`}
           />
           <Formula
             display
@@ -283,7 +283,7 @@ export default function ZoomLab() {
           />
           <Formula
             display
-            tex={`\\text{측대역 분리 간격} = \\dfrac{${sidebandDelta}\\ \\mathrm{Hz}}{\\Delta f_{\\text{zoom}}} = \\mathbf{${texNumber(sidebandBins, 2)}\\ \\text{bin}}\\implies ${
+            tex={`\\text{측대역 분리 간격} = \\dfrac{${sidebandDelta}\\ \\mathrm{Hz}}{\\Delta f_{\\text{zoom}}} = \\mathbf{${texNumber(sidebandBins, 3)}\\ \\text{bin}}\\implies ${
               isSeparated
                 ? '\\text{분리 성공 (독립 피크 식별)}'
                 : '\\text{분리 불가 (GMF 캐리어에 뭉개져 매몰)}'

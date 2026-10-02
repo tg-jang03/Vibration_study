@@ -154,11 +154,11 @@ export default function WindowComparisonLab() {
   const formulas = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       <Formula
-        tex={`\\mathrm{ENBW}_{A} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsA.acf, 2)}}{${texNumber(data.propsA.ecf, 2)}}\\right)^2 = ${texNumber(data.propsA.enbw, 2)}\\ \\mathrm{bin}`}
+        tex={`\\mathrm{ENBW}_{A} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsA.acf, 3)}}{${texNumber(data.propsA.ecf, 2)}}\\right)^2 = ${texNumber(data.propsA.enbw, 2)}\\ \\mathrm{bin}`}
         display
       />
       <Formula
-        tex={`\\mathrm{ENBW}_{B} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsB.acf, 2)}}{${texNumber(data.propsB.ecf, 2)}}\\right)^2 = ${texNumber(data.propsB.enbw, 2)}\\ \\mathrm{bin}`}
+        tex={`\\mathrm{ENBW}_{B} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsB.acf, 3)}}{${texNumber(data.propsB.ecf, 2)}}\\right)^2 = ${texNumber(data.propsB.enbw, 2)}\\ \\mathrm{bin}`}
         display
       />
     </div>

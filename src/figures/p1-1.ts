@@ -91,14 +91,14 @@ export const phaseMatters: FigureSpec = {
       title: `위상을 맞춘 합 (사각파에 가까움): CF = ${formatNumber(cfA, 3)}`,
       series: [{ x: sqA.t, y: sqA.x, color: 'c1', width: 2 }],
       x: { range: [0, T2], ticks: 'none' },
-      y: { range: [-1.9, 1.9], ticks: [-1, 0, 1] },
+      y: { range: [-2.3, 2.3], ticks: [-2, -1, 0, 1, 2] },
       height: 100,
     },
     {
       title: `3·5·7차 위상만 옮긴 합: CF = ${formatNumber(cfB, 3)}`,
       series: [{ x: sqB.t, y: sqB.x, color: 'c2', width: 2 }],
       x: { range: [0, T2], label: '시간 [s]' },
-      y: { range: [-1.9, 1.9], ticks: [-1, 0, 1] },
+      y: { range: [-2.3, 2.3], ticks: [-2, -1, 0, 1, 2] },
       height: 115,
     },
     {

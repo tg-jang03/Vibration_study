@@ -16,10 +16,12 @@ interface Props {
 
 const { id, caption, panels } = Astro.props;
 
-const W = 680;
-const ML = 56;
-const MR = 16;
-const GAP = 10;
+// 본문 폭(약 900px)에서 1:1로 보이도록 잡은 기준 폭. 패널 height는 680 폭 기준으로 적었으므로 HSCALE을 곱한다
+const W = 900;
+const HSCALE = 1.2;
+const ML = 62;
+const MR = 18;
+const GAP = 14;
 const COLOR: Record<FigColor, string> = {
   c1: 'var(--plot-1)',
   c2: 'var(--plot-2)',
@@ -32,7 +34,7 @@ const COLOR: Record<FigColor, string> = {
 };
 const DEFAULT: FigColor[] = ['c1', 'c2', 'c3', 'c4'];
 const f2 = (v: number) => (Number.isFinite(v) ? v.toFixed(2) : '0');
-const textWidth = (s: string) => [...s].reduce((w, ch) => w + (ch.charCodeAt(0) > 0x2e80 ? 12 : 6.8), 0);
+const textWidth = (s: string) => [...s].reduce((w, ch) => w + (ch.charCodeAt(0) > 0x2e80 ? 13.5 : 7.6), 0);
 const tickText = (v: number) => formatNumber(v, 4);
 
 interface Laid {
@@ -47,10 +49,10 @@ let offset = 0;
 const laid: Laid[] = panels.map((panel) => {
   const legendItems = panel.series.filter((s) => s.label);
   const showLegend = panel.legend ?? legendItems.length > 1;
-  const headH = (panel.title ? 18 : 0) + (showLegend && legendItems.length > 0 ? 20 : 0) + 8;
+  const headH = (panel.title ? 21 : 0) + (showLegend && legendItems.length > 0 ? 22 : 0) + 8;
   const hasXTicks = panel.x.ticks !== 'none';
-  const footH = (hasXTicks ? 20 : 4) + (panel.x.label ? 18 : 0) + 4;
-  const plotH = (panel.height ?? 200) - 0;
+  const footH = (hasXTicks ? 22 : 4) + (panel.x.label ? 20 : 0) + 4;
+  const plotH = Math.round((panel.height ?? 200) * HSCALE);
   const top = offset;
   const height = headH + plotH + footH;
   offset += height + GAP;
@@ -93,7 +95,7 @@ function render(l: Laid, index: number) {
     .filter((e) => e.s.label);
   const showLegend = (panel.legend ?? legend.length > 1) && legend.length > 0;
   let lx = ML;
-  const legendY = (panel.title ? 18 : 0) + 12;
+  const legendY = (panel.title ? 21 : 0) + 14;
   const legendItems = showLegend
     ? legend.map((e) => {
         const item = { x: lx, ...e };
@@ -166,7 +168,7 @@ const rendered = laid.map(render);
                 </clipPath>
               </defs>
               {p.title && (
-                <text class="fig-title" x={ML} y={13}>
+                <text class="fig-title" x={ML} y={15}>
                   {p.title}
                 </text>
               )}
@@ -203,7 +205,7 @@ const rendered = laid.map(render);
               {r.xTicks.map((v) => (
                 <g>
                   <line class="fig-grid" y1={top} y2={bottom} x1={f2(r.sx(v))} x2={f2(r.sx(v))} />
-                  <text class="fig-tick" x={f2(r.sx(v))} y={bottom + 15} text-anchor="middle">
+                  <text class="fig-tick" x={f2(r.sx(v))} y={bottom + 17} text-anchor="middle">
                     {r.label(p.x.tickLabels, v)}
                   </text>
                 </g>
@@ -212,12 +214,12 @@ const rendered = laid.map(render);
               <line class="fig-axis" x1={ML} x2={ML} y1={top} y2={bottom} />
               <line class="fig-axis" x1={ML} x2={ML + r.plotW} y1={bottom} y2={bottom} />
               {p.x.label && (
-                <text class="fig-label" x={ML + r.plotW / 2} y={bottom + (p.x.ticks === 'none' ? 18 : 34)} text-anchor="middle">
+                <text class="fig-label" x={ML + r.plotW / 2} y={bottom + (p.x.ticks === 'none' ? 20 : 38)} text-anchor="middle">
                   {p.x.label}
                 </text>
               )}
               {p.y.label && (
-                <text class="fig-label" transform={`translate(14, ${f2((top + bottom) / 2)}) rotate(-90)`} text-anchor="middle">
+                <text class="fig-label" transform={`translate(15, ${f2((top + bottom) / 2)}) rotate(-90)`} text-anchor="middle">
                   {p.y.label}
                 </text>
               )}
@@ -385,8 +387,8 @@ const rendered = laid.map(render);
 
 <style>
   .fig {
-    margin: 1.6rem 0;
-    padding: 0.75rem 0.75rem 0.5rem;
+    margin: 1.75rem 0;
+    padding: 1rem 1.1rem 0.75rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -399,16 +401,18 @@ const rendered = laid.map(render);
   .fig svg {
     display: block;
     width: 100%;
-    min-width: 480px;
+    min-width: 560px;
     height: auto;
     font-family: var(--font-sans);
   }
 
   figcaption {
-    margin-top: 0.4rem;
-    font-size: 0.88rem;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.92rem;
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.65;
   }
 
   .fig :global(.fig-grid) {
@@ -428,24 +432,24 @@ const rendered = laid.map(render);
   }
 
   .fig :global(.fig-tick) {
-    font-size: 11px;
+    font-size: 12.5px;
     fill: var(--text-muted);
   }
 
   .fig :global(.fig-label),
   .fig :global(.fig-legend) {
-    font-size: 12px;
+    font-size: 13px;
     fill: var(--text-muted);
   }
 
   .fig :global(.fig-title) {
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 700;
     fill: var(--text);
   }
 
   .fig :global(.fig-note) {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .fig :global(.fig-bold) {

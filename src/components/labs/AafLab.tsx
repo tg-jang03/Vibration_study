@@ -25,19 +25,19 @@ type AafType = 'none' | 'ideal' | 'butter2' | 'butter4' | 'butter8';
 type PresetKey = 'default8' | 'noAaf' | 'ideal' | 'ratio2' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default8', label: '상용 분석기 표준 (fs = 2.56 F_max, Butterworth 8차 AAF)' },
-  { value: 'noAaf', label: 'AAF 없음 (1.8 F_max 성분이 0.76 F_max 가짜 피크로 침투)' },
-  { value: 'ideal', label: '이상적 벽돌형 필터 (Ideal Brick-wall AAF)' },
-  { value: 'ratio2', label: 'fs = 2.0 F_max (전이대역 0 -> AAF 필터 불가)' },
+  { value: 'default8', label: '일반적인 분석기 설정 (f_s = 2.56 F_max, 8차 필터)' },
+  { value: 'noAaf', label: '필터 없음 (1.8 F_max 성분이 0.76 F_max 가짜 막대로 보임)' },
+  { value: 'ideal', label: '이상적 필터 (F_max에서 수직으로 끊음 — 실제로는 불가능)' },
+  { value: 'ratio2', label: 'f_s = 2.0 F_max (필터가 깎을 여유 구간이 0)' },
   { value: 'custom', label: '직접 파라미터 조작' },
 ];
 
 const AAF_OPTIONS: ParamOption<AafType>[] = [
-  { value: 'butter8', label: 'Butterworth 8차 (-48 dB/oct, 상용 표준급)' },
-  { value: 'butter4', label: 'Butterworth 4차 (-24 dB/oct)' },
-  { value: 'butter2', label: 'Butterworth 2차 (-12 dB/oct)' },
+  { value: 'butter8', label: 'Butterworth 8차 (주파수 2배마다 −48 dB)' },
+  { value: 'butter4', label: 'Butterworth 4차 (주파수 2배마다 −24 dB)' },
+  { value: 'butter2', label: 'Butterworth 2차 (주파수 2배마다 −12 dB)' },
   { value: 'ideal', label: '이상적 필터 (F_max 초과 완벽 차단)' },
-  { value: 'none', label: 'AAF 없음 (Off, 필터 미적용)' },
+  { value: 'none', label: '필터 없음' },
 ];
 
 export default function AafLab() {
@@ -176,7 +176,7 @@ export default function AafLab() {
       {
         x: [fOut],
         y: [Math.max(-80, -outAttDb)],
-        name: `입력 f_out (${formatNumber(fOut)} Hz, -${formatNumber(outAttDb, 1)} dB)`,
+        name: `입력 f_out (${formatNumber(fOut)} Hz, -${formatNumber(outAttDb, 4)} dB)`,
         mode: 'markers',
         color: '#ea580c', // orange
         markerSize: 9,
@@ -229,7 +229,7 @@ export default function AafLab() {
   return (
     <LabFrame
       id="LAB-SMP-02"
-      title="AAF(안티에일리어싱 필터)와 fs = 2.56 F_max 전이대역"
+      title="AAF(안티에일리어싱 필터)와 f_s = 2.56 F_max"
       controls={
         <>
           <ParamSelect
@@ -308,19 +308,19 @@ export default function AafLab() {
         <>
           <Formula
             display
-            tex={`f_s = ${texNumber(ratio, 2)} \\times F_{\\max} = ${texNumber(fs, 1)}\\ \\mathrm{Hz},\\quad f_N = \\dfrac{f_s}{2} = ${texNumber(fn, 1)}\\ \\mathrm{Hz}`}
+            tex={`f_s = ${texNumber(ratio, 3)} \\times F_{\\max} = ${texNumber(fs, 4)}\\ \\mathrm{Hz},\\quad f_N = \\dfrac{f_s}{2} = ${texNumber(fn, 4)}\\ \\mathrm{Hz}`}
           />
           <Formula
             display
-            tex={`f_{\\text{guard}} = f_s - F_{\\max} = (${texNumber(ratio, 2)} - 1) F_{\\max} = ${texNumber(fGuard, 1)}\\ \\mathrm{Hz}\\quad (${fOut >= fGuard ? '\\text{위험: } f_{\\text{out}} \\ge f_{\\text{guard}} \\rightarrow F_{\\max}\\text{ 안쪽 침투}' : '\\text{안전: } F_{\\max}\\text{ 바깥 폐기 대역으로 접힘}'})`}
+            tex={`f_s - F_{\\max} = ${texNumber(fGuard, 4)}\\ \\mathrm{Hz}\\quad ${fOut >= fGuard ? '\\Rightarrow\\ f_{\\text{out}}\\text{이 이보다 높아 화면 안으로 접힌다}' : '\\Rightarrow\\ f_{\\text{out}}\\text{은 화면 밖(버리는 구간)으로 접힌다}'}`}
           />
           <Formula
             display
-            tex={`|H(f_{\\text{out}})| = ${texNumber(outGain, 4)}\\quad (\\text{감쇠 } ${texNumber(outAttDb, 1)}\\ \\mathrm{dB})\\implies A_{\\text{eff}} = A_{\\text{out}} \\times |H| = ${texNumber(effectiveOutAmp, 4)}\\ \\mathrm{Pk}`}
+            tex={`|H(f_{\\text{out}})| = ${texNumber(outGain, 4)}\\quad (\\text{감쇠 } ${texNumber(outAttDb, 4)}\\ \\mathrm{dB})\\implies A_{\\text{eff}} = A_{\\text{out}} \\times |H| = ${texNumber(effectiveOutAmp, 4)}\\ \\mathrm{Pk}`}
           />
           <Formula
             display
-            tex={`\\dfrac{N}{2} = 1.28 \\times \\mathrm{LOR}\\quad (\\text{전체 } N/2\\ \\text{라인 중 } 78.1\\%\\text{만 화면에 표시, 나머지 } 21.9\\%\\text{는 AAF 전이대역으로 폐기})`}
+            tex={`\\dfrac{N}{2} = 1.28 \\times \\mathrm{LOR}\\quad (\\text{bin } N/2\\text{개 중 } 78\\,\\%\\text{만 화면에 표시})`}
           />
         </>
       }
@@ -361,21 +361,21 @@ export default function AafLab() {
       tasks={[
         {
           question:
-            'AAF를 끄고(None) 1.8 F_max 성분(1800 Hz)을 인가하면 스펙트럼의 어디에 가짜 피크가 나타날까요?',
+            '필터를 끄고(필터 없음) 1.8 F_max 성분(1800 Hz)을 넣으면 스펙트럼의 어디에 가짜 막대가 설까요?',
           answer:
-            'fa = |1800 - 2560| = 760 Hz (= 0.76 F_max)에 원래 진폭 그대로(1.0 Pk) 나타납니다! 현장 진동 분석가가 AAF 없이 계측하면 760 Hz에 정체불명의 심각한 진동 피크가 있다고 오진하게 됩니다.',
+            'f_a = |1800 − 2560| = 760 Hz(= 0.76 F_max)에 원래 진폭 그대로(1.0 Pk) 나타납니다. 필터 없이 재면 실제로는 없는 760 Hz 진동이 있다고 잘못 판단하게 됩니다.',
         },
         {
           question:
-            '상용 분석기 표준인 Butterworth 8차 AAF를 켜면 1.8 F_max 성분의 진폭은 얼마나 줄어드나요?',
+            '8차 필터를 켜면 1.8 F_max 성분의 진폭은 얼마나 줄어드나요?',
           answer:
-            '감쇠량이 약 40.8 dB에 달하여 진폭이 1.0에서 0.0091 Pk(1% 미만)로 극적으로 줄어듭니다! 따라서 스펙트럼에서 거의 잡음 바닥 수준으로 사라져 오진 위험을 방지합니다.',
+            '약 40.8 dB 깎여 진폭이 1.0에서 0.0091 Pk(1 % 미만)로 줄어듭니다. 가짜 막대가 거의 보이지 않게 됩니다.',
         },
         {
           question:
-            '샘플링 비율을 나이퀴스트 이론 한계인 fs / F_max = 2.0으로 낮추면 어떤 문제가 발생할까요?',
+            '샘플링 비율 f_s / F_max를 2.0으로 낮추면 어떤 문제가 생길까요?',
           answer:
-            'fs - F_max = F_max가 되어 전이대역(Transition band) 여유가 0이 됩니다. 물리적 아날로그 필터는 F_max에서 즉시 수직으로 떨어질 수 없으므로, F_max 바로 위(예: 1.1 F_max)의 강한 진동 성분이 거의 감쇠되지 않은 채 0.9 F_max로 고스란히 접혀 들어와 화면을 오염시킵니다. 이것이 모든 상용 진동 분석기가 fs = 2.56 F_max를 고수하는 핵심 이유입니다.',
+            'f_s − F_max = F_max가 되어 필터가 깎을 여유 구간이 0이 됩니다. 실제 필터는 F_max에서 수직으로 끊지 못하므로, F_max 바로 위(예: 1.1 F_max)의 성분이 거의 깎이지 않은 채 0.9 F_max로 접혀 들어옵니다. 많은 분석기가 f_s = 2.56 F_max를 쓰는 이유입니다.',
         },
       ]}
     >

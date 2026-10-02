@@ -104,6 +104,8 @@
   - 개념 순서: 앞 페이지까지 설명한 개념만 쓴다. 처음 나오는 용어는 그 자리에서 한 줄로 푼다 (개념 척추 표 §1-2).
   - 예시 그림: 개념마다 `Figure`(빌드 시 정적 SVG). 데이터는 `src/figures/p{Part}-{절}.ts`에서 `lib/dsp`로 계산, 형식은 `src/lib/figure.ts`. 아스키 그림 금지. 확인은 `/dev/figures/` 갤러리.
   - 강조 상자: `Callout`(`src/components/content/`) 6종만. 랩 앞에 `try` 상자로 조작 단계, 랩 뒤에 해석.
+  - 폭: 절 페이지의 글·그림·상자·랩은 모두 같은 폭(`--content-width`, `global.css`)을 쓴다. 특정 요소만 넓히거나 좁히지 않는다.
+- `texNumber(v, sig)`·`formatNumber(v, sig)`의 둘째 인자는 **유효숫자**다 (소수 자리 아님). `texNumber(2560, 1)`은 "3000"이 된다. 주파수·dB는 3~4를 쓴다.
   - push 전 체크리스트(§1-5) 확인.
 - 새 절 페이지는 `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 목차 `src/data/curriculum.ts`의 `href`·`status`도 고친다. 예시: `src/pages/p1-1.mdx`.
 - KaTeX는 `package.json` `overrides`로 한 버전만 쓴다. 수식 관련 패키지를 바꾸면 `npm ls katex`로 확인한다 (I-021).

@@ -24,6 +24,8 @@
   --radius: 10px;
   --gap: 1rem;
   --max-width: 1120px;
+  /* 절 페이지 본문 폭: 글·그림·상자·랩이 모두 같은 폭을 쓴다 (2026-10-02 사용자 피드백) */
+  --content-width: 920px;
   --font-sans: system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;
 
@@ -192,9 +194,49 @@ main.container {
   margin-bottom: 0.5rem;
 }
 
-/* 본문 (MDX 페이지): 글은 읽기 좋은 폭, 랩(island)은 컨테이너 폭까지 (I-016) */
-.prose > :not(astro-island) {
-  max-width: 76ch;
+/* 본문 (MDX 페이지): 글·그림·강조 상자·랩이 같은 폭 (I-016 → 2026-10-02 통일) */
+.prose,
+.breadcrumb,
+.section-pager {
+  max-width: var(--content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.prose {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0.85em 0;
+}
+
+.prose li + li {
+  margin-top: 0.25em;
+}
+
+.prose h1 {
+  font-size: 2rem;
+  margin: 0.3em 0 0.6em;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  margin: 2.2em 0 0.7em;
+  padding-left: 0.7rem;
+  border-left: 4px solid var(--accent);
+}
+
+.prose h3 {
+  font-size: 1.2rem;
+  margin: 1.8em 0 0.6em;
+}
+
+.prose hr + h2 {
+  margin-top: 0;
 }
 
 /* 구분선은 브라우저 기본(margin auto)이면 넓은 컨테이너 가운데로 밀린다 */
@@ -257,17 +299,17 @@ main.container {
   gap: 0.5rem;
 }
 
+/* 수식(위) → 읽음값(아래). 나란히 두면 긴 수식이 잘려서 위아래로 쌓는다 */
 .lab-results {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  align-items: start;
 }
 
 .lab-formulas {
   background: var(--surface-2);
   border-radius: var(--radius);
-  padding: 0.25rem 1rem;
+  padding: 0.35rem 1.1rem;
   overflow-x: auto;
 }
 
@@ -439,20 +481,40 @@ main.container {
   color: var(--text-muted);
 }
 
-/* 본문 표 */
+/* 본문 표: 카드처럼 둥근 테두리, 머리줄 강조, 줄 사이 옅은 구분선 */
 .prose table:not(.readout-table) {
-  border-collapse: collapse;
-  font-size: 0.92rem;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1.25rem 0;
 }
 
 .prose table:not(.readout-table) th,
 .prose table:not(.readout-table) td {
-  border: 1px solid var(--border);
-  padding: 0.35rem 0.6rem;
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+.prose table:not(.readout-table) tr:last-child td {
+  border-bottom: 0;
 }
 
 .prose table:not(.readout-table) th {
-  background: var(--surface-2);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.prose table:not(.readout-table) td:first-child {
+  font-weight: 600;
 }
 
 /* 본문 접는 상자 ("더 깊이 보기") */

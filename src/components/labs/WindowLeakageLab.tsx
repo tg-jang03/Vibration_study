@@ -171,7 +171,7 @@ export default function WindowLeakageLab() {
   const formulas = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       <Formula
-        tex={`f = f_0 + \\delta \\cdot \\Delta f = ${f0} + ${texNumber(delta, 2)} \\cdot 1.0 = ${texNumber(f, 2)}\\ \\mathrm{Hz}`}
+        tex={`f = f_0 + \\delta \\cdot \\Delta f = ${f0} + ${texNumber(delta, 2)} \\cdot 1.0 = ${texNumber(f, 4)}\\ \\mathrm{Hz}`}
         display
       />
       <Formula
