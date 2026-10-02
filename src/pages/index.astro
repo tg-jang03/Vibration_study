@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PARTS, partProgress } from '../data/curriculum';
+import { withBase } from '../lib/site';
+---
+
+<BaseLayout>
+  <h1>회전체 진동 진단 공부</h1>
+  <p class="lead">
+    학교에서 배운 MCK·모드해석에서 출발해 현장 GT/ST 진단까지. 신호처리는 가상 신호를 직접 조작하는 랩으로 익힌다.
+  </p>
+
+  <h2>커리큘럼 지도</h2>
+  <ol class="part-grid">
+    {
+      PARTS.map((part) => {
+        const { done, total } = partProgress(part);
+        return (
+          <li>
+            <a class="card part-card" href={withBase(`/parts/${part.num}/`)} data-featured={part.featured}>
+              <span class="part-num">Part {part.num}</span>
+              <span class="part-title">
+                {part.title}
+                {part.featured && <span class="star" aria-label="핵심">★</span>}
+              </span>
+              <span class="part-question">{part.question}</span>
+              <span class="part-progress">
+                <span class="bar" style={`--p:${total ? (done / total) * 100 : 0}%`} />
+                <span class="count">
+                  {done} / {total} 절
+                </span>
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ol>
+</BaseLayout>
+
+<style>
+  .part-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--gap);
+  }
+
+  .part-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .part-card:hover,
+  .part-card:focus-visible {
+    border-color: var(--accent);
+  }
+
+  .part-card[data-featured] {
+    background: var(--accent-soft);
+  }
+
+  .part-num {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .part-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+
+  .star {
+    color: var(--status-wip);
+    margin-left: 0.3rem;
+  }
+
+  .part-question {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+  }
+
+  .part-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .bar {
+    flex: 1;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--status-done) var(--p), var(--surface-2) var(--p));
+  }
+</style>

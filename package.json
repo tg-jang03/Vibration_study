@@ -1,0 +1,28 @@
+{
+  "name": "vibration-study",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "description": "회전체 진동 진단 학습 사이트 — 인터랙티브 신호처리 랩",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/react": "^7.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "astro": "^7.3.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
+  }
+}

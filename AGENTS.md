@@ -55,7 +55,7 @@
 - **main 병합은 사용자만** 한다. 에이전트는 PR 병합, force push, 히스토리 재작성을 하지 않는다.
 - 다른 에이전트가 진행 중인 브랜치는 수정하지 않는다. 필요한 점은 `Issues.md`에 남긴다.
 - 세부 마일스톤 완료 흐름
-  1. 담당자: Roadmap의 완료 기준 충족 + `npm test`·`npm run build` 통과 + 문서 갱신 (Progress, 필요하면 Contents·Issues·Decisions)
+  1. 담당자: Roadmap의 완료 기준 충족 + `npm run check`·`npm run build` 통과(M0.5부터 `npm test` 포함) + 문서 갱신 (Progress, 필요하면 Contents·Issues·Decisions)
   2. `Progress.md` 상태를 `리뷰 대기`로 바꾸고 커밋
   3. 브랜치 push → PR 생성 (`gh pr create`). PR 본문에 무엇을 했고 어떻게 확인하는지 적는다.
   4. (선택) 다른 에이전트가 교차 리뷰 → PR 코멘트, 지적 사항은 `Issues.md`
@@ -85,6 +85,10 @@
 ## 6. 코드 규칙 (M0 스캐폴딩 이후 적용)
 
 기술 스택은 `docs/Decisions.md` D-006~D-012, 디렉터리 구조는 `docs/Roadmap.md` §4를 따른다.
+
+- 명령: `npm install` → `npm run dev`(개발 서버) · `npm run check`(타입 검사) · `npm run build`(정적 빌드) · `npm test`(M0.5부터)
+- 사이트는 `/Vibration_study/` 하위 경로로 배포된다. 내부 링크와 정적 파일 경로는 반드시 `withBase()`(`src/lib/site.ts`)로 만든다.
+- 사이트 목차(`src/data/curriculum.ts`)는 `docs/Curriculum.md`의 절 구성, `docs/Contents.md` §4의 페이지 상태와 같아야 한다. 한쪽을 고치면 다른 쪽도 고친다.
 
 - `src/lib/dsp/`에는 **순수 함수만** 둔다. DOM·React·플롯 라이브러리에 의존하지 않는다.
 - 내부 단위는 SI (s, Hz, rad, m, m/s, m/s²). rpm, mm/s, µm, g, dB 변환은 UI 계층에서만 한다 (D-012).

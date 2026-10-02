@@ -1,0 +1,89 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STATUS_LABEL } from '../../data/curriculum';
+import { withBase } from '../../lib/site';
+
+export const getStaticPaths = (() =>
+  PARTS.map((part, index) => ({
+    params: { part: String(part.num) },
+    props: { part, prev: PARTS[index - 1], next: PARTS[index + 1] },
+  }))) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { part, prev, next } = Astro.props as Props;
+---
+
+<BaseLayout title={`Part ${part.num} ${part.title}`} description={part.question}>
+  <div class="breadcrumb"><a href={withBase('/')}>커리큘럼</a> › Part {part.num}</div>
+  <h1>Part {part.num}. {part.title}</h1>
+  <p class="lead">{part.question}</p>
+
+  <ol class="section-list">
+    {
+      part.sections.map((section) => (
+        <li class="card section-item">
+          <span class="section-id">{section.id}</span>
+          {section.href ? (
+            <a class="section-title" href={withBase(section.href)}>
+              {section.title}
+            </a>
+          ) : (
+            <span class="section-title">{section.title}</span>
+          )}
+          <span class="badge" data-status={section.status}>
+            {STATUS_LABEL[section.status]}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <nav class="part-pager" aria-label="Part 이동">
+    {prev ? <a href={withBase(`/parts/${prev.num}/`)}>← Part {prev.num}. {prev.title}</a> : <span />}
+    {next ? <a href={withBase(`/parts/${next.num}/`)}>Part {next.num}. {next.title} →</a> : <span />}
+  </nav>
+</BaseLayout>
+
+<style>
+  .section-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .section-item {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .section-id {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    min-width: 3.2rem;
+  }
+
+  .section-title {
+    flex: 1;
+    font-weight: 600;
+  }
+
+  span.section-title {
+    color: var(--text);
+  }
+
+  .part-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import { REPO_URL, SITE_NAME, withBase } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = '회전체(GT/ST) 진동 진단을 인터랙티브 신호처리 랩과 수식으로 공부하는 개인 학습 사이트',
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+const isHome = Astro.url.pathname.replace(/\/+$/, '') === withBase('/').replace(/\/+$/, '');
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href={withBase('/')}>{SITE_NAME}</a>
+        <nav class="site-nav" aria-label="주 메뉴">
+          <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>커리큘럼</a>
+          <span class="nav-soon" title="M1.15에서 추가">Signal Lab</span>
+          <span class="nav-soon" title="M10.3에서 추가">레퍼런스</span>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        개인 학습용 사이트 · <a href={REPO_URL}>GitHub</a>
+      </div>
+    </footer>
+  </body>
+</html>
