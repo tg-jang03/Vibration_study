@@ -3,6 +3,21 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Antigravity · M1.9 윈도우 라이브러리 (M1.4와 병렬)
+- 진행 방식: Claude가 M1.4(푸리에 랩)를 별도 worktree에서 진행 중이므로, UI 파일(src/components, src/pages, curriculum.ts)을 전혀 건드리지 않고 DSP 코어와 문서만 작업 (AGENTS §4, D-021)
+- 한 일:
+  - `src/lib/dsp/window.ts`: 주기형(DFT-even) 윈도우 8종(`uniformWindow`, `hannWindow`, `hammingWindow`, `blackmanHarrisWindow`, `flatTopWindow`, `kaiserWindow`, `exponentialWindow`, `forceWindow`), `createWindow`, `applyWindow`, `besselI0`
+  - 특성 계수 계산 `windowProperties(w)`: S₁, S₂, CG, ACF, ECF, ENBW, scallopLossDb/Ratio
+  - `src/lib/dsp/spectrum.ts`: `window` 옵션 추가 (`Float64Array` 또는 `WindowType`), 진폭 분모를 S₁(윈도우 합)으로 정규화 (미적용 시 N과 동일하여 기존 100% 호환)
+  - I-010 해결 (D-022): Flat top 5항 코사인 표준 계수(ISO 18431-2, SciPy `flattop`, MATLAB `flattopwin`, D'Antona & Ferrero 2006) 채택 및 출처 명시
+  - `Contents.md` §6 Flat top 수치 확정 및 출처 추가
+- 확인:
+  - 새 테스트 20개(`window.test.ts`) + `spectrum.test.ts` 4개 추가. 전체 75개 테스트 100% 통과
+  - Contents §6 문헌값 검증: Uniform(CG 1, ENBW 1, SL 3.92 dB), Hann(CG 0.5, ENBW 1.5, SL 1.42 dB), Hamming(CG 0.54, ENBW 1.363, SL 1.78 dB), Blackman-Harris(CG 0.359, ENBW 2.004, SL 0.83 dB), Flat top(CG 0.2156, ENBW 3.77 bin, SL < 0.01 dB)
+  - bin 중심 톤 피크 진폭 보존(A=1.000) 및 bin 사이(δ=0.5) 스캘럽 손실 검증
+  - `npm run check` 0 errors/0 warnings, `npm run build` 13페이지 통과
+- 다음: Claude의 M1.4(푸리에 랩) 완료 후 M1.5(샘플링) 또는 M1.10(윈도우 랩)
+
 ### 2026-10-02 · Claude · M1.3 공통 랩 UI (M1.2와 병렬)
 - 진행 방식: 사용자 요청으로 Codex의 M1.2와 병렬. 별도 worktree(`../진동공부-claude`)에서 코드 파일이 겹치지 않게 작업하고, Codex가 push한 뒤 rebase해서 문서와 함께 push (D-021)
 - 한 일: `LabFrame`, `ParamSlider`(useRafCallback, 프레임당 1회)·`ParamSelect`·`ParamToggle`, `ReadoutTable`, `formatNumber`·`formatError`(+테스트 8), `Plot.onRendered`·축 설정 내용 비교, 랩 폭(I-016 해결), `/dev/lab-ui/` + 벤치마크, SineDemo를 LabFrame으로, `scripts/bench/plot-bench.mjs`

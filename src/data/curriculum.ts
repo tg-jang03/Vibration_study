@@ -51,7 +51,7 @@ export const PARTS: Part[] = [
     featured: true,
     sections: [
       { id: 'P1-1', title: '푸리에 기초: 신호를 주파수로 보는 법', status: 'done', href: '/p1-1/' },
-      { id: 'P1-2', title: '샘플링 · 에일리어싱 · AAF · ADC', status: 'wip', href: '/p1-2/' },
+      { id: 'P1-2', title: '샘플링 · 에일리어싱 · AAF · ADC', status: 'done', href: '/p1-2/' },
       { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'spec' },
       { id: 'P1-4', title: '윈도우', status: 'spec' },
       { id: 'P1-5', title: '평균화와 TSA', status: 'spec' },

@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { acquire, aliasComponent, aliasFrequency } from './sampling';
+import {
+  acquire,
+  aliasComponent,
+  aliasFrequency,
+  butterworthAttenuationDb,
+  butterworthGain,
+  effectiveSnr,
+  quantize,
+  theoreticalSqnr,
+} from './sampling';
 import { evaluate, type SignalSpec } from './signal';
 
 describe('aliasFrequency & aliasComponent', () => {
@@ -103,3 +112,98 @@ describe('acquire', () => {
     expect(() => acquire(sine(10), { fs: 100, n: 2.5 })).toThrow(RangeError);
   });
 });
+
+describe('butterworthGain & butterworthAttenuationDb (Contents §6)', () => {
+  it('f = 0일 때 이득 1, 감쇠 0 dB', () => {
+    expect(butterworthGain(0, 1000, 8)).toBe(1.0);
+    expect(butterworthAttenuationDb(0, 1000, 8)).toBe(0.0);
+  });
+
+  it('차단주파수 fc에서 -3 dB (이득 1/√2 ≈ 0.7071)', () => {
+    expect(butterworthGain(1000, 1000, 4)).toBeCloseTo(1 / Math.SQRT2, 5);
+    expect(butterworthAttenuationDb(1000, 1000, 4)).toBeCloseTo(3.0103, 3);
+  });
+
+  it('Butterworth 8차, f/fc = 1.8 -> 감쇠 40.8 dB (|H| ≈ 0.00907)', () => {
+    const fc = 1000;
+    const f = 1800; // ratio = 1.8
+    const gain = butterworthGain(f, fc, 8);
+    const att = butterworthAttenuationDb(f, fc, 8);
+    // 10 * log10(1 + 1.8^16) = 40.8407 dB
+    expect(att).toBeCloseTo(40.84, 1);
+    expect(gain).toBeCloseTo(0.009077, 4);
+    // 감쇠 dB = -20 * log10(gain)
+    expect(-20 * Math.log10(gain)).toBeCloseTo(att, 4);
+  });
+
+  it('잘못된 fc, order는 RangeError', () => {
+    expect(() => butterworthGain(100, 0, 4)).toThrow(RangeError);
+    expect(() => butterworthAttenuationDb(100, 1000, -1)).toThrow(RangeError);
+  });
+});
+
+describe('theoreticalSqnr & effectiveSnr (Contents §6)', () => {
+  it('풀스케일 정현파 SQNR: 6.02 * b + 1.76 dB', () => {
+    expect(theoreticalSqnr(16)).toBeCloseTo(98.08, 2);
+    expect(theoreticalSqnr(8)).toBeCloseTo(49.92, 2);
+    expect(theoreticalSqnr(24)).toBeCloseTo(146.24, 2);
+  });
+
+  it('레인지 여유(Back-off) 반영: 10배 여유 시 20 dB 감소', () => {
+    // 16 bit 풀스케일 98.08 dB, range/peak = 10 -> -20 dB -> 78.08 dB
+    expect(effectiveSnr(16, 10, 1)).toBeCloseTo(78.08, 2);
+  });
+
+  it('잘못된 bits, range, peakAmp는 오류', () => {
+    expect(() => theoreticalSqnr(0)).toThrow(RangeError);
+    expect(() => effectiveSnr(16, 0, 1)).toThrow(RangeError);
+    expect(() => effectiveSnr(16, 10, 0)).toThrow(RangeError);
+  });
+});
+
+describe('quantize', () => {
+  it('클리핑 없는 경우: 오차 범위 |e[n]| <= LSB / 2', () => {
+    const n = 1000;
+    const x = new Float64Array(n);
+    for (let i = 0; i < n; i++) x[i] = 0.8 * Math.sin((2 * Math.PI * 5 * i) / n);
+
+    const bits = 8;
+    const range = 1.0;
+    const res = quantize(x, { bits, range });
+
+    expect(res.clipped).toBe(false);
+    expect(res.clippedCount).toBe(0);
+    expect(res.clipRatio).toBe(0);
+
+    const expectedLsb = (2 * range) / Math.pow(2, bits);
+    expect(res.lsb).toBeCloseTo(expectedLsb, 6);
+
+    for (let i = 0; i < n; i++) {
+      expect(Math.abs(res.error[i])).toBeLessThanOrEqual(res.lsb / 2 + 1e-12);
+      expect(res.y[i]).toBeCloseTo(x[i] + res.error[i], 12);
+    }
+  });
+
+  it('클리핑 발생: 신호 피크 > range 시 클리핑 플래그 및 카운트 검출', () => {
+    const x = new Float64Array([-1.5, -0.5, 0, 0.5, 1.5]);
+    const res = quantize(x, { bits: 8, range: 1.0 });
+
+    expect(res.clipped).toBe(true);
+    expect(res.clippedCount).toBe(2);
+    expect(res.clipRatio).toBe(2 / 5);
+
+    // 8 bit: maxCode = 127, minCode = -128, LSB = 2/256 = 1/128
+    const maxVal = 127 * (2 / 256);
+    const minVal = -128 * (2 / 256);
+    expect(res.y[0]).toBeCloseTo(minVal, 6);
+    expect(res.y[4]).toBeCloseTo(maxVal, 6);
+  });
+
+  it('잘못된 파라미터는 RangeError', () => {
+    const x = new Float64Array([0]);
+    expect(() => quantize(x, { bits: 0, range: 1 })).toThrow(RangeError);
+    expect(() => quantize(x, { bits: 33, range: 1 })).toThrow(RangeError);
+    expect(() => quantize(x, { bits: 16, range: 0 })).toThrow(RangeError);
+  });
+});
+
