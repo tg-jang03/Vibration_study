@@ -8,26 +8,23 @@
 | 항목 | 값 |
 |---|---|
 | 큰 마일스톤 | M1 신호처리 기초 (Part 1) — 9 / 16 (M1.0 추가) |
-| 세부 마일스톤 | **M1.8 Zoom FFT(LAB-ZOOM-01) 완료** → 다음 **M1.10 윈도우 랩 (P1-4, LAB-WIN-01~03)** |
+| 세부 마일스톤 | **M1.10 윈도우 페이지(P1-4) 본문 작성 완료 → 사용자 검토 대기** (D-024). 확인 후 LAB-WIN-01~03 랩 구현 예정 |
 | 담당 | Antigravity |
 | 사이트 | https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포) |
-| 사용자 확인 대기 | **P1-0·P1-1 본문 (D-024)**, `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
+| 사용자 확인 대기 | **P1-4 윈도우 본문 (D-024)**, **P1-0·P1-1 본문 (D-024)**, `Curriculum.md` 전체, `Roadmap.md` §6-3 M1 세부 목록, `Decisions.md`의 `제안` 항목 (특히 D-007 기술 스택, D-015 문서 추가), I-009 규격 인용 정책 |
 
 ## 핸드오프 (다음 작업자에게)
 
-- **[중요] 페이지 작성 기준 변경 (D-024, 2026-10-02)**: 모든 새 페이지는 `docs/Contents.md` §1을 따른다 — **본문 먼저 → 사용자 확인(상태 `검토`/`review`) → 랩**. 맨 위 선수 개념 표, 새 용어는 정의 + 숫자 예 + `docs/Glossary.md` 등록, 뒤 페이지 개념은 쓰지 않기, 랩마다 할 일 → 화면 읽는 법 → 따라 하기 → 무엇을 봤나, push 전 체크리스트. 예시: `src/pages/p1-0.mdx`, `p1-1.mdx`.
-- P1-0(신규)·P1-1(보강) 본문이 사용자 검토 대기. 검토 뒤 Claude가 P1-2를 같은 기준으로 보강한다 (I-022).
-- **다음 마일스톤**:
-  - `M1.10 윈도우 랩` (`Roadmap.md` §6-3): M1.9에서 윈도우 8종 라이브러리(`window.ts`)가 이미 구현되어 있으므로, P1-4 페이지와 LAB-WIN-01(누설 & 피켓펜스), LAB-WIN-02(윈도우 8종 비교), LAB-WIN-03(3가지 진폭 보정: ACF, ECF, ENBW)을 작성. D-024 기준에 따라 **본문 먼저 작성 → 사용자 확인(상태 'review') → 랩** 순서로 진행.
+- **[중요] 페이지 작성 기준 변경 (D-024, 2026-10-02)**: 모든 새 페이지는 `docs/Contents.md` §1을 따른다 — **본문 먼저 → 사용자 확인(상태 `검토`/`review`) → 랩**. 맨 위 선수 개념 표, 새 용어는 정의 + 숫자 예 + `docs/Glossary.md` 등록, 뒤 페이지 개념은 쓰지 않기, 랩마다 할 일 → 화면 읽는 법 → 따라 하기 → 무엇을 봤나, push 전 체크리스트. 예시: `src/pages/p1-0.mdx`, `p1-1.mdx`, `p1-4.mdx`.
+- **진행 상황**:
+  - `M1.8 Zoom FFT`: `src/lib/dsp/zoom.ts`, `zoom.test.ts`, `ZoomLab.tsx`, `p1-3.mdx` 완성 및 push 완료 (`fef6e90`).
+  - `M1.10 윈도우 랩 (P1-4)`: D-024 기준에 따라 **P1-4 본문(글) 및 랩 가이드 작성 완료** (`src/pages/p1-4.mdx`). 용어집(`docs/Glossary.md`), 목차(`src/data/curriculum.ts` `status: 'review'`), 콘텐츠 사양(`docs/Contents.md`) 갱신 완료. 현재 사용자 검토 대기 중.
+  - 사용자가 P1-4 본문을 검토한 후 OK하면 랩 3종(`LAB-WIN-01`, `LAB-WIN-02`, `LAB-WIN-03`)을 구현하여 붙이고 상태를 `done`으로 전환.
 - 이미 있는 것
-  - `src/lib/dsp/zoom.ts`: `calculateZoomMetrics()`, `computeZoomSpectrum()` (M1.8)
-  - `components/labs/ZoomLab.tsx`: `LAB-ZOOM-01` Zoom FFT 랩 (기어 GMF 1200 Hz ± 1X 측대역 확대, Z=1~64배율, 대역폭 B, 분해능 Δf 및 측정 시간 T 증가 시각화) (M1.8)
-  - `src/lib/dsp/resolution.ts`: `calculateResolution({fmax, lor})`, `separatedBins()`, `smearingMetrics(a, duration, deltaF)`, `minSeparationBins()` (M1.7)
-  - `src/lib/dsp/signal.ts`: `ChirpComponent` (`f(t) = f0 + rate*t` 주파수 가속/감속 위상 적분 모델) (M1.7)
-  - `components/labs/ResolutionLab.tsx`: `LAB-RES-01` 분해능 & 두 성분 분리 랩 (M1.7)
-  - `components/labs/SmearingLab.tsx`: `LAB-RES-02` Smearing 랩 (M1.7)
-  - 페이지 `/p1-3/`: 1-3 주파수 분해능, 윈도우 메인로브 폭 분리 조건, 현장 4대 사례, Smearing $T^2$ 법칙, Zoom FFT 원리 및 LAB-RES-01, LAB-RES-02, LAB-ZOOM-01 완성 (M1.7, M1.8)
-  - `src/lib/dsp/window.ts`: 주기형 윈도우 8종 및 특성치 계산 (M1.9)
+  - `src/pages/p1-4.mdx`: 1-4 윈도우 본문 (스펙트럴 누설 원리, 피켓 펜스 & 스캘럽 손실, 시간영역 곱/주파수영역 합성곱, 윈도우 5대 선택 가이드, 3가지 보정 계수 ACF·ECF·ENBW, 지수 윈도우 감쇠 사후 보정, 랩 3종 가이드, 확인 문제 4개, 현장 판단 기준, 흔한 실수)
+  - `src/lib/dsp/window.ts`: 주기형 윈도우 8종(`uniformWindow`, `hannWindow`, `hammingWindow`, `blackmanHarrisWindow`, `flatTopWindow`, `kaiserWindow`, `exponentialWindow`, `forceWindow`) 및 특성 계수 계산(S₁, S₂, CG, ACF, ECF, ENBW, scallopLoss) (M1.9)
+  - `src/lib/dsp/window.test.ts`: 단위 테스트 20개 통과 (M1.9)
+  - `src/lib/dsp/zoom.ts` / `zoom.test.ts` / `ZoomLab.tsx` / `p1-3.mdx`: Zoom FFT 완비 (M1.8)
 - 화면 확인: `npm run build` → `npx astro preview` 후 Edge 헤드리스 캡처 (AGENTS.md §6).
 
 ## 큰 마일스톤 현황
@@ -62,7 +59,7 @@
 | M1.7 | 분해능 · Smearing (LAB-RES-01, 02) | 완료 | Antigravity | main | 2026-10-02 |
 | M1.8 | Zoom FFT (LAB-ZOOM-01) | 완료 | Antigravity | main | 2026-10-02 |
 | M1.9 | 윈도우 라이브러리 | 완료 | Antigravity (M1.4와 병렬, D-021) | main | 2026-10-02 |
-| M1.10 | 윈도우 랩 (LAB-WIN-01~03) | 대기 | Antigravity | main | — |
+| M1.10 | 윈도우 랩 (LAB-WIN-01~03) | 검토 대기 (본문, D-024) | Antigravity | main | — |
 | M1.11 | 평균화 (LAB-AVG-01) | 대기 | 미배정 | — | — |
 | M1.12 | TSA (LAB-AVG-02) | 대기 | 미배정 | — | — |
 | M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | 대기 | 미배정 | — | — |
@@ -95,6 +92,32 @@
 
 > 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020).
 
+### 2026-10-02 · Antigravity · M1.10 윈도우 페이지 P1-4 본문 작성 (D-024)
+- 진행 방식: D-024 신규 페이지 작성 기준(본문 먼저 → 사용자 확인 → 랩) 준수
+- 한 일:
+  - `src/pages/p1-4.mdx` 본문 작성:
+    1. 현장에서 왜 필요한가 (스펙트럴 누설로 인한 진폭 16% 저하 및 미세 결함 마스킹 방지)
+    2. 선수 개념 표 (P1-0, P1-1, P1-2, P1-3 대조)
+    3. 이 페이지에서 할 수 있게 되는 것 6가지
+    4. 흐름 표 (3단계 랩 연결)
+    5. 1절 누설 원인 (DFT의 주기적 연장 가정, 정수 주기 vs 비정수 주기 불연속 단차, 60.0 Hz vs 60.5 Hz 숫자 예)
+    6. 2절 피켓 펜스 & 스캘럽 손실 (창살 사이 관측 모델, Uniform 3.92 dB/36.3% 손실 vs Hann 1.42 dB/15.1% vs Flat top <0.01 dB, 쿨링팬 4.5 mm/s 경보 판정 사례)
+    7. 3절 윈도우 함수 (시간의 곱 = 주파수의 합성곱, 메인로브 폭 vs 사이드로브 감쇠율 불변의 트레이드오프)
+    8. 4절 현장 윈도우 5대 선택 가이드 (Uniform, Hann 기본값, Flat top 밸런싱/교정, Blackman-Harris 4항 초고동적범위, Force/Exponential 모달 시험 및 지수 감쇠비 사후 보정 $\zeta_{\mathrm{true}} \approx \zeta_{\mathrm{meas}} - 1/(\tau\omega_n)$)
+    9. 5절 3가지 보정 계수와 ENBW (이산 피크 톤 ACF $N/S_1$, 광대역 랜덤 잡음/RMS ECF $\sqrt{N/S_2}$, PSD 잡음 대역폭 ENBW $(ACF/ECF)^2$, 반대로 적용 시 18.4% 과소평가 또는 50% 과대평가 함정)
+    10. 6절 랩 3종(LAB-WIN-01~03) 자리 안내 (할 일, 화면 읽는 법, 따라 하기, 무엇을 봤나)
+    11. 7절 핵심 정리 5가지
+    12. 8절 확인 문제 4개, 현장 판단 기준표, 흔한 실수 4가지, 참고자료(R-05 Heinzel, R-06 Harris, R-03 Wowk)
+  - `docs/Glossary.md`: 새 용어 10개(스펙트럴 누설, 피켓 펜스 효과, 스캘럽 손실, 윈도우 함수, 메인로브/사이드로브, CG, ACF, ECF, ENBW, 지수 윈도우 감쇠 보정) 등록
+  - `src/data/curriculum.ts`: P1-4 `href: '/p1-4/'`, `status: 'review'`
+  - `docs/Contents.md`: P1-4 상태 `검토 (본문, D-024)`
+- 확인:
+  - 전체 단위 테스트 110개 100% 통과 (`npm test`)
+  - `astro check` 0 errors / 0 warnings / 0 hints (총 52개 파일)
+  - `astro build` 18개 정적 페이지 정상 빌드
+  - Edge 헤드리스 캡처로 렌더링, 수식, 표, 굵은 글씨(`<strong>`) 시각적 정상 확인
+- 다음: 사용자 P1-4 본문 검토 → 확인 후 LAB-WIN-01~03 랩 인터랙티브 컴포넌트 구현
+
 ### 2026-10-02 · Antigravity · M1.8 Zoom FFT (P1-3, LAB-ZOOM-01)
 - 한 일:
   - `src/lib/dsp/zoom.ts`: Zoom FFT 메트릭 계산 함수 `calculateZoomMetrics()` ($B = F_{\max}/Z$, $\Delta f = F_{\max}/(Z \cdot \mathrm{LOR})$, $T = Z \cdot T_{\text{base}}$), Zoom 대역 슬라이스 및 고분해능 스펙트럼 계산 `computeZoomSpectrum()` 구현
@@ -119,13 +142,3 @@
   - 발견·수정: 괄호로 끝나는 굵은 글씨 뒤 한글 → `**` 노출(`<strong>`으로), 한글 글자 중간 줄바꿈(`word-break: keep-all`)
 - 확인: 테스트 87, `astro check` 0 errors, 빌드 16페이지, 수식 오류 0, P1-0·P1-1 헤드리스 캡처, 콘솔 오류 0
 - 다음: 사용자 검토 → P1-2 보강
-
-### 2026-10-02 · Antigravity · M1.7 분해능 · Smearing (P1-3, LAB-RES-01, 02)
-- 한 일:
-  - `src/lib/dsp/resolution.ts`: 분해능 3식 계산 함수 `calculateResolution({fmax, lor})`, 두 성분 간격 bin 수 `separatedBins()`, 윈도우별 최소 분리 bin `minSeparationBins()`, 가감속 스미어링 모델 `smearingMetrics()` 구현
-  - `src/lib/dsp/signal.ts`: 가속/감속 모사용 선형 처프 `ChirpComponent` (`f(t) = f0 + rate*t`) 및 `evaluate()` 적분 위상 지원 추가
-  - `src/components/labs/ResolutionLab.tsx`: `LAB-RES-01` 분해능 및 두 성분 분리 랩 (현장 프리셋 4종: 1X vs 2LF, 2극 발전기 동기 결함, Oil whirl, 베어링 측대역)
-  - `src/components/labs/SmearingLab.tsx`: `LAB-RES-02` Smearing 랩 (코스트다운 감속률 $a$와 $T^2$ 비례 피크 번짐 시각화)
-  - `src/pages/p1-3.mdx`: 1-3 분해능 본문 초안 작성 및 LAB-RES-01, 02 임베드
-- 확인: 전체 테스트 107개 통과, `astro check` 0 errors, Edge 헤드리스 스크린샷 검증 완료
-- 다음: M1.8(Zoom FFT)

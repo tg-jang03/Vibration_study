@@ -3,6 +3,16 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Antigravity · M1.7 분해능 · Smearing (P1-3, LAB-RES-01, 02)
+- 한 일:
+  - `src/lib/dsp/resolution.ts`: 분해능 3식 계산 함수 `calculateResolution({fmax, lor})`, 두 성분 간격 bin 수 `separatedBins()`, 윈도우별 최소 분리 bin `minSeparationBins()`, 가감속 스미어링 모델 `smearingMetrics()` 구현
+  - `src/lib/dsp/signal.ts`: 가속/감속 모사용 선형 처프 `ChirpComponent` (`f(t) = f0 + rate*t`) 및 `evaluate()` 적분 위상 지원 추가
+  - `src/components/labs/ResolutionLab.tsx`: `LAB-RES-01` 분해능 및 두 성분 분리 랩 (현장 프리셋 4종: 1X vs 2LF, 2극 발전기 동기 결함, Oil whirl, 베어링 측대역)
+  - `src/components/labs/SmearingLab.tsx`: `LAB-RES-02` Smearing 랩 (코스트다운 감속률 $a$와 $T^2$ 비례 피크 번짐 시각화)
+  - `src/pages/p1-3.mdx`: 1-3 분해능 본문 초안 작성 및 LAB-RES-01, 02 임베드
+- 확인: 전체 테스트 107개 통과, `astro check` 0 errors, Edge 헤드리스 스크린샷 검증 완료
+- 다음: M1.8(Zoom FFT)
+
 ### 2026-10-02 · Antigravity · M1.6 AAF · ADC (P1-2, LAB-SMP-02, 03)
 - 한 일:
   - `src/lib/dsp/sampling.ts`: Butterworth 필터 감쇠 모델(`butterworthGain`, `butterworthAttenuationDb`), ADC 이론 SQNR 및 레인지 헤드룸 반영 유효 SNR(`theoreticalSqnr`, `effectiveSnr`), 양자화 및 클리핑 모델(`quantize`) 구현
