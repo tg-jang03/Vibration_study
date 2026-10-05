@@ -21,13 +21,18 @@ describe('createRng', () => {
     const rng = createRng(7);
     let sum = 0;
     let sumSq = 0;
+    // 표본마다 expect를 부르면 N = 10만에서 5초 제한에 걸린다 → 범위는 최솟값·최댓값으로 한 번만 확인
+    let min = Infinity;
+    let max = -Infinity;
     for (let i = 0; i < N; i++) {
       const u = rng.uniform();
-      expect(u).toBeGreaterThanOrEqual(0);
-      expect(u).toBeLessThan(1);
+      min = Math.min(min, u);
+      max = Math.max(max, u);
       sum += u;
       sumSq += u * u;
     }
+    expect(min).toBeGreaterThanOrEqual(0);
+    expect(max).toBeLessThan(1);
     const mean = sum / N;
     expect(mean).toBeCloseTo(0.5, 2);
     expect(sumSq / N - mean * mean).toBeCloseTo(1 / 12, 2);

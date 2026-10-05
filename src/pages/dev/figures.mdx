@@ -11,8 +11,9 @@ import * as F1 from '../../figures/p1-1';
 import * as F2 from '../../figures/p1-2';
 import * as F3 from '../../figures/p1-3';
 import * as F4 from '../../figures/p1-4';
+import * as F5 from '../../figures/p1-5';
 
-export const byId = (m) => Object.values(m).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
 # 그림 갤러리 (개발용)
 
@@ -47,3 +48,7 @@ export const byId = (m) => Object.values(m).sort((a, b) => a.id.localeCompare(b.
 ## P1-4
 
 {byId(F4).map((f) => <Figure {...f} />)}
+
+## P1-5
+
+{byId(F5).map((f) => <Figure {...f} />)}

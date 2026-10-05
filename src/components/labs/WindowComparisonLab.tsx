@@ -1,227 +1,124 @@
 import { useMemo, useState } from 'react';
-import Formula from '../ui/Formula';
 import LabFrame, { type LabTask } from '../ui/LabFrame';
 import ParamSelect, { type ParamOption } from '../ui/ParamSelect';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
-import { texNumber } from '../../lib/format';
 import { createWindow, windowProperties, type WindowType } from '../../lib/dsp/window';
 import { fft, zeroPad } from '../../lib/dsp/fft';
 
 /**
- * LAB-WIN-02 윈도우 8종 비교 & 선택 가이드 (P1-4, Contents §5-1).
+ * LAB-WIN-02 윈도우 비교: 메인로브 폭과 사이드로브 높이 (P1-4, Contents §5-1).
  *
- * 목적:
- * 윈도우 8종의 시간영역 모양과 주파수 스펙트럼(|W(f)|)을 직접 겹쳐 비교하며,
- * 메인로브 폭(분해능)과 사이드로브 감쇠율(동적범위)의 트레이드오프를 확인한다.
+ * 두 윈도우의 시간 모양과, 성분 하나가 그 윈도우에서 그려지는 모양(|W|)을 겹쳐 비교한다.
+ * 읽음값은 본문에서 설명한 세 숫자(메인로브 반폭, 가장 높은 사이드로브, 가리비 손실)만 쓴다.
+ * 큰 성분 옆 작은 성분이 보이는지는 본문 그림 7(동적 범위)로 보여 준다.
  */
 
-const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
-  { value: 'hann', label: 'Hann (실무 만능 기본값)' },
-  { value: 'uniform', label: 'Uniform (사각 윈도우)' },
-  { value: 'flatTop', label: 'Flat top (진폭 정확도 특화)' },
-  { value: 'blackmanHarris', label: 'Blackman-Harris (초고동적범위 -92 dB)' },
-  { value: 'hamming', label: 'Hamming (첫 사이드로브 -42.7 dB)' },
-  { value: 'kaiser', label: 'Kaiser (β = 6.0 조정형)' },
-  { value: 'exponential', label: 'Exponential (모달 감쇠 보조)' },
-  { value: 'force', label: 'Force (해머 펄스 게이트)' },
+type Win = 'uniform' | 'hann' | 'flatTop' | 'blackmanHarris' | 'hamming';
+const WINDOW_OPTIONS: ParamOption<Win>[] = [
+  { value: 'hann', label: 'Hann (분석기 기본값)' },
+  { value: 'uniform', label: '윈도우 없음 (Uniform)' },
+  { value: 'flatTop', label: 'Flat top (진폭 측정용)' },
+  { value: 'blackmanHarris', label: 'Blackman-Harris (작은 성분 찾기용)' },
+  { value: 'hamming', label: 'Hamming (Hann과 비슷, 첫 사이드로브가 더 낮음)' },
 ];
+const NAME: Record<Win, string> = {
+  hann: 'Hann',
+  uniform: '윈도우 없음',
+  flatTop: 'Flat top',
+  blackmanHarris: 'Blackman-Harris',
+  hamming: 'Hamming',
+};
+const N = 512;
+const PAD = 16;
+const SPAN = 12; // bin
+
+function analyze(type: WindowType) {
+  const w = createWindow(type, N);
+  const r = fft(zeroPad(w, N * PAD));
+  const dc = Math.hypot(r.real[0], r.imag[0]);
+  const count = SPAN * PAD + 1;
+  const offset = Array.from({ length: count }, (_, k) => k / PAD);
+  const db = offset.map((_, k) => Math.max(-140, 20 * Math.log10(Math.max(1e-12, Math.hypot(r.real[k], r.imag[k]) / dc))));
+  // 메인로브 반폭: 가운데에서 처음으로 값이 다시 커지기 시작하는 곳(첫 골)
+  let first = count - 1;
+  for (let k = 1; k < count - 1; k++) {
+    if (db[k] < db[k - 1] && db[k] <= db[k + 1]) {
+      first = k;
+      break;
+    }
+  }
+  const side = Math.max(...db.slice(first + 1));
+  const props = windowProperties(w);
+  const time = Array.from({ length: N / 4 + 1 }, (_, i) => i / (N / 4));
+  const shape = time.map((t) => w[Math.min(N - 1, Math.round(t * N))]);
+  return {
+    time,
+    shape,
+    offset: [...offset.slice(1).reverse().map((x) => -x), ...offset],
+    db: [...db.slice(1).reverse(), ...db],
+    halfWidth: first / PAD,
+    side: Math.round(side * 10) / 10,
+    scallop: props.scallopLossDb,
+  };
+}
 
 export default function WindowComparisonLab() {
-  const [winA, setWinA] = useState<WindowType>('hann');
-  const [winB, setWinB] = useState<WindowType>('uniform');
-
-  const n = 512;
-  const padN = 4096; // 8x 제로패딩으로 주파수 응답 곡선을 매끄럽게 보간
-
-  const data = useMemo(() => {
-    const wA = createWindow(winA, n);
-    const wB = createWindow(winB, n);
-
-    const propsA = windowProperties(wA);
-    const propsB = windowProperties(wB);
-
-    // 시간영역 축 (0 ~ 1 정규화 시간)
-    const timeNorm: number[] = [];
-    const valA: number[] = [];
-    const valB: number[] = [];
-    for (let i = 0; i < n; i++) {
-      timeNorm.push(i / n);
-      valA.push(wA[i]);
-      valB.push(wB[i]);
-    }
-
-    // 주파수 응답 계산 (제로패딩 FFT 후 0 dB 정규화)
-    const calcResponse = (w: Float64Array) => {
-      const padded = zeroPad(w, padN);
-      const res = fft(padded);
-      const binScale = padN / n; // 8
-
-      // DC 피크 크기
-      const peakMag = Math.hypot(res.real[0], res.imag[0]);
-
-      const bins: number[] = [];
-      const dbVals: number[] = [];
-
-      // ±10 bin 대역 추출
-      const maxBin = 10;
-      const step = 1 / binScale;
-
-      for (let k = 0; k <= maxBin * binScale; k++) {
-        const bin = k * step;
-        const mag = Math.hypot(res.real[k], res.imag[k]);
-        const db = 20 * Math.log10(Math.max(1e-5, mag / peakMag));
-        bins.push(bin);
-        dbVals.push(db);
-      }
-
-      // 음수 bin 대칭 복제
-      const allBins: number[] = [];
-      const allDbs: number[] = [];
-      for (let i = bins.length - 1; i > 0; i--) {
-        allBins.push(-bins[i]);
-        allDbs.push(dbVals[i]);
-      }
-      for (let i = 0; i < bins.length; i++) {
-        allBins.push(bins[i]);
-        allDbs.push(dbVals[i]);
-      }
-
-      return { bins: allBins, dbs: allDbs };
-    };
-
-    const respA = calcResponse(wA);
-    const respB = calcResponse(wB);
-
-    return {
-      timeNorm,
-      valA,
-      valB,
-      propsA,
-      propsB,
-      respA,
-      respB,
-    };
-  }, [winA, winB]);
+  const [winA, setWinA] = useState<Win>('hann');
+  const [winB, setWinB] = useState<Win>('uniform');
+  const a = useMemo(() => analyze(winA), [winA]);
+  const b = useMemo(() => analyze(winB), [winB]);
 
   const timeSeries: PlotSeries[] = [
-    {
-      x: data.timeNorm,
-      y: data.valA,
-      name: `윈도우 A (${winA})`,
-      color: '#38bdf8',
-    },
-    {
-      x: data.timeNorm,
-      y: data.valB,
-      name: `윈도우 B (${winB})`,
-      color: '#f59e0b',
-    },
+    { x: a.time, y: a.shape, name: `A: ${NAME[winA]}`, color: '#38bdf8', width: 2 },
+    { x: b.time, y: b.shape, name: `B: ${NAME[winB]}`, color: '#f59e0b', width: 2 },
   ];
-
   const freqSeries: PlotSeries[] = [
-    {
-      x: data.respA.bins,
-      y: data.respA.dbs,
-      name: `스펙트럼 A (${winA})`,
-      color: '#38bdf8',
-    },
-    {
-      x: data.respB.bins,
-      y: data.respB.dbs,
-      name: `스펙트럼 B (${winB})`,
-      color: '#f59e0b',
-    },
+    { x: a.offset, y: a.db, name: `A: ${NAME[winA]}`, color: '#38bdf8', width: 1.6 },
+    { x: b.offset, y: b.db, name: `B: ${NAME[winB]}`, color: '#f59e0b', width: 1.6 },
   ];
 
   const controls = (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-      <ParamSelect
-        label="비교 윈도우 A"
-        value={winA}
-        options={WINDOW_OPTIONS}
-        onChange={(v) => setWinA(v as WindowType)}
-      />
-      <ParamSelect
-        label="비교 윈도우 B"
-        value={winB}
-        options={WINDOW_OPTIONS}
-        onChange={(v) => setWinB(v as WindowType)}
-      />
-    </div>
-  );
-
-  const formulas = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      <Formula
-        tex={`\\mathrm{ENBW}_{A} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsA.acf, 3)}}{${texNumber(data.propsA.ecf, 2)}}\\right)^2 = ${texNumber(data.propsA.enbw, 2)}\\ \\mathrm{bin}`}
-        display
-      />
-      <Formula
-        tex={`\\mathrm{ENBW}_{B} = \\left(\\frac{\\mathrm{ACF}}{\\mathrm{ECF}}\\right)^2 = \\left(\\frac{${texNumber(data.propsB.acf, 3)}}{${texNumber(data.propsB.ecf, 2)}}\\right)^2 = ${texNumber(data.propsB.enbw, 2)}\\ \\mathrm{bin}`}
-        display
-      />
-    </div>
+    <>
+      <ParamSelect label="윈도우 A" value={winA} options={WINDOW_OPTIONS} onChange={setWinA} />
+      <ParamSelect label="윈도우 B" value={winB} options={WINDOW_OPTIONS} onChange={setWinB} />
+    </>
   );
 
   const readouts = (
     <ReadoutTable
       rows={[
-        { label: `[A:${winA}] 코히어런트 이득 CG`, value: data.propsA.cg, sig: 3 },
-        { label: `[A:${winA}] 진폭 보정계수 ACF`, value: data.propsA.acf, sig: 3 },
-        { label: `[A:${winA}] 등가잡음대역폭 ENBW`, value: data.propsA.enbw, unit: 'bin', sig: 3 },
-        { label: `[A:${winA}] 최대 스캘럽 손실`, value: data.propsA.scallopLossDb, unit: 'dB', sig: 3 },
-        { label: `[B:${winB}] 진폭 보정계수 ACF`, value: data.propsB.acf, sig: 3 },
-        { label: `[B:${winB}] 등가잡음대역폭 ENBW`, value: data.propsB.enbw, unit: 'bin', sig: 3 },
-        { label: `[B:${winB}] 최대 스캘럽 손실`, value: data.propsB.scallopLossDb, unit: 'dB', sig: 3 },
+        { label: `A ${NAME[winA]}: 메인로브 반폭 (첫 0까지)`, value: a.halfWidth, unit: 'bin', sig: 3 },
+        { label: `A ${NAME[winA]}: 가장 높은 사이드로브`, value: a.side, unit: 'dB', sig: 3 },
+        { label: `A ${NAME[winA]}: 최대 가리비 손실`, value: a.scallop, unit: 'dB', sig: 3 },
+        { label: `B ${NAME[winB]}: 메인로브 반폭 (첫 0까지)`, value: b.halfWidth, unit: 'bin', sig: 3 },
+        { label: `B ${NAME[winB]}: 가장 높은 사이드로브`, value: b.side, unit: 'dB', sig: 3 },
+        { label: `B ${NAME[winB]}: 최대 가리비 손실`, value: b.scallop, unit: 'dB', sig: 3 },
       ]}
     />
   );
 
   const tasks: LabTask[] = [
     {
-      question: '과제 1: 윈도우 A를 Hann, B를 Uniform으로 두고 오른쪽 주파수 응답을 보세요. 사이드로브가 얼마나 차이 나나요?',
-      answer: 'Uniform의 최고 사이드로브는 -13.3 dB로 매우 높지만, Hann은 -31.5 dB로 뚝 떨어집니다. 대신 Hann의 메인로브 폭은 ±2 bin으로 Uniform(±1 bin)의 2배가 됩니다.',
+      question: 'A를 Hann, B를 윈도우 없음으로 두고 아래 그래프를 보세요. 메인로브 폭과 사이드로브 높이는 각각 어느 쪽이 유리한가요?',
+      answer: '메인로브는 윈도우 없음이 좁고(±1 bin, Hann ±2 bin), 사이드로브는 Hann이 훨씬 낮습니다(−31.5 dB vs −13.3 dB). 가까운 두 성분 가르기에는 좁은 쪽이, 큰 성분 옆 작은 성분 찾기에는 낮은 쪽이 유리합니다.',
     },
     {
-      question: '과제 2: 윈도우 B를 Flat top으로 바꿔보세요. 메인로브 꼭대기 모양과 스캘럽 손실은 어떤가요?',
-      answer: 'Flat top의 메인로브는 ±5 bin에 걸쳐 완만하게 퍼져 분해능은 낮지만, 스캘럽 손실이 0.01 dB 미만으로 사실상 0입니다! 진폭을 절대적으로 지켜야 하는 밸런싱/교정에 쓰입니다.',
+      question: 'B를 Flat top으로 바꾸세요. 가리비 손실과 메인로브 폭은 어떤가요?',
+      answer: '가리비 손실은 약 0.01 dB로 거의 없지만, 메인로브가 ±5 bin으로 가장 넓습니다. 진폭을 정확히 읽을 때 쓰고, 가까운 성분을 가를 때는 쓰지 않습니다.',
+    },
+    {
+      question: 'B를 Blackman-Harris로 바꾸세요. Hann과 비교해 얻는 것과 잃는 것은?',
+      answer: '사이드로브가 −92 dB까지 내려가 큰 성분 옆의 아주 작은 성분이 보이지만(본문 그림 7), 메인로브가 ±4 bin으로 Hann의 두 배입니다.',
     },
   ];
 
   return (
-    <LabFrame
-      id="LAB-WIN-02"
-      title="LAB-WIN-02 윈도우 8종 비교 & 선택 가이드"
-      controls={controls}
-      formulas={formulas}
-      readouts={readouts}
-      tasks={tasks}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>
-            시간영역 윈도우 형상 w[n] (0 ~ 1 정규화)
-          </div>
-          <Plot
-            series={timeSeries}
-            x={{ label: '정규화 시간 (n / N)' }}
-            y={{ label: '가중치 w[n]', range: [0, 1.1] }}
-            height={200}
-          />
-        </div>
-        <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.35rem' }}>
-            주파수 응답 |W(f)| (중심 주파수 기준 ±10 bin 대역)
-          </div>
-          <Plot
-            series={freqSeries}
-            x={{ label: '주파수 [bin 오프셋]' }}
-            y={{ label: '감쇠율 [dB]', range: [-100, 5] }}
-            height={240}
-          />
-        </div>
-      </div>
+    <LabFrame id="LAB-WIN-02" title="윈도우 비교: 메인로브와 사이드로브" controls={controls} readouts={readouts} tasks={tasks}>
+      <h4>윈도우 모양 (프레임 시작 0 → 끝 1)</h4>
+      <Plot series={timeSeries} x={{ label: '프레임 안의 위치' }} y={{ label: '가중치', range: [0, 1.1] }} height={200} ariaLabel="윈도우 가중치 모양" />
+      <h4>성분 하나가 그려지는 모양 (성분에서 ±12 bin)</h4>
+      <Plot series={freqSeries} x={{ label: '성분에서 떨어진 거리 [bin]' }} y={{ label: '[dB]', range: [-130, 5] }} height={250} ariaLabel="윈도우의 주파수 모양" />
     </LabFrame>
   );
 }

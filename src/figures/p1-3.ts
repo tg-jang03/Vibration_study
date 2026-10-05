@@ -13,7 +13,6 @@ function curve(components: SignalComponent[], t0: number, t1: number, points = 1
   const t = grid(t0, t1, points);
   return { t, x: t.map((tt) => evaluate({ components }, tt)) };
 }
-const arr = (a: ArrayLike<number>) => Array.from(a);
 function inRange(spec: { frequency: Float64Array; amplitude: Float64Array }, lo: number, hi: number) {
   const f: number[] = [];
   const a: number[] = [];
