@@ -71,7 +71,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
   const ampMax = Math.min(Math.max(peak?.amplitudeRatio ?? 1, 1) * 1.15, 55);
 
   const amplitudeSeries: PlotSeries[] = [
-    { x: CURVE, y: amplitudeCurve, name: `진폭비 (ζ = ${zeta.toFixed(2)})`, color: 'var(--plot-1)', width: 2.2 },
+    { x: CURVE, y: amplitudeCurve, name: `진폭비 (ζ = ${Number(zeta.toFixed(3))})`, color: 'var(--plot-1)', width: 2.2 },
     { x: [0, R_MAX], y: [1, 1], name: 'X_st', color: '#94a3b8', dash: 'dash', width: 1.2 },
     { x: [r], y: [response.amplitudeRatio], name: '현재 점', color: 'var(--plot-2)', mode: 'markers', markerSize: 11 },
   ];
@@ -94,7 +94,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
       controls={
         <>
           <ParamSlider label="가진 주파수 f" value={forcingHz} min={0} max={15} step={0.05} unit="Hz" format={(v) => v.toFixed(2)} onChange={setForcingHz} />
-          <ParamSlider label="감쇠비 ζ" value={zeta} min={0.01} max={0.5} step={0.01} format={(v) => v.toFixed(2)} onChange={setZeta} />
+          <ParamSlider label="감쇠비 ζ" value={zeta} min={0.01} max={0.5} step={0.005} format={(v) => v.toFixed(3)} onChange={setZeta} />
           <ParamSelect label="시간파형" value={display} options={DISPLAY_OPTIONS} onChange={setDisplay} />
         </>
       }

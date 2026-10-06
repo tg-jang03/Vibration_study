@@ -11,6 +11,8 @@ import { freeResponse, freeResponseAt, sdofProperties } from '../../lib/mck';
 const BASIC_SYSTEM = { mass: 1, stiffness: 1000 };
 const DURATION = 3;
 const POINTS = 751;
+/** 기본 모드 x₀ 최댓값 [mm]. 기본 모드는 이 값으로 그림·그래프 축척을 고정해 당기는 거리에 따라 폭이 달라 보이게 한다. */
+const BASIC_MAX_X0_MM = 20;
 
 type DisplayQuantity = 'x' | 'v' | 'a';
 
@@ -81,13 +83,16 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
   const currentAcceleration = clean(current.a);
   const restoringForce = clean(-system.stiffness * current.x);
   const equilibriumX = 350;
-  const animationScale = 58 / Math.max(amplitude * 1000, 2);
+  // 기본 모드는 축척 고정(20 mm = 58 px), 확장 모드는 진폭이 100 mm까지 커질 수 있어 진폭에 맞춘다
+  const animationScale = expanded ? 58 / Math.max(amplitude * 1000, 2) : 58 / BASIC_MAX_X0_MM;
+  const quarter = properties.period / 4;
+  const canStep = elapsed + quarter <= DURATION + 1e-9;
   const massX = equilibriumX + currentMm * animationScale;
   const forceLength = Math.min(100, Math.abs(restoringForce) * 5);
   const forceEnd = massX + (restoringForce === 0 ? 0 : Math.sign(restoringForce) * forceLength);
 
   const displayConfig = {
-    x: { values: shown.map((s) => 1000 * s.x), current: currentMm, label: '변위 x [mm]', limit: Math.max(2, amplitude * 1000) * 1.15 },
+    x: { values: shown.map((s) => 1000 * s.x), current: currentMm, label: '변위 x [mm]', limit: (expanded ? Math.max(2, amplitude * 1000) : BASIC_MAX_X0_MM) * 1.15 },
     v: { values: shown.map((s) => s.v), current: currentVelocity, label: '속도 v [m/s]', limit: Math.max(0.02, amplitude * properties.omegaN) * 1.15 },
     a: { values: shown.map((s) => s.a), current: currentAcceleration, label: '가속도 a [m/s²]', limit: Math.max(0.2, amplitude * properties.omegaN ** 2) * 1.15 },
   }[display];
@@ -110,6 +115,11 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
     reset();
     setter(value);
   };
+  /** 다음 T/4 지점(평형점·끝점)으로 한 칸 넘긴다. 클릭할 때만 상태를 바꾼다. */
+  const stepQuarter = () => {
+    setPlaying(false);
+    setElapsed((e) => Math.min(DURATION, (Math.floor(e / quarter + 1e-6) + 1) * quarter));
+  };
 
   return (
     <LabFrame
@@ -123,7 +133,7 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
               <ParamSlider label="강성 k" value={stiffness} min={100} max={4000} step={100} unit="N/m" onChange={change(setStiffness)} />
             </>
           )}
-          <ParamSlider label="처음 변위 x₀" value={x0Mm} min={expanded ? -20 : 2} max={20} step={1} unit="mm" onChange={change(setX0Mm)} />
+          <ParamSlider label="처음 변위 x₀" value={x0Mm} min={expanded ? -20 : 2} max={BASIC_MAX_X0_MM} step={1} unit="mm" onChange={change(setX0Mm)} />
           {expanded && (
             <>
               <ParamSlider label="처음 속도 v₀" value={v0} min={-0.5} max={0.5} step={0.05} unit="m/s" onChange={change(setV0)} />
@@ -137,6 +147,7 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
                 {elapsed >= DURATION ? '처음부터 재생' : playing ? '재생 중' : '재생'}
               </button>
               <button className="lab-button" type="button" onClick={() => setPlaying(false)} disabled={!playing}>정지</button>
+              <button className="lab-button" type="button" onClick={stepQuarter} disabled={!canStep}>T/4 앞으로</button>
               <button className="lab-button" type="button" onClick={reset}>처음 상태</button>
             </div>
           </div>
@@ -148,7 +159,7 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
           <Formula display tex={`f_n = \\dfrac{\\omega_n}{2\\pi} = ${texNumber(properties.frequencyHz)}\\ \\mathrm{Hz},\\qquad T = \\dfrac{1}{f_n} = ${texNumber(properties.period)}\\ \\mathrm{s}`} />
           <Formula display tex={`x(t) = ${texNumber(initial.x0)}\\cos(${texNumber(properties.omegaN)}t) + \\dfrac{${texNumber(initial.v0)}}{${texNumber(properties.omegaN)}}\\sin(${texNumber(properties.omegaN)}t)\\ \\mathrm{m}`} />
         </>
-      ) : <Formula display tex={`F = -kx = -(${system.stiffness})(${texNumber(current.x, 3)}) = ${texNumber(restoringForce, 3)}\\ \\mathrm{N}`} />}
+      ) : <Formula display tex={`F = -kx = -(${system.stiffness})(${texNumber(clean(current.x), 3)}) = ${texNumber(restoringForce, 3)}\\ \\mathrm{N}`} />}
       readouts={
         <ReadoutTable
           caption={expanded ? '계의 박자와 현재 상태' : '현재 순간과 한 번 왕복'}
@@ -175,8 +186,8 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
         { question: 'x₀만 두 배로 바꾸면 fₙ도 바뀌나요?', answer: '아닙니다. 진폭 A만 바뀌고, fₙ은 m과 k로만 정해집니다.' },
       ] : [
         { question: '재생 직후 오른쪽 끝점에서 속도와 복원력은 각각 어떤가요?', answer: '속도는 0입니다. 복원력은 왼쪽을 향하고 크기는 kx₀입니다. x₀ = 10 mm이면 10 N입니다.' },
-        { question: '질량이 평형 위치 x = 0을 지날 때 멈출까요, 가장 빠를까요?', answer: '가장 빠릅니다. 10 mm에서 놓으면 속도 크기는 약 0.316 m/s입니다.' },
-        { question: '당기는 거리를 두 배 늘리면 한 번 왕복 시간 T도 두 배가 될까요?', answer: '아닙니다. 움직이는 폭만 두 배가 되고 T는 약 0.1987 s로 같습니다.' },
+        { question: '질량이 평형 위치 x = 0을 지날 때 멈출까요, 가장 빠를까요?', answer: '가장 빠릅니다. 10 mm에서 놓으면 속도 크기는 약 0.316 m/s입니다. T/4 앞으로를 한 번 누르면 그 순간에서 멈춰 읽을 수 있습니다.' },
+        { question: '당기는 거리를 두 배 늘리면 한 번 왕복 시간 T도 두 배가 될까요?', answer: '아닙니다. 움직이는 폭·복원력·최대 속도는 두 배가 되지만 T는 약 0.1987 s로 같습니다.' },
       ]}
       footer={expanded ? '감쇠가 없는 선형 질량-스프링 모델. 모든 계산은 SI 단위의 해석해를 사용합니다.' : '기본값: m = 1 kg, k = 1000 N/m, 감쇠 없음. P0-2에서 m·k·초기 속도를 직접 바꿉니다.'}
     >

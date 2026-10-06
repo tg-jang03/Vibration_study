@@ -35,7 +35,7 @@ const rulerSegments = (deflected: boolean): FigAnnotation[] => {
 export const rulerQuestion: FigureSpec = {
   id: 'fig-p0-1-1',
   caption:
-    '그림 1. 책상에 눌러 둔 자를 아래로 당긴 순간. 회색 점선은 힘이 균형을 이루는 원래 자리이고, 파랑 선은 당겨진 자다. 손을 놓으면 자는 원래 자리 쪽으로 움직이지만 거기서 바로 멈추지 않는다.',
+    '그림 1. 책상 끝에 눌러 둔 자를 아래로 당긴 순간. 왼쪽 빗금은 자를 붙잡아 둔 곳(책상 끝과 누르는 손)이다. 회색 점선은 힘이 균형을 이루는 원래 자리이고, 파랑 선은 당겨진 자다. 손을 놓으면 자는 원래 자리 쪽으로 움직이지만 거기서 바로 멈추지 않는다.',
   panels: [
     {
       title: '당겼다가 손을 놓기 직전',
@@ -71,24 +71,27 @@ export const equilibriumAndRestoringForce: FigureSpec = {
         { type: 'ground', x1: 0.9, y1: 0.15, x2: 0.9, y2: 1.2, side: 'left' },
         { type: 'spring', x1: 0.9, y1: 0.68, x2: 4.5, y2: 0.68, coils: 7, label: 'k' },
         { type: 'rect', x1: 4.5, x2: 5.9, y1: 0.18, y2: 1.18, label: 'm', color: 'c1' },
-        { type: 'line', x1: 5.2, y1: 0.05, x2: 5.2, y2: 1.35, dash: true, color: 'muted' },
+        // 평형 점선은 질량 위·아래로만 그려 'm' 글자를 가리지 않게 한다
+        { type: 'line', x1: 5.2, y1: 0.02, x2: 5.2, y2: 0.18, dash: true, color: 'muted' },
+        { type: 'line', x1: 5.2, y1: 1.18, x2: 5.2, y2: 1.3, dash: true, color: 'muted' },
         { type: 'text', x: 5.2, y: 1.42, text: '평형', anchor: 'middle', color: 'muted' },
       ],
     },
     {
       title: '오른쪽으로 당김: x > 0, 복원력은 왼쪽',
       frame: false,
-      height: 105,
+      height: 115,
       x: { range: [0, 10] },
-      y: { range: squareYRange([0, 10], 105) },
+      y: { range: squareYRange([0, 10], 115) },
       series: [],
       annotations: [
         { type: 'ground', x1: 0.9, y1: 0.15, x2: 0.9, y2: 1.2, side: 'left' },
         { type: 'spring', x1: 0.9, y1: 0.68, x2: 6.2, y2: 0.68, coils: 9, label: '늘어난 스프링 k' },
         { type: 'rect', x1: 6.2, x2: 7.6, y1: 0.18, y2: 1.18, label: 'm', color: 'c1' },
-        { type: 'line', x1: 5.2, y1: 0.05, x2: 5.2, y2: 1.35, dash: true, color: 'muted' },
-        { type: 'arrow', x1: 5.2, y1: 1.42, x2: 6.9, y2: 1.42, label: '변위 x', color: 'c2' },
-        { type: 'arrow', x1: 6.2, y1: 0.68, x2: 4.5, y2: 0.68, double: false, label: '복원력 F = −kx', color: 'warn' },
+        { type: 'line', x1: 5.2, y1: 0.02, x2: 5.2, y2: 1.2, dash: true, color: 'muted' },
+        // 변위는 질량 아래, 복원력은 질량 위에서 왼쪽으로 (스프링·점선과 겹치지 않게)
+        { type: 'arrow', x1: 5.2, y1: 0.07, x2: 6.9, y2: 0.07, label: '변위 x', color: 'c3', labelDx: -28 },
+        { type: 'arrow', x1: 6.9, y1: 1.32, x2: 5.3, y2: 1.32, double: false, label: '복원력 F = −kx', color: 'c2' },
       ],
     },
   ],
@@ -102,7 +105,7 @@ export const oneCycle: FigureSpec = {
       series: [{ x: T, y: RESPONSE.map((s) => 1000 * s.x), width: 2.4 }],
       annotations: [
         { type: 'point', x: 0, y: 10, label: '끝점: 멈춤', dx: 12, dy: -12, color: 'warn' },
-        { type: 'point', x: PROPS.period / 4, y: 0, label: '평형점: 가장 빠름', dx: 12, dy: -12, color: 'c2' },
+        { type: 'point', x: PROPS.period / 4, y: 0, label: '평형점: 가장 빠름', dx: 12, dy: -12, color: 'c4' },
         { type: 'point', x: PROPS.period / 2, y: -10, label: '반대쪽 끝점', dx: 12, dy: 18, color: 'warn' },
         { type: 'arrow', x1: 0, y1: 13, x2: PROPS.period, y2: 13, label: `주기 T = ${formatNumber(PROPS.period, 4)} s`, color: 'c3' },
       ],
@@ -140,7 +143,7 @@ export const energyExchange: FigureSpec = {
 export const modelMap: FigureSpec = {
   id: 'fig-p0-1-5',
   caption:
-    '그림 5. 책상 끝의 자, 그네, 기초 위의 기계는 생김새가 다르지만 같은 질문으로 단순화할 수 있다. 무엇이 움직이는 질량인가? 무엇이 원래 자리로 되돌리는 스프링 역할을 하는가? 이 두 가지를 찾으면 질량-스프링 모델로 같은 언어를 쓸 수 있다.',
+    '그림 5. 책상 끝의 자, 그네, 기초 위의 기계는 생김새가 다르지만 같은 두 질문으로 단순화할 수 있다. 무엇이 움직이는 질량인가? 무엇이 원래 자리로 되돌리는 힘을 만드는가? 오른쪽 끝은 기초 위 기계를 예로 그 답을 질량 m과 스프링 k로 바꿔 그린 모델이다. 세 물체 각각에서 무엇이 m과 k인지는 아래 표에 정리했다.',
   panels: [
     {
       frame: false,

@@ -29,6 +29,7 @@ export default function SineBasicsLab() {
   }, [amp, freq, phiDeg, showRef]);
 
   const period = 1 / freq;
+  const phiRad = (phiDeg * Math.PI) / 180;
   const shift = (phiDeg / 360) * period; // φ > 0 이면 앞섬(꼭대기가 먼저), φ < 0 이면 늦음
   const shiftText = phiDeg === 0 ? '어긋남 없음' : phiDeg > 0 ? `${texNumber(Math.abs(shift))} s 앞섬` : `${texNumber(Math.abs(shift))} s 늦음`;
 
@@ -46,7 +47,8 @@ export default function SineBasicsLab() {
       }
       formulas={
         <>
-          <Formula display tex={`x(t) = A\\cos(2\\pi f t + \\varphi) = ${texNumber(amp, 2)}\\cos(2\\pi\\cdot ${texNumber(freq)}\\,t ${phiDeg >= 0 ? '+' : '-'} ${Math.abs(phiDeg)}^\\circ)`} />
+          <Formula display tex={`x(t) = A\\cos(2\\pi f t + \\varphi) = ${texNumber(amp, 2)}\\cos(2\\pi\\cdot ${texNumber(freq)}\\,t ${phiDeg >= 0 ? '+' : '-'} ${texNumber(Math.abs(phiRad), 4)})`} />
+          <Formula display tex={`\\varphi = ${phiDeg}^\\circ = ${phiDeg}\\times\\dfrac{\\pi}{180} = ${texNumber(phiRad, 4)}\\ \\mathrm{rad}`} />
           <Formula display tex={`T = \\dfrac{1}{f} = \\dfrac{1}{${texNumber(freq)}} = ${texNumber(period)}\\ \\mathrm{s}`} />
           <Formula display tex={`\\Delta t = \\dfrac{\\varphi}{360^\\circ}\\times T = \\dfrac{${phiDeg}}{360}\\times ${texNumber(period)} = ${texNumber(shift)}\\ \\mathrm{s}`} />
         </>

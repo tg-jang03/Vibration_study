@@ -46,11 +46,14 @@ export default function DampingLab() {
   }, [properties.omegaD, system, x0]);
 
   const logDecrement = properties.logDecrement ?? Number.NaN;
-  const nextPeakRatio = underdamped ? Math.exp(-logDecrement) : Number.NaN;
-  const estimatedZeta = underdamped
-    ? logDecrement / Math.sqrt((2 * Math.PI) ** 2 + logDecrement ** 2)
+  // 읽음값의 "측정"은 그려진 파형의 첫 두 양의 피크에서 잰다 (2초 안에 피크가 둘 없으면 —)
+  const hasTwoPeaks = underdamped && peakData.x.length >= 2 && peakData.x[1] > 0;
+  const measuredPeakRatio = hasTwoPeaks ? peakData.x[1] / peakData.x[0] : Number.NaN;
+  const measuredDelta = hasTwoPeaks ? clean(Math.log(peakData.x[0] / peakData.x[1])) : Number.NaN;
+  const estimatedZeta = hasTwoPeaks
+    ? measuredDelta / Math.sqrt((2 * Math.PI) ** 2 + measuredDelta ** 2)
     : Number.NaN;
-  const halfCycles = underdamped ? (logDecrement === 0 ? Number.POSITIVE_INFINITY : Math.log(2) / logDecrement) : Number.NaN;
+  const halfCycles = hasTwoPeaks ? (measuredDelta === 0 ? Number.POSITIVE_INFINITY : Math.log(2) / measuredDelta) : Number.NaN;
   const frequencyRatio = underdamped ? (properties.omegaD as number) / properties.omegaN : Number.NaN;
   const regimeName = properties.regime === 'undamped'
     ? '감쇠 없음'
@@ -108,10 +111,10 @@ export default function DampingLab() {
           caption="감쇠가 바꾸는 박자와 줄어드는 속도"
           rows={[
             { label: '감쇠 주파수비 ωd/ωₙ', value: frequencyRatio, sig: 5 },
-            { label: '다음/이전 양의 피크', value: nextPeakRatio, sig: 4 },
-            { label: '대수감쇠율 δ', value: logDecrement, sig: 5 },
+            { label: '다음/이전 양의 피크 (파형)', value: measuredPeakRatio, theory: underdamped ? Math.exp(-logDecrement) : undefined, sig: 4 },
+            { label: '대수감쇠율 δ (파형)', value: measuredDelta, theory: underdamped ? logDecrement : undefined, sig: 5 },
             { label: 'δ로 추정한 ζ', value: estimatedZeta, theory: underdamped ? zeta : undefined, sig: 4 },
-            { label: '진폭 반감까지', value: halfCycles, unit: '주기', sig: 4 },
+            { label: '진폭 반감까지', value: halfCycles, unit: Number.isNaN(halfCycles) ? undefined : '주기', sig: 4 },
           ]}
         />
       }
@@ -133,7 +136,7 @@ export default function DampingLab() {
           answer: '넘어가지 않습니다. 임계감쇠와 과감쇠 모두 진동 없이 같은 쪽에서 평형으로 돌아옵니다.',
         },
       ]}
-      footer="m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. ζ ≥ 1에서는 반복 피크·대수감쇠율이 정의되지 않아 읽음값을 —로 표시합니다."
+      footer="m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. 피크 비·δ는 그려진 파형의 첫 두 양의 피크에서 재고, 이론은 δ = 2πζ/√(1−ζ²)입니다. ζ ≥ 1이거나 2초 안에 같은 방향 피크가 둘 없으면 읽음값을 —로 표시합니다."
     >
       <Plot
         series={series}

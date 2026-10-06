@@ -73,7 +73,7 @@ const exampleResponse = forcedResponse(systemFor(ZETA), exampleInput, { x0: 0, v
 const mm = (v: number) => 1000 * v;
 export const transientAndSteady: FigureSpec = {
   id: 'fig-p0-4-2',
-  caption: `그림 2. 고유진동수 5 Hz, ζ = 0.05인 계에 8 Hz(r = 1.6) 힘을 정지 상태에서 걸기 시작했다. 위: 실제 변위(파랑)는 처음 0.5초 동안 들쭉날쭉하다가 점점 회색 점선(정상상태 응답, 8 Hz)과 겹친다. 아래: 둘의 차이인 과도 응답(초록)은 5 Hz 근처 박자로 흔들리며 P0-3의 포락선처럼 줄어든다. 약 ${f(3 * P0_4_REFERENCE.transientTau, 2)}초(3τ) 뒤에는 처음의 5 % 아래다.`,
+  caption: `그림 2. 고유진동수 5 Hz, ζ = 0.05인 계에 8 Hz(r = 1.6) 힘을 정지 상태에서 걸기 시작했다. 위: 실제 변위(파랑)는 처음 1초 정도 들쭉날쭉하다가 점점 회색 점선(정상상태 응답, 8 Hz)과 겹친다. 아래: 둘의 차이인 과도 응답(초록)은 5 Hz 근처 박자로 흔들리며 P0-3의 포락선처럼 줄어든다. 약 ${f(3 * P0_4_REFERENCE.transientTau, 2)}초(3τ) 뒤에는 처음의 5 % 아래다.`,
   panels: [
     {
       series: [

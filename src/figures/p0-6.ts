@@ -1,5 +1,5 @@
 /** P0-6 "회전기계의 진동: 불평형과 1X" 본문 그림. 계산은 lib/mck 해석해에서 수행한다. */
-import { grid, squareYRange, type FigureSpec } from '../lib/figure';
+import { grid, squareYRange, type FigPanel, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
 import { unbalanceForce, unbalancePeak, unbalanceResponseFactor, unbalanceSteadyState } from '../lib/mck';
 
@@ -58,7 +58,7 @@ export const P0_6_REFERENCE = {
 export const unbalanceModel: FigureSpec = {
   id: 'fig-p0-6-1',
   caption:
-    '그림 1. 불평형이 있는 1자유도 회전체 모델. 회전 중심 O에서 편심 거리 e만큼 떨어진 곳에 불평형 질량 m_u가 붙어 각속도 Ω로 회전한다. 회전체와 함께 도는 원심력 F_u = m_u e Ω²의 수평 방향 성분 F_x(t) = F_u cos(Ωt)가 베어링과 기초를 주기적으로 흔든다.',
+    '그림 1. 불평형이 있는 1자유도 회전체 모델. 회전체와 함께 흔들리는 기계 전체(회색 상자, 질량 M)가 스프링 k와 감쇠기 c로 지지되어 있다. 원판(파랑)의 회전 중심 O에서 거리 e만큼 떨어진 곳에 불평형 질량 m_u가 붙어 각속도 Ω로 회전한다. 함께 도는 원심력 F_u = m_u e Ω²의 수평 성분 F_x(t) = F_u cos(Ωt)가 기계를 좌우로 흔든다.',
   panels: [
     {
       frame: false,
@@ -71,12 +71,16 @@ export const unbalanceModel: FigureSpec = {
         { type: 'ground', x1: 1.2, y1: 0.5, x2: 1.2, y2: 3.5, side: 'left' },
         { type: 'spring', x1: 1.2, y1: 2.5, x2: 4.5, y2: 2.5, coils: 6, label: '강성 k' },
         { type: 'damper', x1: 1.2, y1: 1.5, x2: 4.5, y2: 1.5, label: '감쇠 c' },
-        // 회전 기계 하우징(질량 M)
-        { type: 'rect', x1: 4.5, x2: 11.5, y1: 0.8, y2: 3.2, label: '기계 전체 질량 M', color: 'muted' },
-        // 회전 원판 (반경 0.9)
-        { type: 'circle', x: 8.0, y: 2.0, r: 0.85, color: 'c1' },
-        // 회전 중심 O
-        { type: 'point', x: 8.0, y: 2.0, label: '회전 중심 O', color: 'muted', dx: -55, dy: -12 },
+        // 회전체와 함께 흔들리는 기계 전체(질량 M). 글자는 원판과 겹치지 않게 왼쪽 위에 따로 쓴다
+        { type: 'rect', x1: 4.5, x2: 11.5, y1: 0.8, y2: 3.2, color: 'muted' },
+        { type: 'text', x: 4.75, y: 2.85, text: '진동하는 전체 질량 M', color: 'muted' },
+        // 회전 원판 (반지름 0.85 단위 → px: 820 px / 14 단위)
+        { type: 'circle', x: 8.0, y: 2.0, r: 0.85 * (820 / 14), fill: true, color: 'c1' },
+        { type: 'text', x: 7.05, y: 1.95, text: '회전 Ω', anchor: 'end', color: 'muted' },
+        // 회전 중심 O (글자는 원판 안 아래쪽)
+        { type: 'point', x: 8.0, y: 2.0, color: 'text' },
+        { type: 'text', x: 8.0, y: 2.0, text: '회전 중심 O', anchor: 'middle', color: 'text', dy: 22 },
+        { type: 'text', x: 8.12, y: 2.3, text: 'e', anchor: 'end', color: 'warn', dx: -4 },
         // 편심 질량 mu (45도 위치)
         {
           type: 'line',
@@ -91,11 +95,9 @@ export const unbalanceModel: FigureSpec = {
           type: 'point',
           x: 8.0 + 0.6 * Math.cos(Math.PI / 4),
           y: 2.0 + 0.6 * Math.sin(Math.PI / 4),
-          label: '불평형 질량 m_u',
           color: 'warn',
-          dx: 8,
-          dy: 14,
         },
+        { type: 'text', x: 8.95, y: 2.2, text: '불평형 질량 m_u', anchor: 'start', color: 'warn' },
         // 원심력 화살표
         {
           type: 'arrow',
@@ -124,14 +126,18 @@ const forceCurve = rpmAxis.map((rpm) => {
 
 export const centrifugalForceCurve: FigureSpec = {
   id: 'fig-p0-6-2',
-  caption: `그림 2. 회전수(rpm)에 따른 불평형 원심력 크기(F_u = m_u e Ω²). 1500 rpm에서 약 ${f(P0_6_REFERENCE.low.force, 3)} N이던 원심력이 회전수가 2배인 3000 rpm에서는 4배인 ${f(P0_6_REFERENCE.resonance.force, 3)} N으로 커지고, 6000 rpm에서는 16배인 ${f(P0_6_REFERENCE.high.force, 3)} N으로 폭발적으로 증가한다. 회전 속도가 올라갈수록 기계가 받는 불평형 힘은 가속된다.`,
+  caption: `그림 2. 회전수(rpm)에 따른 불평형 원심력 크기(F_u = m_u e Ω², m_u e = ${f(ME, 2)} kg·m). 1500 rpm에서 약 ${f(P0_6_REFERENCE.low.force, 3)} N이던 원심력이 회전수가 2배인 3000 rpm에서는 4배인 ${f(P0_6_REFERENCE.resonance.force, 3)} N, 4배인 6000 rpm에서는 16배인 ${f(P0_6_REFERENCE.high.force, 4)} N이 된다. 회전수가 올라갈수록 곡선이 가팔라지는 것이 제곱 비례의 모양이다.`,
   panels: [
     {
       series: [{ x: rpmAxis, y: forceCurve, label: '원심력 F_u [N]', color: 'warn', width: 2.4 }],
       annotations: [
-        { type: 'point', x: 1500, y: P0_6_REFERENCE.low.force, label: `1500 rpm: ${f(P0_6_REFERENCE.low.force, 3)} N`, color: 'warn', dx: 10, dy: -10 },
-        { type: 'point', x: 3000, y: P0_6_REFERENCE.resonance.force, label: `3000 rpm: ${f(P0_6_REFERENCE.resonance.force, 3)} N (4배)`, color: 'warn', dx: 10, dy: -10 },
-        { type: 'point', x: 6000, y: P0_6_REFERENCE.high.force, label: `6000 rpm: ${f(P0_6_REFERENCE.high.force, 3)} N (16배)`, color: 'warn', dx: -130, dy: -12 },
+        // 아래로 볼록한 곡선이라 점의 왼쪽 위는 비어 있다 → 글자를 왼쪽 위에 둔다
+        { type: 'point', x: 1500, y: P0_6_REFERENCE.low.force, color: 'warn' },
+        { type: 'text', x: 1500, y: P0_6_REFERENCE.low.force, text: `1500 rpm: ${f(P0_6_REFERENCE.low.force, 3)} N`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 3000, y: P0_6_REFERENCE.resonance.force, color: 'warn' },
+        { type: 'text', x: 3000, y: P0_6_REFERENCE.resonance.force, text: `3000 rpm: ${f(P0_6_REFERENCE.resonance.force, 3)} N (4배)`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 6000, y: P0_6_REFERENCE.high.force, color: 'warn' },
+        { type: 'text', x: 6000, y: P0_6_REFERENCE.high.force, text: `6000 rpm: ${f(P0_6_REFERENCE.high.force, 4)} N (16배)`, anchor: 'end', color: 'warn', dx: -10, dy: -4, bold: true },
       ],
       x: { range: [0, 6000], ticks: [0, 1500, 3000, 4500, 6000], label: '회전수 [rpm]' },
       y: { range: [0, 4500], ticks: [0, 1000, 2000, 3000, 4000], label: '원심력 크기 F_u [N]' },
@@ -147,10 +153,10 @@ const x3 = t3.map((t) => mm(res3000.displacementAmplitude) * Math.cos(2 * Math.P
 
 export const timeWaveform1X: FigureSpec = {
   id: 'fig-p0-6-3',
-  caption: `그림 3. 3000 rpm(50 Hz) 정상상태에서 1회전 주기(T = 20 ms) 동안의 불평형 외력 수평 성분(주황 점선)과 수평 변위 응답(파랑 실선). 회전수가 50 Hz이므로 수평 진동도 정확히 50 Hz 정현파로 나타난다(1X 진동). 공진(3000 rpm)에서는 변위가 힘보다 90°(1/4 주기, 5 ms) 늦게 정점을 찍는다.`,
+  caption: `그림 3. 3000 rpm(50 Hz) 정상상태에서 세 바퀴(60 ms, 한 바퀴 T = 20 ms) 동안의 불평형 외력 수평 성분(위, 주황 점선)과 수평 변위 응답(아래, 파랑 실선). 회전수가 50 Hz이므로 수평 진동도 정확히 50 Hz 정현파로 나타난다(1X 진동). 공진(3000 rpm)에서는 변위가 힘보다 90°(1/4 주기, 5 ms) 늦게 정점을 찍는다.`,
   panels: [
     {
-      title: '수평 외력 성분 F_x(t) [환산 진폭]',
+      title: '수평 외력 성분 F_x(t)',
       series: [{ x: t3, y: fx3.map((v) => v / 1000), label: '수평 외력 F_x [kN]', color: 'warn', width: 2, dash: true }],
       annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
       x: { range: [0, 0.06], label: '시간 t [s]', ticks: [0, 0.02, 0.04, 0.06] },
@@ -191,7 +197,9 @@ export const unbalanceBode: FigureSpec = {
       annotations: [
         { type: 'hline', y: 1, color: 'muted', dash: true },
         { type: 'vline', x: 1, label: 'r = 1 (임계속도)', color: 'warn', dash: true },
-        { type: 'point', x: 1, y: 10, label: '1/(2ζ) = 10', color: 'c1', dx: 10, dy: -10 },
+        // 세로선 글자(오른쪽 위)와 겹치지 않게 봉우리 왼쪽에 쓴다
+        { type: 'point', x: 1, y: 10, color: 'c1' },
+        { type: 'text', x: 1, y: 10, text: 'ζ = 0.05: 1/(2ζ) = 10', anchor: 'end', color: 'c1', dx: -10, dy: 4, bold: true },
       ],
       x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
       y: { range: [0, 11], ticks: [0, 1, 2, 4, 6, 8, 10], label: '진폭비' },
@@ -225,7 +233,7 @@ const staticFactor = rAxis.map((r) => {
 export const staticVsUnbalance: FigureSpec = {
   id: 'fig-p0-6-5',
   caption:
-    '그림 5. 일반 강제진동(파랑, P0-4)과 불평형 진동(주황, P0-6)의 증폭 특성 비교 (ζ = 0.05). 일반 강제진동은 힘의 크기가 일정하여 r = 0에서 정적 처짐 1을 가지며 고속에서는 0으로 꺼진다. 반면 불평형 진동은 힘이 속도 제곱에 비례하므로 r = 0에서 0이고, 고속(r ≫ 1)에서는 진폭비 1(편심량 m_u e / M)로 수렴한다.',
+    '그림 5. 일반 강제진동(파랑, P0-4)과 불평형 진동(주황, P0-6)의 증폭 특성 비교 (ζ = 0.05). 일반 강제진동은 힘의 크기가 일정하여 r = 0에서 정적 처짐 1을 가지며 고속에서는 0으로 줄어든다. 반면 불평형 진동은 힘이 속도 제곱에 비례하므로 r = 0에서 0이고, 고속(r ≫ 1)에서는 진폭비 1(편심 거리 m_u e / M)로 수렴한다.',
   panels: [
     {
       series: [
@@ -233,8 +241,10 @@ export const staticVsUnbalance: FigureSpec = {
         { x: rAxis, y: curveZ005.map((c) => Math.min(c.factor, 12)), label: '불평형 원심력 진동 (P0-6)', color: 'c2', width: 2.2 },
       ],
       annotations: [
-        { type: 'point', x: 0, y: 1, label: 'P0-4: 정적 처짐 (1)', color: 'c1', dx: 10, dy: 10 },
-        { type: 'point', x: 0, y: 0, label: 'P0-6: 정지 시 힘 없음 (0)', color: 'c2', dx: 10, dy: -12 },
+        { type: 'point', x: 0, y: 1, color: 'c1' },
+        { type: 'text', x: 0, y: 1, text: 'P0-4: 1에서 출발', color: 'c1', dx: 8, dy: -10, bold: true },
+        { type: 'point', x: 0, y: 0, color: 'c2' },
+        { type: 'text', x: 0, y: 0, text: 'P0-6: 0에서 출발', color: 'c2', dx: 8, dy: -4, bold: true },
         { type: 'hline', y: 1, color: 'muted', dash: true },
         { type: 'vline', x: 1, color: 'muted', dash: true },
       ],
@@ -246,72 +256,106 @@ export const staticVsUnbalance: FigureSpec = {
 };
 
 // ── 그림 6: 런업 중 임계속도 통과 파형 ────────────────────────
-const tRun = grid(0, 4.0, 1201);
+// 회전수를 1초에 1200 rpm(20 Hz)씩 0 → 6000 rpm(100 Hz)까지 올린다. t = 2.5 s에 50 Hz(임계속도) 통과.
+// 각 순간의 정상상태 진폭·위상으로 그린 개념도. 100 Hz에서도 한 주기에 12점 이상이 되도록 점을 촘촘히 둔다.
+const RUN_T = 5;
+const RUN_RATE_HZ = 20; // Hz/s
+const tRun = grid(0, RUN_T, 6001);
+const runUpEnvT = grid(0, RUN_T, 501);
+const runUpAmp = (t: number) => unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).factor * E_CG_MM;
 const runUpDisp = tRun.map((t) => {
-  // 회전수가 0에서 60 Hz(3600 rpm)까지 선형 가속 (t = 2.5 s에 50 Hz 임계속도 통과)
-  const fInst = 20 * t; // 0 ~ 80 Hz
-  const r = fInst / FN;
-  const factor = unbalanceResponseFactor(r, ZETA).factor;
-  const phi = unbalanceResponseFactor(r, ZETA).phaseLag;
-  const currentAmp = Math.min(factor * E_CG_MM, 1.0);
-  // 위상 적분 φ(t) = 2π * ∫ (20τ) dτ = 2π * 10 t²
-  const phaseAngle = 2 * Math.PI * 10 * t ** 2 - phi;
-  return currentAmp * Math.cos(phaseAngle);
+  const phi = unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).phaseLag;
+  // 회전 각도 θ(t) = 2π ∫ 20τ dτ = 2π · 10 t²
+  const theta = 2 * Math.PI * (RUN_RATE_HZ / 2) * t ** 2;
+  return runUpAmp(t) * Math.cos(theta - phi);
 });
+const runUpEnv = runUpEnvT.map(runUpAmp);
+const RUN_PEAK_MM = E_CG_MM * peak.responseFactor;
 
 export const runUpTransient: FigureSpec = {
   id: 'fig-p0-6-6',
-  caption:
-    '그림 6. 기동 런업(Run-up) 중 임계속도를 통과할 때의 축 진동 파형(개념도). 회전수가 서서히 올라가면서 저속에서는 조용하다가, 고유진동수(50 Hz, 3000 rpm)를 통과하는 약 2.5초 지점에서 진폭이 급격히 1 mm까지 솟구친다(임계속도 통과). 임계속도를 안전하게 넘어서면 진폭이 다시 0.1 mm(편심 거리)로 뚝 떨어져 안정화된다.',
+  caption: `그림 6. 회전수를 1초에 1200 rpm씩 0에서 6000 rpm까지 올리는 런업(Run-up) 중의 수평 변위 파형(파랑)과 진폭(회색 점선). 각 순간의 정상상태 진폭으로 그린 개념도다. 저속에서는 진폭이 작다가, 고유진동수(50 Hz, 3000 rpm)를 지나는 2.5초 근처에서 ${f(RUN_PEAK_MM, 2)} mm(편심 거리 ${f(E_CG_MM, 2)} mm의 10배)까지 커진다. 지나고 나면 다시 줄어 6000 rpm(r = 2)에서 ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm가 되고, 회전수를 더 올리면 편심 거리 ${f(E_CG_MM, 2)} mm에 다가간다.`,
   panels: [
     {
-      series: [{ x: tRun, y: runUpDisp, label: '축 수평 변위 x(t) [mm]', color: 'c1', width: 1.8 }],
+      series: [
+        { x: tRun, y: runUpDisp, label: '수평 변위 x(t)', color: 'c1', width: 1.2 },
+        { x: runUpEnvT, y: runUpEnv, label: '진폭 X', color: 'muted', width: 1.4, dash: true },
+        { x: runUpEnvT, y: runUpEnv.map((v) => -v), color: 'muted', width: 1.4, dash: true },
+      ],
       annotations: [
         { type: 'hline', y: 0, color: 'muted', dash: true },
-        { type: 'vline', x: 2.5, label: '임계속도 통과 (3000 rpm)', color: 'warn', dash: true },
-        { type: 'point', x: 2.5, y: 1.0, label: '공진 피크 (1.0 mm)', color: 'warn', dx: 10, dy: -12 },
-        { type: 'arrow', x1: 3.5, y1: 0.35, x2: 3.5, y2: 0.12, label: '안정화 (0.1 mm)', color: 'muted', double: false, labelDy: -12 },
+        { type: 'vline', x: 2.5, color: 'warn', dash: true },
+        { type: 'point', x: 2.5, y: RUN_PEAK_MM, color: 'warn' },
+        { type: 'text', x: 2.5, y: RUN_PEAK_MM, text: `공진 피크 ${f(RUN_PEAK_MM, 2)} mm (3000 rpm, t = 2.5 s)`, color: 'warn', dx: 10, dy: 4, bold: true },
+        { type: 'text', x: RUN_T, y: P0_6_REFERENCE.high.amplitudeMm, text: `6000 rpm(r = 2): ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm`, anchor: 'end', color: 'text', dx: -4, dy: -14, bold: true },
       ],
-      x: { range: [0, 4.0], label: '가속 시간 t [s]', ticks: [0, 1, 2, 2.5, 3, 4] },
-      y: { range: [-1.2, 1.2], ticks: [-1, -0.5, 0, 0.5, 1], label: '변위 [mm]' },
+      x: { range: [0, RUN_T], label: '가속 시간 t [s] (회전수 = 1200 × t rpm)', ticks: [0, 1, 2, 2.5, 3, 4, 5] },
+      y: { range: [-1.3, 1.3], ticks: [-1, -0.5, 0, 0.5, 1], label: '변위 [mm]' },
       height: 200,
     },
   ],
 };
 
-// ── 그림 7: 초임계 영역의 자기 조심 현상 (Self-centering) ──────
+// ── 그림 7: 초임계 영역의 질량 중심 회전 (Self-centering) ──────
+// 로터를 축 방향에서 본 모습: 베어링 중심 B, 축 중심 O가 그리는 궤도(점선), 축 단면(파랑 원), O에서 본 무거운 점 방향(화살표).
+const PX = 820 / 10; // 단위 → px (x 범위 10)
+const B_X = 2.6;
+const C_Y = 1.4;
+const ORBIT_R = 0.8;
+const O_X = B_X + ORBIT_R;
+const SHAFT_R = 0.3;
+const HEAVY_LEN = 0.5;
+
+function selfCenteringPanel(supercritical: boolean): FigPanel {
+  const tipX = supercritical ? O_X - HEAVY_LEN : O_X + HEAVY_LEN;
+  const lines = supercritical
+    ? ['변위가 힘의 반대쪽 (위상 ≈ 180°)', '축 중심 O가 무거운 점 반대쪽으로 밀린다', '무거운 점은 궤도 안쪽, G는 베어링 중심에 머문다']
+    : ['변위가 힘과 같은 쪽 (위상 ≈ 0°)', '축 중심 O가 무거운 점 쪽으로 밀린다', '무거운 점은 궤도 바깥쪽을 향한다'];
+  return {
+    title: supercritical
+      ? '초임계 (r ≫ 1, 고속): 위상 지연 ≈ 180° — 질량 중심 회전'
+      : '아임계 (r ≪ 1, 저속): 위상 지연 ≈ 0°',
+    frame: false,
+    height: 190,
+    x: { range: [0, 10] },
+    y: { range: squareYRange([0, 10], 190) },
+    series: [],
+    annotations: [
+      // 궤도와 베어링 중심
+      { type: 'circle', x: B_X, y: C_Y, r: ORBIT_R * PX, dash: true, color: 'muted' },
+      { type: 'text', x: B_X, y: C_Y + ORBIT_R, text: 'O의 궤도', anchor: 'middle', color: 'muted', dy: -6 },
+      { type: 'line', x1: B_X - 0.1, y1: C_Y, x2: B_X + 0.1, y2: C_Y, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.1, x2: B_X, y2: C_Y + 0.1, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.12, x2: B_X, y2: 0.42, color: 'muted', dash: true, width: 1 },
+      {
+        type: 'text',
+        x: B_X,
+        y: 0.2,
+        text: supercritical ? '베어링 중심 = 질량 중심 G' : '베어링 중심',
+        anchor: 'middle',
+        color: supercritical ? 'c3' : 'text',
+        bold: true,
+      },
+      // 축 단면과 축 중심 O
+      { type: 'circle', x: O_X, y: C_Y, r: SHAFT_R * PX, fill: true, color: 'c1' },
+      { type: 'point', x: O_X, y: C_Y, color: 'c1' },
+      { type: 'text', x: O_X, y: C_Y, text: 'O', anchor: 'middle', color: 'c1', dy: -9, bold: true },
+      // O에서 본 무거운 점의 방향
+      { type: 'arrow', x1: O_X, y1: C_Y, x2: tipX, y2: C_Y, color: 'warn', double: false },
+      supercritical
+        ? { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'end', color: 'warn', dy: -10, bold: true }
+        : { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'start', color: 'warn', dx: 6, dy: 4, bold: true },
+      // 설명
+      { type: 'text', x: 5.2, y: C_Y + 0.4, text: lines[0], color: 'text', bold: true },
+      { type: 'text', x: 5.2, y: C_Y, text: lines[1], color: 'text' },
+      { type: 'text', x: 5.2, y: C_Y - 0.4, text: lines[2], color: 'warn' },
+    ],
+  };
+}
+
 export const selfCenteringDiagram: FigureSpec = {
   id: 'fig-p0-6-7',
   caption:
-    '그림 7. 회전 속도에 따른 회전축과 질량 중심의 거동 (자기 조심 현상). 왼쪽(아임계 r ≪ 1): 위상 지연이 0°에 가까워 무거운 점 m_u가 바깥쪽으로 튀어나오며 축 중심 O가 불평형 쪽으로 함께 쏠린다. 오른쪽(초임계 r ≫ 1): 위상 지연이 180°가 되어 무거운 점 m_u가 회전 중심 안쪽으로 파고들고, 실제 질량 중심 G가 회전 중심에 오게 된다. 축은 질량 중심을 축으로 자전하여 진동이 편심 거리 e_cg로 스스로 제한된다.',
-  panels: [
-    {
-      title: '아임계 영역 (r ≪ 1, 저속): 위상 지연 0° — 무거운 점이 바깥으로 쏠림',
-      frame: false,
-      height: 140,
-      x: { range: [0, 10] },
-      y: { range: squareYRange([0, 10], 140) },
-      series: [],
-      annotations: [
-        { type: 'circle', x: 5.0, y: 1.2, r: 0.9, color: 'c1' },
-        { type: 'point', x: 5.0, y: 1.2, label: '회전 중심 O', color: 'muted', dx: -55, dy: -12 },
-        { type: 'point', x: 5.7, y: 1.2, label: '무거운 점 m_u (바깥쪽)', color: 'warn', dx: 8, dy: 12 },
-        { type: 'arrow', x1: 5.0, y1: 1.2, x2: 6.2, y2: 1.2, label: '쏠림 방향', color: 'warn', double: false, labelDy: -8 },
-      ],
-    },
-    {
-      title: '초임계 영역 (r ≫ 1, 고속): 위상 지연 180° — 질량 중심 G 둘레로 자전 (자기 조심)',
-      frame: false,
-      height: 140,
-      x: { range: [0, 10] },
-      y: { range: squareYRange([0, 10], 140) },
-      series: [],
-      annotations: [
-        { type: 'circle', x: 4.4, y: 1.2, r: 0.9, color: 'c2' },
-        { type: 'point', x: 5.0, y: 1.2, label: '회전 중심 = 무게 중심 G', color: 'c2', dx: 8, dy: -12 },
-        { type: 'point', x: 4.4, y: 1.2, label: '기하학적 축 O', color: 'muted', dx: -55, dy: -12 },
-        { type: 'point', x: 5.1, y: 1.2, label: 'm_u (안쪽)', color: 'warn', dx: 8, dy: 14 },
-      ],
-    },
-  ],
+    '그림 7. 로터를 축 방향에서 본 모습. 점선 원은 축 중심 O가 그리는 궤도, 파란 원은 축 단면, 주황 화살표는 O에서 본 무거운 점(m_u)의 방향이다 (크기는 보기 쉽게 과장했다). 위(아임계): 변위가 힘과 같은 쪽으로 나서 O가 무거운 점 쪽으로 밀리고, 무거운 점은 궤도 바깥쪽을 향한다. 아래(초임계): 변위가 힘의 반대쪽으로 나서 O가 무거운 점의 반대쪽으로 밀리고, 무거운 점은 궤도 안쪽을 향한다. 이때 전체 질량 중심 G가 베어링 중심에 머물고, O는 그 둘레를 반지름 e_cg로 돈다(질량 중심 회전).',
+  panels: [selfCenteringPanel(false), selfCenteringPanel(true)],
 };

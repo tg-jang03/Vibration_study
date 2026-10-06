@@ -145,7 +145,7 @@ export default function TwoDofModeLab() {
         x: timeline,
         y: response.map((r) => clean(r.mode1[0] * 1000)),
         name: `x₁ 모드 1 성분 (${formatNumber(f1, 3)} Hz)`,
-        color: '#10b981',
+        color: 'var(--plot-3)',
         width: 1.5,
         dash: 'dash',
       });
@@ -153,7 +153,7 @@ export default function TwoDofModeLab() {
         x: timeline,
         y: response.map((r) => clean(r.mode2[0] * 1000)),
         name: `x₁ 모드 2 성분 (${formatNumber(f2, 3)} Hz)`,
-        color: '#8b5cf6',
+        color: 'var(--plot-4)',
         width: 1.5,
         dash: 'dash',
       });
@@ -234,7 +234,7 @@ export default function TwoDofModeLab() {
           onChange={setSlowMo}
         />
 
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
           <button
             type="button"
             onClick={() => {
@@ -249,6 +249,7 @@ export default function TwoDofModeLab() {
               border: '1px solid var(--border-color, #cbd5e1)',
               background: kc === 100 ? 'var(--accent-bg, #e0f2fe)' : 'transparent',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
             }}
           >
             약한 결합 (kc = 0.1k, 맥놀이)
@@ -266,6 +267,7 @@ export default function TwoDofModeLab() {
               border: '1px solid var(--border-color, #cbd5e1)',
               background: kc === 1000 ? 'var(--accent-bg, #e0f2fe)' : 'transparent',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
             }}
           >
             표준 결합 (kc = k)
@@ -279,16 +281,18 @@ export default function TwoDofModeLab() {
     { label: '1차 고유진동수 f₁', value: f1, unit: 'Hz', sig: 3 },
     { label: '2차 고유진동수 f₂', value: f2, unit: 'Hz', sig: 3 },
     { label: '진동수 비 f₂ / f₁', value: ratio, unit: '', sig: 3 },
-    { label: '모드 1 초기성분 q₁(0)', value: q1_0_mm, unit: 'mm', sig: 3 },
-    { label: '모드 2 초기성분 q₂(0)', value: q2_0_mm, unit: 'mm', sig: 3 },
-    { label: '맥놀이 주기 T_beat', value: beatPeriod, unit: 's', sig: 3 },
+    { label: '모드 1 형상 비 x₂ / x₁', value: clean(mode1.shape[1] / mode1.shape[0]), unit: '', sig: 3 },
+    { label: '모드 2 형상 비 x₂ / x₁', value: clean(mode2.shape[1] / mode2.shape[0]), unit: '', sig: 3 },
+    { label: '처음 변위 중 모드 1 몫', value: q1_0_mm, unit: 'mm', sig: 3 },
+    { label: '처음 변위 중 모드 2 몫', value: q2_0_mm, unit: 'mm', sig: 3 },
+    { label: '맥놀이 주기 1 / (f₂ − f₁)', value: beatPeriod, unit: 's', sig: 3 },
   ];
 
   const formulas = (
     <Formula
       tex={`\\begin{aligned}
       \\omega_1 &= \\sqrt{\\frac{k}{m}} = \\sqrt{\\frac{1000}{1}} = ${texNumber(mode1.omega, 3)}\\text{ rad/s} \\implies f_1 = ${texNumber(f1, 3)}\\text{ Hz} \\\\[2pt]
-      \\omega_2 &= \\sqrt{\\frac{k + 2k_c}{m}} = \\sqrt{\\frac{1000 + 2(${texNumber(kc, 3)})}{1}} = ${texNumber(mode2.omega, 3)}\\text{ rad/s} \\implies f_2 = ${texNumber(f2, 3)}\\text{ Hz} \\\\[2pt]
+      \\omega_2 &= \\sqrt{\\frac{k + 2k_c}{m}} = \\sqrt{\\frac{1000 + 2(${kc})}{1}} = ${texNumber(mode2.omega, 3)}\\text{ rad/s} \\implies f_2 = ${texNumber(f2, 3)}\\text{ Hz} \\\\[2pt]
       x_1(t) &= ${texNumber(q1_0_mm, 2)} \\cos(\\omega_1 t) + (${texNumber(q2_0_mm, 2)}) \\cos(\\omega_2 t) \\quad [\\text{mm}] \\\\[2pt]
       x_2(t) &= ${texNumber(q1_0_mm, 2)} \\cos(\\omega_1 t) - (${texNumber(q2_0_mm, 2)}) \\cos(\\omega_2 t) \\quad [\\text{mm}]
       \\end{aligned}`}

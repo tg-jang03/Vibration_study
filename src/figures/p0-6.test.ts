@@ -40,6 +40,17 @@ describe('P0-6 figures', () => {
     expect(R.high.amplitudeMm).toBeCloseTo(0.133, 2);
   });
 
+  it('run-up figure peaks near 1.0 mm at 3000 rpm and ends at 0.133 mm at 6000 rpm (r = 2)', () => {
+    const [, envelope] = F.runUpTransient.panels[0].series;
+    const env = Array.from(envelope.y);
+    const t = Array.from(envelope.x);
+    const iMax = env.indexOf(Math.max(...env));
+    expect(env[iMax]).toBeCloseTo(1.0, 1);
+    expect(t[iMax]).toBeCloseTo(2.5, 1);
+    expect(env[env.length - 1]).toBeCloseTo(R.high.amplitudeMm, 6);
+    expect(env[env.length - 1]).toBeCloseTo(0.133, 3);
+  });
+
   it('has 7 unique figures with ordered ids', () => {
     const figures = [
       F.unbalanceModel,

@@ -40,7 +40,7 @@ export const damperModel: FigureSpec = {
       { type: 'spring', x1: 0.8, y1: 1.25, x2: 5.1, y2: 1.25, coils: 8, label: '강성 k' },
       { type: 'damper', x1: 0.8, y1: 0.55, x2: 5.1, y2: 0.55, width: 18, label: '감쇠 계수 c' },
       { type: 'rect', x1: 5.1, x2: 6.65, y1: 0.25, y2: 1.55, label: '질량 m', color: 'c1' },
-      { type: 'arrow', x1: 5.85, y1: 1.82, x2: 7.25, y2: 1.82, label: '속도 ẋ', color: 'c2' },
+      { type: 'arrow', x1: 5.85, y1: 1.82, x2: 7.25, y2: 1.82, label: '속도 ẋ', color: 'c1' },
       { type: 'arrow', x1: 5.1, y1: 0.9, x2: 3.9, y2: 0.9, label: '−cẋ', color: 'warn' },
       { type: 'text', x: 8.35, y: 1.25, text: 'mẍ + cẋ + kx = 0', anchor: 'middle', color: 'text', bold: true },
       { type: 'text', x: 8.35, y: 0.65, text: '움직임 → 열', anchor: 'middle', color: 'c3', bold: true },
@@ -126,7 +126,7 @@ const zetaAxis = grid(0, 0.8, 401);
 const dampedRatio = zetaAxis.map((value) => Math.sqrt(1 - value ** 2));
 export const dampedFrequencyShift: FigureSpec = {
   id: 'fig-p0-3-5',
-  caption: `그림 5. 부족감쇠의 박자는 ω_d/ω_n = √(1−ζ²)만큼 낮아진다. ζ = 0.05에서는 ${formatNumber(P0_3_REFERENCE.frequencyRatio, 6)}배로, 차이는 약 0.125 %뿐이다. 작은 감쇠는 박자보다 지속 시간을 훨씬 크게 바꾼다.`,
+  caption: `그림 5. 부족감쇠의 박자는 ω_d/ω_n = √(1−ζ²)만큼 낮아진다. ζ = 0.05에서는 ${formatNumber(P0_3_REFERENCE.frequencyRatio, 5)}배로, 차이는 약 0.125 %뿐이다. 작은 감쇠는 박자보다 지속 시간을 훨씬 크게 바꾼다.`,
   panels: [{
     series: [{ x: zetaAxis, y: dampedRatio, label: 'ω_d/ωₙ', color: 'c1', width: 2.4 }],
     annotations: [
@@ -144,7 +144,7 @@ const peakTimes = [0, dampedPeriod, 2 * dampedPeriod, 3 * dampedPeriod];
 const peakValues = peakTimes.map((t) => 1000 * freeResponseAt(BASE, { x0: X0 }, t).x);
 export const logarithmicDecrement: FigureSpec = {
   id: 'fig-p0-3-6',
-  caption: `그림 6. ζ = 0.05에서 같은 방향의 첫 두 피크는 10.0 mm와 ${formatNumber(peakValues[1], 4)} mm다. 다음/이전 피크 비는 ${formatNumber(P0_3_REFERENCE.nextPeakRatio, 4)}, δ = ln(10.0/${formatNumber(peakValues[1], 4)}) = ${formatNumber(P0_3_REFERENCE.logDecrement, 4)}다.`,
+  caption: `그림 6. ζ = 0.05에서 같은 방향의 첫 두 피크는 10.0 mm와 ${peakValues[1].toFixed(2)} mm다. 다음/이전 피크 비는 ${formatNumber(P0_3_REFERENCE.nextPeakRatio, 4)}이고, δ = ln(1/${formatNumber(P0_3_REFERENCE.nextPeakRatio, 4)}) = ${formatNumber(P0_3_REFERENCE.logDecrement, 4)}다.`,
   panels: [{
     series: [
       { x: responseTime, y: damped.map((s) => 1000 * s.x), label: '감쇠 자유응답', color: 'c1', width: 2.2 },
@@ -152,7 +152,7 @@ export const logarithmicDecrement: FigureSpec = {
     ],
     annotations: [
       { type: 'point', x: peakTimes[0], y: peakValues[0], label: 'xᵢ = 10.0 mm', color: 'warn', dx: 14, dy: -12 },
-      { type: 'point', x: peakTimes[1], y: peakValues[1], label: `xᵢ₊₁ = ${formatNumber(peakValues[1], 3)} mm`, color: 'warn', dx: 14, dy: -12 },
+      { type: 'point', x: peakTimes[1], y: peakValues[1], label: `xᵢ₊₁ = ${peakValues[1].toFixed(2)} mm`, color: 'warn', dx: 14, dy: -12 },
     ],
     x: { range: [0, 0.85], label: '시간 t [s]' },
     y: { range: [-9, 11.5], ticks: [-5, 0, 5, 10], label: '변위 x [mm]' },

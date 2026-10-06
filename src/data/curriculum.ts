@@ -42,7 +42,7 @@ export const PARTS: Part[] = [
       { id: 'P0-4', title: '강제진동과 공진', status: 'review', href: '/p0-4/' },
       { id: 'P0-5', title: '여러 질량과 모드', status: 'review', href: '/p0-5/' },
       { id: 'P0-6', title: '회전기계의 진동: 불평형과 1X', status: 'review', href: '/p0-6/' },
-      { id: 'P0-7', title: '기계 요소가 만드는 주파수: 한 바퀴에 몇 번?', status: 'planned' },
+      { id: 'P0-7', title: '기계 요소가 만드는 주파수: 한 바퀴에 몇 번?', status: 'review', href: '/p0-7/' },
       { id: 'P0-8', title: '응답에서 원인으로: 진단은 거꾸로 푸는 문제', status: 'planned' },
     ],
   },

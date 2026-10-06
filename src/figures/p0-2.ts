@@ -31,31 +31,37 @@ export const equationBalance: FigureSpec = {
       { type: 'ground', x1: 0.8, y1: 0.2, x2: 0.8, y2: 1.35, side: 'left' },
       { type: 'spring', x1: 0.8, y1: 0.78, x2: 4.8, y2: 0.78, coils: 8, label: '강성 k' },
       { type: 'rect', x1: 4.8, x2: 6.25, y1: 0.28, y2: 1.28, label: '질량 m', color: 'c1' },
-      { type: 'line', x1: 4.1, y1: 0.1, x2: 4.1, y2: 1.5, dash: true, color: 'muted' },
-      { type: 'arrow', x1: 4.1, y1: 1.53, x2: 5.52, y2: 1.53, label: '변위 x', color: 'c2' },
-      { type: 'arrow', x1: 4.8, y1: 0.78, x2: 3.25, y2: 0.78, label: 'F = −kx', color: 'warn' },
+      { type: 'line', x1: 4.1, y1: 0.05, x2: 4.1, y2: 1.3, dash: true, color: 'muted' },
+      // 변위는 질량 아래, 복원력은 질량 위에서 왼쪽으로 (스프링·점선과 겹치지 않게)
+      { type: 'arrow', x1: 4.1, y1: 0.1, x2: 5.52, y2: 0.1, label: '변위 x', color: 'c3', labelDx: -28 },
+      { type: 'arrow', x1: 5.52, y1: 1.45, x2: 4.25, y2: 1.45, double: false, label: 'F = −kx', color: 'c2' },
       { type: 'text', x: 8.05, y: 1.1, text: 'mẍ = −kx', anchor: 'middle', color: 'text', bold: true },
-      { type: 'text', x: 8.05, y: 0.58, text: 'mẍ + kx = 0', anchor: 'middle', color: 'c3', bold: true },
+      { type: 'text', x: 8.05, y: 0.58, text: 'mẍ + kx = 0', anchor: 'middle', color: 'c1', bold: true },
     ],
   }],
 };
 
 const sineT = grid(0, 1, 501);
-const sine = sineT.map((t) => Math.cos(2 * Math.PI * 2 * t));
+const SINE_F = 2; // Hz → T = 0.5 s
+const sine = sineT.map((t) => Math.cos(2 * Math.PI * SINE_F * t));
+const sineLate = sineT.map((t) => Math.cos(2 * Math.PI * SINE_F * t - Math.PI / 2)); // φ = −90°
 export const sineAnatomy: FigureSpec = {
   id: 'fig-p0-2-2',
   caption:
-    '그림 2. 정현파는 세 숫자로 정해진다. 진폭 A는 중심에서 꼭대기까지의 높이, 주기 T는 같은 상태로 돌아오는 시간, 위상 φ는 같은 박자 안에서 시작 위치가 얼마나 어긋났는지 나타낸다. 주파수는 f = 1/T다.',
+    '그림 2. 정현파는 세 숫자로 정해진다. 파랑 선(φ = 0)에서 진폭 A는 중심에서 꼭대기까지의 높이, 주기 T는 같은 상태로 돌아오는 시간이다. 주황 점선은 진폭과 주기가 같고 위상만 φ = −90°인 파형으로, 꼭대기가 한 주기의 1/4(Δt = T/4 = 0.125 s)만큼 늦게 온다. 주파수는 f = 1/T = 2 Hz다.',
   panels: [{
-    series: [{ x: sineT, y: sine, label: 'x(t) = A cos(2πft + φ)', width: 2.4 }],
+    series: [
+      { x: sineT, y: sine, label: 'φ = 0', color: 'c1', width: 2.4 },
+      { x: sineT, y: sineLate, label: 'φ = −90° (T/4 늦음)', color: 'c2', dash: true, width: 2 },
+    ],
     annotations: [
       { type: 'hline', y: 0, color: 'muted', dash: true },
-      { type: 'arrow', x1: 0, y1: 0, x2: 0, y2: 1, label: '진폭 A', color: 'c2', labelDx: 8 },
-      { type: 'arrow', x1: 0, y1: 1.2, x2: 0.5, y2: 1.2, label: '주기 T', color: 'c3' },
-      { type: 'point', x: 0.125, y: 0, label: '한 주기의 1/4 = 90°', color: 'warn', dx: 12, dy: -12 },
+      { type: 'arrow', x1: 0, y1: 0, x2: 0, y2: 1, label: 'A', color: 'c4', labelDx: 8 },
+      { type: 'arrow', x1: 0, y1: 1.15, x2: 1 / (4 * SINE_F), y2: 1.15, double: false, label: 'Δt = T/4', color: 'c2' },
+      { type: 'arrow', x1: 1 / SINE_F, y1: 1.15, x2: 2 / SINE_F, y2: 1.15, label: '주기 T', color: 'c3' },
     ],
     x: { range: [0, 1], label: '시간 t [s]' },
-    y: { range: [-1.3, 1.35], ticks: [-1, 0, 1], label: '변위 x / A' },
+    y: { range: [-1.3, 1.5], ticks: [-1, 0, 1], label: '변위 x / A' },
     height: 220,
   }],
 };
@@ -105,7 +111,7 @@ const initB = freeResponse(BASE, { x0: 0, v0: BASE_PROPS.omegaN * 0.01 }, twoPer
 export const initialConditions: FigureSpec = {
   id: 'fig-p0-2-5',
   caption:
-    '그림 5. 처음 위치에서 놓은 경우와 평형점에서 밀어 준 경우. 두 응답은 진폭과 고유진동수가 같고 시작 위치만 한 주기의 1/4만큼 다르다. 초기조건 x₀·v₀는 진폭과 위상을 정하지만 고유진동수는 바꾸지 않는다.',
+    '그림 5. 처음 위치에서 놓은 경우와 평형점에서 밀어 준 경우. 두 응답은 진폭과 고유진동수가 같고, 파형이 한 주기의 1/4(90°)만큼 어긋나 있다. 초기조건 x₀·v₀는 진폭과 위상을 정하지만 고유진동수는 바꾸지 않는다.',
   panels: [{
     series: [
       { x: twoPeriods, y: initA.map((s) => 1000 * s.x), label: 'x₀ = 10 mm, v₀ = 0', color: 'c1', width: 2.2 },
@@ -146,7 +152,7 @@ const deflectionHz = deflectionMm.map((mm) => Math.sqrt(g / (mm / 1000)) / (2 * 
 export const staticDeflectionEstimate: FigureSpec = {
   id: 'fig-p0-2-7',
   caption:
-    '그림 7. 같은 물체를 올렸을 때 정적으로 많이 처지는 지지는 부드럽고 고유진동수가 낮다. 자기 무게로 처진 양 δₛₜ를 알면 fₙ = (1/2π)√(g/δₛₜ)로 질량과 강성을 따로 몰라도 박자를 어림할 수 있다.',
+    '그림 7. 같은 물체를 올렸을 때 정적으로 많이 처지는 지지는 부드럽고 고유진동수가 낮다. 올린 물체의 무게로 지지가 처진 양 δₛₜ를 알면 fₙ = (1/2π)√(g/δₛₜ)로 질량과 강성을 따로 몰라도 박자를 어림할 수 있다 (g ≈ 9.81 m/s²).',
   panels: [{
     series: [{ x: deflectionMm, y: deflectionHz, label: '정적 처짐으로 어림한 fₙ', color: 'c4', width: 2.4 }],
     annotations: [

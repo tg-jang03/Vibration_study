@@ -190,7 +190,7 @@ const weakResp = twoDofFreeResponse(SYSTEM_WEAK, { x1: X0, x2: 0 }, t5);
 
 export const beatEnergyExchange: FigureSpec = {
   id: 'fig-p0-5-5',
-  caption: `그림 5. 가운데 스프링이 약할 때(k_c = 100 N/m, 0.1k) 질량 1만 당겼다 놓은 경우. 두 고유진동수(f₁ = ${f(P0_5_REFERENCE.weakF1, 3)} Hz, f₂ = ${f(P0_5_REFERENCE.weakF2, 3)} Hz)의 차이가 약 ${f(BEAT_FREQ_DIFF, 3)} Hz로 매우 작아진다. 질량 1(파랑)의 진폭이 서서히 줄어드는 동안 질량 2(주황)의 진폭이 최대로 커지고, 다시 질량 1로 되돌아온다. 주기는 약 ${f(P0_5_REFERENCE.weakBeatPeriod, 2)}초다.`,
+  caption: `그림 5. 가운데 스프링이 약할 때(k_c = 100 N/m, 0.1k) 질량 1만 당겼다 놓은 경우. 두 고유진동수(f₁ = ${f(P0_5_REFERENCE.weakF1, 3)} Hz, f₂ = ${f(P0_5_REFERENCE.weakF2, 3)} Hz)의 차이가 약 ${f(BEAT_FREQ_DIFF, 3)} Hz로 매우 작아진다. 질량 1(파랑)의 진폭이 서서히 줄어드는 동안 질량 2(주황)의 진폭이 최대로 커지고, 다시 질량 1로 되돌아온다. 주기는 약 ${f(P0_5_REFERENCE.weakBeatPeriod, 3)}초다.`,
   panels: [
     {
       series: [
@@ -199,7 +199,7 @@ export const beatEnergyExchange: FigureSpec = {
       ],
       annotations: [
         { type: 'hline', y: 0, color: 'muted', dash: true },
-        { type: 'arrow', x1: 0, y1: 11, x2: BEAT_PERIOD, y2: 11, label: `맥놀이 주기 T ≈ ${f(BEAT_PERIOD, 2)} s`, color: 'warn', double: true, labelDy: -8 },
+        { type: 'arrow', x1: 0, y1: 11, x2: BEAT_PERIOD, y2: 11, label: `맥놀이 주기 T ≈ ${f(BEAT_PERIOD, 3)} s`, color: 'warn', double: true, labelDy: -8 },
       ],
       x: { range: [0, 4.5], label: '시간 t [s]' },
       y: { range: [-12, 13], ticks: [-10, -5, 0, 5, 10], label: '변위 [mm]' },
@@ -209,15 +209,16 @@ export const beatEnergyExchange: FigureSpec = {
 };
 
 // ── 그림 6: 2자유도계 주파수응답 (FRF 봉우리 2개) ──────────────
+const FRF_ZETA = 0.04;
 const freqAxis = grid(1, 14, 601);
 const frfData = freqAxis.map((freq) => {
   const omega = 2 * Math.PI * freq;
-  return twoDofForcedFRF(SYSTEM_DEFAULT, omega, 0.04);
+  return twoDofForcedFRF(SYSTEM_DEFAULT, omega, FRF_ZETA);
 });
 
 export const twoDofFrf: FigureSpec = {
   id: 'fig-p0-5-6',
-  caption: `그림 6. 질량 1에 크기 1의 주기 외력을 가했을 때의 주파수응답(FRF). 1자유도는 공진 봉우리가 1개였지만(P0-4), 2자유도는 고유진동수 f₁ = ${f(P0_5_REFERENCE.f1, 3)} Hz와 f₂ = ${f(P0_5_REFERENCE.f2, 3)} Hz 두 곳에서 각각 공진 봉우리가 솟는다. 첫 봉우리에서는 두 질량이 같은 방향(동상), 둘째 봉우리에서는 서로 반대 방향(역상)으로 크게 흔들린다.`,
+  caption: `그림 6. 질량 1에 진폭 1 N의 조화 외력을 가했을 때의 주파수응답(FRF, 두 모드 모두 감쇠비 ζ = ${FRF_ZETA}). 1자유도는 공진 봉우리가 1개였지만(P0-4), 2자유도는 고유진동수 f₁ = ${f(P0_5_REFERENCE.f1, 3)} Hz와 f₂ = ${f(P0_5_REFERENCE.f2, 3)} Hz 두 곳에서 각각 공진 봉우리가 솟는다. 첫 봉우리에서는 두 질량이 같은 방향(동상), 둘째 봉우리에서는 서로 반대 방향(역상)으로 크게 흔들린다.`,
   panels: [
     {
       series: [
@@ -229,7 +230,8 @@ export const twoDofFrf: FigureSpec = {
         { type: 'vline', x: MODE2.frequencyHz, label: `2차 공진 (${f(MODE2.frequencyHz, 3)} Hz)`, color: 'c2', dash: true },
       ],
       x: { range: [1, 14], label: '가진 주파수 f [Hz]' },
-      y: { range: [0, 32], ticks: [0, 10, 20, 30], label: '진폭 [mm]' },
+      // 봉우리 높이: 1차 ≈ 6.3 mm, 2차 ≈ 2.1 mm
+      y: { range: [0, 7.5], ticks: [0, 2, 4, 6], label: '진폭 [mm]' },
       height: 230,
     },
   ],
@@ -263,7 +265,8 @@ export const continuumModes: FigureSpec = {
       series: [{ x: xBeam, y: mode2Shape, color: 'c2', width: 2.2 }],
       annotations: [
         { type: 'hline', y: 0, color: 'muted', dash: true },
-        { type: 'point', x: 5, y: 0, label: '마디 (절점)', color: 'warn', dx: 10, dy: 12 },
+        // 곡선이 오른쪽 아래로 내려가므로 글자는 오른쪽 위에 둔다
+        { type: 'point', x: 5, y: 0, label: '마디 (절점)', color: 'warn', dx: 10, dy: -8 },
       ],
       x: { range: [0, 10], label: '축 길이 방향 위치', ticks: [0, 2.5, 5, 7.5, 10] },
       y: { range: [-1.2, 1.2], ticks: [-1, 0, 1], label: '변위 형상' },
@@ -274,7 +277,7 @@ export const continuumModes: FigureSpec = {
       series: [{ x: xBeam, y: mode3Shape, color: 'c3', width: 2.2 }],
       annotations: [
         { type: 'hline', y: 0, color: 'muted', dash: true },
-        { type: 'point', x: 10 / 3, y: 0, label: '마디 1', color: 'warn', dx: 10, dy: 12 },
+        { type: 'point', x: 10 / 3, y: 0, label: '마디 1', color: 'warn', dx: 10, dy: -8 },
         { type: 'point', x: 20 / 3, y: 0, label: '마디 2', color: 'warn', dx: 10, dy: 12 },
       ],
       x: { range: [0, 10], label: '축 길이 방향 위치', ticks: [0, 2.5, 5, 7.5, 10] },
