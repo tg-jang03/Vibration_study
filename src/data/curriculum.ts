@@ -41,7 +41,7 @@ export const PARTS: Part[] = [
       { id: 'P0-3', title: '감쇠: 흔들림은 왜 잦아드나', status: 'review', href: '/p0-3/' },
       { id: 'P0-4', title: '강제진동과 공진', status: 'review', href: '/p0-4/' },
       { id: 'P0-5', title: '여러 질량과 모드', status: 'review', href: '/p0-5/' },
-      { id: 'P0-6', title: '회전기계의 진동: 불평형과 1X', status: 'planned' },
+      { id: 'P0-6', title: '회전기계의 진동: 불평형과 1X', status: 'review', href: '/p0-6/' },
       { id: 'P0-7', title: '응답에서 원인으로: 진단은 거꾸로 푸는 문제', status: 'planned' },
     ],
   },
