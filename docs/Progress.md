@@ -10,10 +10,10 @@
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
 | **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 16 / 18 | **M1.14** 변조·맥놀이 (P1-7: LAB-MOD-01) | **진행 중** (2026-10-06~) |
-| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 3 / 9 | **M2.2** P0-2 · LAB-MCK-01 확장 · LAB-BAS-01 이동 | **완료 — 사용자 검토** |
+| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 4 / 9 | **M2.3** P0-3 · LAB-DAMP-01 | **완료 — 사용자 검토** |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
-- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P1-6 스케일링·단위(M1.13)**, **P0-1 진동이란(M2.1)**, **P0-2 고유진동수(M2.2)**
+- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P1-6 스케일링·단위(M1.13)**, **P0-1~P0-3** (M2.1~M2.3)
 
 ## 핸드오프 — 공통
 
@@ -36,8 +36,8 @@
 - **작업 폴더**: `C:\Users\AX\Desktop\ATG\업무\진동공부-Codex` (Codex가 2026-10-06에 만든 기존 git worktree, detached HEAD). 기본 폴더 `진동공부`는 트랙 A가 쓰므로 들어가지 않는다.
 - **시작할 때마다**: `git fetch origin` → `git rebase origin/main` (로컬 커밋이 없으면 `git checkout --detach origin/main`). **push**: 검사 통과 후 `git push origin HEAD:main`. 거절되면 다시 fetch·rebase.
 - **먼저 읽을 것**: `AGENTS.md` → `docs/PageGuide.md`(특히 §5-4 도식, §6-4 랩, §10 Part 0 특기 사항) → `Roadmap.md` §6-4(M2 표) → `Curriculum.md` Part 0 → `Contents.md` §1-2 Part 0 척추, §5 LAB-MCK-01 ~ LAB-SRC-01, §6 기준값(고유진동수 ~ 불평형 응답 행) → D-027, D-029.
-- **M2.2 완료**: P0-2 본문·정적 그림 7개, LAB-MCK-01 확장(m·k·x₀·v₀, x/v/a, fₙ·T·A), LAB-BAS-01을 P1-0에서 이동. P0-1 기본 랩 모드는 유지.
-- **다음은 사용자 확인 뒤 M2.3**: P0-3 감쇠 본문·그림과 LAB-DAMP-01(ζ·포락선·ω_d·대수감쇠율·반감 주기). `lib/mck/sdof.ts`의 감쇠 자유응답을 사용한다.
+- **M2.3 완료**: P0-3 본문·정적 그림 6개, LAB-DAMP-01(ζ·fₙ·x₀, 포락선·피크, ω_d/ω_n·δ·ζ 추정·반감 주기). 기존 `lib/mck/sdof.ts` 해석해 사용, 공용 코어 변경 없음.
+- **다음은 사용자 확인 뒤 M2.4**: P0-4 강제진동·공진 본문·그림과 LAB-FRC-01(힘/변위 시간파형, 진폭비·위상 곡선, 과도/정상상태). `lib/mck/forced.ts`를 사용한다.
 - 이 Codex 실행 셸에서는 Node가 PATH에 없을 때가 있었다. 그 경우 검사 명령 앞에 현재 프로세스용으로 `$env:Path = 'C:\Program Files\nodejs;' + $env:Path`를 붙이면 된다.
 - **고치지 않는 것**: `src/pages/p1-1 ~ p1-8.mdx`, `src/figures/p1-*.ts`, `src/lib/dsp/`(읽기·import는 자유), Part 1 랩, `docs/Progress.md`의 트랙 A 행·절.
 - **P1-0**: M2.2(LAB-BAS-01 이동)부터 트랙 B 소유.
@@ -48,7 +48,7 @@
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
 | M1 | 신호처리 기초 (Part 1) · 트랙 A | 진행 중 | 16 / 18 | — |
-| M2 | 진동의 기초 (Part 0) · 트랙 B | 진행 중 | 3 / 9 | — |
+| M2 | 진동의 기초 (Part 0) · 트랙 B | 진행 중 | 4 / 9 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
 | M5 | 회전체 동역학 기초 (Part 4) | 대기 | 0 / 3 | — |
@@ -91,7 +91,7 @@
 | M2.0 | Part 0 착수 준비 (지침서 D-028, 도식 그림, 병렬 트랙 D-029, worktree) | **완료** | Claude | main | 2026-10-06 |
 | M2.1 | 질량-스프링 계산 코어 `lib/mck` + 진동이란 (P0-1, LAB-MCK-01 기본) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
 | M2.2 | 고유진동수 (P0-2, LAB-MCK-01 확장, LAB-BAS-01 이동) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
-| M2.3 | 감쇠 (P0-3, LAB-DAMP-01) | 대기 | Codex | — | — |
+| M2.3 | 감쇠 (P0-3, LAB-DAMP-01) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
 | M2.4 | 강제진동과 공진 (P0-4, LAB-FRC-01) | 대기 | Codex | — | — |
 | M2.5 | 여러 질량과 모드 (P0-5, LAB-2DOF-01) | 대기 | Codex | — | — |
 | M2.6 | 불평형과 1X (P0-6, LAB-UNB-01) | 대기 | Codex | — | — |
@@ -139,6 +139,14 @@
 
 ## 세션 로그 — 트랙 B (Codex, Part 0) · 최근 3개, 최신이 위
 
+### 2026-10-06 · Codex · M2.3 감쇠와 LAB-DAMP-01
+- 요청: 사용자 — 다음 작업 진행
+- P0-3: 감쇠력·운동방정식 → 감쇠비와 부족/임계/과감쇠 → 포락선 → 감쇠 고유진동수 → 대수감쇠율. 정적 그림 6개와 수치 회귀 테스트 2개
+- LAB-DAMP-01: ζ·fₙ·x₀, 포락선·같은 방향 피크 토글, ω_d/ω_n·피크 비·δ·ζ 추정·반감 주기. ζ ≥ 1 비진동 해와 해당 없음 표시
+- 문서: Contents·Glossary·curriculum.ts 상태와 최초 용어 위치 갱신, M2.0 로그를 archive로 이동
+- 확인: 최신 main(M1.13 포함)에서 `npm run check` 0 errors, `npm test` 206개, `npm run build` 25페이지, P0-3 전체 헤드리스 캡처 정상
+- 다음: 사용자 검토 뒤 M2.4 강제진동과 공진
+
 ### 2026-10-06 · Codex · M2.2 고유진동수와 질량-스프링 확장
 - 요청: 사용자 — 다음 세부 마일스톤 진행
 - P0-2: 운동방정식 → 정현파 세 숫자 → 고유진동수 → 진폭·초기조건 → x/v/a → 정적 처짐. 정적 그림 7개와 숫자 회귀 테스트 2개
@@ -158,13 +166,3 @@
   - `curriculum.ts` P0-1 링크·검토 상태, Contents P0-1·랩 상태, Glossary Part 0 최초 용어 갱신
 - 확인: 최신 main(M1.12 포함)에서 `npm test` 178개 통과, `npm run check` 0 errors, `npm run build` 22페이지. P0-1(1100×10000)·그림 갤러리 Edge 헤드리스 캡처에서 겹침·잘림 확인
 - 다음: 사용자 검토 뒤 M2.2 고유진동수
-
-### 2026-10-06 · Claude · M2.0 Part 0 착수 준비 — 지침서(D-028), 도식 그림, 병렬 트랙(D-029)
-- 요청: 사용자 — "P1-0 ~ P1-4 개편은 마음에 든다. P1-5는 더 해야 하지? 지금까지 개편한 느낌으로 다른 작업자도 할 수 있게 지침서를 만들어 달라. Part 0은 Codex가 병렬로 할 거니 기반을 마련하고, 병렬로 해도 되면 알려 달라. 마일스톤을 따로 둬서 두 진행을 동시에 볼 수 있게."
-- 한 일
-  - `docs/PageGuide.md` 신설 (D-028): 독자·말투·피할 표현, 개념 순서 적용법, MDX 뼈대 견본·절의 리듬·제목·분량(P1-0 ~ P1-5 실측), 도입과 마무리, 그림(만드는 법·id·색·도식·회귀 테스트), 상자 6종 쓰임표, 따라 하기 → 랩 → 해석, 랩 컴포넌트·hydration, 수식과 숫자, MDX 함정 표, 작업 순서, Part 0 특기 사항, 체크리스트, 기준 페이지 색인. `Contents.md` §1은 개념 척추만 남기고 나머지는 PageGuide로 옮김
-  - 도식 그림: `lib/figure.ts`에 `frame: false`, 주석 `line`·`spring`·`damper`·`ground`·`circle`, `squareYRange`·`springPoints`·`damperSegments`·`groundSegments`·`FIG_LAYOUT`(+테스트 4), `Figure.astro` 렌더링. 견본 `src/figures/dev-schematic.ts`(벽–스프링·감쇠기–질량, 감쇠 자유진동 x(t), 도는 원판과 불평형)를 갤러리 맨 아래에
-  - 병렬 트랙 (D-029): 트랙 A(Claude, M1) ∥ 트랙 B(Codex, M2), 파일 소유·git 흐름·ID 충돌·CI 규칙. `AGENTS.md` §2·§3·§4·§6, Progress 트랙 현황 표·트랙별 핸드오프·세션 로그, Roadmap §6-4에 M2.0 ~ M2.8 산출물·완료 기준
-  - 트랙 B 폴더: Codex가 이미 쓰던 worktree `진동공부-Codex`를 그대로 쓴다. 새 worktree를 만들다 대소문자만 다른 같은 폴더에서 `npm ci`가 실행되어 Codex의 `node_modules` 일부를 지웠고, `npm install`로 복구했다 (I-024)
-- 확인: `npm test` 145개, `npm run check` 0 errors, `npm run build` 21페이지, 갤러리의 도식 견본 헤드리스 캡처. 커밋 `1a72540` push
-- 다음: Codex가 M2.1 시작 (트랙 B 핸드오프)
