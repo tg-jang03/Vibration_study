@@ -15,6 +15,7 @@ const {
 
 const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
 const isHome = Astro.url.pathname.replace(/\/+$/, '') === withBase('/').replace(/\/+$/, '');
+const isLab = Astro.url.pathname.replace(/\/+$/, '') === withBase('/lab/').replace(/\/+$/, '');
 ---
 
 <!doctype html>
@@ -32,7 +33,7 @@ const isHome = Astro.url.pathname.replace(/\/+$/, '') === withBase('/').replace(
         <a class="brand" href={withBase('/')}>{SITE_NAME}</a>
         <nav class="site-nav" aria-label="주 메뉴">
           <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>커리큘럼</a>
-          <span class="nav-soon" title="M1.15에서 추가">Signal Lab</span>
+          <a href={withBase('/lab/')} aria-current={isLab ? 'page' : undefined}>Signal Lab</a>
           <span class="nav-soon" title="M11.3에서 추가">레퍼런스</span>
         </nav>
       </div>

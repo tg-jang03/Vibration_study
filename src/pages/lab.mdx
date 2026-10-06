@@ -1,0 +1,25 @@
+---
+layout: ../layouts/MdxLayout.astro
+title: Signal Lab
+description: 기계 신호(1X·하모닉·0.45X·기어 맞물림과 측대역·구름베어링형 충격·잡음)를 직접 만들고, F_max·라인 수·윈도우·AAF·평균·표시를 바꿔 가며 성분마다 지금 설정으로 보이는지 판정하는 샌드박스
+---
+
+import Callout from '../components/content/Callout.astro';
+import SandboxLab from '../components/labs/SandboxLab';
+import { withBase } from '../lib/site';
+
+# Signal Lab
+
+Part 1에서 배운 측정 설정을 한곳에 모은 실험장입니다. 아래쪽 슬라이더로 기계 신호를 만들고, 위쪽에서 F_max·라인 수·윈도우·평균을 정하면, 성분마다 **지금 설정으로 보이는지**를 판정해 줍니다. 설정을 정하는 순서와 근거는 <a href={withBase('/p1-8/')}>P1-8 측정 설정 종합</a>에 있습니다.
+
+<Callout type="try">
+
+1. "목적 (설정 도우미)"에서 목적을 하나 고르고, 채워진 설정과 이유를 읽습니다.
+2. 판정표에서 그 목적의 성분이 "보임"인지 확인합니다.
+3. 라인 수나 F_max를 한 단계씩 바꿔 판정이 언제 "이웃과 붙음", "F_max 밖"으로 바뀌는지 봅니다.
+
+</Callout>
+
+<SandboxLab client:load />
+
+판정은 학습용 단순 규칙입니다. 이웃 성분과 윈도우별 최소 간격(Hann 3.5 bin, P1-3) 이상 떨어져 있고, 주변 바닥보다 6 dB 이상 높으면 "보임"으로 봅니다. 도우미의 설정값은 3000 rpm 기계 기준의 출발점일 뿐이며, 실제 기계와 지침에 맞춰 다시 정해야 합니다 (I-014).

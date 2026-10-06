@@ -3,6 +3,15 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-06 · Claude · 문서 최신화와 보관 규칙 (D-030)
+- 요청: 사용자 — "문서 최신화 안 된 것들 다 업데이트하고, 토큰 절약할 수 있도록 안 읽어도 되거나 old 한 것들은 archive에 보관하는 지침을 만들고 진행하자." (앞서 승인 창이 잦은 원인 — PATH 앞붙임·exact 허용 규칙 — 도 정리)
+- 한 일: D-030(문서 3등급, 보관 규칙, 크기 규칙, D-001 대체). `archive/Issues.md`(해결·종결 15건 + I-023 처리 기록), `archive/Decisions.md`(D-001·013·016·024), `archive/Milestones.md`(M0 표·회고, M1.2 산출물, M1.2·M1.11 코어 메모). AGENTS §2 등급표·§3 절차·§5 크기 규칙(§6 중복 요약 압축)
+- 최신화: Roadmap §4-2 실제 디렉터리·M1 세부 수 18, Contents 신호 성분(chirp·impulses)·§3-1 규약 요약·§4 P1-1 ~ P1-4 완료(2026-10-06 사용자 확인, `curriculum.ts` done), Contents·Curriculum 머리에 "읽는 법"
+- 결과: Issues 30 → 7 KB, Issues·Decisions·Progress·Roadmap·Contents 합계 175 → 149 KB(−15 %). 세션 시작 때 읽는 양은 Progress 앞부분 + 필요한 절만
+- 테스트: `curriculum.test.ts`가 "Part 1 공개 페이지는 모두 검토"를 고정해 상태가 바뀌면 깨졌다 → 규칙 검사(공개 = 검토·완료, 미공개 = 계획, P1-1 ~ P1-4 완료)로
+- 확인: `npm run check` 0 errors, `npm test` 179개, `npm run build` 22페이지
+- 다음: `제안` 상태 결정들의 확정 여부 사용자 확인 → M1.13
+
 ### 2026-10-06 · Codex · M2.1 질량-스프링 계산 코어와 P0-1 진동이란
 - 요청: 사용자 — Claude가 마련한 기반 위에서 M2를 세부 마일스톤 하나씩 진행
 - 한 일

@@ -43,6 +43,11 @@ import { withBase } from '../lib/site';
       })
     }
   </ol>
+  <h2>Signal Lab</h2>
+  <a class="card lab-card" href={withBase('/lab/')}>
+    <span class="part-title">내 설정으로 무엇이 보이나</span>
+    <span class="part-question">1X·하모닉·기어 맞물림·충격·잡음이 섞인 기계 신호를 만들고, F_max·라인 수·윈도우·평균을 바꿔 가며 성분마다 보이는지 판정해 보는 실험장입니다 (Part 1 종합, P1-8).</span>
+  </a>
 </BaseLayout>
 
 <style>
@@ -55,7 +60,8 @@ import { withBase } from '../lib/site';
     gap: var(--gap);
   }
 
-  .part-card {
+  .part-card,
+  .lab-card {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
@@ -66,7 +72,9 @@ import { withBase } from '../lib/site';
   }
 
   .part-card:hover,
-  .part-card:focus-visible {
+  .part-card:focus-visible,
+  .lab-card:hover,
+  .lab-card:focus-visible {
     border-color: var(--accent);
   }
 
