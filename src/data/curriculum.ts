@@ -96,7 +96,7 @@ export const PARTS: Part[] = [
     question: '회전체는 무엇이 다르고, 언제 스스로 흔들리나?',
     sections: [
       { id: 'P4-0', title: '회전기계의 구성: 무엇이 돌고, 무엇이 받치나?', status: 'review', href: '/p4-0/' },
-      { id: 'P4-1', title: '1자유도 불평형 응답을 Bode/Polar로', status: 'planned' },
+      { id: 'P4-1', title: '1자유도 불평형 응답을 Bode/Polar로', status: 'review', href: '/p4-1/' },
       { id: 'P4-2', title: 'Jeffcott 로터: 회전체 응답의 기본', status: 'planned' },
       { id: 'P4-3', title: '유막 베어링과 안정성 입문', status: 'planned' },
     ],
