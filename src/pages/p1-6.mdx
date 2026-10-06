@@ -1,0 +1,371 @@
+---
+layout: ../layouts/MdxLayout.astro
+title: P1-6 스펙트럼 스케일링과 진동 단위
+description: 라인 수를 바꾸면 톤은 그대로이고 잡음 바닥만 움직이는 이유, 진폭·파워·PSD 중 무엇을 고르나, 스펙트럼에서 전체 크기(대역 RMS) 구하기와 ENBW, √2 × RMS와 진짜 Peak, µm pp·mm/s rms·in/s pk·g 환산, dB와 기준값
+sectionId: P1-6
+---
+
+import Figure from '../components/content/Figure.astro';
+import Callout from '../components/content/Callout.astro';
+import SpectrumScalingLab from '../components/labs/SpectrumScalingLab';
+import AmplitudeScaleLab from '../components/labs/AmplitudeScaleLab';
+import UnitConverterLab from '../components/labs/UnitConverterLab';
+import * as F from '../figures/p1-6';
+
+# 1-6 스펙트럼 스케일링과 진동 단위
+
+분해능을 높이려고 라인 수를 400에서 3200으로 올려 다시 쟀습니다. 50 Hz 막대의 높이는 그대로인데 스펙트럼 바닥이 9 dB 내려갔습니다. 기계가 조용해진 걸까요?
+
+보고서 두 장도 있습니다. 한 장에는 같은 펌프가 "0.25 in/s pk", 다른 한 장에는 "3.2 mm/s rms"로 적혀 있습니다. 어느 쪽이 더 큰가요? 이 페이지는 **스펙트럼 세로축의 숫자가 무엇을 뜻하는지**와 **진동 단위를 서로 바꾸는 법**을 다룹니다.
+
+<Callout type="idea" title="이 페이지를 다 읽으면">
+
+1. 라인 수를 바꿀 때 정현파 막대는 그대로이고 잡음 바닥만 움직이는 이유를 설명할 수 있다.
+2. 진폭·파워·PSD 가운데 신호 종류에 맞는 세로축을 고를 수 있다.
+3. 스펙트럼에서 전체 크기(대역 RMS)를 계산하고, ENBW로 나누지 않으면 얼마나 틀리는지 안다.
+4. 분석기의 "Peak"가 진짜 Peak인지 √2 × RMS인지 구분할 수 있다.
+5. µm pp · mm/s rms · in/s pk · g를 서로 바꾸고, 작은 성분을 dB로 찾을 수 있다.
+
+</Callout>
+
+---
+
+## 1. 라인 수를 올렸더니 바닥이 내려갔다
+
+<Figure {...F.linesVsFloor} />
+
+그림 1은 같은 신호를 두 번 잰 것입니다. 50 Hz 정현파(톤) 1 mm/s RMS와, 0 ~ 640 Hz에 고르게 퍼진 백색 잡음(P1-5) 1 mm/s RMS를 더했습니다. 세로축은 P1-2의 dB로, 0 dB를 1 mm/s로 잡았습니다.
+
+그림 1에서 읽을 수 있는 것:
+
+- **50 Hz 막대**: 400 라인이든 3200 라인이든 약 0 dB(1 mm/s)로 같습니다.
+- **잡음 바닥**: −25.3 dB에서 −34.3 dB로 약 9 dB 내려갔습니다. 9 dB는 파워로 1/8, 진폭으로 약 1/2.8입니다.
+
+신호는 바뀌지 않았는데 바닥의 높이만 바뀌었습니다. 라인 수가 8배가 되면서 Δf(P1-3)가 1.25 Hz에서 0.156 Hz로 1/8이 된 것이 이유입니다. 다음 절에서 왜 그런지 봅니다.
+
+---
+
+## 2. bin 하나는 Δf 폭의 바구니: 잡음은 폭만큼, 톤은 통째로
+
+### 2.1 잡음은 bin 폭만큼 담긴다
+
+<Figure {...F.binBasket} />
+
+P1-4에서 bin 하나는 자기 주파수 근처 **ENBW × Δf** 폭(Hann이면 1.5 bin)의 성분을 모은다고 했습니다. 그림 2처럼 생각하면 쉽습니다. 잡음은 주파수 축 위에 고르게 깔려 있고, bin은 그 위에 놓인 바구니입니다.
+
+- **잡음**: 바구니가 넓으면 많이, 좁으면 적게 담깁니다. 라인 수를 8배로 늘리면 바구니가 1/8로 좁아지므로 bin 하나의 잡음 파워도 1/8입니다. 대신 바구니 수가 8배라 10 Hz 안의 합은 그대로입니다 (그림 2: 0.0213과 0.0227 (mm/s)²).
+- **톤**: 한 주파수에만 있으므로 바구니 폭과 상관없이 통째로 한 bin에 들어갑니다. 그래서 막대 높이가 변하지 않습니다.
+
+<Callout type="term" title="파워 스펙트럼 (Power Spectrum)">
+
+bin마다 RMS 진폭의 제곱(P1-5의 파워)을 세운 스펙트럼입니다. 단위는 (mm/s)² 같은 "진폭 단위의 제곱"입니다. 진폭 스펙트럼과 담고 있는 정보는 같고, 세로축만 제곱한 것입니다. 기호는 $PS_k$로 씁니다.
+
+</Callout>
+
+<Callout type="example" title="잡음 바닥의 높이 계산">
+
+잡음 1 mm/s RMS가 0 ~ 640 Hz에 고르게 퍼져 있으면, 1 Hz 폭마다 $1^2 / 640 \approx 0.00156$ (mm/s)²가 있습니다.
+
+1. 400 라인 (Δf = 1.25 Hz, Hann): bin 하나가 $1.5 \times 1.25 = 1.875$ Hz 폭을 모읍니다 → $0.00156 \times 1.875 \approx 0.00293$ (mm/s)² → 진폭 $\sqrt{0.00293} \approx 0.054$ mm/s → $20\log_{10} 0.054 \approx -25.3$ dB
+2. 3200 라인 (Δf = 0.156 Hz): 폭이 1/8 → 0.000366 (mm/s)² → 0.019 mm/s → −34.3 dB
+
+그림 1의 두 바닥과 같습니다.
+
+</Callout>
+
+<Callout type="warn" title="'바닥이 내려갔다'는 '진동이 줄었다'가 아니다">
+
+라인 수(또는 측정 시간)를 바꾼 두 스펙트럼의 잡음 바닥을 비교하면 안 됩니다. 기계는 그대로인데 bin 폭만 바뀌어도 바닥이 움직입니다. 두 측정을 비교할 때는 라인 수·F_max·윈도우를 먼저 맞춥니다.
+
+</Callout>
+
+---
+
+## 3. PSD: 잡음의 크기를 Δf와 상관없이 읽는 법
+
+### 3.1 1 Hz 폭당 파워
+
+잡음의 크기를 측정 설정과 상관없이 말하려면, bin의 파워를 그 bin이 모은 폭으로 나누면 됩니다. 이것이 <strong>PSD(Power Spectral Density, 파워 스펙트럼 밀도)</strong>입니다.
+
+$$
+PSD_k = \frac{PS_k}{\mathrm{ENBW}\cdot\Delta f}
+$$
+
+$PS_k$는 $k$번째 bin의 파워, ENBW는 윈도우의 등가 잡음 대역폭(bin 단위, P1-4), $\Delta f$는 bin 간격입니다. 단위는 (mm/s)²/Hz입니다. 제곱근을 취한 $\sqrt{PSD}$를 <strong>ASD(Amplitude Spectral Density)</strong>라고 하며, 단위는 mm/s/√Hz입니다.
+
+<Figure {...F.psdView} />
+
+그림 3은 그림 1과 같은 측정을 PSD로 그린 것입니다. 이번에는 반대입니다.
+
+- **잡음 바닥**: 두 경우 모두 약 −28 dB(0.00156 (mm/s)²/Hz)로 같습니다. 바구니 폭으로 나눠 주었기 때문입니다.
+- **톤**: −2.6 dB에서 +6.4 dB로 9 dB 커졌습니다. 한 bin에 몰린 톤의 파워를 점점 좁은 폭으로 나눴기 때문입니다.
+
+**정현파 성분(1X, 2X 같은 막대)은 진폭이나 파워로, 넓게 퍼진 잡음(랜덤)은 PSD로 봅니다.** 각자 Δf와 무관한 쪽을 고르는 것입니다.
+
+<Callout type="field" title="PSD를 쓰는 곳">
+
+넓은 주파수에 퍼진 진동을 다룰 때 PSD를 씁니다. 예를 들어 랜덤 진동 시험의 규격 곡선은 g²/Hz로 주어지고, 가속도계 같은 센서의 잡음 사양은 µg/√Hz(ASD)로 적힙니다. 회전기계에서 1X·2X 같은 막대를 읽을 때는 진폭 스펙트럼을 씁니다.
+
+</Callout>
+
+### 3.2 랩: 라인 수를 바꾸며 네 가지 세로축 보기
+
+<Callout type="try">
+
+1. 처음 상태(진폭 RMS, dB로 보기, 400 라인, Hann)에서 50 Hz 막대와 주황 점선(잡음 바닥)의 높이를 읽습니다.
+2. 라인 수를 800 → 1600 → 3200으로 올립니다. 아래 그래프에서 톤 높이와 잡음 바닥이 각각 어떻게 움직이나요?
+3. 세로축을 PSD로 바꾸고 2번을 되풀이합니다. 이번에는 어느 쪽이 움직이나요?
+4. 세로축을 파워로 두고 dB 보기를 끈 뒤, 3200 라인에서 잡음 바닥이 400 라인의 몇 분의 1인지 읽음값으로 확인합니다.
+
+</Callout>
+
+<SpectrumScalingLab client:visible />
+
+2번에서 진폭(RMS)으로 보면 톤은 0 dB에 그대로 있고, 잡음 바닥은 라인 수가 2배 될 때마다 3 dB씩, 3200 라인에서 모두 9 dB 내려갑니다. 3번 PSD에서는 바닥이 −28 dB에 머물고 톤이 3 dB씩 올라갑니다. 4번에서 파워 바닥은 0.0029에서 0.00037 (mm/s)²로 1/8입니다. 바닥은 프레임 8개를 평균한 값이라 이론값과 몇 % 다를 수 있습니다.
+
+---
+
+## 4. 스펙트럼에서 전체 크기 구하기: 파워를 더하고 ENBW로 나눈다
+
+### 4.1 대역 RMS
+
+진동계는 "overall 4.2 mm/s rms"처럼 전체 크기를 숫자 하나로 보여 주기도 합니다. 시간 파형의 RMS(P1-0)를 스펙트럼에서 구할 수도 있습니다. P1-1의 파스발 정리대로 **성분별 파워를 더하면 전체 파워**가 되기 때문입니다. 원하는 주파수 범위만 더하면 그 대역의 크기가 되며, 이것을 <strong>대역 RMS(Band RMS)</strong>라고 합니다.
+
+$$
+\text{대역 RMS} = \sqrt{\frac{\sum_{k} PS_k}{\mathrm{ENBW}}}
+$$
+
+윈도우를 쓰면 ENBW로 나눠야 합니다. 윈도우는 정현파 막대의 높이를 맞추도록(P1-4의 진폭 보정) 스펙트럼을 키우는데, 그 과정에서 이웃 bin에도 몫을 나눠 담아 합계가 ENBW배로 불어나기 때문입니다.
+
+<Figure {...F.overallFromSpectrum} />
+
+<Callout type="example" title="Hann으로 잰 1 mm/s RMS 톤 하나">
+
+bin 중심에 놓인 톤은 Hann 윈도우에서 세 bin에 퍼집니다. 가운데 bin의 파워는 1 (mm/s)², 양옆은 각각 0.25 (mm/s)²입니다 (P1-4의 메인로브).
+
+1. 세 bin의 파워를 더한다: $0.25 + 1 + 0.25 = 1.5$
+2. ENBW로 나눈다: $1.5 / 1.5 = 1$ (mm/s)²
+3. 제곱근: 1 mm/s RMS — 원래 크기와 같습니다
+
+나누지 않으면 $\sqrt{1.5} \approx 1.22$ mm/s로 22 % 크게 나옵니다.
+
+</Callout>
+
+<Callout type="warn" title="'막대 높이를 그냥 더하면 overall'이 아니다">
+
+흔한 실수가 둘 있습니다. 첫째, 진폭을 더하면 안 되고 **파워(진폭의 제곱)를 더한 뒤 제곱근**을 취해야 합니다 (1과 3 mm/s의 합은 4가 아니라 $\sqrt{1 + 9} \approx 3.16$). 둘째, 윈도우를 썼다면 ENBW로 나눠야 합니다.
+
+</Callout>
+
+---
+
+## 5. "Peak"는 어느 Peak인가: √2 × RMS와 진짜 Peak
+
+### 5.1 스펙트럼의 Peak와 overall의 Peak
+
+스펙트럼을 Peak로 표시하면, 분석기는 bin마다 RMS에 √2를 곱해 보여 줍니다. 한 bin에 든 성분은 정현파 하나이므로 이 값은 **그 성분의 Peak로 정확합니다**.
+
+문제는 전체 크기입니다. 많은 진동계는 overall RMS를 구한 뒤 √2를 곱해 "Peak"로 표시합니다. 이것을 <strong>derived peak(환산 Peak)</strong>라고 부릅니다. 시간 파형에서 실제로 가장 큰 값인 <strong>true peak(진짜 Peak)</strong>와는 다른 숫자입니다. P1-0에서 본 대로 RMS × √2 = Peak는 정현파 하나일 때만 맞습니다.
+
+<Figure {...F.derivedPeak} />
+
+그림 5의 가속도는 1X 정현파에 짧은 충격이 1초에 107번 섞인 신호입니다. 진짜 Peak는 6.41 m/s²인데 √2 × RMS는 1.70 m/s²로 진짜의 27 %입니다. Crest factor(P1-0)가 5.32로 정현파의 1.41보다 훨씬 크기 때문입니다.
+
+<Callout type="try">
+
+1. 처음 상태(충격이 섞인 가속도, 선형 축)에서 위 그래프의 세 선 — 진짜 Peak(주황), √2 × RMS(초록), RMS(회색) — 을 비교합니다.
+2. 읽음값 표의 "√2 × RMS" 줄 오차 열을 봅니다. 진짜 Peak보다 몇 % 작은가요?
+3. 신호를 "기계 속도"로 바꿉니다. 충격이 없으면 두 Peak가 얼마나 가까워지나요?
+
+</Callout>
+
+<AmplitudeScaleLab client:visible initialSignal="impact" initialScale="linear" />
+
+2번에서 √2 × RMS는 진짜 Peak보다 약 73 % 작습니다. 3번의 기계 속도 신호는 1X가 대부분이라 Crest factor가 정현파에 가깝고, 두 Peak의 차이도 훨씬 작습니다. 충격이 섞인 신호일수록 둘의 차이가 커집니다.
+
+<Callout type="warn" title="Peak끼리 비교할 때 확인할 것">
+
+한 장비는 진짜 Peak, 다른 장비는 √2 × RMS를 "Peak"로 표시하면, 같은 기계라도 숫자가 크게 다릅니다. Peak 값을 비교하거나 기록할 때는 장비의 표시 방식(true peak인지 derived peak인지)을 함께 적습니다.
+
+</Callout>
+
+---
+
+## 6. 진동 단위: 무엇을 어떤 단위로 적나, 어떻게 바꾸나
+
+### 6.1 자주 쓰는 단위와 표기
+
+P1-0에서 변위·속도·가속도와 Peak · Peak-Peak · RMS를 배웠습니다. 실제 보고서에는 이 둘을 묶은 관례가 있고, 나라·업계에 따라 단위도 다릅니다.
+
+| 무엇을 재나 | 흔한 표기 (SI) | 흔한 표기 (인치 단위) | 이유 |
+|---|---|---|---|
+| 축 변위 (비접촉 변위 센서) | µm Peak-Peak | mil Peak-Peak | 축이 움직인 전체 폭을 베어링 틈과 비교 |
+| 케이싱 속도 | mm/s RMS | in/s Peak | 넓은 주파수 범위의 진동 크기를 한 숫자로 |
+| 가속도 | m/s² 또는 g (Peak·RMS 모두 쓰임) | g | 높은 주파수의 충격·마찰 |
+
+<Callout type="term" title="mil, in/s, g">
+
+**mil**은 1/1000 inch = 25.4 µm, **in/s**는 inch/s = 25.4 mm/s입니다. **g**는 표준 중력가속도 9.80665 m/s²입니다. 단위만 바꾸는 것은 곱셈 한 번이지만, Peak ↔ RMS(√2배)와 변위 ↔ 속도 ↔ 가속도(주파수 필요)가 함께 섞이면 실수가 잦아집니다.
+
+</Callout>
+
+### 6.2 환산: 표기, 단위, 양을 차례로
+
+정현파 하나라면 세 단계로 바꿉니다.
+
+1. **표기**: Peak = √2 × RMS = Peak-Peak ÷ 2
+2. **단위**: 1 mil = 25.4 µm, 1 in/s = 25.4 mm/s, 1 g = 9.80665 m/s²
+3. **양**: $v = 2\pi f\, d$, $a = 2\pi f\, v$ (P1-0) — 주파수가 필요합니다
+
+<Callout type="example" title="두 가지 환산">
+
+**25 Hz, 50 µm Peak-Peak를 mm/s RMS로**: Peak 25 µm → $v = 2\pi \times 25 \times 0.025\ \mathrm{mm} \approx 3.93$ mm/s Peak → ÷ √2 ≈ <strong>2.78 mm/s RMS</strong>
+
+**1 in/s Peak를 mm/s RMS로**: 25.4 mm/s Peak → ÷ √2 ≈ <strong>17.96 mm/s RMS</strong> (같은 속도끼리라 주파수가 필요 없습니다)
+
+그래서 처음 질문의 "0.25 in/s pk"는 $0.25 \times 17.96 \approx 4.49$ mm/s RMS로, "3.2 mm/s rms"보다 큽니다.
+
+</Callout>
+
+<Figure {...F.sameVelocity} />
+
+그림 6에서 같은 진동도 주파수에 따라 숫자가 크게 달라지는 것을 볼 수 있습니다. 변위는 주파수에 반비례하고 가속도는 비례합니다. 그래서 **낮은 주파수(축의 1X 등)는 변위로, 높은 주파수(구름베어링·기어의 충격)는 가속도로** 보면 작은 변화도 숫자로 잘 드러납니다. 속도는 그 사이에서 넓은 범위를 비교적 고르게 보여 줍니다.
+
+<Callout type="try">
+
+1. 처음 상태(25 Hz, 50 µm Peak-Peak)에서 표의 "속도 mm/s RMS" 줄이 2.78인지 확인합니다.
+2. 단위를 "속도 in/s"로 바꾸고 값을 1.00 in/s Peak로 맞춥니다. "속도 mm/s RMS" 줄은 얼마인가요? 주파수를 바꾸면 이 줄이 변하나요?
+3. 단위를 "속도 mm/s", 값을 5 mm/s RMS로 하고 주파수를 10 Hz → 1000 Hz로 옮깁니다. 아래 그래프의 주황 점이 변위·가속도 곡선을 따라 어떻게 움직이나요?
+
+</Callout>
+
+<UnitConverterLab client:visible />
+
+1번은 2.78 mm/s RMS입니다. 2번에서 1 in/s Peak는 17.96 mm/s RMS이고, 속도끼리의 환산이라 주파수를 바꿔도 변하지 않습니다. 3번에서 변위는 225 µm에서 2.25 µm Peak-Peak로 1/100, 가속도는 0.045 g에서 4.5 g Peak로 100배가 됩니다.
+
+<Callout type="warn" title="이 환산은 정현파 하나일 때만 맞다">
+
+overall 값처럼 여러 성분이 섞인 숫자에 $v = 2\pi f d$나 √2를 그대로 쓰면 틀립니다. 주파수가 하나로 정해지지 않고, Crest factor도 √2가 아니기 때문입니다. 성분별 환산은 스펙트럼의 막대 하나하나에 대해 합니다.
+
+</Callout>
+
+---
+
+## 7. dB와 로그 축: 작은 성분을 한 화면에
+
+### 7.1 선형 축에서는 안 보이는 성분
+
+<Figure {...F.linearVsDb} />
+
+그림 7의 147 Hz 성분은 1X의 약 1/180입니다. 선형 축에서는 막대가 1 픽셀도 안 되어 보이지 않지만, dB로 그리면 1X(+6.5 dB)보다 45 dB 아래인 −38.4 dB에 또렷이 섭니다. 크기 차이가 수백 배 나는 성분을 함께 보려면 dB나 로그 축이 필요합니다. 로그 축은 눈금 간격을 10배마다 같게 둔 축으로, dB 축과 같은 그림을 숫자 그대로의 눈금으로 보여 줍니다.
+
+### 7.2 진폭은 20 log, 파워는 10 log
+
+P1-2에서 진폭 비 $r$의 dB는 $20\log_{10} r$이었습니다. 파워 비는 $10\log_{10}$으로 씁니다. 파워는 진폭의 제곱이므로 같은 상황이면 두 dB가 같습니다.
+
+- 진폭 1/10 → $20\log_{10} 0.1 = -20$ dB
+- 파워 1/100 → $10\log_{10} 0.01 = -20$ dB
+
+그래서 같은 스펙트럼을 진폭 dB로 보든 파워 dB로 보든 성분 사이의 차이는 같습니다. 다만 Peak와 RMS 사이에는 $20\log_{10}\sqrt{2} \approx 3.01$ dB 차이가 있으므로 표기를 함께 적습니다.
+
+### 7.3 dB에는 기준값이 붙는다
+
+dB는 비율이라 "−38 dB"만으로는 크기를 알 수 없습니다. <strong>0 dB가 무엇인지(기준값)</strong>를 함께 적어야 합니다. 이 페이지의 그림은 1 mm/s를 0 dB로 잡았습니다.
+
+<Callout type="example" title="같은 크기, 다른 기준값">
+
+1 mm/s RMS를 dB로 적으면:
+
+- 기준 1 mm/s → $20\log_{10}(1/1) = 0$ dB
+- 기준 1 nm/s → $20\log_{10}(10^{-3}/10^{-9}) = 120$ dB
+
+국제 표준 ISO 1683은 진동 레벨의 기준값으로 속도 1 nm/s, 가속도 1 µm/s²를 권합니다. 장비마다 다른 기준(예: 가장 큰 성분 = 0 dB)을 쓰기도 하므로 화면의 "dB re …" 표시를 확인합니다.
+
+</Callout>
+
+<Callout type="try">
+
+1. 처음 상태(기계 속도, dB, 기준 1 mm/s)에서 147 Hz와 294 Hz 성분을 찾습니다. 각각 몇 dB인가요?
+2. 세로축을 선형으로 바꿔 같은 성분이 보이는지 봅니다.
+3. dB 기준값을 1 nm/s로 바꿉니다. 그래프와 읽음값이 몇 dB씩 움직이나요?
+4. 표기를 Peak → RMS로 바꿉니다. 모든 성분이 같은 만큼 내려가나요?
+
+</Callout>
+
+<AmplitudeScaleLab client:visible initialSignal="machine" initialScale="db" />
+
+1번에서 147 Hz는 약 −35 dB, 294 Hz는 약 −43 dB(Peak)로 잡음 바닥 위에 보입니다. 2번 선형 축에서는 둘 다 보이지 않습니다. 3번에서 모든 값이 120 dB씩 올라가지만 모양은 그대로이고, 4번에서는 모든 성분이 3.01 dB씩 내려갑니다. 성분 사이의 차이는 어느 경우에도 변하지 않습니다.
+
+---
+
+## 8. 정리
+
+| 하려는 일 | 세로축 · 표기 | 함께 확인할 것 |
+|---|---|---|
+| 1X·2X 같은 정현파 성분의 크기 읽기 | 진폭 (Peak 또는 RMS) | 표기(Peak·RMS), 윈도우(P1-4) |
+| 넓게 퍼진 잡음·랜덤 진동의 크기 | PSD (또는 ASD) | 단위 (mm/s)²/Hz, ENBW로 나눴는가 |
+| 전체 크기 (overall, 대역) | 대역 RMS = √(Σ파워 ÷ ENBW) | 대역의 범위, 윈도우 |
+| 작은 성분 찾기 | dB 또는 로그 축 | 기준값 (dB re …) |
+| 다른 보고서와 비교 | 같은 양·단위·표기로 환산 | 정현파 하나일 때만 환산이 맞음 |
+
+| 주제 | 꼭 기억할 것 |
+|---|---|
+| 라인 수와 바닥 | 라인 수를 늘리면 bin이 좁아져 잡음 바닥이 내려간다 (8배 → −9 dB). 톤은 그대로 |
+| PSD | 파워 ÷ (ENBW × Δf). 잡음은 Δf와 무관하게, 톤은 Δf에 따라 달라진다 |
+| 대역 RMS | 파워를 더하고 ENBW로 나눈 뒤 제곱근. 안 나누면 Hann에서 22 % 크다 |
+| Peak | 스펙트럼 막대의 Peak는 정확, overall의 "Peak"는 √2 × RMS일 수 있다 |
+| 단위 | 1 mil = 25.4 µm, 1 in/s pk = 17.96 mm/s rms, $v = 2\pi f d$ |
+| dB | 진폭 20 log, 파워 10 log. 기준값을 함께 적는다 |
+
+---
+
+## 9. 확인 문제
+
+<details>
+<summary><strong>Q1. 라인 수를 800에서 3200으로 올렸습니다(F_max 그대로). 진폭 스펙트럼의 잡음 바닥과 1X 막대는 각각 몇 dB 움직이나요?</strong></summary>
+
+라인 수가 4배라 bin 폭이 1/4 → 잡음 바닥은 파워 1/4, $10\log_{10}(1/4) \approx -6$ dB 내려갑니다. 1X 막대는 그대로입니다. 기계가 조용해진 것이 아닙니다.
+</details>
+
+<details>
+<summary><strong>Q2. 같은 측정을 PSD로 보면 Q1의 답은 어떻게 바뀌나요?</strong></summary>
+
+잡음 바닥은 그대로이고, 1X 막대가 4배(+6 dB) 커집니다. PSD는 bin 파워를 bin 폭으로 나눈 값이라 잡음에는 Δf와 무관하지만, 한 bin에 몰린 정현파에는 맞지 않습니다.
+</details>
+
+<details>
+<summary><strong>Q3. Hann 윈도우로 잰 스펙트럼에서 10 ~ 1000 Hz의 파워를 모두 더했더니 12 (mm/s)²였습니다. 이 대역의 RMS는?</strong></summary>
+
+$\sqrt{12 / 1.5} = \sqrt{8} \approx 2.83$ mm/s RMS입니다. ENBW로 나누지 않고 $\sqrt{12} \approx 3.46$으로 적으면 22 % 크게 보고하게 됩니다.
+</details>
+
+<details>
+<summary><strong>Q4. 25 Hz, 50 µm Peak-Peak인 정현파 진동은 몇 mm/s RMS인가요?</strong></summary>
+
+Peak 25 µm → $2\pi \times 25 \times 25\ \mu\mathrm{m} \approx 3.93$ mm/s Peak → ÷ √2 ≈ 2.78 mm/s RMS입니다.
+</details>
+
+<details>
+<summary><strong>Q5. "0.25 in/s pk"와 "3.2 mm/s rms" 중 어느 쪽이 큰가요?</strong></summary>
+
+1 in/s Peak = 17.96 mm/s RMS이므로 0.25 in/s Peak ≈ 4.49 mm/s RMS입니다. 0.25 in/s pk 쪽이 약 1.4배 큽니다. 단위와 표기를 맞추지 않고 숫자만 비교하면 틀립니다.
+</details>
+
+<details>
+<summary><strong>Q6. 베어링 상태를 보려고 가속도계를 달았는데, 진동계가 overall 2 g "Peak"를 보여 줍니다. 파형의 진짜 최대값도 2 g 근처라고 봐도 되나요?</strong></summary>
+
+장비가 √2 × RMS(derived peak)를 표시한다면 아닙니다. 충격이 섞인 가속도는 Crest factor가 커서 진짜 Peak가 훨씬 클 수 있습니다 (그림 5에서는 약 3.8배). 시간 파형의 최대값이나 장비의 true peak 설정으로 확인합니다.
+</details>
+
+<details>
+<summary><strong>Q7. 보고서에 "147 Hz 성분 −38 dB"라고만 적혀 있습니다. 무엇이 빠졌나요?</strong></summary>
+
+기준값(0 dB가 무엇인지)과 표기(Peak·RMS)가 빠졌습니다. 기준 1 mm/s RMS라면 약 0.012 mm/s RMS지만, 기준 1 nm/s라면 전혀 다른 크기입니다. "−38 dB re 1 mm/s RMS"처럼 적습니다.
+</details>
+
+다음 페이지(P1-7, 준비 중)에서는 스펙트럼에서 큰 성분 양옆에 작은 성분이 줄지어 서는 이유(변조와 측대역)와, 두 주파수가 가까울 때 생기는 맥놀이를 다룹니다.
+
+## 참고자료
+
+- R-05: Heinzel·Rüdiger·Schilling, *Spectrum and spectral density estimation by the DFT…* — 파워 스펙트럼·PSD 정규화와 ENBW.
+- ISO 1683: 음향·진동 레벨의 기준값 (I-006: 원문 대조 전).

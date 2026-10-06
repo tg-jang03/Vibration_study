@@ -9,11 +9,11 @@
 
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
-| **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 15 / 18 | **M1.13** 스케일링·단위 (P1-6: LAB-SPC-01·02, LAB-UNIT-01) | **진행 중** (2026-10-06~) |
+| **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 16 / 18 | **M1.13** 스케일링·단위 (P1-6) 완료 → 다음 M1.14 변조 (P1-7) | **완료 — 사용자 검토** |
 | **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 3 / 9 | **M2.2** P0-2 · LAB-MCK-01 확장 · LAB-BAS-01 이동 | **완료 — 사용자 검토** |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
-- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P0-1 진동이란(M2.1)**, **P0-2 고유진동수(M2.2)**
+- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P1-6 스케일링·단위(M1.13)**, **P0-1 진동이란(M2.1)**, **P0-2 고유진동수(M2.2)**
 
 ## 핸드오프 — 공통
 
@@ -25,8 +25,9 @@
 
 ## 핸드오프 — 트랙 A (Claude, Part 1)
 
-- **방금 끝냄 (M1.12)**: `lib/dsp/tsa.ts`(`synchronousAverage`·`tsaGain`·`removeOrders`, 테스트 9), 신호 `src/lib/gearbox.ts`(그림·랩 공용), `TsaLab.tsx`(LAB-AVG-02), P1-5 §6 TSA(그림 9 ~ 12) — 고르기·정리 표·확인 문제 Q6·Q7. 옛 §6 ~ §8은 §7 ~ §9로 밀림 (§1 ~ §5 번호는 그대로).
-- **다음**: 사용자 확인 → M1.13 스케일링·단위(P1-6: LAB-SPC-01·02, LAB-UNIT-01) → M1.14 변조(P1-7) → M1.15 측정 설정 종합·샌드박스(P1-8, 홈).
+- **방금 끝냄 (M1.13)**: P1-6 스펙트럼 스케일링과 진동 단위 — 그림 7(`src/figures/p1-6.ts`), 랩 LAB-SPC-01 `SpectrumScalingLab`·LAB-SPC-02 `AmplitudeScaleLab`(2곳)·LAB-UNIT-01 `UnitConverterLab`. 계산 `lib/dsp/scaling.ts`(파워·PSD·대역 RMS·dB), 단위 `lib/units.ts`(정현파 환산), 그림·랩 공용 신호 `lib/scalingDemo.ts`.
+- **다음**: 사용자 확인 → M1.14 변조·맥놀이(P1-7, LAB-MOD-01: AM/FM 신호 성분을 `signal.ts`에 추가) → M1.15 측정 설정 종합·샌드박스(P1-8, 홈).
+- 화면 확인 요령: 앱 브라우저 창이 숨겨져 있으면 `client:visible` 랩이 깨어나지 않는다. 헤드리스 Edge를 `--window-size=1100,23500`으로 전체 페이지를 한 번에 찍고, PowerShell `System.Drawing`으로 1500px씩 잘라 본다 (앵커 캡처는 랩 계산 중이면 빈 화면).
 - 그림: dB 스펙트럼은 선 + 점. 그림 숫자 회귀 테스트 예: `src/figures/figures-p1-4-5.test.ts`. 같은 랩을 여러 곳에 둘 때는 props로 시작 상태 + `client:visible` (`AveragingLab`).
 - **P1-0은 트랙 B 소유** (M2.2·M2.8). 고칠 일이 생기면 트랙 B 핸드오프에 요청으로 남긴다.
 
@@ -46,7 +47,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) · 트랙 A | 진행 중 | 15 / 18 | — |
+| M1 | 신호처리 기초 (Part 1) · 트랙 A | 진행 중 | 16 / 18 | — |
 | M2 | 진동의 기초 (Part 0) · 트랙 B | 진행 중 | 3 / 9 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -79,7 +80,7 @@
 | M1.T2 | Part 1 개편 ② (그림·미니 랩·개념 순서, D-026) | **완료** (P1-0 ~ P1-5, 사용자 확인 대기) | Claude | main | 2026-10-02 |
 | M1.11 | 평균화 (LAB-AVG-01) | **완료** (M1.T2에서 본문 재작성·랩 연결) | Codex / Claude | main | 2026-10-02 |
 | M1.12 | TSA (LAB-AVG-02) | **완료** (P1-5 §6, 사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | **진행 중** | Claude | — | — |
+| M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | **완료** (P1-6, 사용자 확인 대기) | Claude | main | 2026-10-06 |
 | M1.14 | 변조 · 맥놀이 (LAB-MOD-01) | 대기 | Claude | — | — |
 | M1.15 | 측정 설정 종합 · 샌드박스 (LAB-SBX-01) | 대기 | Claude | — | — |
 
@@ -105,6 +106,14 @@
 
 > 트랙마다 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020, D-029). 트랙 B 세션 로그는 이 파일 맨 아래.
 
+### 2026-10-06 · Claude · M1.13 스케일링·단위 — P1-6
+- 요청: 사용자 — "넌 다음 작업 진행해"
+- 한 일: P1-6 본문(9절, 371줄) — 라인 수와 잡음 바닥, bin = Δf 폭의 바구니, PSD·ASD, 대역 RMS와 ENBW, √2 × RMS vs 진짜 Peak, 단위 관례·환산, dB와 기준값. 그림 7, 랩 3종(4곳)
+- 코어: `lib/dsp/scaling.ts`(+테스트 10), `lib/units.ts`(+테스트 7), `lib/scalingDemo.ts`. 그림 숫자 테스트 `figures-p1-6.test.ts` 6
+- 문서: Contents §1-2 P1-6 행·§3 식(ASD·대역 RMS·derived peak)·§4·§5(LAB-SPC-02는 Peak 표기·dB 중심으로 사양 조정)·§6 기준값 4행, Glossary 12행, I-006 진행 기록
+- 확인: `npm run check` 0 errors, `npm test`, `npm run build`, 전체 페이지 헤드리스 캡처로 그림 라벨 겹침(그림 1·2·3·4)·랩 축 눈금·1X bin 어긋남(충격 신호 30 → 25 Hz) 수정
+- 다음: 사용자 확인 → M1.14
+
 ### 2026-10-06 · Claude · 문서 최신화와 보관 규칙 (D-030)
 - 요청: 사용자 — "문서 최신화 안 된 것들 다 업데이트하고, 토큰 절약할 수 있도록 안 읽어도 되거나 old 한 것들은 archive에 보관하는 지침을 만들고 진행하자." (앞서 승인 창이 잦은 원인 — PATH 앞붙임·exact 허용 규칙 — 도 정리)
 - 한 일: D-030(문서 3등급, 보관 규칙, 크기 규칙, D-001 대체). `archive/Issues.md`(해결·종결 15건 + I-023 처리 기록), `archive/Decisions.md`(D-001·013·016·024), `archive/Milestones.md`(M0 표·회고, M1.2 산출물, M1.2·M1.11 코어 메모). AGENTS §2 등급표·§3 절차·§5 크기 규칙(§6 중복 요약 압축)
@@ -127,20 +136,6 @@
   - 이 PC: Git Bash용 `~/.bashrc`·`~/.bash_profile` — Node가 PATH에 없을 때만 보충 (이 세션 셸은 Node 설치 전 환경이라 `npm`을 못 찾았다)
 - 확인: `npm test` 158개, `npm run check` 0 errors, `npm run build` 21페이지. P1-5 헤드리스 캡처로 그림 9 ~ 12·랩 확인 → 그림 11 라벨이 곡선과 겹쳐 빈자리 + 화살표로, 랩의 TSA 선이 주황(계열 순서 색)·회색 막대가 파랑(var 색 무시)이던 것을 수정
 - 다음: 사용자 확인 → M1.13 스케일링·단위(P1-6)
-
-### 2026-10-02 · Claude · M1.T2 마무리 — P1-4·P1-5 개편, M1.11 완료, Part 0 재구성 계획 (D-027)
-- 요청: 사용자 — "P1-3까지 너무 좋다, P1-5까지 진행하자", "아까 Part 0 구성안도 계획에 반영해 줘" (Part 0을 진동을 전혀 모르는 사람용으로, Part 1과 연결되게)
-- 한 일
-  - P1-4 재작성 + `src/figures/p1-4.ts` 그림 8개 (프레임 반복, 누설, Hann 곱하기, Uniform vs Hann dB, 가리비 곡선, 메인로브·사이드로브, 동적 범위 −70 dB, w·w² 평균). 과장·이모지 인용문 제거, 뒤 개념은 한 줄 풀이 + 위치
-  - 윈도우 랩 보완: LAB-WIN-01(1초 프레임 전체, dB 보기, "10 bin 떨어진 곳 dB" 읽음값 — 예전 "±1 bin 밖 누설 %"는 Flat top 메인로브를 누설로 셈), LAB-WIN-02(본문 윈도우 5종, 읽음값 = 메인로브 반폭·사이드로브·가리비 손실), LAB-WIN-03(라벨·과제)
-  - P1-5 재작성 + `src/figures/p1-5.ts` 그림 8개 (들쭉날쭉한 바닥, 파워 평균 M별, 높이 vs 흔들림, 화살표 평균, 파워 vs 벡터 평균, 지수 평균 추적, 런업 피크 홀드, 오버랩 배치). LAB-AVG-01 연결: 시작 상태 props + `client:visible`로 4곳, 70 Hz 성분 추가(파워 평균으로 드러나는 성분 vs 벡터 평균으로만 드러나는 성분)
-  - 그림 숫자 테스트 `src/figures/figures-p1-4-5.test.ts` 5개, `random.test.ts` 시간 초과 원인(표본마다 expect) 수정
-  - Part 0 재구성 계획 (하위 에이전트): D-027, Curriculum·Contents·Roadmap·curriculum.ts·본문 상호참조. 이어서 AGENTS(Part 0~10), Issues 옛 ID(I-008·I-012·I-013), D-014·D-017 상태 표시
-  - 문서: Contents §3-1·§4·§5(LAB-WIN-01·02·03, LAB-AVG-01), Glossary P1-4·P1-5 항목 재정리, Issues I-005·I-007·I-011 해결·I-023 진행 기록
-  - 이 PC 설정: `.claude/settings.local.json`(gitignore됨)에 반복 명령 허용 규칙
-- 확인: `npm test` 141개 통과(2회 연속), `npm run check` 0 errors, `npm run build` 21페이지, P1-4·P1-5 헤드리스 캡처로 그림·랩 겹침 확인 후 수정(그림 6·8 글자 겹침, 그림 5 축, 그림 7 피크 홀드 톱니 → 프레임 100개)
-- 커밋: 이 세션에서 끝내지 못한 커밋을 2026-10-06에 검사(`npm test` 141 통과, `npm run check` 0 errors, `npm run build` 21페이지) 후 `894d3f7`로 push, Actions 성공
-- 다음: 사용자 확인 → M1.12 TSA
 
 ## 세션 로그 — 트랙 B (Codex, Part 0) · 최근 3개, 최신이 위
 

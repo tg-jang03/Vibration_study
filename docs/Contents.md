@@ -45,6 +45,7 @@
 | P1-3 | Δf = 1/T 상세, 두 성분 분리, smearing, Zoom FFT (윈도우 없이 설명) | P1-1, P1-2 |
 | P1-4 | 누설, 윈도우, 메인로브·사이드로브, 보정계수(ACF·ECF·ENBW) | P1-3 |
 | P1-5 | 잡음의 흔들림, 평균 방식(선형·지수·피크 홀드·벡터), 오버랩, TSA(빗살 통과 특성 ∣H∣, 기어 맞물림 주파수, Residual) | P1-4 |
+| P1-6 | 라인 수와 잡음 바닥(bin = Δf 폭의 바구니), 파워 스펙트럼, PSD·ASD, 대역 RMS(overall)와 ENBW로 나누기, derived peak(√2 × RMS) vs true peak, 단위 관례(µm pp·mil·mm/s rms·in/s pk·g)와 정현파 환산, dB(진폭 20 log·파워 10 log)·기준값, 로그 축 | P1-0 ~ P1-5 |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -120,6 +121,9 @@
 - 윈도우 계수: `CG = \dfrac{S_1}{N},\; ACF = \dfrac{N}{S_1},\; ECF = \sqrt{\dfrac{N}{S_2}},\; \mathrm{ENBW} = \dfrac{N S_2}{S_1^2}`
 - 지수 평균: `\bar S_m = (1-\alpha)\,\bar S_{m-1} + \alpha\, S_m`
 - 오버랩 총 측정시간: `T_{tot} = T\,[\,1 + (M-1)(1-r)\,]`
+- ASD: `ASD_k = \sqrt{PSD_k}` (단위 mm/s/√Hz)
+- 대역 RMS (overall): `\sqrt{\dfrac{\sum_k PS_k}{\mathrm{ENBW}}} = \sqrt{\sum_k PSD_k\,\Delta f}` (k는 대역 안의 bin, ENBW는 bin 단위)
+- derived peak: `\sqrt 2\,A_{rms}` (정현파 하나일 때만 true peak와 같다)
 - 파워 평균 흔들림 (dB, 경험칙): `\approx 4.34/\sqrt{M}`
 - TSA: `\bar x(\theta) = \dfrac{1}{M}\sum_{m=0}^{M-1} x(\theta + 2\pi m)`
 - TSA 비동기 성분 이득: `|H(f)| = \left| \dfrac{\sin(\pi M f / f_r)}{M \sin(\pi f / f_r)} \right|`
@@ -169,7 +173,7 @@
 | P1-3 | 분해능 · 측정 시간 · Zoom FFT | LAB-RES-01, 02, LAB-ZOOM-01 | M1.7~M1.8, M1.T, M1.T2 | 완료 (2026-10-06 사용자 확인, 그림 5) |
 | P1-4 | 윈도우 | LAB-WIN-01, 02, 03 | M1.9~M1.10, M1.T, M1.T2 | 완료 (2026-10-06 사용자 확인, 그림 8) |
 | P1-5 | 평균화와 TSA | LAB-AVG-01, 02 | M1.11~M1.12, M1.T2 | 검토 (D-026 개편: 평균화 그림 8 + TSA 그림 4, LAB-AVG-01 4곳·LAB-AVG-02 2곳 연결) |
-| P1-6 | 스펙트럼 스케일링과 진동 단위 | LAB-SPC-01, 02, LAB-UNIT-01 | M1.13 | 사양 |
+| P1-6 | 스펙트럼 스케일링과 진동 단위 | LAB-SPC-01, 02, LAB-UNIT-01 | M1.13 | 검토 (그림 7, LAB-SPC-01·LAB-UNIT-01 각 1곳, LAB-SPC-02 2곳) |
 | P1-7 | 변조 · 측대역 · 맥놀이 | LAB-MOD-01 | M1.14 | 사양 |
 | P1-8 | 측정 설정 종합 | LAB-SBX-01 | M1.15 | 계획 |
 | P2-1 | 센서 원리와 선택 | LAB-SNS-01 | M3.1 | 계획 |
@@ -413,34 +417,34 @@
 - 실험 과제: M을 늘리면 축 B 성분과 잡음이 어떻게 사라지나? 축 B 주파수비가 정수에 가까우면? 결함 임펄스는 몇 회전부터 보이나?
 - 검증: 동기 성분 이득 1, 비동기 성분 이득이 식과 일치 (§6 TSA 행, `tsa.test.ts`)
 
-#### LAB-SPC-01 스펙트럼 종류: Linear / Power / PSD
-- P1-6 · M1.13 · 사양
-- 목적: 톤(이산 성분)과 랜덤(광대역)은 Δf를 바꿀 때 반대로 움직인다 → PSD는 랜덤용이다.
-- 신호: 톤 A = 1 + 백색 잡음 σ
-- 조작: 표시 [Linear 진폭(Pk/RMS) / Power(rms²) / PSD / ASD(√PSD)], LOR(Δf), 윈도우
-- 출력: 같은 신호를 Linear와 PSD 두 패널로 동시에, LOR을 바꿀 때 톤 피크값과 잡음 바닥값 추적표, 대역 RMS 계산
-- 수식: 파워 스펙트럼, PSD (§3)
-- 실험 과제: LOR 400 → 3200 (Δf가 1/8): Power에서 잡음 바닥은? (1/8, −9 dB) PSD에서 톤 피크는? (×8, +9 dB) → 어떤 성분에 어떤 표시를 써야 하나?
-- 검증: 백색 잡음 단일측 PSD = 2σ²/f_s, Δf를 바꿔도 불변
+#### LAB-SPC-01 스펙트럼의 세로축: 진폭 · 파워 · PSD
+- P1-6 §3.2 · M1.13 · 구현 (`SpectrumScalingLab`, 계산 `lib/dsp/scaling.ts`, 신호 `lib/scalingDemo.ts` — 본문 그림 1 ~ 4와 같은 신호·시드)
+- 목적: 톤(정현파)과 넓게 퍼진 잡음은 Δf를 바꿀 때 반대로 움직인다 → 톤은 진폭·파워, 잡음은 PSD.
+- 신호: 50 Hz 톤 1 mm/s RMS + 백색 잡음 1 mm/s RMS(0 ~ 640 Hz). F_max 500 Hz, f_s 1280 Hz, 라인 수 400 ~ 3200(N 1024 ~ 8192), 50 Hz는 모든 라인 수에서 bin 중심. 프레임 8개 파워 평균
+- 조작: 세로축 [진폭 RMS / 파워 / PSD / ASD], 라인 수, dB로 보기, 윈도우 [Hann / 없음], 톤 크기(0 ~ 2), 잡음 σ(0.1 ~ 2)
+- 출력: 스펙트럼 0 ~ 200 Hz + 잡음 바닥 선, 라인 수에 따른 톤 높이·잡음 바닥 그래프. 읽음값 — Δf, T, 톤 높이·잡음 바닥(이론값과 비교, dB), 대역 RMS(÷ ENBW) vs 이론, 나누지 않은 값, 파형 RMS
+- 수식: Δf, PSD = PS/(ENBW·Δf), 대역 RMS
+- 실험 과제: 400 → 3200 라인에서 바닥 −25 → −34 dB(톤 0 dB 그대로) / PSD에서는 바닥 −28 dB 그대로·톤 +9 dB / 윈도우 없음이면 두 대역 RMS가 같음 / σ 2배 → PSD +6 dB
+- 검증 (`scaling.test.ts`): bin 중심 톤 파워 = RMS², 잡음 PSD = 2σ²/f_s(N 1024·8192 모두 ±7 %), 파워 바닥 ∝ Δf, 톤 PSD ∝ 1/Δf, Hann 톤 대역 RMS 정확·나누지 않으면 √1.5배
 
-#### LAB-SPC-02 진폭 표기 · dB · 로그 축
-- P1-6 · M1.13 · 사양
-- 목적: Pk / Pk-Pk / RMS 환산은 정현파에서만 성립하고, 작은 성분은 dB·로그 축에서 보인다.
-- 신호: (a) 정현파 (b) 정현파 + 주기 임팩트 (Crest factor 큼) (c) 1X + 하모닉 패밀리 + 작은 베어링 성분
-- 조작: 신호 선택, 표기 [Pk / Pk-Pk / RMS / "정현파 환산" Pk], 스케일 [Linear / Log / dB], dB 기준값 선택 (I-006)
-- 출력: 시간파형 위의 Pk·RMS 수평선, 실제 Pk vs √2·RMS 비교표, Crest factor, 같은 스펙트럼의 Linear vs dB 두 패널
-- 수식: 정현파 진폭 관계, Crest factor, dB (§3)
-- 실험 과제: (b)에서 √2·RMS로 구한 Pk는 실제 Pk의 몇 %인가? (c)에서 Linear 축으로 안 보이던 성분이 dB에서 보이나?
-- 검증: 정현파 CF = √2
+#### LAB-SPC-02 진폭 표기와 dB
+- P1-6 §5(충격, 선형), §7(기계 신호, dB) · M1.13 · 구현 (`AmplitudeScaleLab`, props `initialSignal`·`initialScale`)
+- 목적: 분석기의 "Peak"가 √2 × RMS(derived peak)일 수 있고 진짜 Peak와 다르다는 것, 작은 성분은 dB에서 보이고 dB에는 기준값이 붙는다는 것.
+- 신호: (a) 충격이 섞인 가속도 — 1X 25 Hz 1 m/s² Peak + 1초에 107번 충격(울림 2.5 kHz, 시정수 1 ms), f_s 25.6 kHz (b) 기계 속도 — 1X 25 Hz와 2 ~ 5차 + 147 Hz 0.02·294 Hz 0.0075 mm/s Peak + 잡음, 1600 라인. 그림 5·7과 같은 신호
+- 조작: 신호, 스펙트럼 세로축 [선형 / dB], 표기 [Peak / RMS], dB 기준값 [1 단위 / 가장 큰 성분 / ISO 1683 기준값(속도 1 nm/s, 가속도 1 µm/s², I-006)]
+- 출력: 파형 + 진짜 Peak·√2 × RMS·RMS 선, 스펙트럼. 읽음값 — 진짜 Peak, RMS, √2 × RMS(진짜 Peak 대비 오차), CF, 표시 성분(1X 또는 147 Hz)의 값과 dB
+- 수식: √2 × RMS, CF, L = 20 log₁₀(A/A_ref)
+- 실험 과제: √2 × RMS는 진짜 Peak의 약 27 %(CF 5.3) / 147 Hz는 선형에서 안 보이고 dB에서 약 −35 dB(Peak) / 기준 1 nm/s → +120 dB / Peak → RMS는 −3.01 dB
+- 원래 사양에서 바꾼 점: Peak·RMS·CF의 시간 파형 비교는 P1-0의 LAB-BAS-02가 하므로, 여기서는 "분석기가 표시하는 Peak"와 dB에 집중했다. 로그 축은 LAB-UNIT-01에서 쓴다.
 
 #### LAB-UNIT-01 진동 단위 환산기
-- P1-6 · M1.13 · 사양
-- 목적: 변위/속도/가속도 × Pk/Pk-Pk/RMS × SI/영미 단위를 주파수와 함께 환산한다.
-- 조작: 값, 단위 [µm, mil, mm/s, in/s, m/s², g], 표기 [Pk / PP / RMS], 주파수 [Hz / rpm]
-- 출력: 모든 조합의 환산표, "같은 속도일 때 변위·가속도 vs 주파수" 그래프 (왜 저주파는 변위, 고주파는 가속도로 보나)
-- 수식: 변위·속도·가속도, 정현파 진폭 관계 (§3)
-- 실험 과제: 25 Hz, 50 µm pp는 몇 mm/s rms? 1 in/s pk는 몇 mm/s rms?
-- 검증: 2.78 mm/s rms, 17.96 mm/s rms, g = 9.80665 m/s², 1 mil = 25.4 µm
+- P1-6 §6.2 · M1.13 · 구현 (`UnitConverterLab`, 계산 `lib/units.ts`)
+- 목적: 변위·속도·가속도 × Peak·Peak-Peak·RMS × SI·인치 단위를 정현파 하나로 가정해 서로 바꾸고, 같은 진동이 주파수에 따라 세 양으로 어떻게 보이는지 본다.
+- 조작: 단위 [µm, mil, mm/s, in/s, m/s², g] (바꾸면 흔한 표기·값으로 초기화), 표기, 값, 주파수 1 ~ 1000 Hz(rpm 함께 표시)
+- 출력: 9가지 흔한 조합의 환산표, 변위(µm pp)·속도(mm/s rms)·가속도(g pk) vs 주파수 로그-로그 그래프 3개 + 지금 주파수 점
+- 수식: Peak = √2 RMS = PP/2, v = 2πf d, a = 2πf v (현재 값 대입)
+- 실험 과제: 25 Hz 50 µm pp → 2.78 mm/s rms / 1 in/s pk → 17.96 mm/s rms / 0.25 in/s pk vs 3.2 mm/s rms / 5 mm/s rms를 10 → 1000 Hz
+- 검증 (`units.test.ts`): 2.78 mm/s rms, 17.96 mm/s rms, g = 9.80665 m/s², 1 mil = 25.4 µm, 100 Hz 10 µm pk → 6.283 mm/s·3.948 m/s², 왕복 환산
 
 #### LAB-MOD-01 변조 · 측대역 · 맥놀이
 - P1-7 · M1.14 · 사양
@@ -614,6 +618,10 @@
 | 정현파 | — | CF = √2 ≈ 1.414 |
 | 단위 환산 | 25 Hz, 50 µm pp | 2.78 mm/s rms |
 | 단위 환산 | 1 in/s pk | 17.96 mm/s rms |
+| 파워 바닥과 Δf | 백색 잡음 σ, Hann, N 1024 → 8192 | bin 파워 2σ²·ENBW/N → 1/8 (−9 dB), PSD는 2σ²/f_s 그대로 |
+| 톤의 PSD | bin 중심 톤 RMS A, Hann | A²/(1.5·Δf) — Δf가 1/8이면 8배 |
+| 대역 RMS (Hann 톤) | bin 중심 톤 1 RMS | 세 bin 파워 0.25·1·0.25, ÷ 1.5 → 1 (안 나누면 √1.5 = 1.22) |
+| dB 기준값 | 1 mm/s | re 1 mm/s 0 dB = re 1 nm/s 120 dB |
 | AM 측대역 | m = 0.5 | 반송파 대비 0.25 (−12.0 dB) |
 | FM 베셀 | β = 1 | J₀ 0.765, J₁ 0.440, J₂ 0.115 |
 | 증폭계수 | 1자유도, ζ = 0.05 | AF ≈ 10 (허용오차 명시) |
