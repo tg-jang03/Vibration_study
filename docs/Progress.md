@@ -37,7 +37,7 @@
 - **작업 폴더**: `C:\Users\AX\Desktop\ATG\업무\진동공부-Codex` (Antigravity 트랙 B git worktree, detached HEAD). 기본 폴더 `진동공부`는 트랙 A가 쓰므로 들어가지 않는다.
 - **시작할 때마다**: `git fetch origin` → `git rebase origin/main` (로컬 커밋이 없으면 `git checkout --detach origin/main`). **push**: 검사 통과 후 `git push origin HEAD:main`. 거절되면 다시 fetch·rebase.
 - **먼저 읽을 것**: `AGENTS.md` → `docs/PageGuide.md`(특히 §5-4 도식, §6-4 랩, §10 Part 0 특기 사항) → `Roadmap.md` §6-4(M2 표) → `Curriculum.md` Part 0 → `Contents.md` §1-2 Part 0 척추, §5 LAB-MCK-01 ~ LAB-SRC-01, §6 기준값(고유진동수 ~ 불평형 응답 행) → D-027, D-029.
-- **M2.6 완료**: P0-6 본문(10절)·정적 그림 7개(`src/figures/p0-6.ts`) 및 회귀 테스트 4개(`p0-6.test.ts`), 그림 갤러리 등록, LAB-UNB-01(`UnbalanceLab`: rpm 슬라이더, 런업 가속 재생, 도는 원판 및 원심력 화살표 SVG 애니메이션, Bode 진폭/위상 선도 및 1X 시간파형, ReadoutTable, 실험과제 4문항), `lib/mck/unbalance.ts`에 `unbalancePeak` 추가 및 테스트 4개.
+- **M2.6 완료 및 Part 0(P0-1 ~ P0-6) 폼 전수 점검 통일**: P0-1 ~ P0-6 전 페이지를 PageGuide(D-028) 및 기준 페이지(P1-0 ~ P1-4)와 1:1 대조. 수식 오타(P0-2), 부제 통일(P0-4, P0-5), idea 상자 평어체 통일(P0-5, P0-6), 랩 뒤 해석 문단 보완(P0-5, P0-6), 정리 표 제목 통일(P0-5, P0-6), 확인 문제 `<details>` 접기 태그 통일(P0-5, P0-6), Part 1 연결 Callout 및 참고자료 절 보완 완료.
 - **다음은 사용자 확인 뒤 M2.7**: P0-7 응답에서 원인으로: 진단은 거꾸로 푸는 문제 (P0-7, LAB-SRC-01: 원인 합성 랩, "원인을 알고 응답을 예측하던 문제를 거꾸로 푸는 것이 진단", 증거 5요소 틀 정립).
 - 이 실행 셸에서는 Node가 PATH에 없을 때가 있었다. 그 경우 검사 명령 앞에 현재 프로세스용으로 `$env:Path = 'C:\Program Files\nodejs;' + $env:Path`를 붙이면 된다.
 - **고치지 않는 것**: `src/pages/p1-1 ~ p1-8.mdx`, `src/figures/p1-*.ts`, `src/lib/dsp/`(읽기·import는 자유), Part 1 랩, `docs/Progress.md`의 트랙 A 행·절.
@@ -147,6 +147,19 @@
 
 ## 세션 로그 — 트랙 B (Antigravity, Part 0) · 최근 3개, 최신이 위
 
+### 2026-10-06 · Antigravity · Part 0(P0-1 ~ P0-6) 폼 전수 점검 및 통일 보완
+- 요청: 사용자 — "일단 다음거 하기전에 지금까지 너가한거랑 기존에 다른 part 들이랑 폼 자체가 좀 다르고 빠진내용같은거 없는지 싹다 다시 점검해봐"
+- P0-1 ~ P0-6 전 페이지를 PageGuide(D-028) 및 기준 페이지(P1-0 ~ P1-4, P2-1)와 1:1 전수 대조:
+  - P0-2: 수식 백슬래시 누락 오타 4개 수정 (`\ddot{x}`, `\dot{x}`, `\omega_n^2`)
+  - P0-4, P0-5: H1 대제목에 콜론 부제 추가하여 일관성 확보
+  - P0-5, P0-6: `idea` 상자 번호 목록을 존댓말체에서 PageGuide 표준 평어체("~할 수 있다", "~를 안다")로 통일
+  - P0-5, P0-6: 랩 바로 뒤 따라 하기 해석 문단(숫자로 답하기) 보완 추가
+  - P0-5, P0-6: `## 8. 핵심 정리`를 표준 `## 8. 정리`로 제목 통일
+  - P0-5, P0-6: `Callout type="example"`로 작성되어 정답이 노출되던 확인 문제 6문항을 표준 `<details><summary><strong>Qn. ...</strong></summary> ... </details>` 태그로 전면 전환
+  - P0-5, P0-6: 별도 H2로 분리되었던 다음 절 안내를 표준 한 줄 문장 + `<Callout type="field" title="Part 1로 이어지는 곳">`으로 정돈, `## 참고자료` 문헌 절 추가
+- 검증: `npm run check` 0 errors, `npm test` 265개 전원 통과, `npm run build` 정적 빌드 32개 페이지 완료, Edge headless로 P0-5·P0-6 전체 렌더링 캡처 확인
+- 다음: 사용자 검토 후 M2.7 (P0-7, LAB-SRC-01) 진행
+
 ### 2026-10-06 · Antigravity · M2.6 불평형과 1X — P0-6, LAB-UNB-01
 - 요청: 사용자 — "문서 기록에 왜 codex 라 해 antigravity 로 바꾸고 다음 작업 진행해"
 - P0-6: rpm과 1X 환산 → 불평형과 원심력(F_u ∝ Ω²) → 1X 시간파형 → 임계속도와 공진 Bode 선도 → 일반 외력과의 차이 → 기동 런업과 초임계 자기 조심(Self-centering). 정적 그림 7개와 숫자 회귀 테스트 4개
@@ -164,12 +177,3 @@
 - 문서: Contents·Glossary·curriculum.ts 상태와 신규 7개 용어 반영, M2.2 로그를 archive로 이동
 - 확인: `npm run check` 0 errors, `npm test` 통과, `npm run build` 정적 빌드 및 헤드리스 캡처 검증
 - 다음: 사용자 검토 뒤 M2.6 불평형과 1X
-
-### 2026-10-06 · Antigravity · M2.4 강제진동과 공진 — P0-4, LAB-FRC-01
-- 요청: 사용자 — M2.4 강제진동과 공진 이어서 진행
-- P0-4: 가진력·운동방정식 → 과도 vs 정상상태 → 진동수비와 세 구간 → 공진과 Q·Half-power 폭 → FRF와 Bode 선도 → 맥놀이. 정적 그림 7개와 숫자 회귀 테스트 4개
-- LAB-FRC-01: 가진 주파수 f (0~15 Hz)·감쇠비 ζ·[과도 포함/정상상태만] 선택, 힘/변위 시간파형, 진폭비·위상 곡선 위 현재 점 표시, 읽음값 7개
-- 코어: `lib/mck/forced.ts` 순수 함수 + 해석해 검증 테스트 10개. 그림 회귀 테스트 4개
-- 문서: Contents·Glossary·curriculum.ts 상태와 7개 용어 갱신, M2.1 로그를 archive로 이동
-- 확인: `npm run check` 0 errors, `npm test` 216개, `npm run build` 26페이지, 헤드리스 캡처 확인
-- 다음: 사용자 검토 뒤 M2.5 여러 질량과 모드
