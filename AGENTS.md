@@ -21,8 +21,9 @@
 |---|---|---|
 | `AGENTS.md` | 공통 규칙, 문서 인덱스 (이 파일) | 규칙이 바뀔 때 (Decision 선행) |
 | `docs/Roadmap.md` | 큰 그림: 목표, 사이트 구조, 기술 구조, 마일스톤 정의·완료 기준 | 마일스톤 범위가 바뀔 때 |
-| `docs/Progress.md` | 현재 마일스톤, 세부 현황, 핸드오프, 최근 세션 로그 3개 | **매 세션 끝 (필수)** |
-| `docs/archive/SessionLog.md` | Progress에서 밀려난 지난 세션 로그 (보관용, 평소엔 읽지 않음) | 세션 로그가 3개를 넘을 때 (D-020) |
+| `docs/Progress.md` | 트랙 현황(A·B), 세부 현황, 트랙별 핸드오프·최근 세션 로그 3개 | **매 세션 끝 (필수)** |
+| `docs/archive/SessionLog.md` | Progress에서 밀려난 지난 세션 로그 (보관용, 평소엔 읽지 않음) | 트랙의 세션 로그가 3개를 넘을 때 (D-020, D-029) |
+| `docs/PageGuide.md` | **페이지 작성 지침서**: 톤·뼈대·그림·상자·랩 배치·수식·MDX 함정·작업 순서·체크리스트 = **어떻게 쓰나** | 작성 방법이 바뀔 때 (D-028) |
 | `docs/Decisions.md` | 결정 기록 `D-xxx` (맥락·결정·대안·영향) | 되돌리기 어려운 선택을 했을 때 |
 | `docs/Issues.md` | 블로커·환경·설계 질문·콘텐츠 검증 `I-xxx` | 발견 즉시, 해결 즉시 |
 | `docs/Curriculum.md` | 상세 커리큘럼 (Contents의 하위 문서): Part 0~10 절별 목표·내용·수식·과제·함정 = **무엇을 가르치나** | 교육 내용이 바뀔 때 (D-015) |
@@ -34,24 +35,32 @@
 
 **시작할 때**
 1. `git status` / `git branch` / `git log --oneline -10`으로 현재 상태 확인
-2. `docs/Progress.md`의 "현재 상태"와 "핸드오프" 읽기
+2. `docs/Progress.md`의 "트랙 현황"과 **자기 트랙**의 "핸드오프" 읽기 (내 트랙·작업 폴더가 맞는지 확인)
 3. `docs/Roadmap.md`에서 담당 마일스톤의 산출물·완료 기준 확인
 4. `docs/Issues.md`의 열린 항목, `docs/Decisions.md`의 관련 결정 확인
-5. 구현할 페이지의 교육 내용은 `docs/Curriculum.md`, 페이지·랩 사양은 `docs/Contents.md`에서 확인 (사양이 비어 있으면 먼저 작성)
+5. 구현할 페이지의 교육 내용은 `docs/Curriculum.md`, 페이지·랩 사양은 `docs/Contents.md`에서 확인 (사양이 비어 있으면 먼저 작성). 페이지를 쓰기 전에 `docs/PageGuide.md`를 읽는다
 
 **끝낼 때**
-1. `docs/Progress.md`: 세부 현황 갱신, 세션 로그 1건을 **맨 위**에 추가, 핸드오프 갱신. 세션 로그가 3개를 넘으면 가장 오래된 것을 `docs/archive/SessionLog.md` 맨 위로 옮긴다
+1. `docs/Progress.md`: 트랙 현황·세부 현황 갱신, **자기 트랙** 세션 로그 1건을 그 절 **맨 위**에 추가, 자기 트랙 핸드오프 갱신. 그 트랙의 세션 로그가 3개를 넘으면 가장 오래된 것을 `docs/archive/SessionLog.md` 맨 위로 옮긴다
 2. 새 결정 → `Decisions.md`, 새 문제 → `Issues.md`, 콘텐츠 상태 변화 → `Contents.md`
 3. 테스트·빌드가 있다면 통과를 확인한 뒤 커밋 (§4 규칙)
 
-## 4. 마일스톤 & Git 협업 (D-017, D-019)
+## 4. 마일스톤 & Git 협업 (D-017, D-019, D-029)
 
 - 저장소: `origin` = https://github.com/tg-jang03/Vibration_study (**공개**, 기본 브랜치 `main`)
 - 마일스톤은 2단계다: 큰 마일스톤 `M{n}`(커리큘럼의 큰 범위) → 세부 마일스톤 `M{n}.{m}`(실제 작업 단위). 목록은 `docs/Roadmap.md` §6.
 - **모든 작업은 `main`에서 한다.** 브랜치와 PR은 만들지 않는다 (D-019).
-- **한 번에 한 에이전트, 하나의 세부 마일스톤만 "진행 중"**. 시작 전에 `Progress.md`의 담당을 확인한다. 다른 에이전트가 진행 중이면 기다린다.
-- 예외 — 병렬 작업 (D-021): 사용자가 요청하면 두 번째 에이전트는 별도 worktree(`git worktree add --detach ../진동공부-<에이전트> main`)에서 파일이 겹치지 않는 세부 마일스톤을 한다. 공유 문서는 먼저 시작한 쪽이 push한 뒤 `git rebase origin/main`으로 받아서 고치고 `git push origin HEAD:main`한다.
-- 작업 순서: `git pull --ff-only` → 작업 → 커밋 → `git push`. push가 거절되면 `git pull --rebase` 후 다시 push한다 (아직 push하지 않은 자기 커밋만 rebase).
+- **병렬 트랙 (D-029, 2026-10-06~)**: 지금은 두 트랙이 나란히 간다. **트랙마다 세부 마일스톤 하나만 "진행 중"**. 시작 전에 `Progress.md` 트랙 현황에서 내 트랙·담당을 확인한다. 같은 트랙에 다른 에이전트가 진행 중이면 기다린다.
+
+  | 트랙 | 범위 | 담당 | 작업 폴더 | 최신 받기 → push |
+  |---|---|---|---|---|
+  | A | M1 Part 1 (M1.12 ~ M1.15) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | B | M2 Part 0 (M2.1 ~ M2.8) | Codex | `../진동공부-codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
+
+  - 파일 소유 (자세히는 D-029): A만 `p1-1 ~ p1-8`·`figures/p1-*`·`lib/dsp`·Part 1 랩·`index.astro` / B만 `p0-*`·`figures/p0-*`·`lib/mck`·Part 0 랩·`p1-0.mdx`·`SineBasicsLab` / 공유는 자기 구역만(`curriculum.ts`의 자기 Part, 갤러리의 자기 절, 문서의 자기 트랙 행·절) / 공용 코어(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`)는 하위 호환으로만 고치고 핸드오프에 적는다.
+  - rebase 충돌은 문서의 같은 자리에서만 난다 → 양쪽 내용을 모두 살린다. 새 `D-`·`I-` 번호는 push 직전에 `origin/main`의 마지막 번호를 확인하고, 겹치면 나중에 push하는 쪽이 올린다.
+- 그 밖의 짧은 병렬 (D-021): 사용자가 요청하면 세 번째 작업은 별도 worktree(`git worktree add --detach ../진동공부-<에이전트> main`)에서 파일이 겹치지 않는 세부 마일스톤을 한다.
+- 작업 순서: 최신 받기 → 작업 → 커밋 → 다시 최신 받기 → 검사 → push. push가 거절되면 다시 rebase 후 push한다 (아직 push하지 않은 자기 커밋만 rebase).
 - 커밋 메시지: `[M{n}.{m}] {type}: {요약}` — type은 `feat` `fix` `docs` `test` `refactor` `chore`
   - 예: `[M0.3] feat: Astro 사이트 골격`, `[M1.5] feat: 샘플링 랩(LAB-SMP-01) 추가`
   - 세부 마일스톤 하나에 커밋 하나가 기본. 크면 여러 개로 나눠도 된다.
@@ -91,22 +100,22 @@
 - 화면 확인(Windows): `npm run build` → `npx astro preview` → Edge 헤드리스 캡처 `msedge --headless=new --window-size=1100,1500 --virtual-time-budget=8000 --screenshot=<png> <URL>` (PowerShell `Start-Process -Wait`로 실행). 수식은 `$…$`·`$$…$$`(MDX), 랩 수식은 `Formula`, 플롯은 `Plot` 래퍼만 쓴다.
 - 사이트 목차(`src/data/curriculum.ts`)는 `docs/Curriculum.md`의 절 구성, `docs/Contents.md` §4의 페이지 상태와 같아야 한다. 한쪽을 고치면 다른 쪽도 고친다.
 
-- `src/lib/dsp/`에는 **순수 함수만** 둔다. DOM·React·플롯 라이브러리에 의존하지 않는다.
+- `src/lib/dsp/`·`src/lib/mck/`(Part 0 질량-스프링 모델)에는 **순수 함수만** 둔다. DOM·React·플롯 라이브러리에 의존하지 않는다.
 - 내부 단위는 SI (s, Hz, rad, m, m/s, m/s²). rpm, mm/s, µm, g, dB 변환은 UI 계층에서만 한다 (D-012).
 - 난수는 반드시 시드를 고정한다 (같은 파라미터 → 같은 결과).
-- 새 DSP 함수에는 **해석해 또는 문헌값으로 검증하는 테스트**를 함께 넣는다 (예: Hann ENBW = 1.5 bin, bin 중심 톤의 진폭 = 입력 진폭). 기준값은 `docs/Contents.md` §6.
+- 새 DSP·MCK 함수에는 **해석해 또는 문헌값으로 검증하는 테스트**를 함께 넣는다 (예: Hann ENBW = 1.5 bin, bin 중심 톤의 진폭 = 입력 진폭). 기준값은 `docs/Contents.md` §6.
 - 기호·수식 표기는 `docs/Contents.md` §3을 단일 기준으로 쓴다.
 - 랩은 `docs/Contents.md`의 랩 사양을 먼저 채우고 구현한다. 구조: 조작 → 플롯 → 수식(현재 값 대입) → 실험 과제.
 - 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
 - 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다. 이론상 0인 값의 부동소수점 잡음(1e-15 수준)도 그대로 표시하지 않고 0으로 보여준다 (hydration 오류, I-019).
-- **페이지 작성 기준 (D-025 톤 + D-026 구조)**: `docs/Contents.md` §1을 따른다.
+- **페이지 작성은 `docs/PageGuide.md`를 따른다** (D-025 톤 + D-026 구조 + D-028 지침서). 기준 페이지는 P1-0 ~ P1-4. 요점:
   - 톤: 질문에서 출발하는 구어체, 정확한 비유만, **"학교 vs 현장" 이분법 금지**, 과장 금지.
-  - 개념 순서: 앞 페이지까지 설명한 개념만 쓴다. 처음 나오는 용어는 그 자리에서 한 줄로 푼다 (개념 척추 표 §1-2).
-  - 예시 그림: 개념마다 `Figure`(빌드 시 정적 SVG). 데이터는 `src/figures/p{Part}-{절}.ts`에서 `lib/dsp`로 계산, 형식은 `src/lib/figure.ts`. 아스키 그림 금지. 확인은 `/dev/figures/` 갤러리.
+  - 개념 순서: 앞 페이지까지 설명한 개념만 쓴다. 처음 나오는 용어는 그 자리에서 한 줄로 푼다 (개념 척추 `docs/Contents.md` §1-2).
+  - 예시 그림: 개념마다 `Figure`(빌드 시 정적 SVG). 데이터는 `src/figures/p{Part}-{절}.ts`에서 `lib/`로 계산, 형식은 `src/lib/figure.ts`, 도식(질량·스프링)은 `frame: false` 패널(견본 `src/figures/dev-schematic.ts`). 아스키 그림·코드 블록 금지. 확인은 `/dev/figures/` 갤러리.
   - 강조 상자: `Callout`(`src/components/content/`) 6종만. 랩 앞에 `try` 상자로 조작 단계, 랩 뒤에 해석.
   - 폭: 절 페이지의 글·그림·상자·랩은 모두 같은 폭(`--content-width`, `global.css`)을 쓴다. 특정 요소만 넓히거나 좁히지 않는다.
+  - push 전 체크리스트: `PageGuide.md` §11.
 - `texNumber(v, sig)`·`formatNumber(v, sig)`의 둘째 인자는 **유효숫자**다 (소수 자리 아님). `texNumber(2560, 1)`은 "3000"이 된다. 주파수·dB는 3~4를 쓴다.
-  - push 전 체크리스트(§1-5) 확인.
 - 새 절 페이지는 `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 목차 `src/data/curriculum.ts`의 `href`·`status`도 고친다. 예시: `src/pages/p1-1.mdx`.
 - KaTeX는 `package.json` `overrides`로 한 버전만 쓴다. 수식 관련 패키지를 바꾸면 `npm ls katex`로 확인한다 (I-021).
 - 성능 측정은 `scripts/bench/plot-bench.mjs`(실시간). 헤드리스 캡처의 가상 시간 모드에서는 시간이 0으로 나온다 (I-020).

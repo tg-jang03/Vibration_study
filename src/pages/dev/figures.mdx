@@ -12,6 +12,7 @@ import * as F2 from '../../figures/p1-2';
 import * as F3 from '../../figures/p1-3';
 import * as F4 from '../../figures/p1-4';
 import * as F5 from '../../figures/p1-5';
+import * as FD from '../../figures/dev-schematic';
 
 export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 
@@ -52,3 +53,9 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P1-5
 
 {byId(F5).map((f) => <Figure {...f} />)}
+
+## 도식 견본 (Part 0용)
+
+축 없는 패널(`frame: false`)에 벽·스프링·감쇠기·질량·원판을 그린 견본이다. 데이터: `src/figures/dev-schematic.ts`.
+
+{byId(FD).map((f) => <Figure {...f} />)}

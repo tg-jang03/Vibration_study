@@ -5,7 +5,18 @@
  *       import { sineAnatomy } from '../figures/p1-0';
  *       <Figure {...sineAnatomy} />
  */
-import { linearScale, niceTicks, type FigAnnotation, type FigColor, type FigPanel, type FigSeries } from '../../lib/figure';
+import {
+  FIG_LAYOUT,
+  damperSegments,
+  groundSegments,
+  linearScale,
+  niceTicks,
+  springPoints,
+  type FigAnnotation,
+  type FigColor,
+  type FigPanel,
+  type FigSeries,
+} from '../../lib/figure';
 import { formatNumber } from '../../lib/format';
 
 interface Props {
@@ -16,11 +27,8 @@ interface Props {
 
 const { id, caption, panels } = Astro.props;
 
-// 본문 폭(약 900px)에서 1:1로 보이도록 잡은 기준 폭. 패널 height는 680 폭 기준으로 적었으므로 HSCALE을 곱한다
-const W = 900;
-const HSCALE = 1.2;
-const ML = 62;
-const MR = 18;
+// 본문 폭(약 900px)에서 1:1로 보이도록 잡은 기준 폭. 패널 height는 680 폭 기준으로 적었으므로 HSCALE을 곱한다 (FIG_LAYOUT)
+const { W, HSCALE, ML, MR } = FIG_LAYOUT;
 const GAP = 14;
 const COLOR: Record<FigColor, string> = {
   c1: 'var(--plot-1)',
@@ -50,8 +58,9 @@ const laid: Laid[] = panels.map((panel) => {
   const legendItems = panel.series.filter((s) => s.label);
   const showLegend = panel.legend ?? legendItems.length > 1;
   const headH = (panel.title ? 21 : 0) + (showLegend && legendItems.length > 0 ? 22 : 0) + 8;
-  const hasXTicks = panel.x.ticks !== 'none';
-  const footH = (hasXTicks ? 22 : 4) + (panel.x.label ? 20 : 0) + 4;
+  const framed = panel.frame !== false;
+  const hasXTicks = framed && panel.x.ticks !== 'none';
+  const footH = (hasXTicks ? 22 : 4) + (framed && panel.x.label ? 20 : 0) + 4;
   const plotH = Math.round((panel.height ?? 200) * HSCALE);
   const top = offset;
   const height = headH + plotH + footH;
@@ -68,8 +77,9 @@ function render(l: Laid, index: number) {
   const sx = linearScale(x0, x1, ML, ML + plotW);
   const sy = linearScale(y0, y1, l.plotTop + l.plotH, l.plotTop);
   const yBase = sy(Math.min(Math.max(0, y0), y1));
-  const xTicks = panel.x.ticks === 'none' ? [] : (panel.x.ticks ?? niceTicks(x0, x1, 6));
-  const yTicks = panel.y.ticks === 'none' ? [] : (panel.y.ticks ?? niceTicks(y0, y1, 4));
+  const framed = panel.frame !== false;
+  const xTicks = !framed || panel.x.ticks === 'none' ? [] : (panel.x.ticks ?? niceTicks(x0, x1, 6));
+  const yTicks = !framed || panel.y.ticks === 'none' ? [] : (panel.y.ticks ?? niceTicks(y0, y1, 4));
   const label = (axisLabels: { value: number; label: string }[] | undefined, v: number) =>
     axisLabels?.find((t) => Math.abs(t.value - v) < 1e-9)?.label ?? tickText(v);
 
@@ -144,7 +154,55 @@ function render(l: Laid, index: number) {
       };
     });
 
-  return { l, plotW, sx, sy, yBase, xTicks, yTicks, label, series, legendItems, legendY, arrows, clipId: `${id}-clip-${index}` };
+  // 도식 도형 (선분·스프링·감쇠기·고정면·원). 글자는 가로로 놓인 도형이면 위, 세로면 오른쪽
+  type Shape = {
+    color: string;
+    width: number;
+    dash?: boolean;
+    segs?: number[][];
+    poly?: string;
+    circle?: { cx: number; cy: number; r: number; fill: boolean };
+    text?: { x: number; y: number; anchor: 'start' | 'middle'; value: string };
+  };
+  const sideLabel = (p1: [number, number], p2: [number, number], half: number, value?: string): Shape['text'] => {
+    if (!value) return undefined;
+    const [mx, my] = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+    return Math.abs(p2[0] - p1[0]) >= Math.abs(p2[1] - p1[1])
+      ? { x: mx, y: my - half - 8, anchor: 'middle', value }
+      : { x: mx + half + 8, y: my + 4, anchor: 'start', value };
+  };
+  const shapes: Shape[] = (panel.annotations ?? []).flatMap((a): Shape[] => {
+    if (a.type === 'line') {
+      return [{ color: COLOR[a.color ?? 'text'], width: a.width ?? 2, dash: a.dash, segs: [[sx(a.x1), sy(a.y1), sx(a.x2), sy(a.y2)]] }];
+    }
+    if (a.type === 'spring' || a.type === 'damper') {
+      const p1: [number, number] = [sx(a.x1), sy(a.y1)];
+      const p2: [number, number] = [sx(a.x2), sy(a.y2)];
+      const w = a.width ?? (a.type === 'spring' ? 14 : 16);
+      const text = sideLabel(p1, p2, w / 2, a.label);
+      const color = COLOR[a.color ?? 'text'];
+      return a.type === 'spring'
+        ? [{ color, width: 1.8, text, poly: springPoints(p1, p2, a.coils ?? 6, w).map((q) => `${f2(q[0])},${f2(q[1])}`).join(' ') }]
+        : [{ color, width: 1.8, text, segs: damperSegments(p1, p2, w) }];
+    }
+    if (a.type === 'ground') {
+      return [{ color: COLOR[a.color ?? 'muted'], width: 1.4, segs: groundSegments([sx(a.x1), sy(a.y1)], [sx(a.x2), sy(a.y2)], a.side ?? 'left') }];
+    }
+    if (a.type === 'circle') {
+      return [
+        {
+          color: COLOR[a.color ?? 'text'],
+          width: 1.8,
+          dash: a.dash,
+          circle: { cx: sx(a.x), cy: sy(a.y), r: a.r, fill: a.fill ?? false },
+          text: a.label ? { x: sx(a.x), y: sy(a.y) + 5, anchor: 'middle', value: a.label } : undefined,
+        },
+      ];
+    }
+    return [];
+  });
+
+  return { l, plotW, sx, sy, yBase, xTicks, yTicks, label, series, legendItems, legendY, arrows, shapes, framed, clipId: `${id}-clip-${index}` };
 }
 
 const rendered = laid.map(render);
@@ -210,15 +268,15 @@ const rendered = laid.map(render);
                   </text>
                 </g>
               ))}
-              {p.y.range[0] < 0 && p.y.range[1] > 0 && <line class="fig-zero" x1={ML} x2={ML + r.plotW} y1={f2(r.sy(0))} y2={f2(r.sy(0))} />}
-              <line class="fig-axis" x1={ML} x2={ML} y1={top} y2={bottom} />
-              <line class="fig-axis" x1={ML} x2={ML + r.plotW} y1={bottom} y2={bottom} />
-              {p.x.label && (
+              {r.framed && p.y.range[0] < 0 && p.y.range[1] > 0 && <line class="fig-zero" x1={ML} x2={ML + r.plotW} y1={f2(r.sy(0))} y2={f2(r.sy(0))} />}
+              {r.framed && <line class="fig-axis" x1={ML} x2={ML} y1={top} y2={bottom} />}
+              {r.framed && <line class="fig-axis" x1={ML} x2={ML + r.plotW} y1={bottom} y2={bottom} />}
+              {r.framed && p.x.label && (
                 <text class="fig-label" x={ML + r.plotW / 2} y={bottom + (p.x.ticks === 'none' ? 20 : 38)} text-anchor="middle">
                   {p.x.label}
                 </text>
               )}
-              {p.y.label && (
+              {r.framed && p.y.label && (
                 <text class="fig-label" transform={`translate(15, ${f2((top + bottom) / 2)}) rotate(-90)`} text-anchor="middle">
                   {p.y.label}
                 </text>
@@ -296,6 +354,29 @@ const rendered = laid.map(render);
                   ),
                 )}
               </g>
+              {/* 도식 도형 (계열 위, 글자·점·화살표 아래) */}
+              {r.shapes.map((sh) => (
+                <g style={`stroke:${sh.color};stroke-width:${sh.width};fill:none`} stroke-linecap="round" stroke-linejoin="round">
+                  {sh.segs?.map((g) => (
+                    <line x1={f2(g[0])} y1={f2(g[1])} x2={f2(g[2])} y2={f2(g[3])} stroke-dasharray={sh.dash ? '6 4' : undefined} />
+                  ))}
+                  {sh.poly && <polyline points={sh.poly} />}
+                  {sh.circle && (
+                    <circle
+                      cx={f2(sh.circle.cx)}
+                      cy={f2(sh.circle.cy)}
+                      r={f2(sh.circle.r)}
+                      style={sh.circle.fill ? `fill:${sh.color};fill-opacity:0.12` : undefined}
+                      stroke-dasharray={sh.dash ? '6 4' : undefined}
+                    />
+                  )}
+                  {sh.text && (
+                    <text class="fig-note fig-bold" x={f2(sh.text.x)} y={f2(sh.text.y)} text-anchor={sh.text.anchor} style={`fill:${sh.color};stroke:none`}>
+                      {sh.text.value}
+                    </text>
+                  )}
+                </g>
+              ))}
               {/* 선·글자·점·화살표 주석 (계열 위) */}
               {(p.annotations ?? []).map((a) =>
                 a.type === 'hline' && (a.y < p.y.range[0] || a.y > p.y.range[1]) ? null : a.type === 'vline' && (a.x < p.x.range[0] || a.x > p.x.range[1]) ? null : a.type === 'hline' ? (
