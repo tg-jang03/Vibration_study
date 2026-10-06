@@ -113,7 +113,7 @@
 - 새 DSP·MCK 함수에는 **해석해 또는 문헌값으로 검증하는 테스트**를 함께 넣는다 (예: Hann ENBW = 1.5 bin, bin 중심 톤의 진폭 = 입력 진폭). 기준값은 `docs/Contents.md` §6.
 - 기호·수식 표기는 `docs/Contents.md` §3을 단일 기준으로 쓴다.
 - 랩은 `docs/Contents.md`의 랩 사양을 먼저 채우고 구현한다. 구조: 조작 → 플롯 → 수식(현재 값 대입) → 실험 과제.
-- 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
+- 랩은 `LabFrame`(`components/ui/`)으로 감싼다. 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다 (극좌표 Polar는 `PolarPlot`, D-035). 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
 - 랩 컴포넌트는 빌드 때 서버에서도 한 번 그려진다. 시간(`performance.now`), 시드 없는 난수, `window`·화면 크기처럼 서버와 브라우저에서 달라지는 값은 첫 렌더에 쓰지 않는다. 이론상 0인 값의 부동소수점 잡음(1e-15 수준)도 그대로 표시하지 않고 0으로 보여준다 (hydration 오류, I-019).
 - **페이지 작성은 `docs/PageGuide.md`를 따른다** (D-025 톤 + D-026 구조 + D-028 지침서, 기준 페이지 P1-0 ~ P1-4). 핵심만: 질문에서 출발하는 구어체·과장 금지·**"학교 vs 현장" 이분법 금지**, 앞 페이지까지 나온 개념만(개념 척추 `Contents.md` §1-2), 개념마다 `Figure`(데이터는 `src/figures/p{Part}-{절}.ts`), 강조 상자는 `Callout` 6종, 랩 앞 따라 하기·뒤 해석, 아스키 그림·코드 블록 금지, 모든 요소 같은 폭(`--content-width`). push 전 체크리스트는 PageGuide §11.
 - `texNumber(v, sig)`·`formatNumber(v, sig)`의 둘째 인자는 **유효숫자**다 (소수 자리 아님). `texNumber(2560, 1)`은 "3000"이 된다. 주파수·dB는 3~4를 쓴다.

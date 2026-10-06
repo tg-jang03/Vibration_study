@@ -291,7 +291,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 
 ### 6-4. 랩 컴포넌트
 
-- `LabFrame`으로 감싸고, 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다. 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
+- `LabFrame`으로 감싸고, 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다 (극좌표 Polar는 `PolarPlot`, D-035 — 예: P2-3의 `PhaseLab`·`SlowRollLab`). 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
 - 구조: 조작 → 플롯 → 수식(현재 값 대입) → 읽음값(측정값 vs 이론값) → 실험 과제(질문 + 접힌 답).
 - 프리셋·라벨·과제에도 풀지 않은 전문용어를 쓰지 않는다.
 - 계산은 `lib/`의 순수 함수로. 본문 그림과 같은 신호·시드를 쓰면 그림과 랩의 숫자가 일치한다. 그림과 랩이 같이 쓰는 신호는 한 파일에 둔다 (예: `src/lib/gearbox.ts`).

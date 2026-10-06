@@ -3,7 +3,7 @@
 > 되돌리기 어려운 선택을 기록한다 (ADR 형식). **추가만** 한다. 결정을 바꿀 때는 새 결정을 쓰고 이전 결정을 `대체됨 → D-xxx`로 표시한다.
 > 상태: `제안`(사용자 확인 전) · `확정` · `폐기` · `대체됨`
 > `대체됨`·`폐기`가 된 결정은 본문을 `archive/Decisions.md`로 옮긴다 (D-030). 보관: **D-001, D-013, D-016, D-024**. 일부만 대체된 결정은 여기 둔다.
-> **다음 번호: D-035**
+> **다음 번호: D-036**
 
 ## 요약
 
@@ -39,6 +39,7 @@
 | D-032 | Part 0에 "기계 요소가 만드는 주파수" 절 추가 (새 P0-7, 옛 P0-7 → P0-8, M2 세부 10개) | 확정 | 2026-10-06 | 사용자 요청 / Claude |
 | D-033 | 트랙 A(Claude)가 Part 0 전수 검토·수정과 M2.7(P0-7)을 맡음 (한 번만의 소유 예외) | 확정 | 2026-10-06 | 사용자 지시 / Claude |
 | D-034 | 다음 배정: 트랙 A M3 → M4, 트랙 B(Codex) M2 마무리 → M5 Part 4. 위상·Polar 공통 관례 | 확정 | 2026-10-06 | 사용자 지시 / Claude |
+| D-035 | Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외) | 제안 | 2026-10-06 | Claude |
 
 ---
 
@@ -396,3 +397,10 @@
   5. 기반: Contents에 Part 2·Part 4 개념 척추, §3 로터 기호·식, §5 LAB-PROX-01·LAB-JEF-01·LAB-STB-01 상세 사양, §6 기준값을 미리 둔다.
 - 영향: AGENTS 트랙 표·파일 소유, Roadmap §6, Contents §1-2·§3·§5·§6, Curriculum Part 4 머리, Progress
 
+## D-035 Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외)
+- 상태: **제안** (M3.3 구현 중 결정, 사용자 확인 전) · 2026-10-06 · Claude
+- 맥락: 랩 플롯은 `Plot` 래퍼만 쓰는데(AGENTS §6), 래퍼가 싣는 Plotly는 카테시안 번들(`plotly.js-cartesian-dist-min`)이라 극좌표가 없다. P2-3(LAB-PHS-01·LAB-SRO-01), P4-1(LAB-AF-01), P5-5가 1X 벡터를 Polar로 그려야 한다. 번들을 바꾸면 모든 랩의 내려받기 크기가 커진다.
+- 결정
+  1. `src/components/ui/PolarPlot.tsx`를 둔다. 라이브러리 없이 SVG로 그리고, Contents §3 관례(0°는 위 = 센서 방향, 지연각은 회전 반대 방향, 기본 회전 반시계)를 따른다. 계열 = 진폭·지연각[°] 배열, 선·점·화살촉, 색은 `var(--plot-n)`. 시간·난수·window를 쓰지 않아 서버 렌더와 같다 (I-019).
+  2. 랩 규칙의 "플롯은 `Plot`만"에 "극좌표는 `PolarPlot`"을 더한다. 본문 그림(`Figure`)의 Polar는 `frame: false` 패널에 원·선으로 그린다 (예: `src/figures/p2-3.ts`의 `polarGrid`).
+- 영향: AGENTS §6, PageGuide §6-4, Contents §3, 트랙 B의 P4-1(M5.1)이 재사용할 수 있다
