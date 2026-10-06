@@ -13,6 +13,7 @@ import * as P04 from '../../figures/p0-4';
 import * as P05 from '../../figures/p0-5';
 import * as P06 from '../../figures/p0-6';
 import * as P07 from '../../figures/p0-7';
+import * as P08 from '../../figures/p0-8';
 import * as F0 from '../../figures/p1-0';
 import * as F1 from '../../figures/p1-1';
 import * as F2 from '../../figures/p1-2';
@@ -69,6 +70,10 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P0-7
 
 {byId(P07).map((f) => <Figure {...f} />)}
+
+## P0-8
+
+{byId(P08).map((f) => <Figure {...f} />)}
 
 ## P1-0
 
