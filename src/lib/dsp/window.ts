@@ -12,7 +12,7 @@
  * - flatTop: 5항 Flat top (교정·밸런싱 피크 진폭 정확도, 스캘럽 손실 < 0.01 dB)
  *   - 출처: ISO 18431-2 / SciPy (scipy.signal.windows.flattop) / MATLAB (flattopwin) / D'Antona & Ferrero (2006)
  * - kaiser: 형상 파라미터 β로 메인로브 폭과 사이드로브 억제 조절
- * - exponential: 임팩트 시험 응답 채널용 인위적 지수 감쇠 (P8-1, LAB-HPB-01)
+ * - exponential: 임팩트 시험 응답 채널용 인위적 지수 감쇠 (P9-1, LAB-HPB-01)
  * - force: 임팩트 시험 해머 채널용 펄스 게이트 + 코사인 테이퍼
  */
 

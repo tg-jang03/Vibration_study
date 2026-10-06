@@ -1,5 +1,5 @@
 /**
- * P1-6 그림과 랩(LAB-SPC-01·02)이 같이 쓰는 신호 (PageGuide §6-4: 그림 = 랩 숫자).
+ * P2-7 그림과 랩(LAB-SPC-01·02)이 같이 쓰는 신호 (PageGuide §6-4: 그림 = 랩 숫자).
  * 내부 단위 SI (속도 m/s, 가속도 m/s²). 표시 단위 변환은 그림·랩에서 한다 (D-012).
  */
 import { averagePower } from './dsp/average';
@@ -18,7 +18,7 @@ export const TONE_NOISE = {
   /** 잡음 크기 [m/s RMS] = 1 mm/s RMS (0 ~ 640 Hz 전체) */
   noiseRms: 0.001,
   seed: 20261006,
-  /** 파워 평균 횟수 (P1-5) — 바닥의 흔들림을 줄여 높이를 읽기 쉽게 */
+  /** 파워 평균 횟수 (P2-6) — 바닥의 흔들림을 줄여 높이를 읽기 쉽게 */
   averages: 8,
   lors: [400, 800, 1600, 3200] as const,
 };
@@ -60,7 +60,7 @@ export function toneNoiseSpectrum({
   return { fs, n, df, enbw, frequency, power, psd: power.map((p) => p / (enbw * df)), timeRms: Math.sqrt(ms / total) };
 }
 
-/** 잡음만 있는 bin의 파워 기대값 = 2σ²·ENBW / N (단일측, P1-4·P1-5) */
+/** 잡음만 있는 bin의 파워 기대값 = 2σ²·ENBW / N (단일측, P2-5·P2-6) */
 export const noiseBinPower = (noiseRms: number, n: number, enbw: number) => (2 * noiseRms ** 2 * enbw) / n;
 /** 백색 잡음의 단일측 PSD = 2σ² / f_s */
 export const noisePsd = (noiseRms: number, fs = TONE_NOISE.fs) => (2 * noiseRms ** 2) / fs;

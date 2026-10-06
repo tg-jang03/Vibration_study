@@ -12,7 +12,7 @@ import { removeOrders, synchronousAverage, tsaGain } from '../../lib/dsp/tsa';
 import { GEARBOX, gearboxSpec } from '../../lib/gearbox';
 
 /**
- * LAB-AVG-02 TSA (P1-5 §4, Contents §5-1).
+ * LAB-AVG-02 TSA (P2-6 §4, Contents §5-1).
  * 축 A의 키페이저로 한 바퀴(256점)씩 잘라 같은 각도끼리 평균한다. 본문 그림과 같은 신호(src/lib/gearbox.ts)·시드.
  */
 

@@ -1,252 +1,307 @@
 /**
- * P2-5 "과도 데이터 수집과 보호 시스템" 본문 그림 데이터 (빌드 시 계산, D-026).
- * 기동·수집은 `src/lib/transient.ts`, 알람 논리는 랩(LAB-ALM-01)과 같은 `src/lib/protection.ts`로 계산한다.
+ * P2-5 "윈도우" 본문 그림 데이터 (빌드 시 계산, D-026).
+ * 스펙트럼은 랩(LAB-WIN-01)과 같은 조건: f_s = 1024 Hz, N = 1024 → Δf = 1 Hz, T = 1 s.
+ * 색은 그림마다 같게 쓴다: Uniform c1, Hann c3, Flat top c2, Blackman-Harris c4.
  */
-import { grid, squareYRange, type FigAnnotation, type FigSeries, type FigureSpec } from '../lib/figure';
+import { grid, type FigAnnotation, type FigColor, type FigPanel, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { DEFAULT_ALARM, evaluateAlarms, scenarioSignal, type ProtSignal } from '../lib/protection';
-import { cascadeLines, countIn, runupResponse, runupRpm, runupTimeAt, RUNUP_ROTOR, sampleByRpm, sampleByTime, smearDemo } from '../lib/transient';
+import { fft, zeroPad } from '../lib/dsp/fft';
+import { acquire } from '../lib/dsp/sampling';
+import type { SignalComponent } from '../lib/dsp/signal';
+import { singleSidedSpectrum } from '../lib/dsp/spectrum';
+import { createWindow, type WindowType } from '../lib/dsp/window';
 
-const fmt = formatNumber;
-const um = (m: number) => m * 1e6;
+const FS = 1024;
+const N = 1024;
+const DB_FLOOR = -120;
+const toDb = (a: number) => Math.max(DB_FLOOR, 20 * Math.log10(Math.max(a, 1e-12)));
+const WIN_COLOR: Record<'uniform' | 'hann' | 'flatTop' | 'blackmanHarris', FigColor> = {
+  uniform: 'c1',
+  hann: 'c3',
+  flatTop: 'c2',
+  blackmanHarris: 'c4',
+};
+const WIN_NAME = { uniform: 'Uniform (윈도우 없음)', hann: 'Hann', flatTop: 'Flat top', blackmanHarris: 'Blackman-Harris' } as const;
 
-/** 본문·캡션이 인용하는 숫자 (회귀 테스트 `figures-p2-5.test.ts`) */
-export const P25_VALUES = (() => {
-  const byTime = sampleByTime(10);
-  const byRpm = sampleByRpm(10);
-  const peakTrue = Math.max(...grid(1800, 2200, 4001).map((r) => runupResponse(r).amp));
-  const peakTime = Math.max(...byTime.map((p) => p.amp));
-  const smear = smearDemo();
-  const peakIn = (a: Float64Array, x: Float64Array, lo: number, hi: number) => Math.max(...Array.from(a).filter((_, k) => x[k] >= lo && x[k] <= hi));
-  const runup = scenarioSignal('runup');
-  const runNo = evaluateAlarms(runup, DEFAULT_ALARM);
-  const runMul = evaluateAlarms(runup, { ...DEFAULT_ALARM, tripMultiply: true });
+function spectrum(components: SignalComponent[], window: WindowType) {
+  return singleSidedSpectrum(acquire({ components }, { fs: FS, n: N }), { window });
+}
+const tone = (freq: number, amp = 1): SignalComponent => ({ type: 'sine', freq, amp });
+function band(spec: { frequency: Float64Array; amplitude: Float64Array }, lo: number, hi: number) {
+  const f: number[] = [];
+  const a: number[] = [];
+  for (let i = 0; i < spec.frequency.length; i++) {
+    if (spec.frequency[i] >= lo && spec.frequency[i] <= hi) {
+      f.push(spec.frequency[i]);
+      a.push(spec.amplitude[i]);
+    }
+  }
+  return { f, a, db: a.map(toDb) };
+}
+const at = (b: { f: number[]; a: number[] }, freq: number) => b.a[b.f.indexOf(freq)];
+
+// 그림 1 — FFT는 프레임이 계속 되풀이된다고 본다: 끝과 시작이 이어지나?
+function framePanel(cycles: number, title: string, last: boolean): FigPanel {
+  const t = grid(0, 1, 600);
+  const x = t.map((tt) => Math.sin(2 * Math.PI * cycles * tt));
   return {
-    byTime,
-    byRpm,
-    inBandTime: countIn(byTime, 1900, 2100),
-    inBandRpm: countIn(byRpm, 1900, 2100),
-    peakTrue,
-    peakTime,
-    tCrit: runupTimeAt(RUNUP_ROTOR.criticalRpm),
-    smear,
-    fixed1: peakIn(smear.fixedAmp, smear.fixedFreq, 25, 40),
-    fixed2: peakIn(smear.fixedAmp, smear.fixedFreq, 55, 75),
-    runup,
-    runNo,
-    runMul,
+    title,
+    series: [
+      { x: t, y: x, color: 'c1', width: 2.2, label: '잰 프레임 (1초)' },
+      { x: t.map((tt) => tt + 1), y: x, color: 'muted', dash: true, width: 1.8, label: 'FFT가 가정하는 다음 반복' },
+    ],
+    annotations: [
+      { type: 'vline', x: 1, label: '프레임 경계', color: 'warn', dash: true },
+      ...(Number.isInteger(cycles)
+        ? []
+        : [{ type: 'arrow' as const, x1: 1.06, y1: Math.sin(2 * Math.PI * cycles), x2: 1.06, y2: 0, double: true, label: '끊김(불연속)', color: 'warn' as const }]),
+    ],
+    x: last ? { range: [0, 2], ticks: [0, 0.5, 1, 1.5, 2], label: '시간 [s]' } : { range: [0, 2], ticks: 'none' },
+    y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
+    height: last ? 130 : 115,
+    legend: !last,
   };
-})();
-const V = P25_VALUES;
+}
+export const frameEnds: FigureSpec = {
+  id: 'fig-4-1',
+  caption:
+    '그림 1. FFT는 잰 1초 프레임이 앞뒤로 똑같이 되풀이된다고 보고 계산한다(점선). 위: 프레임 안에 정확히 3주기가 들어가면 끝과 다음 시작이 매끄럽게 이어져, 에너지가 3 Hz bin 하나에 모인다. 아래: 3.5주기면 프레임 경계에서 신호가 뚝 끊긴다. 이 끊김을 만들려면 여러 주파수가 필요하므로, 에너지가 주변 bin들로 새어 나간다 — 누설이다.',
+  panels: [framePanel(3, '3.0주기: 끝과 시작이 이어진다', false), framePanel(3.5, '3.5주기: 경계에서 끊긴다', true)],
+};
 
-// 그림 1 — 언제 저장하나: Δt vs Δrpm
-const tLine = grid(0, 330, 661);
-export const triggers: FigureSpec = {
-  id: 'fig-p2-5-1',
-  caption: `그림 1. 예시 기동(300 → 3600 rpm, 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm 둘레의 1500 ~ 2500 rpm은 20 rpm/s로 빨리 지난다)에서 데이터를 저장하는 두 방식. 위: 10초마다 저장하면(주황 점) 기동 전체에서 ${V.byTime.length}점이고, 1900 ~ 2100 rpm(회색 띠) 안에는 ${V.inBandTime}점뿐이다. 10 rpm마다 저장하면 ${V.byRpm.length}점, 같은 구간에 ${V.inBandRpm}점이다. 아래: 두 방식으로 그린 1X 진폭 vs 회전수(Bode, P0-6). 10초마다 모은 주황 선은 봉우리를 건너뛰어 최대를 ${fmt(um(V.peakTime) * 1, 3)} µm pp로 읽는다 — 참 최대 ${fmt(um(V.peakTrue), 3)} µm pp의 ${fmt((V.peakTime / V.peakTrue) * 100, 2)} %. 10 rpm마다 모은 파랑 점은 곡선을 그대로 따라간다.`,
+// 그림 2 — 윈도우 없이(Uniform) 60.0 Hz와 60.5 Hz를 잰 스펙트럼
+const u60 = band(spectrum([tone(60)], 'uniform'), 50, 70);
+const u605 = band(spectrum([tone(60.5)], 'uniform'), 50, 70);
+const u605wide = band(spectrum([tone(60.5)], 'uniform'), 30, 90);
+const uPeak = Math.max(...u605.a);
+const uFar = toDb(at(u605wide, 70));
+export const leakage: FigureSpec = {
+  id: 'fig-4-2',
+  caption: `그림 2. 진폭 1인 정현파를 윈도우 없이 1초 동안 잰 스펙트럼 (Δf = 1 Hz). 위: 60.0 Hz는 1초에 정확히 60주기라 60 Hz 막대 하나에 높이 1로 모인다. 가운데: 60.5 Hz는 60.5주기라 프레임 끝이 끊기고(그림 1), 에너지가 양옆 막대로 새면서 가장 높은 막대도 ${formatNumber(uPeak, 2)}로 낮아진다. 아래: 가운데와 같은 스펙트럼을 dB로 그리면, 10 bin 떨어진 70 Hz에도 ${formatNumber(uFar, 2)} dB(약 1/30)가 남아 있다. 새어 나간 에너지가 아주 멀리까지 깔린다.`,
   panels: [
     {
-      title: '회전수와 저장 시점',
-      series: [
-        { x: tLine, y: tLine.map(runupRpm), color: 'c1', width: 2 },
-        { x: V.byTime.map((p) => p.t), y: V.byTime.map((p) => p.rpm), kind: 'dots', color: 'c2', radius: 3.5, label: '10초마다' },
+      title: '60.0 Hz (1초에 정확히 60주기): 막대 하나',
+      series: [{ x: u60.f, y: u60.a, kind: 'stem', color: 'c1', width: 2.6, radius: 3.6 }],
+      x: { range: [50, 70], ticks: 'none' },
+      y: { range: [0, 1.2], ticks: [0, 0.5, 1] },
+      height: 95,
+    },
+    {
+      title: '60.5 Hz (60.5주기): 옆으로 퍼지고 낮아진다',
+      series: [{ x: u605.f, y: u605.a, kind: 'stem', color: 'c1', width: 2.6, radius: 3.6 }],
+      annotations: [
+        { type: 'vline', x: 60.5, color: 'warn', dash: true },
+        { type: 'text', x: 61, y: uPeak, text: `가장 높은 막대 ${formatNumber(uPeak, 2)}`, dx: 10, dy: 4, color: 'c1', bold: true },
       ],
-      annotations: [{ type: 'rect', x1: 0, x2: 330, y1: 1900, y2: 2100, color: 'muted' }, { type: 'text', x: 5, y: 2250, text: '1900 ~ 2100 rpm', anchor: 'start', color: 'muted' }],
-      x: { range: [0, 330], ticks: [0, 60, 120, 180, 240, 300], label: '시각 [s]' },
-      y: { range: [0, 3800], ticks: [0, 1000, 2000, 3000], label: '[rpm]' },
+      x: { range: [50, 70], ticks: [50, 55, 60, 65, 70], label: '주파수 [Hz]' },
+      y: { range: [0, 1.2], ticks: [0, 0.5, 1] },
+      height: 110,
+    },
+    {
+      title: '같은 60.5 Hz를 dB로 보면: 멀리까지 깔린다',
+      series: [
+        { x: u605wide.f, y: u605wide.db, color: 'c1', width: 1.4 },
+        { x: u605wide.f, y: u605wide.db, kind: 'dots', color: 'c1', radius: 2.6 },
+      ],
+      annotations: [{ type: 'point', x: 70, y: uFar, label: `10 bin 떨어진 곳: ${formatNumber(uFar, 2)} dB`, color: 'warn', dx: 10, dy: -8 }],
+      x: { range: [30, 90], ticks: [30, 40, 50, 60, 70, 80, 90], label: '주파수 [Hz]' },
+      y: { range: [-60, 5], ticks: [-60, -40, -20, 0], label: '[dB]' },
       height: 130,
     },
-    {
-      title: '1X 진폭 vs 회전수',
-      series: [
-        { x: grid(300, 3600, 1321), y: grid(300, 3600, 1321).map((r) => um(runupResponse(r).amp)), color: 'muted', width: 1.4, dash: true, label: '참 곡선' },
-        { x: V.byRpm.map((p) => p.rpm), y: V.byRpm.map((p) => um(p.amp)), kind: 'dots', color: 'c1', radius: 1.8, label: '10 rpm마다' },
-        { x: V.byTime.map((p) => p.rpm), y: V.byTime.map((p) => um(p.amp)), color: 'c2', width: 2, label: '10초마다 (점을 이음)' },
-        { x: V.byTime.map((p) => p.rpm), y: V.byTime.map((p) => um(p.amp)), kind: 'dots', color: 'c2', radius: 3.5 },
-      ],
-      annotations: [],
-      x: { range: [300, 3600], ticks: [500, 1000, 1500, 2000, 2500, 3000, 3500], label: '회전수 [rpm]' },
-      y: { range: [0, 150], ticks: [0, 50, 100, 150], label: '[µm pp]' },
-      height: 170,
-      legend: true,
-    },
   ],
 };
 
-// 그림 2 — 동기 샘플링
-const S = V.smear;
-const fixedUpTo = S.fixedFreq.findIndex((f) => f > 80);
-const ordUpTo = S.order.findIndex((o) => o > 4);
-export const syncSampling: FigureSpec = {
-  id: 'fig-p2-5-2',
-  caption: `그림 2. 회전수가 20 rpm/s로 오르는 임계속도 구간(${S.rpmStart} rpm부터)에서 1X ${fmt(um(2 * 25e-6), 2)} µm pp·2X ${fmt(um(2 * 7.5e-6), 2)} µm pp인 신호를 잰다 (크기는 일정하다고 둔 예). 위: 시간 간격을 고정해(f_s 1280 Hz, 6.4 s) 찍으면 그동안 회전수가 ${S.rpmEndFixed} rpm까지 올라 1X·2X가 여러 bin에 번진다 (P1-3의 스미어링) — 봉우리는 ${fmt(um(2 * V.fixed1), 3)}·${fmt(um(2 * V.fixed2), 3)} µm pp로 낮게 읽힌다. 아래: 키페이저에 맞춰 한 바퀴에 64점씩 256바퀴를 찍고(동기 샘플링) 가로축을 차수로 그리면 1X·2X가 차수 1·2에 정확히 서고 크기도 그대로다.`,
-  panels: [
-    {
-      title: '시간 간격을 고정해 찍은 스펙트럼',
-      series: [{ x: Array.from(S.fixedFreq.subarray(0, fixedUpTo)), y: Array.from(S.fixedAmp.subarray(0, fixedUpTo), (a) => um(2 * a)), color: 'c2', width: 1.8 }],
-      annotations: [],
-      x: { range: [0, 80], ticks: [0, 10, 20, 30, 40, 50, 60, 70, 80], label: '주파수 [Hz]' },
-      y: { range: [0, 55], ticks: [0, 25, 50], label: '[µm pp]' },
-      height: 120,
-    },
-    {
-      title: '한 바퀴에 같은 수로 찍은 스펙트럼 (가로축 = 차수)',
-      series: [{ x: Array.from(S.order.subarray(0, ordUpTo)), y: Array.from(S.orderAmp.subarray(0, ordUpTo), (a) => um(2 * a)), color: 'c1', width: 1.8 }],
-      annotations: [
-        { type: 'text', x: 1.05, y: 48, text: '1X: 50 µm pp', anchor: 'start', color: 'c1', bold: true },
-        { type: 'text', x: 2.05, y: 15, text: '2X: 15 µm pp', anchor: 'start', color: 'c1', bold: true },
-      ],
-      x: { range: [0, 4], ticks: [0, 1, 2, 3, 4], label: '차수 (회전 주파수의 몇 배)' },
-      y: { range: [0, 55], ticks: [0, 25, 50], label: '[µm pp]' },
-      height: 120,
-    },
-  ],
-};
-
-// 그림 3 — Cascade (회전수마다 스펙트럼을 쌓기)
-const fC = grid(0, 150, 601);
-const cascadeRpms = grid(600, 3600, 16);
-const SCALE = 3; // 1 µm pp → 3 rpm 높이
-const shape = (f: number, f0: number) => 1 / (1 + ((f - f0) / 0.9) ** 2);
-export const cascade: FigureSpec = {
-  id: 'fig-p2-5-3',
-  caption: `그림 3. 기동하며 회전수마다 저장한 스펙트럼을 그 회전수 높이에 쌓은 그림(Cascade, 예시 로터). 회전에서 나온 1X·2X는 회전수를 따라 비스듬한 줄을 이루고, 1X 줄은 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm(33.3 Hz)에서 가장 높이 솟는다. 95 Hz 성분은 회전수와 상관없이 제자리에 서 있다 — 구조 공진처럼 고정된 주파수다 (P0-7, P2-4). 한 장으로 "무엇이 회전을 따라가고 무엇이 고정됐나"를 본다 (자세히는 P5-2).`,
-  panels: [
-    {
-      series: cascadeRpms.map((rpm): FigSeries => {
-        const lines = cascadeLines(rpm);
-        return { x: fC, y: fC.map((f) => rpm + SCALE * lines.reduce((s, l) => s + um(l.amp) * shape(f, l.f), 0)), color: 'c1', width: 1.2 };
-      }),
-      annotations: [
-        { type: 'line', x1: 10, y1: 600, x2: 60, y2: 3600, color: 'c2', dash: true, width: 1.2 },
-        { type: 'text', x: 61, y: 3700, text: '1X (= rpm/60)', anchor: 'start', color: 'c2', bold: true },
-        { type: 'text', x: 121, y: 3700, text: '2X', anchor: 'middle', color: 'c2', bold: true },
-        { type: 'text', x: 96, y: 450, text: '95 Hz (고정)', anchor: 'start', color: 'warn', bold: true },
-        { type: 'text', x: 36, y: 2420, text: '임계 2000 rpm', anchor: 'start', color: 'text' },
-      ],
-      x: { range: [0, 150], ticks: [0, 25, 50, 75, 100, 125, 150], label: '주파수 [Hz]' },
-      y: { range: [400, 3900], ticks: [600, 1200, 1800, 2400, 3000, 3600], label: '회전수 [rpm]' },
-      height: 230,
-    },
-  ],
-};
-
-// 그림 4 — 보호 시스템의 채널 구성 (도식)
-const Y4 = squareYRange([0, 30], 230);
-const SY = 6.4;
-const box = (x1: number, x2: number, y1: number, y2: number, color: 'c1' | 'c3' | 'c4' | 'muted', lines: string[]): FigAnnotation[] => [
-  { type: 'rect', x1, x2, y1, y2, color },
-  ...lines.map((t, i): FigAnnotation => ({ type: 'text', x: (x1 + x2) / 2, y: (y1 + y2) / 2 + 0.45 * (lines.length - 1) - 0.9 * i - 0.15, text: t, anchor: 'middle', bold: i === 0 })),
-];
-export const channels: FigureSpec = {
-  id: 'fig-p2-5-4',
+// 그림 3 — 윈도우: 프레임 양 끝을 0으로 줄인다
+const tw = grid(0, 1, 600);
+const hannCurve = tw.map((t) => 0.5 - 0.5 * Math.cos(2 * Math.PI * t));
+const raw35 = tw.map((t) => Math.sin(2 * Math.PI * 3.5 * t));
+const win35 = raw35.map((v, i) => v * hannCurve[i]);
+export const windowTime: FigureSpec = {
+  id: 'fig-4-3',
   caption:
-    '그림 4. 터빈 한 대의 보호 시스템 채널 구성 (예시, 옆에서 본 모습). 베어링마다 축의 X·Y 비접촉 변위 센서(P2-2), 축 끝에는 축 방향 위치(추력) 센서 두 개, 회전 기준인 키페이저(P2-3), 필요하면 케이싱의 속도·가속도 센서(P2-1)를 단다. 보호 모니터는 채널마다 진폭을 Alert·Danger 레벨과 비교하고, 릴레이로 경보를 울리거나 보팅을 거쳐 트립(기계 정지) 신호를 낸다. 같은 원신호를 상태감시 시스템으로도 보내 저장·진단에 쓴다.',
+    '그림 3. 그림 1 아래의 3.5주기 신호에 Hann 윈도우를 곱한 모습. 위: Hann 가중치(주황 점선)는 프레임 가운데에서 1, 양 끝에서 0인 종 모양이다. 아래: 곱한 신호는 양 끝이 0으로 모이므로, FFT가 가정하는 다음 반복(점선)과 경계에서 끊김 없이 이어진다. 끊김이 없으니 멀리까지 새는 에너지가 크게 줄어든다.',
   panels: [
     {
-      frame: false,
-      height: 230,
-      x: { range: [0, 30] },
-      y: { range: Y4 },
-      series: [],
-      annotations: [
-        { type: 'line', x1: 1.5, y1: SY, x2: 12.6, y2: SY, color: 'muted', width: 6 },
-        ...[3, 10].flatMap((bx, i): FigAnnotation[] => [
-          { type: 'rect', x1: bx - 0.6, x2: bx + 0.6, y1: SY - 1.0, y2: SY + 1.0, color: 'muted' },
-          { type: 'line', x1: bx - 0.3, y1: SY + 1.05, x2: bx - 0.9, y2: SY + 2.0, color: 'c1', width: 4 },
-          { type: 'line', x1: bx + 0.3, y1: SY + 1.05, x2: bx + 0.9, y2: SY + 2.0, color: 'c1', width: 4 },
-          { type: 'text', x: bx, y: SY + 2.35, text: `베어링 ${i + 1}: X·Y`, anchor: 'middle', color: 'c1', bold: true },
-          { type: 'rect', x1: bx - 0.35, x2: bx + 0.35, y1: SY - 1.85, y2: SY - 1.05, color: 'c4' },
-        ]),
-        { type: 'text', x: 6.5, y: SY - 2.55, text: '케이싱 센서 (속도·가속도)', anchor: 'middle', color: 'c4' },
-        { type: 'line', x1: 0.2, y1: SY, x2: 1.2, y2: SY, color: 'c1', width: 4 },
-        { type: 'text', x: 0.1, y: SY - 3.2, text: '← 축 끝: 축 방향 위치 ×2', anchor: 'start', color: 'c1' },
-        { type: 'line', x1: 6.5, y1: SY + 1.0, x2: 6.5, y2: SY + 1.9, color: 'c3', width: 4 },
-        { type: 'text', x: 6.5, y: SY + 2.35, text: '키페이저', anchor: 'middle', color: 'c3', bold: true },
-        { type: 'text', x: 6.5, y: SY - 0.55, text: '로터', anchor: 'middle', color: 'muted' },
-        { type: 'arrow', x1: 13.0, y1: SY, x2: 15.2, y2: SY, color: 'text', double: false },
-        ...box(15.3, 20.7, SY - 1.6, SY + 1.6, 'c1', ['보호 모니터', '채널마다 비교', 'Alert · Danger']),
-        { type: 'arrow', x1: 20.8, y1: SY + 0.8, x2: 22.6, y2: SY + 1.6, color: 'text', double: false },
-        { type: 'arrow', x1: 20.8, y1: SY - 0.8, x2: 22.6, y2: SY - 1.6, color: 'text', double: false },
-        ...box(22.7, 29.4, SY + 1.0, SY + 2.6, 'c4', ['Alert → 경보', '사람이 확인']),
-        ...box(22.7, 29.4, SY - 2.6, SY - 1.0, 'muted', ['Danger → 보팅 → 트립', '기계를 자동으로 세운다']),
-        { type: 'line', x1: 18.0, y1: SY - 1.7, x2: 18.0, y2: 2.6, color: 'muted', dash: true, width: 1.6 },
-        ...box(13.0, 23.0, 0.5, 2.5, 'c3', ['상태감시 시스템', '원신호 저장 · 스펙트럼 · Bode · 진단']),
+      title: '원래 신호와 Hann 가중치',
+      series: [
+        { x: tw, y: raw35, color: 'c1', width: 1.8, label: '잰 신호 (3.5주기)' },
+        { x: tw, y: hannCurve, color: 'warn', dash: true, width: 2.2, label: 'Hann 가중치 w(t)' },
       ],
+      x: { range: [0, 2], ticks: 'none' },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
+      height: 115,
+    },
+    {
+      title: '가중치를 곱한 신호: 양 끝이 0이라 반복해도 끊기지 않는다',
+      series: [
+        { x: tw, y: win35, color: 'c3', width: 2.2, label: '곱한 신호' },
+        { x: tw.map((t) => t + 1), y: win35, color: 'muted', dash: true, width: 1.8, label: 'FFT가 가정하는 다음 반복' },
+      ],
+      annotations: [{ type: 'vline', x: 1, label: '프레임 경계', color: 'warn', dash: true }],
+      x: { range: [0, 2], ticks: [0, 0.5, 1, 1.5, 2], label: '시간 [s]' },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
+      height: 130,
     },
   ],
 };
 
-// 그림 5 — 레벨과 시간 지연
-const T5 = grid(0, 50, 1001);
-const sig5: ProtSignal = (() => {
-  const x = Float64Array.from(T5, (t) => 40 + (t >= 10 && t < 10.3 ? 170 : 0) + (t <= 25 ? 0 : t >= 35 ? 110 : (110 * (t - 25)) / 10));
-  return { dt: 0.05, t: Float64Array.from(T5), x, y: Float64Array.from(x), rpm: Float64Array.from(T5, () => 3600), startup: new Uint8Array(T5.length) };
-})();
-const r5 = evaluateAlarms(sig5, { ...DEFAULT_ALARM, voting: '1oo1' });
-/** 25 s 뒤 처음으로 레벨 이상인 샘플 시각 */
-const firstOver = (level: number) => T5.find((t, i) => t > 25 && sig5.x[i] >= level) ?? NaN;
-const cross5 = firstOver(DEFAULT_ALARM.danger);
-const crossA5 = firstOver(DEFAULT_ALARM.alert);
-export const levelsDelay: FigureSpec = {
-  id: 'fig-p2-5-5',
-  caption: `그림 5. 한 채널의 진폭(파랑)과 두 단계 레벨 — Alert ${DEFAULT_ALARM.alert} µm pp(보라 점선), Danger ${DEFAULT_ALARM.danger} µm pp(주황 점선), 시간 지연 ${DEFAULT_ALARM.delay}초 (예시값). 10 s의 0.3초짜리 튐은 Danger를 넘었지만 지연보다 짧아 아무 알람도 서지 않는다. 25 s부터 진동이 실제로 커지면 Alert를 넘은 ${fmt(crossA5, 3)} s에서 1초 뒤 Alert가, Danger를 넘은 ${fmt(cross5, 3)} s에서 1초 뒤(${fmt(r5.tripTime ?? NaN, 3)} s) Danger가 서고 트립 신호가 나간다. 아래 줄은 알람 상태(서면 위로)다.`,
+// 그림 4 — 같은 60.5 Hz: 윈도우 없음 vs Hann (dB)
+const h605 = band(spectrum([tone(60.5)], 'hann'), 30, 90);
+const hPeak = Math.max(...h605.a);
+const hFar = toDb(at(h605, 70));
+const dbPanel = (title: string, b: { f: number[]; db: number[] }, color: FigColor, far: number, last: boolean): FigPanel => ({
+  title,
+  series: [
+    { x: b.f, y: b.db, color, width: 1.4 },
+    { x: b.f, y: b.db, kind: 'dots', color, radius: 2.6 },
+  ],
+  annotations: [
+    { type: 'vline', x: 60.5, color: 'warn', dash: true },
+    { type: 'point', x: 70, y: far, label: `70 Hz: ${formatNumber(far, 2)} dB`, color: 'warn', dx: 10, dy: -8 },
+  ],
+  x: last ? { range: [30, 90], ticks: [30, 40, 50, 60, 70, 80, 90], label: '주파수 [Hz]' } : { range: [30, 90], ticks: 'none' },
+  y: { range: [-100, 5], ticks: [-100, -80, -60, -40, -20, 0], label: '[dB]' },
+  height: last ? 125 : 110,
+});
+export const uniformVsHann: FigureSpec = {
+  id: 'fig-4-4',
+  caption: `그림 4. 같은 60.5 Hz 신호(진폭 1)를 윈도우 없이(위)와 Hann 윈도우로(아래) 잰 dB 스펙트럼. Hann은 가운데 봉우리가 조금 넓어지지만, 10 bin 떨어진 70 Hz의 누설이 ${formatNumber(uFar, 2)} dB에서 ${formatNumber(hFar, 2)} dB로 약 ${formatNumber(Math.round(uFar - hFar), 2)} dB(1/100) 내려가고, 가장 높은 막대도 ${formatNumber(uPeak, 2)} → ${formatNumber(hPeak, 2)}로 실제 값 1에 가까워진다.`,
+  panels: [
+    dbPanel('윈도우 없음 (Uniform)', u605wide, 'c1', uFar, false),
+    dbPanel('Hann 윈도우', h605, 'c3', hFar, true),
+  ],
+};
+
+// 그림 5 — 성분이 bin 사이 어디에 있느냐에 따라 가장 높은 막대가 깎이는 정도 (가리비 모양)
+const SC_WINDOWS = ['uniform', 'hann', 'flatTop'] as const;
+const scF = grid(59, 62, 151);
+const scallopCurves = SC_WINDOWS.map((w) => ({
+  w,
+  y: scF.map((f) => {
+    const s = spectrum([tone(f)], w);
+    let m = 0;
+    for (let k = 56; k <= 65; k++) m = Math.max(m, s.amplitude[k]);
+    return m;
+  }),
+}));
+const MID = scF.findIndex((f) => Math.abs(f - 60.5) < 1e-9);
+const mid = (w: (typeof SC_WINDOWS)[number]) => scallopCurves.find((c) => c.w === w)!.y[MID];
+export const scallop: FigureSpec = {
+  id: 'fig-4-5',
+  caption: `그림 5. 진폭 1인 성분의 주파수를 59 Hz에서 62 Hz까지 조금씩 옮기며, 스펙트럼에서 가장 높은 막대의 높이를 그렸다 (Δf = 1 Hz, 세로축은 0.55부터). 성분이 눈금(59, 60, 61, 62 Hz) 위에 있으면 모두 1이지만, 눈금 한가운데(예: 60.5 Hz)에서는 윈도우 없음 ${formatNumber(mid('uniform'), 2)}, Hann ${formatNumber(mid('hann'), 2)}, Flat top ${formatNumber(mid('flatTop'), 3)}으로 깎인다. 눈금마다 되풀이되는 아치 모양 때문에 이 깎임을 가리비 손실(Scallop Loss)이라 부른다.`,
   panels: [
     {
-      series: [{ x: T5, y: Array.from(sig5.x), color: 'c1', width: 2 }],
-      annotations: [
-        { type: 'hline', y: DEFAULT_ALARM.alert, color: 'c4', dash: true, label: `Alert ${DEFAULT_ALARM.alert}`, labelAt: 'start' },
-        { type: 'hline', y: DEFAULT_ALARM.danger, color: 'warn', dash: true, label: `Danger ${DEFAULT_ALARM.danger}`, labelAt: 'start' },
-        { type: 'text', x: 10.8, y: 195, text: '0.3초 튐 → 지연보다 짧아 무시', anchor: 'start', color: 'c1' },
-        { type: 'arrow', x1: cross5, y1: 175, x2: cross5 + DEFAULT_ALARM.delay, y2: 175, double: true, color: 'warn', label: '지연 1초' },
-      ],
-      x: { range: [0, 50], ticks: 'none' },
-      y: { range: [0, 220], ticks: [0, 50, 100, 150, 200], label: '[µm pp]' },
-      height: 150,
-    },
-    {
-      series: [
-        { x: T5, y: Array.from(r5.alertX, (v) => 1.2 + 0.7 * v), kind: 'step', color: 'c4', width: 2.2 },
-        { x: T5, y: Array.from(r5.trip, (v) => 0.2 + 0.7 * v), kind: 'step', color: 'warn', width: 2.2 },
-      ],
-      annotations: [
-        { type: 'text', x: 0.5, y: 1.45, text: 'Alert (경보)', anchor: 'start', color: 'c4', bold: true },
-        { type: 'text', x: 0.5, y: 0.45, text: 'Danger → 트립', anchor: 'start', color: 'warn', bold: true },
-      ],
-      x: { range: [0, 50], ticks: [0, 10, 20, 30, 40, 50], label: '시각 [s]' },
-      y: { range: [0, 2.1], ticks: 'none' },
-      height: 70,
+      series: scallopCurves.map((c) => ({ x: scF, y: c.y, color: WIN_COLOR[c.w], width: 2.4, label: WIN_NAME[c.w] })),
+      annotations: [59, 60, 61, 62].map((f) => ({ type: 'vline' as const, x: f, color: 'muted' as const, dash: true })),
+      x: { range: [59, 62], ticks: [59, 59.5, 60, 60.5, 61, 61.5, 62], label: '성분의 주파수 [Hz] (눈금 = 59, 60, 61, 62 Hz)' },
+      y: { range: [0.55, 1.05], ticks: [0.6, 0.7, 0.8, 0.9, 1], label: '가장 높은 막대' },
+      height: 200,
     },
   ],
 };
 
-// 그림 6 — 기동 중 트립 배율
-const R6 = V.runup;
-const t6 = Array.from(R6.t);
-export const tripMultiply: FigureSpec = {
-  id: 'fig-p2-5-6',
-  caption: `그림 6. 예시 기동에서 X 채널 진폭(파랑). 임계속도(${RUNUP_ROTOR.criticalRpm} rpm, ${fmt(V.tCrit, 3)} s)를 지나는 몇 초 동안 진폭이 ${fmt(Math.max(...R6.x), 3)} µm pp까지 올라 Danger ${DEFAULT_ALARM.danger}(주황 점선)를 넘는다 — 배율이 없으면 ${fmt(V.runNo.tripTime ?? NaN, 4)} s에 트립되어 기동이 실패한다. 기동하는 동안 레벨을 2배로 올리면(트립 배율, 초록 실선 ${DEFAULT_ALARM.danger * 2}) 임계속도를 지나도 트립되지 않고, 운전 회전수 가까이(3500 rpm) 오면 원래 레벨로 돌아온다. 배율과 기간은 예시값이다.`,
+// 그림 6 — 윈도우 모양을 주파수로 본 것: 메인로브와 사이드로브
+const KW = ['uniform', 'hann', 'flatTop', 'blackmanHarris'] as const;
+const KN = 512;
+const KPAD = 16;
+const kernels = KW.map((w) => {
+  const r = fft(zeroPad(createWindow(w, KN), KN * KPAD));
+  const dc = Math.hypot(r.real[0], r.imag[0]);
+  const count = 12 * KPAD + 1;
+  const x = Array.from({ length: count }, (_, k) => k / KPAD);
+  const mag = x.map((_, k) => Math.hypot(r.real[k], r.imag[k]) / dc);
+  return { w, x, mag, db: mag.map(toDb) };
+});
+const sideLevel = (w: (typeof KW)[number], from: number) => {
+  const k = kernels.find((c) => c.w === w)!;
+  return Math.max(...k.db.filter((_, i) => k.x[i] >= from));
+};
+const side = { uniform: sideLevel('uniform', 1), hann: sideLevel('hann', 2), flatTop: sideLevel('flatTop', 5), blackmanHarris: sideLevel('blackmanHarris', 4) };
+export const kernelShapes: FigureSpec = {
+  id: 'fig-4-6',
+  caption: `그림 6. 진폭 1인 성분 하나가 각 윈도우에서 어떤 모양으로 그려지는지를, 성분에서 떨어진 거리(bin)에 따라 그렸다. 위(그대로의 높이): 가운데 봉우리 — 메인로브 — 가 처음 0이 되는 곳이 윈도우 없음 1 bin, Hann 2 bin, Blackman-Harris 4 bin, Flat top 5 bin이다. 봉우리가 넓을수록 가까운 두 성분이 하나로 뭉치기 쉽다. 아래(dB): 메인로브 바깥의 작은 봉우리들 — 사이드로브 — 의 가장 높은 값(점선)이 윈도우 없음 ${formatNumber(side.uniform, 3)} dB, Hann ${formatNumber(side.hann, 3)} dB, Blackman-Harris ${formatNumber(side.blackmanHarris, 3)} dB, Flat top ${formatNumber(side.flatTop, 3)} dB이다. 사이드로브가 낮을수록 큰 성분 옆의 작은 성분이 덜 가려진다.`,
   panels: [
     {
-      series: [
-        { x: t6, y: Array.from(R6.x), color: 'c1', width: 2 },
-        { x: t6, y: Array.from(V.runMul.dangerLevel), kind: 'step', color: 'c3', width: 2 },
-      ],
+      title: '그대로의 높이: 메인로브 폭',
+      series: kernels.map((k) => ({ x: k.x, y: k.mag, color: WIN_COLOR[k.w], width: 2.2, label: WIN_NAME[k.w] })),
       annotations: [
-        { type: 'hline', y: DEFAULT_ALARM.danger, color: 'warn', dash: true, label: `Danger ${DEFAULT_ALARM.danger} (배율 없음)`, labelAt: 'end' },
-        { type: 'text', x: 200, y: 262, text: `기동 중 ×2 = ${DEFAULT_ALARM.danger * 2}`, anchor: 'start', color: 'c3', bold: true },
-        { type: 'vline', x: V.tCrit, color: 'muted', label: '임계속도 통과' },
+        { type: 'point', x: 1, y: 0, label: '1', color: 'c1', dx: -4, dy: -10 },
+        { type: 'point', x: 2, y: 0, label: '2', color: 'c3', dx: -4, dy: -10 },
+        { type: 'point', x: 4, y: 0, label: '4', color: 'c4', dx: -4, dy: -10 },
+        { type: 'point', x: 5, y: 0, label: '5', color: 'c2', dx: -4, dy: -10 },
       ],
-      x: { range: [0, 360], ticks: 'none' },
-      y: { range: [0, 280], ticks: [0, 50, 100, 150, 200, 250], label: '[µm pp]' },
+      x: { range: [0, 6], ticks: [0, 1, 2, 3, 4, 5, 6] },
+      y: { range: [0, 1.08], ticks: [0, 0.5, 1] },
       height: 150,
     },
     {
-      series: [{ x: t6, y: Array.from(R6.rpm), color: 'muted', width: 2 }],
-      annotations: [{ type: 'vline', x: V.tCrit, color: 'muted' }],
-      x: { range: [0, 360], ticks: [0, 60, 120, 180, 240, 300, 360], label: '시각 [s]' },
-      y: { range: [0, 4000], ticks: [0, 2000, 3600], label: '[rpm]' },
-      height: 80,
+      title: 'dB로 본 높이: 사이드로브 높이',
+      series: kernels.map((k) => ({ x: k.x, y: k.db, color: WIN_COLOR[k.w], width: 1.8, label: WIN_NAME[k.w] })),
+      // 가장 높은 사이드로브 높이 (값은 캡션에). 글자는 곡선과 겹치므로 선만 긋는다
+      annotations: [
+        { type: 'hline', y: side.uniform, color: 'c1' },
+        { type: 'hline', y: side.hann, color: 'c3' },
+        { type: 'hline', y: side.blackmanHarris, color: 'c4' },
+      ],
+      x: { range: [0, 12], ticks: [0, 2, 4, 6, 8, 10, 12], label: '성분에서 떨어진 거리 [bin]' },
+      y: { range: [-120, 5], ticks: [-120, -100, -80, -60, -40, -20, 0], label: '[dB]' },
+      height: 190,
+      legend: false,
+    },
+  ],
+};
+
+// 그림 7 — 큰 성분 옆의 작은 성분 (−70 dB, 8 bin 떨어짐)
+const SMALL_DB = -70;
+const BIG_F = 100.5;
+const SMALL_F = 108.5;
+const drComponents = [tone(BIG_F), tone(SMALL_F, 10 ** (SMALL_DB / 20))];
+const drWindows = ['uniform', 'hann', 'blackmanHarris'] as const;
+const dr = drWindows.map((w) => {
+  const withSmall = band(spectrum(drComponents, w), 85, 125);
+  const bigOnly = band(spectrum([tone(BIG_F)], w), 85, 125);
+  return { w, b: withSmall, leakAtSmall: Math.max(toDb(at(bigOnly, 108)), toDb(at(bigOnly, 109))) };
+});
+const drTitle = {
+  uniform: '윈도우 없음: 큰 성분의 누설에 완전히 묻힌다',
+  hann: 'Hann: 아직 묻힌다',
+  blackmanHarris: 'Blackman-Harris: 작은 성분이 드러난다',
+} as const;
+export const dynamicRange: FigureSpec = {
+  id: 'fig-4-7',
+  caption: `그림 7. 큰 성분(${BIG_F} Hz, 진폭 1)에서 8 bin 떨어진 곳(${SMALL_F} Hz, 주황 점선)에 ${formatNumber(SMALL_DB)} dB(약 1/3000) 작은 성분이 있다. 작은 성분 자리에 큰 성분이 흘린 누설은 윈도우 없음 ${formatNumber(dr[0].leakAtSmall, 2)} dB, Hann ${formatNumber(dr[1].leakAtSmall, 2)} dB, Blackman-Harris ${formatNumber(dr[2].leakAtSmall, 2)} dB이다. 이 누설보다 작은 성분이 커야 보인다. 작은 성분이 −50 dB였다면 Hann으로도 보였을 것이다.`,
+  panels: dr.map((d, i) => ({
+    title: drTitle[d.w],
+    series: [
+      { x: d.b.f, y: d.b.db, color: WIN_COLOR[d.w], width: 1.4 },
+      { x: d.b.f, y: d.b.db, kind: 'dots', color: WIN_COLOR[d.w], radius: 2.4 },
+    ],
+    annotations: [{ type: 'vline', x: SMALL_F, color: 'warn', dash: true, label: i === 0 ? `작은 성분 (${formatNumber(SMALL_DB)} dB)` : undefined }] as FigAnnotation[],
+    x: i === dr.length - 1 ? { range: [85, 125], ticks: [85, 90, 95, 100, 105, 110, 115, 120, 125], label: '주파수 [Hz]' } : { range: [85, 125], ticks: 'none' },
+    y: { range: [-120, 5], ticks: [-120, -90, -60, -30, 0], label: '[dB]' },
+    height: i === dr.length - 1 ? 120 : 105,
+  })),
+};
+
+// 그림 8 — 진폭 보정과 에너지 보정의 차이: w의 평균과 w²의 평균
+const hannSq = hannCurve.map((v) => v * v);
+export const windowAverages: FigureSpec = {
+  id: 'fig-4-8',
+  caption:
+    '그림 8. Hann 가중치 w(t)(파랑)와 그 제곱 w²(t)(초록). 정현파 막대의 높이는 신호에 w를 곱한 만큼 줄어드는데, w의 평균이 0.5이므로 막대가 절반이 된다 → 2배 해 주는 진폭 보정(ACF = 2). 잡음처럼 넓게 퍼진 신호는 에너지(제곱)로 따지므로 w²의 평균 0.375만큼 줄어든다 → 에너지를 되돌리려면 1/√0.375 ≈ 1.63배 하는 에너지 보정(ECF ≈ 1.63). 두 평균이 다르기 때문에 보정도 두 가지가 필요하다.',
+  panels: [
+    {
+      series: [
+        { x: tw, y: hannCurve, color: 'c1', width: 2.4, label: '가중치 w(t)' },
+        { x: tw, y: hannSq, color: 'c3', width: 2.4, label: '가중치의 제곱 w²(t)' },
+      ],
+      annotations: [
+        { type: 'hline', y: 0.5, label: 'w의 평균 0.5', color: 'c1', labelAt: 'start' },
+        { type: 'hline', y: 0.375, label: 'w²의 평균 0.375', color: 'c3', labelAt: 'start', labelBelow: true },
+      ],
+      x: { range: [0, 1], ticks: [0, 0.25, 0.5, 0.75, 1], label: '프레임 안의 시간 (0 = 시작, 1 = 끝)' },
+      y: { range: [0, 1.08], ticks: [0, 0.25, 0.5, 0.75, 1] },
+      height: 180,
     },
   ],
 };

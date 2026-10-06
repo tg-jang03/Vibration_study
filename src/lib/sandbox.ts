@@ -1,5 +1,5 @@
 /**
- * Signal Lab 샌드박스 엔진 (LAB-SBX-01, P1-8). 그림(src/figures/p1-8.ts)과 랩이 같이 쓴다.
+ * Signal Lab 샌드박스 엔진 (LAB-SBX-01, P2-9). 그림(src/figures/p2-9.ts)과 랩이 같이 쓴다.
  * 기계 신호(속도 [m/s])를 만들고, 측정 설정(F_max·LOR·윈도우·AAF·평균)대로 스펙트럼을 계산한 뒤
  * 성분마다 "지금 설정으로 보이는가"를 판정한다. 표시 단위 변환(mm/s)은 UI에서 한다 (D-012).
  */
@@ -18,7 +18,7 @@ export interface Machine {
   x1: number;
   x2: number;
   x3: number;
-  /** 0.45X 성분 (1X보다 낮은 성분, 유막 베어링 불안정의 표시 — Part 6) */
+  /** 0.45X 성분 (1X보다 낮은 성분, 유막 베어링 불안정의 표시 — Part 7) */
   sub: number;
   /** 기어 맞물림 (축 A 이빨 15개 → 15X) */
   gear: number;
@@ -64,7 +64,7 @@ export interface Settings {
 
 export const FMAX_OPTIONS = [200, 500, 1000, 2000, 5000];
 export const LOR_OPTIONS = [100, 200, 400, 800, 1600, 3200, 6400];
-/** 두 막대를 가르는 데 필요한 최소 간격 [bin] (P1-3: 없음 2, Hann 3.5, Flat top 8. Blackman-Harris는 메인로브 ±4 bin) */
+/** 두 막대를 가르는 데 필요한 최소 간격 [bin] (P2-4: 없음 2, Hann 3.5, Flat top 8. Blackman-Harris는 메인로브 ±4 bin) */
 export const MIN_SEPARATION: Record<SandboxWindow, number> = { uniform: 2, hann: 3.5, flatTop: 8, blackmanHarris: 7 };
 /** "보인다"로 볼 최소 높이: 주변 바닥보다 6 dB(2배) */
 export const VISIBLE_MARGIN_DB = 6;
@@ -263,8 +263,8 @@ export const RECIPES: Record<Purpose, Recipe> = {
     reasons: [
       'F_max 2000 Hz (1X의 40배): 하모닉과 기어 맞물림(750 Hz)까지 한 화면에 들어온다',
       '1600 라인 → Δf 1.25 Hz, T 0.8 s: 측대역 간격 12.5 Hz를 10 bin으로 가르면서도 측정이 짧다',
-      'Hann: 성분을 가르는 힘과 누설 사이의 무난한 기본값 (P1-4)',
-      '파워 평균 8회 · 오버랩 50 %: 바닥의 흔들림을 줄이고 총 3.6 s (P1-5)',
+      'Hann: 성분을 가르는 힘과 누설 사이의 무난한 기본값 (P2-5)',
+      '파워 평균 8회 · 오버랩 50 %: 바닥의 흔들림을 줄이고 총 3.6 s (P2-6)',
     ],
   },
   balance: {
@@ -275,8 +275,8 @@ export const RECIPES: Record<Purpose, Recipe> = {
     reasons: [
       'F_max 500 Hz (1X의 10배): 1X와 낮은 하모닉만 보면 된다',
       '400 라인 → Δf 1.25 Hz: 1X 하나를 읽는 데는 충분하다',
-      'Flat top: 회전수가 bin 사이에 와도 진폭 오차 0.01 dB 미만 (P1-4). 대신 이웃과는 8 bin 이상 떨어져야 한다',
-      '평균 4회. 위상까지 평균하려면 회전 표식 센서(키페이저)로 트리거한 벡터 평균 (P1-5, P2-3)',
+      'Flat top: 회전수가 bin 사이에 와도 진폭 오차 0.01 dB 미만 (P2-5). 대신 이웃과는 8 bin 이상 떨어져야 한다',
+      '평균 4회. 위상까지 평균하려면 회전 표식 센서(키페이저)로 트리거한 벡터 평균 (P2-6, P3-3)',
     ],
   },
   sub: {
@@ -286,7 +286,7 @@ export const RECIPES: Record<Purpose, Recipe> = {
     reasons: [
       'F_max 200 Hz (1X의 4배): 1X 아래쪽을 자세히 본다',
       '800 라인 → Δf 0.25 Hz, T 4 s: 0.45X(22.5 Hz)가 0.4 ~ 0.5X 사이 어디인지 0.25 Hz 단위로 읽는다',
-      'T가 4 s로 길다 → 그동안 회전수가 일정해야 한다 (P1-3 스미어링)',
+      'T가 4 s로 길다 → 그동안 회전수가 일정해야 한다 (P2-4 스미어링)',
       'Hann · 파워 평균 4회 · 오버랩 50 %',
     ],
   },
@@ -297,9 +297,9 @@ export const RECIPES: Record<Purpose, Recipe> = {
     db: true,
     reasons: [
       'F_max 5000 Hz: 맞물림 750 Hz의 3배(2250 Hz) 이상을 본다',
-      '3200 라인 → Δf 1.56 Hz: 측대역 간격 12.5 Hz를 8 bin으로 가른다 (P1-7)',
-      'dB로 본다: 측대역은 맞물림보다 16 dB 이상 낮다 (P1-6)',
-      '파워 평균 8회 · 오버랩 50 %. 한 축만 골라 보려면 TSA (P1-5)',
+      '3200 라인 → Δf 1.56 Hz: 측대역 간격 12.5 Hz를 8 bin으로 가른다 (P2-8)',
+      'dB로 본다: 측대역은 맞물림보다 16 dB 이상 낮다 (P2-7)',
+      '파워 평균 8회 · 오버랩 50 %. 한 축만 골라 보려면 TSA (P2-6)',
     ],
   },
   bearing: {
@@ -311,7 +311,7 @@ export const RECIPES: Record<Purpose, Recipe> = {
       'F_max 5000 Hz: 충격이 울리는 높은 주파수(3 kHz 근처)가 들어와야 한다',
       '1600 라인 → Δf 3.1 Hz: 넓게 퍼진 울림 대역을 보는 데는 충분하다',
       'dB로 본다: 울림 대역의 막대는 작다',
-      '충격이 몇 번 되풀이되는지(반복 주파수)는 엔벨로프 분석으로 따로 본다 (P3-7)',
+      '충격이 몇 번 되풀이되는지(반복 주파수)는 엔벨로프 분석으로 따로 본다 (P4-7)',
     ],
   },
 };

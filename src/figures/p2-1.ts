@@ -1,245 +1,306 @@
 /**
- * P2-1 "센서 원리와 선택" 본문 그림 데이터 (빌드 시 계산, D-026).
- * 센서 응답은 랩(LAB-SNS-01)과 같은 `src/lib/sensor.ts`(lib/mck의 H(r)·r²H(r))로 계산한다.
+ * P2-1 "신호와 스펙트럼의 기본" 본문 그림 데이터 (빌드 시 계산, D-026).
  */
-import { grid, squareYRange, type FigAnnotation, type FigPanel, type FigureSpec } from '../lib/figure';
+import { grid, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { flatBand, MOUNTS, sensorResponse, type MountKind } from '../lib/sensor';
+import { acquire } from '../lib/dsp/sampling';
+import type { SignalComponent } from '../lib/dsp/signal';
+import { crestFactor, peak, rms } from '../lib/dsp/stats';
 
-const deg = (rad: number) => (rad * 180) / Math.PI;
-const logTicks = (lo: number, hi: number) =>
-  Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((v) => ({ value: v, label: v >= 3 ? `${10 ** (v - 3)}k` : String(10 ** v) }));
+const DEG = Math.PI / 180;
 
-// 그림 1 — 세 가지 센서 (도식)
-const X1: [number, number] = [0, 30];
-const Y1 = squareYRange(X1, 190);
-const top = Y1[1];
-export const threeSensors: FigureSpec = {
-  id: 'fig-p2-1-1',
-  caption: '그림 1. 진동을 전압으로 바꾸는 세 가지 센서. 왼쪽: 비접촉 변위 센서는 센서 끝과 축 사이의 거리(간격)를 잰다 — 센서가 붙은 곳에 대한 축의 상대 변위다. 가운데·오른쪽: 속도계와 가속도계는 기계 표면에 붙이고, 통 안에 스프링에 매달린 질량(m)이 들어 있다. 통이 흔들리면 질량과 통 사이에 상대 운동이 생기고, 센서는 그것을 전압으로 바꾼다 — 기계 표면 자체의 절대 진동을 잰다. 속도계의 스프링은 무르고(고유진동수가 낮다), 가속도계의 압전 소자는 아주 단단하다(고유진동수가 높다).',
+/** 연속 신호처럼 그리기 위한 촘촘한 샘플 */
+function trace(components: SignalComponent[], duration: number, points = 1200) {
+  const fs = (points - 1) / duration;
+  const s = acquire({ components }, { fs, n: points });
+  return { t: Array.from(s.t), x: Array.from(s.x) };
+}
+
+// 그림 1 — 기계 진동 시간파형
+const machine = trace(
+  [
+    { type: 'sine', freq: 60, amp: 4 },
+    { type: 'sine', freq: 120, amp: 1.2, phase: 0.8 },
+    { type: 'sine', freq: 300, amp: 0.5, phase: 1.1 },
+    { type: 'noise', rms: 0.25, seed: 3 },
+  ],
+  0.1,
+  1600,
+);
+export const machineWaveform: FigureSpec = {
+  id: 'fig-0-1',
+  caption:
+    '그림 1. 3600 rpm으로 도는 기계의 케이싱 진동 (예시로 만든 신호). 가로축은 시간, 세로축은 그 순간의 진동 속도다. 0.1초 동안 큰 물결이 6번 반복된다 — 1초에 60번, 회전과 같은 박자다. 큰 물결 위의 잔물결과 들쭉날쭉함은 다른 성분과 잡음이다.',
   panels: [
     {
-      frame: false,
+      series: [{ x: machine.t, y: machine.x, width: 1.6 }],
+      x: { range: [0, 0.1], label: '시간 [s]' },
+      y: { range: [-7, 7], label: '속도 [mm/s]' },
       height: 190,
-      x: { range: X1 },
-      y: { range: Y1 },
-      series: [],
-      annotations: [
-        // A: 비접촉 변위 센서
-        { type: 'text', x: 4.5, y: top - 0.45, text: '비접촉 변위 센서', anchor: 'middle', bold: true },
-        { type: 'circle', x: 2.6, y: top * 0.48, r: 1.8 * (820 / 30), fill: true, color: 'muted', label: '축' },
-        { type: 'rect', x1: 5.5, x2: 8.8, y1: top * 0.48 - 0.4, y2: top * 0.48 + 0.4, color: 'c1', label: '센서' },
-        { type: 'arrow', x1: 4.4, y1: top * 0.48 + 0.95, x2: 5.5, y2: top * 0.48 + 0.95, double: true, color: 'warn', label: '간격', labelDy: -8 },
-        { type: 'text', x: 4.5, y: 0.4, text: '축까지의 거리 → 상대 변위', anchor: 'middle', color: 'muted' },
-        // B: 동전형 속도계
-        { type: 'text', x: 15, y: top - 0.45, text: '동전형 속도계', anchor: 'middle', bold: true },
-        { type: 'ground', x1: 11, y1: 1.1, x2: 19, y2: 1.1, side: 'right' },
-        { type: 'rect', x1: 12.3, x2: 17.7, y1: 1.15, y2: top - 1.0, color: 'muted' },
-        { type: 'spring', x1: 15, y1: 1.2, x2: 15, y2: top * 0.52, coils: 5, label: '무른 스프링' },
-        { type: 'rect', x1: 13.8, x2: 16.2, y1: top * 0.52, y2: top * 0.52 + 1.1, color: 'c1', label: 'm' },
-        { type: 'text', x: 15, y: top * 0.52 + 1.6, text: '코일 · 자석', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 15, y: 0.4, text: '기계 표면의 절대 속도', anchor: 'middle', color: 'muted' },
-        // C: 가속도계
-        { type: 'text', x: 25.5, y: top - 0.45, text: '가속도계 (압전)', anchor: 'middle', bold: true },
-        { type: 'ground', x1: 21.5, y1: 1.1, x2: 29.5, y2: 1.1, side: 'right' },
-        { type: 'rect', x1: 23.3, x2: 27.7, y1: 1.15, y2: top * 0.62, color: 'muted' },
-        { type: 'spring', x1: 25.5, y1: 1.2, x2: 25.5, y2: 2.0, coils: 2 },
-        { type: 'text', x: 25.5, y: 3.35, text: '압전 소자 (단단함)', anchor: 'middle', color: 'muted' },
-        { type: 'rect', x1: 24.3, x2: 26.7, y1: 2.0, y2: 3.0, color: 'c1', label: 'm' },
-        { type: 'text', x: 25.5, y: 0.4, text: '기계 표면의 절대 가속도', anchor: 'middle', color: 'muted' },
-      ],
     },
   ],
 };
 
-// 그림 2 — 같은 질량-스프링, 쓰는 구간이 다르다
-const ZETA2 = 0.1;
-const lr = grid(-2, 2, 401);
-const accR = lr.map((l) => Math.log10(sensorResponse('accelerometer', 10 ** l, 1, ZETA2).ratio));
-const velR = lr.map((l) => Math.log10(sensorResponse('velocity', 10 ** l, 1, ZETA2).ratio));
-export const twoRegimes: FigureSpec = {
-  id: 'fig-p2-1-2',
-  caption: `그림 2. 통 안의 질량-스프링(감쇠비 ${ZETA2})이 기계 표면의 진동을 얼마나 그대로 옮기는지를 진동수비 r = 진동 주파수 ÷ 센서 고유진동수에 대해 그렸다 (두 축 모두 로그 눈금). 파랑: 가속도계로 쓸 때 — 읽은 값 ÷ 실제 가속도 = H(r)(P0-4의 진폭비). r ≪ 1에서 1로 평탄하다. 초록: 속도계로 쓸 때 — 읽은 값 ÷ 실제 속도 = r²H(r). r ≫ 1에서 1로 평탄하다. 같은 계가 공진 아래에서는 가속도를, 위에서는 속도(질량이 제자리에 머물고 통만 움직임)를 그대로 읽는다. r = 1 근처는 둘 다 공진으로 부풀려진다.`,
+// 그림 2 — 같은 움직임을 변위·속도·가속도로
+// d = 50 µm·cos(2π60t) + 0.5 µm·cos(2π600t) → 미분할 때마다 성분이 2πf배
+const T2 = 0.05;
+const d = trace([{ type: 'sine', freq: 60, amp: 50 }, { type: 'sine', freq: 600, amp: 0.5 }], T2, 1500);
+const v1 = 2 * Math.PI * 60 * 50e-3; // mm/s (µm → mm)
+const v2 = 2 * Math.PI * 600 * 0.5e-3;
+const v = trace([{ type: 'sine', freq: 60, amp: v1, phase: 90 * DEG }, { type: 'sine', freq: 600, amp: v2, phase: 90 * DEG }], T2, 1500);
+const a1 = (2 * Math.PI * 60) ** 2 * 50e-6; // m/s²
+const a2 = (2 * Math.PI * 600) ** 2 * 0.5e-6;
+const acc = trace([{ type: 'sine', freq: 60, amp: a1, phase: 180 * DEG }, { type: 'sine', freq: 600, amp: a2, phase: 180 * DEG }], T2, 1500);
+export const threeMeasures: FigureSpec = {
+  id: 'fig-0-2',
+  caption: `그림 2. 같은 움직임을 세 가지 양으로 본 모습. 느린 흔들림(60 Hz, 변위 50 µm)과 아주 작은 빠른 떨림(600 Hz, 변위 0.5 µm)이 섞여 있다. 변위로 보면 빠른 떨림은 거의 안 보이지만, 속도에서는 잔물결로, 가속도에서는 느린 흔들림과 같은 크기(${formatNumber(a2, 3)} m/s²)로 드러난다. 미분할 때마다 성분이 주파수에 비례해 커지기 때문이다.`,
+  panels: [
+    { title: '변위 d [µm]', series: [{ x: d.t, y: d.x, width: 1.6 }], x: { range: [0, T2], ticks: 'none' }, y: { range: [-60, 60] }, height: 110 },
+    { title: '속도 v [mm/s]', series: [{ x: v.t, y: v.x, width: 1.6, color: 'c2' }], x: { range: [0, T2], ticks: 'none' }, y: { range: [-24, 24] }, height: 110 },
+    { title: '가속도 a [m/s²]', series: [{ x: acc.t, y: acc.x, width: 1.4, color: 'c3' }], x: { range: [0, T2], label: '시간 [s]' }, y: { range: [-16, 16] }, height: 110 },
+  ],
+};
+
+// 그림 3 — 정현파의 진폭과 주기
+const sine5 = trace([{ type: 'sine', freq: 5, amp: 1 }], 0.5, 800);
+export const sineAnatomy: FigureSpec = {
+  id: 'fig-0-3',
+  caption:
+    '그림 3. 정현파 x(t) = A cos(2πft). 진폭 A는 가운데(0)에서 꼭대기까지의 높이, 주기 T는 같은 모양이 다시 시작될 때까지 걸리는 시간이다. 이 예는 T = 0.2 s이므로 1초에 5번 반복한다 → 주파수 f = 1/T = 5 Hz.',
+  panels: [
+    {
+      series: [{ x: sine5.t, y: sine5.x, width: 2.4 }],
+      annotations: [
+        { type: 'hline', y: 1 },
+        { type: 'hline', y: -1 },
+        { type: 'arrow', x1: 0, y1: 1.28, x2: 0.2, y2: 1.28, label: '주기 T = 0.2 s', color: 'c2' },
+        { type: 'arrow', x1: 0.53, y1: 0, x2: 0.53, y2: 1, label: '진폭 A', color: 'warn' },
+      ],
+      x: { range: [0, 0.62], ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5], label: '시간 [s]' },
+      y: {
+        range: [-1.4, 1.55],
+        ticks: [-1, 0, 1],
+        tickLabels: [
+          { value: 1, label: '+A' },
+          { value: -1, label: '−A' },
+        ],
+      },
+      height: 210,
+    },
+  ],
+};
+
+// 그림 4 — 위상 90°, 180°
+const ref = trace([{ type: 'sine', freq: 5, amp: 1 }], 0.4, 700);
+const lag90 = trace([{ type: 'sine', freq: 5, amp: 1, phase: -90 * DEG }], 0.4, 700);
+const inv = trace([{ type: 'sine', freq: 5, amp: 1, phase: 180 * DEG }], 0.4, 700);
+export const phaseShift: FigureSpec = {
+  id: 'fig-0-4',
+  caption:
+    '그림 4. 위상은 같은 주파수의 두 정현파가 시간상 얼마나 어긋났는지를 각도로 나타낸다. 한 주기 = 360°. 위: 꼭대기가 T/4(= 0.05 s)만큼 늦게 온다 → 90° 늦음. 아래: 반 주기 어긋나 위아래가 뒤집혔다 → 180° = 부호가 반대.',
+  panels: [
+    {
+      title: '90° 늦은 정현파',
+      series: [
+        { x: ref.t, y: ref.x, color: 'muted', dash: true, label: '기준 (φ = 0°)' },
+        { x: lag90.t, y: lag90.x, color: 'c1', width: 2.4, label: 'φ = −90° (90° 늦음)' },
+      ],
+      annotations: [{ type: 'arrow', x1: 0.2, y1: 1.22, x2: 0.25, y2: 1.22, label: 'Δt = T/4 = 0.05 s', labelDx: 60, labelDy: 4, color: 'c2' }],
+      x: { range: [0, 0.4], ticks: 'none' },
+      y: { range: [-1.3, 1.45], ticks: [-1, 0, 1] },
+      height: 150,
+    },
+    {
+      title: '180° 어긋난 정현파',
+      series: [
+        { x: ref.t, y: ref.x, color: 'muted', dash: true, label: '기준 (φ = 0°)' },
+        { x: inv.t, y: inv.x, color: 'c2', width: 2.4, label: 'φ = 180° (부호 반대)' },
+      ],
+      x: { range: [0, 0.4], label: '시간 [s]' },
+      y: { range: [-1.3, 1.45], ticks: [-1, 0, 1] },
+      height: 150,
+    },
+  ],
+};
+
+// 그림 5 — 1X, 2X (축 회전각 기준)
+const ang = grid(0, 720, 721);
+export const ordersFigure: FigureSpec = {
+  id: 'fig-0-5',
+  caption:
+    '그림 5. 가로축을 시간 대신 "축이 돈 각도"로 그렸다. 1X는 축이 한 바퀴(360°) 돌 때 한 번 흔들리고, 2X는 두 번 흔들린다. 회전수가 바뀌어도 이 관계는 그대로라서, 회전 주파수의 몇 배인지(차수)로 성분을 부른다.',
   panels: [
     {
       series: [
-        { x: lr, y: accR, color: 'c1', width: 2.4, label: '가속도계: H(r)' },
-        { x: lr, y: velR, color: 'c3', width: 2.4, label: '속도계: r²H(r)' },
+        { x: ang, y: ang.map((a) => Math.cos(a * DEG)), width: 2.4, label: '1X: 한 바퀴에 1번' },
+        { x: ang, y: ang.map((a) => 0.6 * Math.cos(2 * a * DEG)), width: 2, color: 'c2', label: '2X: 한 바퀴에 2번' },
       ],
-      annotations: [
-        { type: 'band', x1: -2, x2: Math.log10(0.3), color: 'c1', label: '가속도계가 쓰는 곳' },
-        { type: 'band', x1: Math.log10(3), x2: 2, color: 'c3', label: '속도계가 쓰는 곳' },
-        { type: 'hline', y: 0, color: 'muted', dash: true },
-        { type: 'vline', x: 0, color: 'warn', dash: true, label: '공진 r = 1' },
-      ],
-      x: { range: [-2, 2], ticks: [-2, -1, 0, 1, 2], tickLabels: [-2, -1, 0, 1, 2].map((v) => ({ value: v, label: String(10 ** v) })), label: '진동수비 r = f / f_n (로그 눈금)' },
-      y: { range: [-3, 1.2], ticks: [-3, -2, -1, 0, 1], tickLabels: [-3, -2, -1, 0, 1].map((v) => ({ value: v, label: String(10 ** v) })), label: '읽은 값 ÷ 실제 값' },
-      height: 220,
-    },
-  ],
-};
-
-// 그림 3 — 가속도계 (공진 25 kHz)
-const ACC = { fn: 25000, zeta: 0.02 };
-const accBand = flatBand('accelerometer', ACC.fn, ACC.zeta);
-const accBand0 = flatBand('accelerometer', ACC.fn, 0);
-const lf3 = grid(1, Math.log10(50000), 500);
-const acc3 = lf3.map((l) => sensorResponse('accelerometer', 10 ** l, ACC.fn, ACC.zeta));
-export const accelerometerResponse: FigureSpec = {
-  id: 'fig-p2-1-3',
-  caption: `그림 3. 공진 ${ACC.fn / 1000} kHz(감쇠비 ${ACC.zeta})인 가속도계의 응답. 위: 읽은 값 ÷ 실제 가속도 — 낮은 주파수에서 1이고, 공진에 가까워질수록 커진다. 회색 띠는 ±10 %, 오른쪽 회색 점선은 공진이다. 진폭비가 1.1을 넘는 곳이 ${formatNumber(accBand.hi / 1000, 3)} kHz(공진의 ${formatNumber(accBand.hi / ACC.fn, 2)}배)이므로, 이 센서로 ±10 % 안에서 믿고 쓸 수 있는 대역은 그 아래다 (감쇠를 무시하면 ${formatNumber(accBand0.hi / 1000, 3)} kHz). 아래: 위상 지연 — 평탄 대역 안에서는 몇 도뿐이다.`,
-  panels: [
-    {
-      title: '읽은 값 ÷ 실제 가속도',
-      series: [{ x: lf3, y: acc3.map((s) => s.ratio), color: 'c1', width: 2.2 }],
-      annotations: [
-        { type: 'rect', x1: 1, x2: Math.log10(50000), y1: 0.9, y2: 1.1, color: 'muted', label: '' },
-        { type: 'vline', x: Math.log10(accBand.hi), color: 'warn', dash: true, label: `±10 % 상한 ${formatNumber(accBand.hi / 1000, 3)} kHz` },
-        { type: 'vline', x: Math.log10(ACC.fn), color: 'muted', dash: true },
-      ],
-      x: { range: [1, Math.log10(50000)], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4) },
-      y: { range: [0, 3], ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
-      height: 165,
-    },
-    {
-      title: '위상 지연 [°]',
-      series: [{ x: lf3, y: acc3.map((s) => deg(s.phaseError)), color: 'c1', width: 2.2 }],
-      annotations: [{ type: 'vline', x: Math.log10(accBand.hi), color: 'warn', dash: true }],
-      x: { range: [1, Math.log10(50000)], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4), label: '주파수 [Hz] (로그 눈금)' },
-      y: { range: [0, 180], ticks: [0, 45, 90, 135, 180] },
-      height: 120,
-    },
-  ],
-};
-
-// 그림 4 — 동전형 속도계 (고유진동수 10 Hz)
-const VEL = { fn: 10 };
-const zetas4 = [0.1, 0.6];
-const lf4 = grid(0, 3, 400);
-const vel4 = zetas4.map((z) => lf4.map((l) => sensorResponse('velocity', 10 ** l, VEL.fn, z)));
-const velBands = zetas4.map((z) => flatBand('velocity', VEL.fn, z));
-const v5 = sensorResponse('velocity', 5, VEL.fn, 0.6);
-export const velocityResponse: FigureSpec = {
-  id: 'fig-p2-1-4',
-  caption: `그림 4. 고유진동수 ${VEL.fn} Hz인 동전형 속도계의 응답. 위: 읽은 값 ÷ 실제 속도 — 높은 주파수에서 1이다. 감쇠가 작으면(ζ 0.1, 파랑) 고유진동수 근처에서 크게 부풀고 ${formatNumber(velBands[0].lo, 3)} Hz부터 ±10 % 안에 든다. 감쇠를 키우면(ζ 0.6, 초록) 부풀림이 사라져 ${formatNumber(velBands[1].lo, 3)} Hz부터 쓸 수 있다. 그래도 고유진동수 아래에서는 급히 작아진다 — 5 Hz(300 rpm 기계의 1X)를 재면 실제의 ${formatNumber(v5.ratio * 100, 2)} %로 읽힌다. 아래: 위상 차이 — 낮은 주파수일수록 크게 어긋난다 (5 Hz에서 ${formatNumber(Math.abs(deg(v5.phaseError)), 3)}°).`,
-  panels: [
-    {
-      title: '읽은 값 ÷ 실제 속도',
-      series: zetas4.map((z, i) => ({ x: lf4, y: vel4[i].map((s) => s.ratio), color: i === 0 ? ('c1' as const) : ('c3' as const), width: 2.2, label: `ζ = ${z}` })),
-      annotations: [
-        { type: 'rect', x1: 0, x2: 3, y1: 0.9, y2: 1.1, color: 'muted', label: '' },
-        { type: 'vline', x: 1, color: 'muted', dash: true, label: '고유진동수 10 Hz' },
-        { type: 'point', x: Math.log10(5), y: v5.ratio, color: 'warn', label: `5 Hz: ${formatNumber(v5.ratio, 2)}`, dx: 10, dy: 14 },
-      ],
-      x: { range: [0, 3], ticks: [0, 1, 2, 3], tickLabels: logTicks(0, 3) },
-      y: { range: [0, 2.5], ticks: [0, 0.5, 1, 1.5, 2, 2.5] },
+      annotations: [{ type: 'vline', x: 360, label: '한 바퀴' }, { type: 'vline', x: 720, label: '두 바퀴' }],
+      x: { range: [0, 720], ticks: [0, 90, 180, 270, 360, 450, 540, 630, 720], label: '축 회전각 [°]' },
+      y: { range: [-1.25, 1.25], ticks: [-1, 0, 1] },
       height: 170,
     },
-    {
-      title: '위상 차이 [°] (높은 주파수 기준)',
-      series: zetas4.map((_, i) => ({ x: lf4, y: vel4[i].map((s) => deg(s.phaseError)), color: i === 0 ? ('c1' as const) : ('c3' as const), width: 2.2 })),
-      x: { range: [0, 3], ticks: [0, 1, 2, 3], tickLabels: logTicks(0, 3), label: '주파수 [Hz] (로그 눈금)' },
-      y: { range: [-180, 0], ticks: [-180, -135, -90, -45, 0] },
-      height: 120,
-      legend: false,
-    },
   ],
 };
 
-// 그림 5 — 마운팅별 응답
-const MKEYS: MountKind[] = ['stud', 'adhesive', 'magnet', 'hand'];
-const MCOL = { stud: 'c1', adhesive: 'c3', magnet: 'c4', hand: 'warn' } as const;
-const SHORT = { stud: '스터드', adhesive: '접착', magnet: '자석', hand: '손' } as const;
-const lf5 = grid(2, Math.log10(30000), 500);
-const mountBands = MKEYS.map((k) => flatBand('accelerometer', MOUNTS[k].fn, MOUNTS[k].zeta).hi);
-export const mountingResponse: FigureSpec = {
-  id: 'fig-p2-1-5',
-  caption: `그림 5. 같은 가속도계를 붙이는 방법만 바꿨다 (설치 공진은 예시값: ${MKEYS.map((k) => `${SHORT[k]} ${formatNumber(MOUNTS[k].fn / 1000, 2)} kHz`).join(', ')} — I-025). 붙이는 방법이 무를수록 센서와 기계 사이에 스프링이 하나 더 생긴 셈이라 공진이 내려온다. ±10 % 안에서 쓸 수 있는 상한도 ${mountBands.map((b) => `${formatNumber(b / 1000, 2)} kHz`).join(' → ')}로 줄어든다. 자석으로 붙이고 수 kHz의 성분을 재면 실제보다 크게 읽힌다.`,
+// 그림 6 — Peak, Pk-Pk, RMS
+const s6 = trace([{ type: 'sine', freq: 5, amp: 1 }], 0.4, 700);
+export const amplitudeMeasures: FigureSpec = {
+  id: 'fig-0-6',
+  caption:
+    '그림 6. 같은 정현파(진폭 A = 1)를 숫자 하나로 나타내는 세 방법. Peak는 0에서 꼭대기까지(1), Pk-Pk는 바닥에서 꼭대기까지(2), RMS는 "평균적인 크기"(0.707)다. 정현파에서만 RMS = Peak/√2가 성립한다.',
   panels: [
     {
-      series: MKEYS.map((k) => ({ x: lf5, y: lf5.map((l) => sensorResponse('accelerometer', 10 ** l, MOUNTS[k].fn, MOUNTS[k].zeta).ratio), color: MCOL[k], width: 2.2, label: MOUNTS[k].label })),
+      series: [{ x: s6.t, y: s6.x, width: 2.4 }],
       annotations: [
-        { type: 'rect', x1: 2, x2: Math.log10(30000), y1: 0.9, y2: 1.1, color: 'muted', label: '' },
-        ...MKEYS.map((k, i): FigAnnotation => ({ type: 'point', x: Math.log10(mountBands[i]), y: 1.1, color: MCOL[k] })),
+        { type: 'hline', y: 1, label: 'Peak = A = 1', labelAt: 'end', color: 'warn' },
+        { type: 'hline', y: Math.SQRT1_2, label: 'RMS = 0.707', labelAt: 'end', labelBelow: true, color: 'c3', dash: false },
+        { type: 'hline', y: -1, color: 'muted' },
+        { type: 'arrow', x1: 0.43, y1: -1, x2: 0.43, y2: 1, label: 'Pk-Pk = 2A = 2', labelDy: -14, color: 'c2' },
       ],
-      x: { range: [2, Math.log10(30000)], ticks: [2, 3, 4], tickLabels: logTicks(2, 4), label: '주파수 [Hz] (로그 눈금)' },
-      y: { range: [0, 3], ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3], label: '읽은 값 ÷ 실제 가속도' },
-      height: 220,
-    },
-  ],
-};
-
-// 그림 6 — 측정 스펙트럼이 바뀐다
-const LINES = [500, 1000, 2000, 3000, 4000, 5000, 6000, 8000];
-const studRead = LINES.map((f) => sensorResponse('accelerometer', f, MOUNTS.stud.fn, MOUNTS.stud.zeta).ratio);
-const magRead = LINES.map((f) => sensorResponse('accelerometer', f, MOUNTS.magnet.fn, MOUNTS.magnet.zeta).ratio);
-const specPanel = (y: number[], title: string, color: 'c1' | 'c4', last: boolean): FigPanel => ({
-  title,
-  series: [{ x: LINES.map((f) => f / 1000), y, kind: 'stem', color, radius: 4, width: 2 }],
-  annotations: [{ type: 'hline', y: 1, color: 'muted', dash: true, label: '실제 크기 1', labelAt: 'end' }],
-  x: last ? { range: [0, 8.6], ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8], label: '주파수 [kHz]' } : { range: [0, 8.6], ticks: 'none' },
-  y: { range: [0, 4], ticks: [0, 1, 2, 3, 4], label: last ? '[m/s² Peak]' : undefined },
-  height: last ? 130 : 110,
-});
-export const spectrumDistortion: FigureSpec = {
-  id: 'fig-p2-1-6',
-  caption: `그림 6. 기계에 크기가 모두 1 m/s²인 성분 여덟 개(0.5 ~ 8 kHz)가 있다. 위: 스터드로 고정한 가속도계 — 8 kHz도 ${formatNumber(studRead[studRead.length - 1], 3)}로 거의 그대로다. 아래: 자석으로 붙인 가속도계(설치 공진 예시 7 kHz) — 공진 근처의 5 kHz가 ${formatNumber(magRead[5], 2)}배, 6 kHz가 ${formatNumber(magRead[6], 2)}배, 8 kHz가 ${formatNumber(magRead[7], 2)}배로 부풀었다. 기계는 같은데 스펙트럼 모양이 달라졌다. 고주파 근처의 큰 막대가 기계가 아니라 센서 설치 때문일 수 있다 (P2-4).`,
-  panels: [specPanel(studRead, '스터드 (설치 공진 25 kHz)', 'c1', false), specPanel(magRead, '자석 (설치 공진 예시 7 kHz)', 'c4', true)],
-};
-
-// 그림 7 — GT/ST: 축을 직접 잰다 (도식)
-const X7: [number, number] = [0, 30];
-const Y7 = squareYRange(X7, 210);
-const cy = (Y7[1] + Y7[0]) / 2 + 0.1;
-const cx = 15;
-const shaftR = 1.6;
-const brgR = 2.05;
-const pxPerUnit = 820 / 30;
-const probeAt = (angDeg: number) => {
-  const a = (angDeg * Math.PI) / 180;
-  return { x1: cx + Math.cos(a) * (brgR + 2.6), y1: cy + Math.sin(a) * (brgR + 2.6), x2: cx + Math.cos(a) * (brgR + 0.15), y2: cy + Math.sin(a) * (brgR + 0.15) };
-};
-const pY = probeAt(45);
-const pX = probeAt(135);
-export const turbineMeasurement: FigureSpec = {
-  id: 'fig-p2-1-7',
-  caption: '그림 7. 발전용 가스·증기 터빈(GT/ST)의 베어링 단면 (축 방향에서 본 모습, 크기는 과장했다). 축(파랑)은 기름막을 사이에 두고 미끄럼 베어링 안에서 돈다. 두 비접촉 변위 센서(주황)가 축을 위쪽 양옆 45°에서 직접 겨냥해 베어링 틈 안에서 축이 얼마나 움직이는지 잰다. 바깥의 무거운 케이싱에 붙인 가속도계·속도계(보라)는 기름막과 케이싱을 거쳐 약해진 진동만 받는다.',
-  panels: [
-    {
-      frame: false,
+      x: { range: [0, 0.6], ticks: [0, 0.1, 0.2, 0.3, 0.4], label: '시간 [s]' },
+      y: { range: [-1.3, 1.3], ticks: [-1, -0.707, 0, 0.707, 1] },
       height: 210,
-      x: { range: X7 },
-      y: { range: Y7 },
-      series: [],
-      annotations: [
-        { type: 'rect', x1: 4, x2: 26, y1: Y7[0] + 0.3, y2: Y7[1] - 0.3, color: 'muted', label: '' },
-        { type: 'text', x: 5, y: Y7[1] - 0.9, text: '케이싱 (무겁다)', anchor: 'start', color: 'muted', bold: true },
-        { type: 'circle', x: cx, y: cy, r: (brgR + 0.9) * pxPerUnit, color: 'muted' },
-        { type: 'circle', x: cx, y: cy, r: brgR * pxPerUnit, color: 'muted', dash: true },
-        { type: 'circle', x: cx + 0.25, y: cy - 0.15, r: shaftR * pxPerUnit, fill: true, color: 'c1', label: '축' },
-        { type: 'text', x: cx + brgR + 1.2, y: cy - 0.2, text: '베어링 · 기름막', anchor: 'start', color: 'muted' },
-        { type: 'line', ...pY, color: 'warn', width: 5 },
-        { type: 'line', ...pX, color: 'warn', width: 5 },
-        { type: 'text', x: pY.x1 + 0.2, y: pY.y1 + 0.35, text: '변위 센서 Y', anchor: 'start', color: 'warn', bold: true },
-        { type: 'text', x: pX.x1 - 0.2, y: pX.y1 + 0.35, text: '변위 센서 X', anchor: 'end', color: 'warn', bold: true },
-        { type: 'rect', x1: 26, x2: 27.6, y1: cy - 0.5, y2: cy + 0.5, color: 'c4', label: '' },
-        { type: 'text', x: 27.8, y: cy + 0.9, text: '케이싱 센서', anchor: 'end', color: 'c4', bold: true },
-      ],
     },
   ],
 };
 
-/** 본문 숫자 확인용 (테스트에서 사용) */
-export const P21_VALUES = {
-  accHi: accBand.hi,
-  accHi0: accBand0.hi,
-  velLo01: velBands[0].lo,
-  velLo06: velBands[1].lo,
-  vel5ratio: v5.ratio,
-  vel5phaseDeg: deg(v5.phaseError),
-  mountBands,
-  mag5k: magRead[5],
-  mag6k: magRead[6],
-  mag8k: magRead[7],
-  stud8k: studRead[studRead.length - 1],
+// 그림 7 — RMS는 같은데 Crest factor가 다른 두 신호
+const sineCf = trace([{ type: 'sine', freq: 5, amp: Math.SQRT2 }], 0.4, 1600);
+const impulsive = (() => {
+  const n = 1600;
+  const t = grid(0, 0.4, n);
+  const raw = t.map((tt) => {
+    let v = 0.55 * Math.cos(2 * Math.PI * 5 * tt);
+    for (let k = 0; k < 4; k++) {
+      const tau = tt - (0.03 + 0.1 * k);
+      if (tau >= 0) v += 3.2 * Math.exp(-tau / 0.004) * Math.cos(2 * Math.PI * 180 * tau);
+    }
+    return v;
+  });
+  const r = rms(raw);
+  return { t, x: raw.map((v) => v / r) };
+})();
+const cfSine = crestFactor(sineCf.x);
+const cfImp = crestFactor(impulsive.x);
+const pkImp = peak(impulsive.x);
+export const crestFactorFigure: FigureSpec = {
+  id: 'fig-0-7',
+  caption: `그림 7. 두 신호의 RMS는 똑같이 1이다. 위의 정현파는 Peak ${formatNumber(Math.SQRT2, 3)} → Crest factor ${formatNumber(cfSine, 3)}. 아래는 짧은 충격이 0.1초마다 섞인 신호로 Peak ${formatNumber(pkImp, 3)} → Crest factor ${formatNumber(cfImp, 3)}. RMS만 보면 같은 크기이지만 모양은 전혀 다르다 — Crest factor가 이 차이를 잡아낸다.`,
+  panels: [
+    {
+      title: `정현파: CF = ${formatNumber(cfSine, 3)}`,
+      series: [{ x: sineCf.t, y: sineCf.x, width: 2 }],
+      annotations: [
+        { type: 'hline', y: Math.SQRT2, label: `Peak ${formatNumber(Math.SQRT2, 3)}`, color: 'warn' },
+        { type: 'hline', y: 1, label: 'RMS 1.0', labelBelow: true, color: 'c3', dash: false },
+      ],
+      x: { range: [0, 0.52], ticks: 'none' },
+      y: { range: [-7.5, 7.5], ticks: [-6, -3, 0, 3, 6] },
+      height: 140,
+    },
+    {
+      title: `충격이 섞인 신호: CF = ${formatNumber(cfImp, 3)}`,
+      series: [{ x: impulsive.t, y: impulsive.x, width: 1.4, color: 'c2' }],
+      annotations: [
+        { type: 'hline', y: pkImp, label: `Peak ${formatNumber(pkImp, 3)}`, color: 'warn' },
+        { type: 'hline', y: 1, label: 'RMS 1.0', labelBelow: true, color: 'c3', dash: false },
+      ],
+      x: { range: [0, 0.52], ticks: [0, 0.1, 0.2, 0.3, 0.4], label: '시간 [s]' },
+      y: { range: [-7.5, 7.5], ticks: [-6, -3, 0, 3, 6] },
+      height: 140,
+    },
+  ],
+};
+
+// 그림 8 — 섞인 신호 → 성분 → 스펙트럼
+const parts = [
+  { f: 60, a: 5, p: 0, name: '60 Hz (1X)', color: 'c1' as const },
+  { f: 120, a: 2, p: 1, name: '120 Hz (2X)', color: 'c2' as const },
+  { f: 180, a: 1, p: 2, name: '180 Hz (3X)', color: 'c3' as const },
+];
+const mix = trace(parts.map((c) => ({ type: 'sine' as const, freq: c.f, amp: c.a, phase: c.p })), 0.05, 1200);
+const partTraces = parts.map((c) => trace([{ type: 'sine', freq: c.f, amp: c.a, phase: c.p }], 0.05, 1200));
+export const mixToSpectrum: FigureSpec = {
+  id: 'fig-0-8',
+  caption:
+    '그림 8. (위) 세 정현파가 더해진 시간파형 — 이것만 보고 성분을 알아내기는 어렵다. (가운데) 같은 신호를 성분별로 나누면 60·120·180 Hz 정현파 세 개다. (아래) 스펙트럼은 이 성분표를 그래프로 그린 것이다: 가로축 = 각 성분의 주파수, 세로축 = 그 진폭(Peak).',
+  panels: [
+    { title: '시간파형 (섞인 신호)', series: [{ x: mix.t, y: mix.x, width: 2, color: 'text' }], x: { range: [0, 0.05], ticks: 'none' }, y: { range: [-8.5, 8.5], ticks: [-5, 0, 5] }, height: 120 },
+    {
+      title: '성분으로 나누면',
+      series: partTraces.map((p, i) => ({ x: p.t, y: p.x, color: parts[i].color, width: 1.8, label: parts[i].name })),
+      x: { range: [0, 0.05], label: '시간 [s]' },
+      y: { range: [-6, 6], ticks: [-5, 0, 5] },
+      height: 130,
+    },
+    {
+      title: '스펙트럼 (성분표)',
+      series: parts.map((c) => ({ x: [c.f], y: [c.a], kind: 'stem' as const, color: c.color, width: 3, radius: 5 })),
+      annotations: parts.map((c) => ({ type: 'text' as const, x: c.f, y: c.a, text: `${c.f} Hz, 진폭 ${c.a}`, anchor: 'middle' as const, dy: -10, color: c.color })),
+      x: { range: [0, 250], label: '주파수 [Hz]' },
+      y: { range: [0, 6.8], ticks: [0, 1, 2, 3, 4, 5, 6], label: '진폭' },
+      height: 150,
+    },
+  ],
+};
+
+// 그림 9 — 샘플과 Δt
+const cont9 = trace([{ type: 'sine', freq: 10, amp: 1 }], 0.2, 600);
+const smp9 = acquire({ components: [{ type: 'sine', freq: 10, amp: 1 }] }, { fs: 100, n: 21 });
+export const samplesFigure: FigureSpec = {
+  id: 'fig-0-9',
+  caption:
+    '그림 9. 분석기는 연속 신호(회색 선)를 일정한 간격 Δt마다 읽어 숫자(점)로 저장한다. 이 예는 1초에 100번 읽으므로 샘플링 주파수 f_s = 100 Hz, 샘플 간격 Δt = 1/f_s = 0.01 s다. n번째 샘플을 x[n]이라고 쓴다.',
+  panels: [
+    {
+      series: [
+        { x: cont9.t, y: cont9.x, color: 'muted', width: 1.6, label: '연속 신호 x(t)' },
+        { x: Array.from(smp9.t), y: Array.from(smp9.x), kind: 'dots', color: 'c1', radius: 4, label: '샘플 x[n]' },
+      ],
+      annotations: [
+        { type: 'arrow', x1: 0.1, y1: -1.28, x2: 0.11, y2: -1.28, label: 'Δt = 0.01 s', labelDx: 44, labelDy: 4, color: 'c2' },
+        { type: 'text', x: 0, y: 1, text: 'x[0]', dx: 6, dy: -8, color: 'c1' },
+        { type: 'text', x: 0.01, y: Math.cos(2 * Math.PI * 0.1), text: 'x[1]', dx: 6, dy: -8, color: 'c1' },
+        { type: 'text', x: 0.02, y: Math.cos(2 * Math.PI * 0.2), text: 'x[2]', dx: 6, dy: -8, color: 'c1' },
+      ],
+      x: { range: [0, 0.2], label: '시간 [s]' },
+      y: { range: [-1.45, 1.35], ticks: [-1, 0, 1] },
+      height: 190,
+    },
+  ],
+};
+
+// 그림 10 — 샘플이 충분할 때와 부족할 때
+const cont10 = trace([{ type: 'sine', freq: 10, amp: 1 }], 1, 2000);
+const good = acquire({ components: [{ type: 'sine', freq: 10, amp: 1 }] }, { fs: 100, n: 101 });
+const bad = acquire({ components: [{ type: 'sine', freq: 10, amp: 1 }] }, { fs: 12, n: 13 });
+const alias = trace([{ type: 'sine', freq: 2, amp: 1 }], 1, 400);
+export const enoughSamples: FigureSpec = {
+  id: 'fig-0-10',
+  caption:
+    '그림 10. 같은 10 Hz 신호를 두 속도로 읽었다. 위: 1초에 100번(한 주기에 10개) 읽으면 점을 이었을 때 원래 모양이 살아 있다. 아래: 1초에 12번(한 주기에 1.2개)만 읽으면 점들이 느린 2 Hz 물결(점선)을 그린다 — 실제로는 없는 주파수가 보이는 에일리어싱이다. 한 주기에 샘플이 2개보다 많아야 한다(P2-3에서 자세히).',
+  panels: [
+    {
+      title: 'f_s = 100 Hz: 한 주기에 샘플 10개 → 원래 모양 그대로',
+      series: [
+        { x: cont10.t, y: cont10.x, color: 'muted', width: 1 },
+        { x: Array.from(good.t), y: Array.from(good.x), kind: 'dots', color: 'c1', radius: 2.6 },
+      ],
+      x: { range: [0, 1], ticks: 'none' },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
+      height: 120,
+    },
+    {
+      title: 'f_s = 12 Hz: 한 주기에 1.2개 → 2 Hz처럼 보인다 (에일리어싱)',
+      series: [
+        { x: cont10.t, y: cont10.x, color: 'muted', width: 1, opacity: 0.6 },
+        { x: alias.t, y: alias.x, color: 'c2', dash: true, width: 2, label: '점이 그리는 가짜 2 Hz' },
+        { x: Array.from(bad.t), y: Array.from(bad.x), kind: 'dots', color: 'c1', radius: 4.5, label: '샘플' },
+      ],
+      x: { range: [0, 1], label: '시간 [s]' },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
+      height: 140,
+    },
+  ],
 };

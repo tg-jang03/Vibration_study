@@ -1,7 +1,7 @@
 /**
- * 진동 단위 환산 (P1-6, LAB-UNIT-01). 표시 계층용 순수 함수 (D-012: 계산은 SI, 단위 변환은 UI에서).
+ * 진동 단위 환산 (P2-7, LAB-UNIT-01). 표시 계층용 순수 함수 (D-012: 계산은 SI, 단위 변환은 UI에서).
  * 정현파 하나를 가정한다: Peak = √2·RMS = Peak-Peak / 2, v = 2πf·d, a = (2πf)²·d.
- * 여러 성분이 섞인 신호의 overall 값에는 이 환산을 쓰면 안 된다 (P1-0 §4, P1-6 §5).
+ * 여러 성분이 섞인 신호의 overall 값에는 이 환산을 쓰면 안 된다 (P2-1 §4, P2-7 §5).
  */
 
 export type Quantity = 'displacement' | 'velocity' | 'acceleration';

@@ -1,5 +1,5 @@
 /**
- * 기계 보호 시스템의 알람 논리 (P2-5, LAB-ALM-01). 순수 함수.
+ * 기계 보호 시스템의 알람 논리 (P3-5, LAB-ALM-01). 순수 함수.
  * 한 베어링의 X·Y 두 채널 진폭 [µm pp]이 시간에 따라 주어지면, Alert·Danger 두 단계 레벨, 시간 지연, 보팅,
  * 기동 중 트립 배율로 알람·트립이 언제 나는지 계산한다. 레벨·지연·배율은 설명용 예시값이다
  * (실제 값은 기계·제조사 권고와 규격을 따른다. 규격 수치는 옮기지 않는다, I-009).
@@ -73,7 +73,7 @@ export function scenarioSignal(s: ProtScenario): ProtSignal {
         x[i] = 40 + nx;
         y[i] = 38 + ny + ((ti >= 15 && ti < 16.5) || (ti >= 32 && ti < 34) || (ti >= 45 && ti < 46.2) ? 220 : 0);
         break;
-      case 'oneDirection': // 한 방향으로만 커지는 진동 (직선 오빗, P2-3) — X만 커진다
+      case 'oneDirection': // 한 방향으로만 커지는 진동 (직선 오빗, P3-3) — X만 커진다
         x[i] = ramp(ti, 10, 50, 40, 180) + nx;
         y[i] = ramp(ti, 10, 50, 50, 60) + ny;
         break;

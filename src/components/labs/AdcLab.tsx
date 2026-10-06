@@ -15,7 +15,7 @@ import {
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 
 /**
- * LAB-SMP-03 ADC 분해능 & 입력 레인지 (P1-2, Contents §5-1).
+ * LAB-SMP-03 ADC 분해능 & 입력 레인지 (P2-3, Contents §5-1).
  *
  * 목적:
  * ADC 비트 수(8~24 bit)와 입력 레인지 설정이 양자화 잡음 바닥(Noise Floor),

@@ -1,287 +1,446 @@
 /**
- * P1-7 "변조 · 측대역 · 맥놀이" 본문 그림 데이터 (빌드 시 계산, D-026).
- * 신호는 랩(LAB-MOD-01)과 같은 `src/lib/modulationDemo.ts`·`signal.ts`의 'modulated' 성분을 쓴다.
- * 진폭은 mm/s Peak로 표시한다 (계산은 m/s, D-012).
+ * P1-7 "기계 요소가 만드는 주파수" 본문 그림 데이터 (빌드 시 계산, D-026·D-032).
+ * 주파수는 랩(LAB-FMAP-01)과 같은 `src/lib/machine/`로, 울림 파형은 `lib/mck`의 감쇠 자유진동으로 계산한다.
  */
-import { grid, type FigAnnotation, type FigPanel, type FigureSpec } from '../lib/figure';
+import { grid, squareYRange, type FigAnnotation, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { beatEnvelope, besselJ, modulationLines } from '../lib/dsp/modulation';
-import { evaluateRange, type SignalComponent } from '../lib/dsp/signal';
-import { singleSidedSpectrum } from '../lib/dsp/spectrum';
-import { BEAT_EXAMPLE, GEAR_EXAMPLE, MOD_AMP, MOD_FS, modSpectrum, peakNear, relDb } from '../lib/modulationDemo';
+import { freeResponseAt } from '../lib/mck';
+import { BEARING_6205, bearingFrequencies, beltFrequency, bladePass, electromagneticForce, gearPair } from '../lib/machine/frequencies';
+import { buildMap, EXAMPLE, LINE_FREQUENCY, MAP_RANGE, PRESETS } from '../lib/machine/frequencyMap';
 
-const MM = 1000;
-const T_SPEC = 8; // 스펙트럼 측정 시간 8 s → Δf = 0.125 Hz
-const am = (carrier: number, modFreq: number, m: number, extra: Partial<SignalComponent> = {}): SignalComponent =>
-  ({ type: 'modulated', carrier, amp: MOD_AMP, modFreq, am: m, ...extra }) as SignalComponent;
-const fm = (carrier: number, modFreq: number, beta: number): SignalComponent => ({ type: 'modulated', carrier, amp: MOD_AMP, modFreq, fm: beta });
-const wave = (c: SignalComponent[], t1: number, points = 3000) => {
-  const r = evaluateRange({ components: c }, 0, t1, points);
-  return { t: Array.from(r.t), x: Array.from(r.x, (v) => v * MM) };
-};
-const view = (s: ReturnType<typeof modSpectrum>, f0: number, f1: number) => {
-  const a = Math.round(f0 / s.df);
-  const b = Math.round(f1 / s.df);
-  return { x: Array.from(s.frequency.slice(a, b + 1)), y: Array.from(s.amplitude.slice(a, b + 1)) };
-};
-const fmt = (v: number) => formatNumber(v, 2);
+const PX_PER_UNIT = 820 / 30; // 도식 패널 x 범위 [0, 30]의 1단위 = 27.3 px
+const hz = (v: number) => formatNumber(v, 4);
+const logTicks = (lo: number, hi: number) =>
+  Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((v) => ({ value: v, label: v >= 3 ? `${10 ** (v - 3)}k` : String(10 ** v) }));
 
-// 그림 1 — 크기가 오르내리는 진동 (AM)
-const FC = 100;
-const FMOD = 5;
-const M = 0.5;
-const plain = wave([am(FC, FMOD, 0)], 0.4);
-const amw = wave([am(FC, FMOD, M)], 0.4);
-const envT = grid(0, 0.4, 200);
-const envUp = envT.map((t) => (1 + M * Math.cos(2 * Math.PI * FMOD * t)));
-export const amWave: FigureSpec = {
-  id: 'fig-p1-7-1',
-  caption: `그림 1. 위: ${FC} Hz 정현파(크기 1 mm/s Peak). 아래: 같은 정현파의 크기를 1초에 ${FMOD}번 오르내리게 한 진동 — 크기가 ${1 - M}에서 ${1 + M} mm/s 사이를 오간다 (회색 점선 = 포락선, 꼭대기를 이은 선). 빠르게 떠는 ${FC} Hz는 그대로이고, 그 크기가 ${FMOD} Hz로 천천히 바뀐다. 이렇게 크기가 주기적으로 변하는 것을 진폭 변조(AM)라고 한다.`,
-  panels: [
-    {
-      title: `${FC} Hz 정현파 (변조 없음)`,
-      series: [{ x: plain.t, y: plain.x, color: 'c1', width: 1.1 }],
-      x: { range: [0, 0.4], ticks: 'none' },
-      y: { range: [-1.7, 1.7], ticks: [-1, 0, 1] },
-      height: 90,
-    },
-    {
-      title: `크기를 ${FMOD} Hz로 오르내리게 함 (m = ${M})`,
-      series: [
-        { x: amw.t, y: amw.x, color: 'c1', width: 1.1 },
-        { x: envT, y: envUp, color: 'muted', dash: true, width: 1.6 },
-        { x: envT, y: envUp.map((v) => -v), color: 'muted', dash: true, width: 1.6 },
-      ],
-      annotations: [{ type: 'arrow', x1: 0.2, y1: 1.75, x2: 0.4, y2: 1.75, label: `한 번 오르내리는 데 1/${FMOD} = ${1 / FMOD} s`, color: 'warn', double: true, labelDy: -10 }],
-      x: { range: [0, 0.4], ticks: [0, 0.1, 0.2, 0.3, 0.4], label: '시간 [s]' },
-      y: { range: [-1.7, 2.25], ticks: [-1.5, -1, -0.5, 0, 0.5, 1, 1.5], label: '[mm/s]' },
-      height: 165,
-    },
-  ],
-};
-
-// 그림 2 — AM의 스펙트럼: 반송파 + 양옆 측대역
-const amSpec = modSpectrum([am(FC, FMOD, M)], T_SPEC);
-const amV = view(amSpec, 85, 115);
-const amSide = peakNear(amSpec, FC + FMOD);
-export const amSpectrum: FigureSpec = {
-  id: 'fig-p1-7-2',
-  caption: `그림 2. 그림 1 아래 진동의 스펙트럼 (측정 ${T_SPEC} s, Hann). 막대는 셋이다 — 가운데 ${FC} Hz(반송파) ${fmt(peakNear(amSpec, FC))} mm/s, 양옆 ${FC - FMOD} Hz와 ${FC + FMOD} Hz(측대역) 각 ${fmt(amSide)} mm/s. 측대역은 반송파에서 변조 주파수(${FMOD} Hz)만큼 떨어져 있고, 높이는 m/2 = ${M / 2}배(${formatNumber(relDb(amSide, peakNear(amSpec, FC)), 3)} dB)다. ${FMOD} Hz 자리에는 아무것도 없다.`,
-  panels: [
-    {
-      series: [{ x: amV.x, y: amV.y, color: 'c1', width: 1.6 }],
-      annotations: [
-        { type: 'text', x: FC, y: 1.08, text: `반송파 ${fmt(peakNear(amSpec, FC))}`, anchor: 'middle', bold: true, color: 'c1' },
-        { type: 'text', x: FC - FMOD, y: amSide + 0.08, text: `측대역 ${fmt(amSide)}`, anchor: 'middle', color: 'warn', bold: true },
-        { type: 'text', x: FC + FMOD, y: amSide + 0.08, text: `측대역 ${fmt(amSide)}`, anchor: 'middle', color: 'warn', bold: true },
-        { type: 'arrow', x1: FC, y1: 0.6, x2: FC + FMOD, y2: 0.6, label: `간격 ${FMOD} Hz = 변조 주파수`, color: 'muted', double: true, labelDy: -10 },
-      ],
-      x: { range: [85, 115], ticks: [85, 90, 95, 100, 105, 110, 115], label: '주파수 [Hz]' },
-      y: { range: [0, 1.2], ticks: [0, 0.25, 0.5, 0.75, 1], label: '[mm/s Peak]' },
-      height: 190,
-    },
-  ],
-};
-
-// 그림 3 — 측대역 간격이 원인을 가리킨다 (기어 맞물림 300 Hz)
-const G = GEAR_EXAMPLE;
-const gearA = modSpectrum([am(G.mesh, G.shaftA, G.m)], T_SPEC);
-const gearB = modSpectrum([am(G.mesh, G.shaftB, G.m)], T_SPEC);
-const gearPanel = (s: typeof gearA, fm: number, title: string, last: boolean): FigPanel => {
-  const v = view(s, 265, 335);
+/** 그림·본문이 인용하는 숫자 (회귀 테스트 `p1-7.test.ts`) */
+export const P07_VALUES = (() => {
+  const fr = 3000 / 60;
+  const gear = gearPair(15, 60, fr);
+  const brg = bearingFrequencies(BEARING_6205, fr);
+  const brgX = bearingFrequencies(BEARING_6205, 1);
+  const pumpFr = 3600 / 60;
+  const fanMotorFr = PRESETS.beltFan.rpm / 60;
   return {
-    title,
-    series: [{ x: v.x, y: v.y, color: last ? 'c3' : 'c1', width: 1.6 }],
-    annotations: [
-      { type: 'arrow', x1: G.mesh, y1: 0.4, x2: G.mesh + fm, y2: 0.4, label: `${fm} Hz`, color: 'warn', double: true, labelDy: -10 },
-      { type: 'arrow', x1: G.mesh - fm, y1: 0.4, x2: G.mesh, y2: 0.4, label: `${fm} Hz`, color: 'warn', double: true, labelDy: -10 },
-    ],
-    x: last ? { range: [265, 335], ticks: [270, 280, 287.5, 300, 312.5, 320, 330], label: '주파수 [Hz]' } : { range: [265, 335], ticks: [270, 280, 287.5, 300, 312.5, 320, 330] },
-    y: { range: [0, 1.15], ticks: [0, 0.5, 1], label: last ? '[mm/s Peak]' : undefined },
-    height: last ? 135 : 118,
+    fr,
+    gearMesh: gear.mesh,
+    gearOut: gear.f2,
+    bladePass7: bladePass(7, pumpFr),
+    brg,
+    brgX,
+    belt: beltFrequency(EXAMPLE.motorPulley, EXAMPLE.beltLength, fanMotorFr),
+    fanMotorFr,
+    fanFr: (fanMotorFr * EXAMPLE.motorPulley) / EXAMPLE.fanPulley,
+    twoFL: electromagneticForce(LINE_FREQUENCY),
+    pumpRpm: PRESETS.motorPump.rpm,
+    /** 전동기-펌프 기동: 2X가 받침대 고유진동수를 지나는 회전수 */
+    cross2X: (EXAMPLE.structureNatural / 2) * 60,
+    /** 날개 통과(7X)가 받침대 고유진동수를 지나는 회전수 */
+    crossBp: (EXAMPLE.structureNatural / 7) * 60,
   };
-};
-export const spacingTellsCause: FigureSpec = {
-  id: 'fig-p1-7-3',
-  caption: `그림 3. 기어 상자에서 맞물림 주파수(P1-5) ${G.mesh} Hz의 크기가 오르내리는 두 경우. 위: 20 Hz로 도는 축 A가 원인 — 측대역이 ${G.mesh - G.shaftA}·${G.mesh + G.shaftA} Hz, 간격 ${G.shaftA} Hz. 아래: 12.5 Hz로 도는 축 B가 원인 — 측대역이 ${G.mesh - G.shaftB}·${G.mesh + G.shaftB} Hz, 간격 ${G.shaftB} Hz. 반송파는 같아도 측대역 간격이 다르다. 간격을 재면 크기를 흔드는 것이 어느 축인지 알 수 있다.`,
-  panels: [gearPanel(gearA, G.shaftA, '축 A(20 Hz)가 한 바퀴에 한 번씩 맞물림을 세게 함', false), gearPanel(gearB, G.shaftB, '축 B(12.5 Hz)가 한 바퀴에 한 번씩 맞물림을 세게 함', true)],
-};
+})();
+const V = P07_VALUES;
 
-// 그림 4 — 짧게 커지는 변조: 측대역이 여러 쌍, 간격은 그대로
-const PULSE_RATE = G.shaftA;
-const SIG = 0.004; // 포락선 펄스 폭 [s]
-const pulseEnv = (t: number) => {
-  let p = 0;
-  const k0 = Math.round(t * PULSE_RATE);
-  for (let k = k0 - 2; k <= k0 + 2; k++) p += Math.exp(-((t - k / PULSE_RATE) ** 2) / (2 * SIG * SIG));
-  return 0.5 + p;
-};
-const pulseN = MOD_FS * T_SPEC;
-const pulseX = Float64Array.from({ length: pulseN }, (_, i) => {
-  const t = i / MOD_FS;
-  return MOD_AMP * pulseEnv(t) * Math.cos(2 * Math.PI * G.mesh * t);
-});
-const pulseSpecRaw = singleSidedSpectrum({ fs: MOD_FS, x: pulseX }, { window: 'hann' });
-const pulseSpec = { frequency: pulseSpecRaw.frequency, amplitude: pulseSpecRaw.amplitude.map((a) => a * MM), df: pulseSpecRaw.binSpacing };
-const pulseView = view(pulseSpec, 180, 420);
-const pulseWaveT = grid(0, 0.15, 3000);
-const pulseWave = pulseWaveT.map((t) => pulseEnv(t) * Math.cos(2 * Math.PI * G.mesh * t));
-const pulsePairs = [1, 2, 3, 4, 5].filter((n) => peakNear(pulseSpec, G.mesh + n * PULSE_RATE) > 0.02 * peakNear(pulseSpec, G.mesh)).length;
-export const pulseModulation: FigureSpec = {
-  id: 'fig-p1-7-4',
-  caption: `그림 4. 맞물림 ${G.mesh} Hz가 한 바퀴(1/${PULSE_RATE} s)에 한 번 짧게 커지는 경우 — 예를 들어 이빨 하나가 상했을 때. 위: 파형과 포락선. 아래: 스펙트럼. 크기의 변화가 정현파 모양이 아니라 짧은 펄스 모양이면 측대역이 한 쌍이 아니라 여러 쌍(여기서 눈에 띄는 것만 ±${pulsePairs}쌍) 생긴다. 그래도 간격은 모두 ${PULSE_RATE} Hz — 원인 축의 회전 주파수 — 로 같다.`,
+// 그림 1 — 한 기계 안의 요소들 (도식)
+const X1: [number, number] = [0, 30];
+const Y1 = squareYRange(X1, 175);
+export const machineElements: FigureSpec = {
+  id: 'fig-p1-7-1',
+  caption:
+    '그림 1. 전동기가 커플링을 거쳐 펌프를 돌리는 기계. 축(불평형·정렬), 구름베어링, 펌프 날개, 전동기의 자기력, 받침대가 저마다 다른 박자로 기계를 흔든다. 위 회색 글씨는 이 페이지에서 셀 주파수의 이름이다.',
   panels: [
     {
-      title: '파형 (회색 점선 = 포락선)',
-      series: [
-        { x: pulseWaveT, y: pulseWave, color: 'c1', width: 0.9 },
-        { x: pulseWaveT, y: pulseWaveT.map(pulseEnv), color: 'muted', dash: true, width: 1.4 },
-      ],
-      x: { range: [0, 0.15], ticks: [0, 0.05, 0.1, 0.15], label: '시간 [s]' },
-      y: { range: [-1.7, 1.7], ticks: [-1, 0, 1], label: '[mm/s]' },
-      height: 130,
-    },
-    {
-      title: '스펙트럼',
-      series: [{ x: pulseView.x, y: pulseView.y, color: 'c1', width: 1.4 }],
-      annotations: [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5].map((n): FigAnnotation => ({ type: 'vline', x: G.mesh + n * PULSE_RATE, color: 'muted', dash: true })),
-      x: { range: [180, 420], ticks: [200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400], label: '주파수 [Hz]' },
-      y: { range: [0, 0.75], ticks: [0, 0.25, 0.5, 0.75], label: '[mm/s Peak]' },
-      height: 160,
-    },
-  ],
-};
-
-// 그림 5 — 주파수가 흔들리는 진동 (FM)
-const BETA = 2;
-const FC5 = 40; // 흔들림(±10 Hz)이 반송파의 25 %라 물결 간격 변화가 눈에 보이도록
-const fmw = wave([fm(FC5, FMOD, BETA)], 0.4);
-const instT = grid(0, 0.4, 200);
-const instF = instT.map((t) => FC5 + BETA * FMOD * Math.cos(2 * Math.PI * FMOD * t));
-export const fmWave: FigureSpec = {
-  id: 'fig-p1-7-5',
-  caption: `그림 5. 위: ${FC5} Hz 정현파의 주파수를 1초에 ${FMOD}번 흔든 진동(FM). 크기는 늘 1 mm/s로 일정하지만, 물결 간격이 촘촘해졌다 넓어졌다를 되풀이한다. 아래: 그 순간의 주파수 — ${FC5 - BETA * FMOD} Hz와 ${FC5 + BETA * FMOD} Hz 사이를 오간다. 최대 흔들림 ${BETA * FMOD} Hz를 변조 주파수 ${FMOD} Hz로 나눈 β = ${BETA}가 FM 변조 지수다.`,
-  panels: [
-    {
-      title: `주파수를 ${FMOD} Hz로 흔듦 (β = ${BETA})`,
-      series: [{ x: fmw.t, y: fmw.x, color: 'c1', width: 1.1 }],
-      x: { range: [0, 0.4], ticks: 'none' },
-      y: { range: [-1.4, 1.4], ticks: [-1, 0, 1], label: '[mm/s]' },
-      height: 120,
-    },
-    {
-      title: '그 순간의 주파수',
-      series: [{ x: instT, y: instF, color: 'c3', width: 2.2 }],
-      annotations: [{ type: 'hline', y: FC5, color: 'muted', dash: true, label: `${FC5} Hz`, labelAt: 'end' }],
-      x: { range: [0, 0.4], ticks: [0, 0.1, 0.2, 0.3, 0.4], label: '시간 [s]' },
-      y: { range: [FC5 - 14, FC5 + 14], ticks: [FC5 - 10, FC5, FC5 + 10], label: '[Hz]' },
-      height: 120,
-    },
-  ],
-};
-
-// 그림 6 — FM 스펙트럼: β가 커지면 측대역이 늘어난다
-const BETAS = [0.5, 1, 2.4, 5];
-const fmSpecs = BETAS.map((b) => modSpectrum([fm(FC, FMOD, b)], T_SPEC));
-export const fmSpectra: FigureSpec = {
-  id: 'fig-p1-7-6',
-  caption: `그림 6. ${FC} Hz 반송파의 주파수를 ${FMOD} Hz로 흔든 FM 진동을 β만 바꿔 가며 스펙트럼으로 봤다. 측대역이 ${FMOD} Hz 간격으로 여러 쌍 서고, 높이는 베셀 함수 Jₙ(β)를 따른다. β = 1이면 반송파 ${fmt(Math.abs(besselJ(0, 1)))}, 첫째 측대역 ${fmt(besselJ(1, 1))}, 둘째 ${fmt(besselJ(2, 1))}. β가 커질수록 의미 있는 측대역이 대략 β + 1쌍으로 늘어나고, β = 2.4 근처에서는 반송파가 거의 사라진다(${formatNumber(Math.abs(besselJ(0, 2.4)), 1)}). 크기는 그대로이고 주파수만 흔들려도, 스펙트럼에는 반송파 하나가 아니라 넓게 퍼진 막대들이 보인다.`,
-  panels: fmSpecs.map((s, i): FigPanel => {
-    const v = view(s, 70, 130);
-    const last = i === fmSpecs.length - 1;
-    return {
-      title: `β = ${BETAS[i]}`,
-      series: [{ x: v.x, y: v.y, color: 'c3', width: 1.4 }],
-      x: last ? { range: [70, 130], ticks: [70, 80, 90, 100, 110, 120, 130], label: '주파수 [Hz]' } : { range: [70, 130], ticks: 'none' },
-      y: { range: [0, 1.05], ticks: [0, 0.5, 1], label: last ? '[mm/s Peak]' : undefined },
-      height: last ? 105 : 85,
-    };
-  }),
-};
-
-// 그림 7 — AM과 FM이 함께: 측대역이 비대칭
-const AMFM = { m: 0.4, beta: 0.6 };
-const asymCases = [
-  { title: `AM만 (m = ${AMFM.m})`, c: [am(FC, FMOD, AMFM.m)], color: 'c1' as const },
-  { title: `FM만 (β = ${AMFM.beta})`, c: [fm(FC, FMOD, AMFM.beta)], color: 'c3' as const },
-  { title: '둘 다, 크기가 클 때 주파수도 높음 (위상차 0°)', c: [{ type: 'modulated', carrier: FC, amp: MOD_AMP, modFreq: FMOD, am: AMFM.m, fm: AMFM.beta, amPhase: 0 } as SignalComponent], color: 'c4' as const },
-];
-const asymSpecs = asymCases.map((k) => modSpectrum(k.c, T_SPEC));
-const both = asymSpecs[2];
-const lowerBoth = peakNear(both, FC - FMOD);
-const upperBoth = peakNear(both, FC + FMOD);
-const theoryBoth = modulationLines(AMFM.m, AMFM.beta, 0, 3);
-export const amfmAsymmetry: FigureSpec = {
-  id: 'fig-p1-7-7',
-  caption: `그림 7. 같은 ${FMOD} Hz로 크기와 주파수가 함께 흔들리면? 위·가운데: AM만, FM만이면 측대역이 양쪽 같은 높이다 (AM ${fmt(peakNear(asymSpecs[0], FC + FMOD))}, FM ${fmt(peakNear(asymSpecs[1], FC + FMOD))}). 아래: 둘이 함께, 크기가 가장 클 때 주파수도 가장 높으면 위쪽 측대역 ${fmt(upperBoth)}, 아래쪽 ${fmt(lowerBoth)}로 한쪽이 커진다 (이론 ${fmt(theoryBoth.find((l) => l.n === 1)!.ratio)}·${fmt(theoryBoth.find((l) => l.n === -1)!.ratio)}). 측대역의 좌우 높이가 다르면 AM과 FM이 함께 있다는 표시다. 간격은 여전히 ${FMOD} Hz다.`,
-  panels: asymSpecs.map((s, i): FigPanel => {
-    const v = view(s, 85, 115);
-    const last = i === asymSpecs.length - 1;
-    return {
-      title: asymCases[i].title,
-      series: [{ x: v.x, y: v.y, color: asymCases[i].color, width: 1.6 }],
-      x: last ? { range: [85, 115], ticks: [85, 90, 95, 100, 105, 110, 115], label: '주파수 [Hz]' } : { range: [85, 115], ticks: 'none' },
-      y: { range: [0, 1.05], ticks: [0, 0.5, 1], label: last ? '[mm/s Peak]' : undefined },
-      height: last ? 110 : 90,
-    };
-  }),
-};
-
-// 그림 8 — 맥놀이: 가까운 두 주파수
-const B = BEAT_EXAMPLE;
-const beatC: SignalComponent[] = [
-  { type: 'sine', freq: B.f1, amp: B.a1 * MOD_AMP },
-  { type: 'sine', freq: B.f2, amp: B.a2 * MOD_AMP },
-];
-const beatW = wave(beatC, 6, 6000);
-const beatEnvT = grid(0, 6, 300);
-const beatEnv = beatEnvT.map((t) => beatEnvelope(B.a1, B.a2, B.f1, B.f2, t));
-const beatSpec = modSpectrum(beatC, T_SPEC);
-const beatV = view(beatSpec, 27, 33);
-const beatPeriod = 1 / Math.abs(B.f1 - B.f2);
-export const beatWave: FigureSpec = {
-  id: 'fig-p1-7-8',
-  caption: `그림 8. 이웃한 두 기계 — ${B.f1} Hz(${B.f1 * 60} rpm, 크기 ${B.a1})와 ${B.f2} Hz(${B.f2 * 60} rpm, 크기 ${B.a2}) — 의 진동이 한 센서에 함께 들어온 경우. 위: 크기가 ${beatPeriod} s마다 한 번 ${B.a1 + B.a2}까지 커졌다 ${formatNumber(Math.abs(B.a1 - B.a2), 2)}까지 작아진다 (맥놀이, P1-3). 아래: 스펙트럼에는 막대가 둘뿐이다 — AM(그림 2)처럼 가운데 반송파와 대칭인 측대역 셋이 아니다. 둘을 가르려면 1/${formatNumber(Math.abs(B.f1 - B.f2), 2)} Hz = ${beatPeriod} s보다 훨씬 길게 재야 한다 (여기서는 ${T_SPEC} s).`,
-  panels: [
-    {
-      title: '파형 (회색 점선 = 포락선)',
-      series: [
-        { x: beatW.t, y: beatW.x, color: 'c1', width: 0.6 },
-        { x: beatEnvT, y: beatEnv, color: 'muted', dash: true, width: 1.6 },
-        { x: beatEnvT, y: beatEnv.map((v) => -v), color: 'muted', dash: true, width: 1.6 },
-      ],
-      annotations: [{ type: 'arrow', x1: 0, y1: 1.85, x2: beatPeriod, y2: 1.85, label: `${beatPeriod} s = 1 / ${formatNumber(Math.abs(B.f1 - B.f2), 2)} Hz`, color: 'warn', double: true, labelDy: -10 }],
-      x: { range: [0, 6], ticks: [0, 1, 2, 3, 4, 5, 6], label: '시간 [s]' },
-      y: { range: [-2.1, 2.3], ticks: [-1.6, -0.4, 0, 0.4, 1.6], label: '[mm/s]' },
-      height: 160,
-    },
-    {
-      title: `스펙트럼 (측정 ${T_SPEC} s)`,
-      series: [{ x: beatV.x, y: beatV.y, color: 'c1', width: 1.6 }],
+      frame: false,
+      height: 175,
+      x: { range: X1 },
+      y: { range: Y1 },
+      series: [],
       annotations: [
-        { type: 'text', x: B.f1 + 0.15, y: peakNear(beatSpec, B.f1), text: `${B.f1} Hz: ${fmt(peakNear(beatSpec, B.f1))}`, anchor: 'start', bold: true },
-        { type: 'text', x: B.f2 - 0.15, y: peakNear(beatSpec, B.f2), text: `${B.f2} Hz: ${fmt(peakNear(beatSpec, B.f2))}`, anchor: 'end', bold: true },
+        { type: 'ground', x1: 0.8, y1: 1.0, x2: 29.2, y2: 1.0, side: 'right' },
+        { type: 'rect', x1: 1.5, x2: 8.5, y1: 1.05, y2: 5.2, color: 'muted', label: '전동기' },
+        { type: 'line', x1: 8.5, y1: 3.4, x2: 12.6, y2: 3.4, color: 'text', width: 4 },
+        { type: 'rect', x1: 12.6, x2: 14.2, y1: 2.6, y2: 4.2, color: 'c1' },
+        { type: 'line', x1: 14.2, y1: 3.4, x2: 22.0, y2: 3.4, color: 'text', width: 4 },
+        { type: 'rect', x1: 15.6, x2: 16.8, y1: 1.05, y2: 4.0, color: 'c1' },
+        { type: 'rect', x1: 19.0, x2: 20.2, y1: 1.05, y2: 4.0, color: 'c1' },
+        { type: 'rect', x1: 22.0, x2: 28.2, y1: 1.05, y2: 5.6, color: 'muted', label: '펌프' },
+        { type: 'text', x: 25.1, y: 2.0, text: '날개 7개', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 5.0, y: 7.0, text: '전동기', anchor: 'middle', bold: true },
+        { type: 'text', x: 5.0, y: 6.2, text: '자기력 2 f_L', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 12.0, y: 7.0, text: '축 · 커플링', anchor: 'middle', bold: true },
+        { type: 'text', x: 12.0, y: 6.2, text: '1X · 2X', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 17.9, y: 7.0, text: '구름베어링', anchor: 'middle', bold: true },
+        { type: 'text', x: 17.9, y: 6.2, text: 'BPFO · BPFI', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 25.1, y: 7.0, text: '펌프 날개', anchor: 'middle', bold: true },
+        { type: 'text', x: 25.1, y: 6.2, text: '날개 통과', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 15.0, y: 0.25, text: '받침대(구조): 정해진 고유진동수', anchor: 'middle', color: 'muted' },
       ],
-      x: { range: [27, 33], ticks: [27, 28, 29, 29.5, 30, 31, 32, 33], label: '주파수 [Hz]' },
-      y: { range: [0, 1.2], ticks: [0, 0.5, 1], label: '[mm/s Peak]' },
+    },
+  ],
+};
+
+// 그림 2 — 세는 규칙: 한 바퀴에 k번 → k × 1X
+const revMs = 1000 / V.fr; // 20 ms
+const events = (k: number) => Array.from({ length: 2 * k }, (_, i) => 3 + (i * revMs) / k);
+const revLines: FigAnnotation[] = [revMs, 2 * revMs].map((t) => ({ type: 'vline', x: t, color: 'muted', dash: true }));
+export const countingRule: FigureSpec = {
+  id: 'fig-p1-7-2',
+  caption: `그림 2. 3000 rpm(한 바퀴 ${formatNumber(revMs, 3)} ms)으로 도는 축에서 일어나는 사건을 시각에 따라 막대로 세웠다. 회색 점선이 한 바퀴의 끝이다. 위: 한 바퀴에 1번(불평형이 한 번 미는 것처럼) → 1초에 ${V.fr}번 = 1X = ${V.fr} Hz. 가운데: 한 바퀴에 3번 → 1초에 ${3 * V.fr}번 = 3X. 아래: 두 사건의 주파수를 주파수 축 위에 줄로 세운 주파수 지도. 줄의 높이에는 뜻이 없고 위치만 본다. 회색 점선은 1X의 정수배(하모닉) 자리다.`,
+  panels: [
+    {
+      title: '한 바퀴에 1번',
+      series: [{ x: events(1), y: events(1).map(() => 1), kind: 'stem', color: 'c1', width: 2.4 }],
+      annotations: [...revLines, { type: 'text', x: revMs, y: 1.15, text: '한 바퀴', anchor: 'end', color: 'muted', dx: -4 }],
+      x: { range: [0, 2 * revMs + 1] },
+      y: { range: [0, 1.4], ticks: 'none' },
+      height: 80,
+    },
+    {
+      title: '한 바퀴에 3번',
+      series: [{ x: events(3), y: events(3).map(() => 1), kind: 'stem', color: 'c2', width: 2.4 }],
+      annotations: revLines,
+      x: { range: [0, 2 * revMs + 1], label: '시각 [ms]' },
+      y: { range: [0, 1.4], ticks: 'none' },
+      height: 80,
+    },
+    {
+      title: '주파수 지도',
+      series: [
+        { x: [V.fr], y: [1], kind: 'stem', color: 'c1', width: 3 },
+        { x: [3 * V.fr], y: [1], kind: 'stem', color: 'c2', width: 3 },
+      ],
+      annotations: [
+        ...[2, 4, 5, 6].map((k): FigAnnotation => ({ type: 'vline', x: k * V.fr, color: 'muted', dash: true })),
+        { type: 'text', x: V.fr, y: 1.12, text: `1X = ${V.fr} Hz`, anchor: 'middle', color: 'c1' },
+        { type: 'text', x: 3 * V.fr, y: 1.12, text: `3X = ${3 * V.fr} Hz`, anchor: 'middle', color: 'c2' },
+      ],
+      x: { range: [0, 330], ticks: [0, 50, 100, 150, 200, 250, 300], label: '주파수 [Hz]' },
+      y: { range: [0, 1.35], ticks: 'none' },
+      height: 105,
+    },
+  ],
+};
+
+// 그림 3 — 날개와 기어 (도식)
+const X3: [number, number] = [0, 30];
+const Y3 = squareYRange(X3, 220);
+const imp = { x: 6.5, y: 4.6, hub: 0.7, tip: 2.8, casing: 3.4, blades: 7 };
+const bladeLines: FigAnnotation[] = Array.from({ length: imp.blades }, (_, k) => {
+  const a = Math.PI / 2 + (2 * Math.PI * k) / imp.blades;
+  return { type: 'line', x1: imp.x + imp.hub * Math.cos(a), y1: imp.y + imp.hub * Math.sin(a), x2: imp.x + imp.tip * Math.cos(a), y2: imp.y + imp.tip * Math.sin(a), color: 'c1', width: 3 };
+});
+const tongueA = (20 * Math.PI) / 180;
+const gA = { x: 15.6, y: 4.6, r: 0.95, z: 15 };
+const gB = { x: gA.x + 5 * gA.r, y: 4.6, r: 4 * gA.r, z: 60 };
+const teeth = (g: { x: number; y: number; r: number; z: number }, color: 'c1' | 'c3'): FigAnnotation[] =>
+  Array.from({ length: g.z }, (_, k) => {
+    const a = (2 * Math.PI * k) / g.z;
+    return { type: 'line', x1: g.x + (g.r - 0.13) * Math.cos(a), y1: g.y + (g.r - 0.13) * Math.sin(a), x2: g.x + (g.r + 0.13) * Math.cos(a), y2: g.y + (g.r + 0.13) * Math.sin(a), color, width: 2 };
+  });
+export const bladesAndGears: FigureSpec = {
+  id: 'fig-p1-7-3',
+  caption: `그림 3. 한 바퀴에 여러 번 일어나는 일. 왼쪽: 날개 7개짜리 펌프 날개바퀴. 케이싱의 한 점(고정점)을 날개가 한 바퀴에 7번 지나가므로 날개 통과 주파수 = 7 × 1X다 (3600 rpm이면 ${hz(V.bladePass7)} Hz). 오른쪽: 이빨 15개 기어(파랑)가 이빨 60개 기어(초록)를 돌린다. 작은 기어가 3000 rpm(${V.fr} Hz)이면 1초에 15 × ${V.fr} = ${hz(V.gearMesh)}번 이빨이 맞물린다 = 맞물림 주파수. 큰 기어도 같은 1초 동안 같은 수의 이빨이 맞물리므로 60 × f₂ = ${hz(V.gearMesh)} → f₂ = ${hz(V.gearOut)} Hz.`,
+  panels: [
+    {
+      frame: false,
+      height: 220,
+      x: { range: X3 },
+      y: { range: Y3 },
+      series: [],
+      annotations: [
+        { type: 'text', x: imp.x, y: Y3[1] - 0.5, text: '펌프 날개 7개', anchor: 'middle', bold: true },
+        { type: 'circle', x: imp.x, y: imp.y, r: imp.casing * PX_PER_UNIT, dash: true, color: 'muted' },
+        { type: 'circle', x: imp.x, y: imp.y, r: imp.hub * PX_PER_UNIT, fill: true, color: 'muted' },
+        ...bladeLines,
+        { type: 'point', x: imp.x + imp.casing * Math.cos(tongueA), y: imp.y + imp.casing * Math.sin(tongueA), color: 'warn', label: '고정점', dx: 8, dy: -6 },
+        { type: 'text', x: imp.x, y: 0.4, text: '한 바퀴에 7번 지나감 → 7 × 1X', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 20.0, y: Y3[1] - 0.5, text: '기어 한 쌍 (이빨 15 · 60)', anchor: 'middle', bold: true },
+        { type: 'circle', x: gA.x, y: gA.y, r: gA.r * PX_PER_UNIT, color: 'c1' },
+        ...teeth(gA, 'c1'),
+        { type: 'circle', x: gB.x, y: gB.y, r: gB.r * PX_PER_UNIT, color: 'c3' },
+        ...teeth(gB, 'c3'),
+        { type: 'text', x: gA.x, y: gA.y - gA.r - 0.75, text: `${V.fr} Hz`, anchor: 'middle', color: 'c1' },
+        { type: 'text', x: gB.x, y: gB.y - 0.15, text: `${hz(V.gearOut)} Hz`, anchor: 'middle', color: 'c3' },
+        { type: 'point', x: gA.x + gA.r, y: gA.y, color: 'warn' },
+        { type: 'line', x1: gA.x + gA.r, y1: gA.y + 0.15, x2: gA.x + gA.r - 0.5, y2: gA.y + 1.9, color: 'warn', width: 1.2 },
+        { type: 'text', x: gA.x + gA.r - 0.5, y: gA.y + 2.1, text: `맞물림 ${hz(V.gearMesh)} Hz`, anchor: 'end', color: 'warn' },
+      ],
+    },
+  ],
+};
+
+// 그림 4 — 구름베어링 단면 (도식)
+const X4: [number, number] = [0, 30];
+const Y4 = squareYRange(X4, 230);
+const B = { x: 8.5, y: 4.9, pitch: 2.7, ball: 0.55, n: 9 };
+const ang = (deg: number) => (deg * Math.PI) / 180;
+const ballCircles: FigAnnotation[] = Array.from({ length: B.n }, (_, k) => {
+  const a = Math.PI / 2 + (2 * Math.PI * k) / B.n;
+  return { type: 'circle', x: B.x + B.pitch * Math.cos(a), y: B.y + B.pitch * Math.sin(a), r: B.ball * PX_PER_UNIT, fill: true, color: 'c1' };
+});
+const at = (r: number, deg: number): [number, number] => [B.x + r * Math.cos(ang(deg)), B.y + r * Math.sin(ang(deg))];
+const tag = (y: number, text: string, target: [number, number], color: 'text' | 'c1' | 'c2' | 'muted' = 'text'): FigAnnotation[] => [
+  { type: 'text', x: 14.2, y: y - 0.12, text, anchor: 'start', color },
+  { type: 'line', x1: 14.0, y1: y, x2: target[0], y2: target[1], color: 'muted', width: 1.2 },
+];
+export const bearingSection: FigureSpec = {
+  id: 'fig-p1-7-4',
+  caption:
+    '그림 4. 구름베어링을 축 방향에서 본 단면 (볼 9개). 바깥 바퀴(외륜)는 하우징에 끼워져 멈춰 있고, 안쪽 바퀴(내륜)는 축에 끼워져 축과 함께 돈다. 볼은 두 바퀴 사이를 구르고, 케이지(회색 점선, 볼 중심을 잇는 원)가 볼 사이 간격을 잡아 준다. 볼 지름 d와 볼 중심이 그리는 원의 지름(피치 지름) D의 비는 실제 6205 베어링과 같게(d/D ≈ 0.2) 그렸다.',
+  panels: [
+    {
+      frame: false,
+      height: 230,
+      x: { range: X4 },
+      y: { range: Y4 },
+      series: [],
+      annotations: [
+        { type: 'text', x: B.x, y: Y4[1] - 0.5, text: '구름베어링 단면', anchor: 'middle', bold: true },
+        { type: 'circle', x: B.x, y: B.y, r: 4.0 * PX_PER_UNIT, color: 'text' },
+        { type: 'circle', x: B.x, y: B.y, r: (B.pitch + B.ball) * PX_PER_UNIT, color: 'text' },
+        { type: 'circle', x: B.x, y: B.y, r: (B.pitch - B.ball) * PX_PER_UNIT, color: 'c2' },
+        { type: 'circle', x: B.x, y: B.y, r: 1.35 * PX_PER_UNIT, fill: true, color: 'muted', label: '축' },
+        { type: 'circle', x: B.x, y: B.y, r: B.pitch * PX_PER_UNIT, dash: true, color: 'muted' },
+        ...ballCircles,
+        ...tag(8.4, '외륜: 하우징에 끼워져 멈춰 있다', at(3.6, 40)),
+        ...tag(6.6, '볼 9개: 두 바퀴 사이를 구른다', at(B.pitch + 0.4, 10), 'c1'),
+        ...tag(4.6, '케이지(점선): 볼 간격을 잡고 볼과 함께 돈다', at(B.pitch, 350), 'muted'),
+        ...tag(2.5, '내륜: 축과 함께 f_r로 돈다', at(1.75, 290), 'c2'),
+        { type: 'text', x: B.x, y: 0.3, text: '외륜 멈춤 · 내륜과 축 회전', anchor: 'middle', color: 'muted' },
+      ],
+    },
+  ],
+};
+
+// 그림 5 — 사이에 낀 것은 절반 속도로 간다 (굴림대, 기름막)
+const X5: [number, number] = [0, 30];
+const Y5 = squareYRange(X5, 160);
+const profileY = [1.55, 2.15, 2.75, 3.35];
+const wallY = 1.2;
+const shaftY = 3.7;
+const uLen = 6;
+export const halfSpeed: FigureSpec = {
+  id: 'fig-p1-7-5',
+  caption:
+    '그림 5. 멈춘 판과 움직이는 판 사이에 낀 것은 위 판 속도의 절반쯤으로 간다. 왼쪽: 아래 판(외륜)이 멈춰 있고 위 판(내륜)이 v로 움직이면, 미끄러지지 않고 구르는 굴림대(볼)의 중심은 v/2로 간다. 그래서 케이지는 내륜보다 느리게 돈다. 오른쪽: 멈춘 베어링 면과 U로 도는 축 표면 사이의 기름은 축 쪽은 U, 베어링 쪽은 0으로 흘러 평균 속도가 U/2쯤이다.',
+  panels: [
+    {
+      frame: false,
+      height: 160,
+      x: { range: X5 },
+      y: { range: Y5 },
+      series: [],
+      annotations: [
+        { type: 'text', x: 7.0, y: Y5[1] - 0.45, text: '굴림대: 중심은 v/2', anchor: 'middle', bold: true },
+        { type: 'ground', x1: 1.0, y1: wallY, x2: 13.0, y2: wallY, side: 'right' },
+        { type: 'circle', x: 6.0, y: wallY + 0.8, r: 0.8 * PX_PER_UNIT, fill: true, color: 'c1' },
+        { type: 'rect', x1: 2.5, x2: 12.5, y1: wallY + 1.6, y2: wallY + 2.1, color: 'c2' },
+        { type: 'arrow', x1: 8.6, y1: wallY + 2.75, x2: 11.6, y2: wallY + 2.75, color: 'c2', double: false, label: 'v (위 판 = 내륜)', labelDy: -8 },
+        { type: 'arrow', x1: 6.0, y1: wallY + 0.8, x2: 7.5, y2: wallY + 0.8, color: 'warn', double: false },
+        { type: 'text', x: 8.0, y: wallY + 0.6, text: 'v/2', anchor: 'start', color: 'warn', bold: true },
+        { type: 'text', x: 7.0, y: 0.25, text: '아래 판 멈춤 = 외륜', anchor: 'middle', color: 'muted' },
+        { type: 'text', x: 22.5, y: Y5[1] - 0.45, text: '기름막: 평균 ≈ U/2', anchor: 'middle', bold: true },
+        { type: 'ground', x1: 17.0, y1: wallY, x2: 28.5, y2: wallY, side: 'right' },
+        { type: 'rect', x1: 17.0, x2: 28.5, y1: shaftY, y2: shaftY + 0.4, color: 'muted' },
+        { type: 'arrow', x1: 23.0, y1: shaftY + 0.95, x2: 26.0, y2: shaftY + 0.95, color: 'c2', double: false, label: 'U (축 표면)', labelDy: -8 },
+        ...profileY.map((y): FigAnnotation => ({ type: 'arrow', x1: 18.5, y1: y, x2: 18.5 + (uLen * (y - wallY)) / (shaftY - wallY), y2: y, color: 'c1', double: false })),
+        { type: 'line', x1: 18.5, y1: wallY, x2: 18.5 + uLen, y2: shaftY, color: 'c1', dash: true, width: 1.2 },
+        { type: 'text', x: 22.5, y: 0.25, text: '베어링 면 멈춤 (속도 0)', anchor: 'middle', color: 'muted' },
+      ],
+    },
+  ],
+};
+
+// 그림 6 — 베어링 줄은 하모닉 사이에 선다 (6205, 3000 rpm)
+const bx = V.brgX;
+const brgStems = [
+  { x: bx.ftf, h: 0.62, color: 'c3' as const, name: 'FTF' },
+  { x: bx.bsf, h: 0.78, color: 'c4' as const, name: 'BSF' },
+  { x: bx.bpfo, h: 1.0, color: 'c1' as const, name: 'BPFO' },
+  { x: bx.bpfi, h: 0.9, color: 'c2' as const, name: 'BPFI' },
+];
+export const bearingLines: FigureSpec = {
+  id: 'fig-p1-7-6',
+  caption: `그림 6. 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 ${formatNumber(bx.ftf, 4)}X, 볼 자전 ${formatNumber(bx.bsf, 4)}X, 외륜 ${formatNumber(bx.bpfo, 4)}X, 내륜 ${formatNumber(bx.bpfi, 4)}X — 모두 점선 사이에 선다. 3000 rpm(1X = ${V.fr} Hz)이면 외륜 ${hz(V.brg.bpfo)} Hz, 내륜 ${hz(V.brg.bpfi)} Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.`,
+  panels: [
+    {
+      series: brgStems.map((s) => ({ x: [s.x], y: [s.h], kind: 'stem' as const, color: s.color, width: 3 })),
+      annotations: [
+        ...Array.from({ length: 9 }, (_, i): FigAnnotation => ({ type: 'vline', x: i + 1, color: 'muted', dash: true })),
+        ...brgStems.map((s): FigAnnotation => ({ type: 'text', x: s.x, y: s.h + 0.1, text: `${s.name} ${formatNumber(s.x, 3)}X`, anchor: 'middle', color: s.color })),
+      ],
+      x: {
+        range: [0, 9.6],
+        ticks: Array.from({ length: 10 }, (_, i) => i),
+        tickLabels: Array.from({ length: 10 }, (_, i) => ({ value: i, label: i === 0 ? '0' : `${i}X` })),
+        label: '주파수 (1X의 배수)',
+      },
+      y: { range: [0, 1.3], ticks: 'none' },
       height: 150,
     },
   ],
 };
 
-/** 본문 숫자 확인용 (테스트에서 사용) */
-export const P17_VALUES = {
-  amCarrier: peakNear(amSpec, FC),
-  amSide,
-  amSideDb: relDb(amSide, peakNear(amSpec, FC)),
-  gearALow: peakNear(gearA, G.mesh - G.shaftA),
-  gearBLow: peakNear(gearB, G.mesh - G.shaftB),
-  pulsePairs,
-  fmBeta1: [0, 1, 2].map((n) => peakNear(fmSpecs[1], FC + n * FMOD)),
-  fmCarrier24: peakNear(fmSpecs[2], FC),
-  upperBoth,
-  lowerBoth,
-  beatA1: peakNear(beatSpec, B.f1),
-  beatA2: peakNear(beatSpec, B.f2),
-  beatPeriod,
+// 그림 7 — 흠집의 충격은 높은 주파수를 울린다
+const RING = { fn: 3000, zeta: 0.04 };
+const ringSys = { mass: 1, stiffness: (2 * Math.PI * RING.fn) ** 2, damping: 2 * RING.zeta * 2 * Math.PI * RING.fn };
+const impactPeriod = 1 / V.brg.bpfo;
+const tMax7 = 0.025;
+const t7 = grid(0, tMax7, 5001);
+const impacts = Array.from({ length: Math.ceil(tMax7 / impactPeriod) }, (_, i) => 0.0008 + i * impactPeriod).filter((t) => t < tMax7);
+const ring7 = t7.map((t) => impacts.reduce((sum, ti) => (t >= ti ? sum + freeResponseAt(ringSys, { x0: 0, v0: 1 }, t - ti).x : sum), 0));
+const ringPeak = Math.max(...ring7.map(Math.abs));
+const ring7n = ring7.map((v) => v / ringPeak);
+const tZoom = grid(0, 0.0015, 1201);
+const ringZoom = tZoom.map((t) => freeResponseAt(ringSys, { x0: 0, v0: 1 }, t).x / ringPeak);
+export const impactRinging: FigureSpec = {
+  id: 'fig-p1-7-7',
+  caption: `그림 7. 외륜 흠집 위를 볼이 지날 때마다 짧은 충격이 생기고, 충격은 하우징을 고유진동수(예시 ${RING.fn / 1000} kHz, 감쇠비 ${RING.zeta})로 울린다 — P1-3의 감쇠 자유진동이 BPFO 박자(${hz(V.brg.bpfo)} Hz, ${formatNumber(impactPeriod * 1000, 3)} ms 간격)로 되풀이된다. 위: 25 ms 동안의 파형. 가운데: 충격 하나를 1.5 ms만 확대 — 한 번 울리는 데 ${formatNumber(1000 / RING.fn, 3)} ms. 아래: 주파수 지도. 흔들림의 대부분은 울림 주파수 근처(주황 띠)에 모이고, 되풀이 박자 ${hz(V.brg.bpfo)} Hz는 울림이 반복되는 간격으로만 드러난다.`,
+  panels: [
+    {
+      title: '25 ms 동안 (정규화)',
+      series: [{ x: t7.map((t) => t * 1000), y: ring7n, color: 'c1', width: 1.2 }],
+      annotations: [
+        { type: 'arrow', x1: impacts[1] * 1000, y1: 1.15, x2: impacts[2] * 1000, y2: 1.15, color: 'warn', label: `${formatNumber(impactPeriod * 1000, 3)} ms = 1 / BPFO`, labelDy: -6 },
+      ],
+      x: { range: [0, tMax7 * 1000], label: '시각 [ms]' },
+      y: { range: [-1.2, 1.5], ticks: 'none' },
+      height: 130,
+    },
+    {
+      title: '충격 하나 확대',
+      series: [{ x: tZoom.map((t) => t * 1000), y: ringZoom, color: 'c1', width: 1.6 }],
+      annotations: [
+        { type: 'arrow', x1: 0.25 / RING.fn * 1000 + (1000 / RING.fn) * 1, y1: 1.05, x2: 0.25 / RING.fn * 1000 + (1000 / RING.fn) * 2, y2: 1.05, color: 'warn', label: `${formatNumber(1000 / RING.fn, 3)} ms → ${RING.fn / 1000} kHz`, labelDy: -6 },
+      ],
+      x: { range: [0, 1.5], label: '시각 [ms]' },
+      y: { range: [-1.2, 1.4], ticks: 'none' },
+      height: 110,
+    },
+    {
+      title: '주파수 지도',
+      series: [{ x: [Math.log10(V.brg.bpfo)], y: [0.6], kind: 'stem', color: 'c1', width: 2.4 }],
+      annotations: [
+        { type: 'band', x1: Math.log10(RING.fn * 0.85), x2: Math.log10(RING.fn * 1.15), color: 'warn', label: '울림이 모이는 곳' },
+        { type: 'text', x: Math.log10(V.brg.bpfo), y: 0.75, text: `되풀이 박자 BPFO ${hz(V.brg.bpfo)} Hz`, anchor: 'middle', color: 'c1' },
+      ],
+      x: { range: [1, 4.3], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4), label: '주파수 [Hz] (로그 눈금)' },
+      y: { range: [0, 1.1], ticks: 'none' },
+      height: 95,
+    },
+  ],
+};
+
+// 그림 8 — 벨트와 1X보다 낮은 줄
+const X8: [number, number] = [0, 30];
+const Y8 = squareYRange(X8, 140);
+const pm = { x: 6.0, y: 2.9, r: 1.0 };
+const pf = { x: 21.5, y: 2.9, r: 2.0 };
+const fanBrg = bearingFrequencies(BEARING_6205, V.fanFr);
+const sub8 = [
+  { f: fanBrg.ftf, h: 0.55, color: 'c4' as const, name: '팬 베어링 FTF' },
+  { f: V.belt, h: 1.0, color: 'c2' as const, name: '벨트' },
+  { f: V.fanFr, h: 0.75, color: 'c3' as const, name: '팬 1X' },
+  { f: 2 * V.belt, h: 0.55, color: 'c2' as const, name: '벨트 × 2' },
+  { f: V.fanMotorFr, h: 1.0, color: 'c1' as const, name: '전동기 1X' },
+];
+export const beltDrive: FigureSpec = {
+  id: 'fig-p1-7-8',
+  caption: `그림 8. 벨트 구동 팬. 위: 지름 ${EXAMPLE.motorPulley} m 풀리가 ${PRESETS.beltFan.rpm} rpm(${hz(V.fanMotorFr)} Hz)으로 돌고, 지름 ${EXAMPLE.fanPulley} m 풀리는 절반 빠르기(${hz(V.fanFr)} Hz)로 돈다. 길이 ${EXAMPLE.beltLength} m 벨트는 1초에 π × ${EXAMPLE.motorPulley} × ${hz(V.fanMotorFr)} ÷ ${EXAMPLE.beltLength} = ${hz(V.belt)}바퀴 돈다. 아래: 전동기 1X(파랑) 아래에 벨트(주황), 팬 축 1X(초록), 팬 베어링 케이지(보라)가 선다 — 모두 1X보다 낮은 줄이다.`,
+  panels: [
+    {
+      frame: false,
+      height: 140,
+      x: { range: X8 },
+      y: { range: Y8 },
+      series: [],
+      annotations: [
+        { type: 'text', x: 13.75, y: Y8[1] - 0.4, text: '벨트 구동 팬', anchor: 'middle', bold: true },
+        { type: 'circle', x: pm.x, y: pm.y, r: pm.r * PX_PER_UNIT, color: 'c1' },
+        { type: 'circle', x: pf.x, y: pf.y, r: pf.r * PX_PER_UNIT, color: 'c3' },
+        { type: 'line', x1: pm.x, y1: pm.y + pm.r, x2: pf.x, y2: pf.y + pf.r, color: 'c2', width: 2.4 },
+        { type: 'line', x1: pm.x, y1: pm.y - pm.r, x2: pf.x, y2: pf.y - pf.r, color: 'c2', width: 2.4 },
+        { type: 'text', x: 13.75, y: 4.75, text: `벨트 길이 ${EXAMPLE.beltLength} m`, anchor: 'middle', color: 'c2' },
+        { type: 'text', x: pm.x, y: 0.3, text: `전동기 풀리 ${EXAMPLE.motorPulley} m`, anchor: 'middle', color: 'c1' },
+        { type: 'text', x: pf.x + 4.6, y: pf.y - 0.1, text: `팬 풀리 ${EXAMPLE.fanPulley} m`, anchor: 'start', color: 'c3' },
+      ],
+    },
+    {
+      title: '1X보다 낮은 줄',
+      series: sub8.map((s) => ({ x: [s.f], y: [s.h], kind: 'stem' as const, color: s.color, width: 3 })),
+      annotations: sub8.map((s): FigAnnotation => ({ type: 'text', x: s.f, y: s.h + 0.1, text: `${s.name} ${formatNumber(s.f, 3)}`, anchor: 'middle', color: s.color })),
+      x: { range: [0, 35], ticks: [0, 5, 10, 15, 20, 25, 30, 35], label: '주파수 [Hz]' },
+      y: { range: [0, 1.3], ticks: 'none' },
+      height: 120,
+    },
+  ],
+};
+
+// 그림 9 — 기동하면서 움직이는 줄과 제자리 줄 (전동기-펌프)
+const rpmTop = PRESETS.motorPump.rpm;
+const rays = [
+  { k: 1, color: 'c1' as const, name: '1X' },
+  { k: 2, color: 'c3' as const, name: '2X' },
+  { k: 7, color: 'c4' as const, name: '날개 통과 7X' },
+];
+export const runUpMap: FigureSpec = {
+  id: 'fig-p1-7-9',
+  caption: `그림 9. 전동기-펌프(날개 7개)를 0에서 ${rpmTop} rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = ${V.twoFL} Hz(회색 점선)와 받침대 고유진동수 ${EXAMPLE.structureNatural} Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 ${formatNumber(V.crossBp, 3)} rpm, 2X ${formatNumber(V.cross2X, 4)} rpm)에서 그 고유진동수를 지나간다 — P1-6의 임계속도와 같은 일이다. 운전 회전수에서 2X(${hz((2 * rpmTop) / 60)} Hz)와 2 f_L(${V.twoFL} Hz)은 거의 겹친다.`,
+  panels: [
+    {
+      series: rays.map((ray) => ({ x: [0, (ray.k * rpmTop) / 60], y: [0, rpmTop], color: ray.color, width: 2.4 })),
+      annotations: [
+        { type: 'vline', x: V.twoFL, color: 'muted', dash: true },
+        { type: 'vline', x: EXAMPLE.structureNatural, color: 'warn', dash: true },
+        { type: 'hline', y: rpmTop, color: 'muted', dash: true, label: `운전 ${rpmTop} rpm`, labelAt: 'start', labelBelow: true },
+        { type: 'point', x: EXAMPLE.structureNatural, y: V.crossBp, color: 'warn' },
+        { type: 'text', x: EXAMPLE.structureNatural, y: V.crossBp, text: `${formatNumber(V.crossBp, 3)} rpm`, anchor: 'end', color: 'warn', dx: -6, dy: -10 },
+        { type: 'point', x: EXAMPLE.structureNatural, y: V.cross2X, color: 'warn' },
+        { type: 'text', x: EXAMPLE.structureNatural, y: V.cross2X, text: `${formatNumber(V.cross2X, 4)} rpm`, anchor: 'end', color: 'warn', dx: -6, dy: -10 },
+        { type: 'text', x: EXAMPLE.structureNatural, y: rpmTop + 260, text: `받침대 ${EXAMPLE.structureNatural} Hz`, anchor: 'end', color: 'warn', dx: -4 },
+        { type: 'text', x: V.twoFL, y: rpmTop + 260, text: `2 f_L ${V.twoFL} Hz`, anchor: 'start', color: 'muted', dx: 4 },
+        { type: 'text', x: 50, y: 3000, text: '1X', anchor: 'end', color: 'c1', dx: -6 },
+        { type: 'text', x: 100, y: 3000, text: '2X', anchor: 'start', color: 'c3', dx: 6 },
+        { type: 'text', x: (7 * 2600) / 60, y: 2600, text: '날개 통과 7X', anchor: 'end', color: 'c4', dx: -4, dy: -10 },
+      ],
+      x: { range: [0, 450], ticks: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450], label: '주파수 [Hz]' },
+      y: { range: [0, rpmTop + 450], ticks: [0, 1000, 2000, 3000], label: '회전수 [rpm]' },
+      height: 210,
+    },
+  ],
+};
+
+// 그림 10 — 관심 주파수 구간 지도 (전동기-펌프, LAB-FMAP-01 처음 상태)
+const pump = PRESETS.motorPump;
+const map10 = buildMap('motorPump', { rpm: pump.rpm, count: pump.count, balls: pump.balls ?? 9 });
+const L = Math.log10;
+const nRows = map10.rows.length;
+const rowY = (i: number) => nRows - i;
+const zoneLabels = map10.zones.map((z): FigAnnotation => ({ type: 'text', x: (L(z.f1) + L(z.f2)) / 2, y: nRows + 0.75, text: z.label, anchor: 'middle', color: 'muted', bold: true }));
+const SHORT: Record<string, string> = { '케이지 FTF': 'FTF', '외륜 BPFO': 'BPFO', '내륜 BPFI': 'BPFI', '볼 자전 BSF': 'BSF', };
+const laneAnnotations: FigAnnotation[] = map10.rows.flatMap((row, i) => [
+  { type: 'text', x: L(MAP_RANGE[0]) + 0.04, y: rowY(i) - 0.1, text: row.element, anchor: 'start', bold: true } as FigAnnotation,
+  ...row.bands.map((b): FigAnnotation => ({ type: 'rect', x1: L(b.f1), x2: L(b.f2), y1: rowY(i) - 0.25, y2: rowY(i) + 0.25, color: 'warn', label: b.label })),
+  ...row.lines.flatMap((line): FigAnnotation[] => [
+    { type: 'line', x1: L(line.f), y1: rowY(i) - 0.28, x2: L(line.f), y2: rowY(i) + 0.28, color: line.kind === 'rotating' ? 'c1' : 'warn', dash: line.kind === 'fixed', width: 2.6 },
+    { type: 'text', x: L(line.f), y: rowY(i) + 0.36, text: SHORT[line.label] ?? line.label, anchor: 'middle', color: line.kind === 'rotating' ? 'c1' : 'warn' },
+  ]),
+]);
+export const interestMap: FigureSpec = {
+  id: 'fig-p1-7-10',
+  caption: `그림 10. 전동기-펌프(${pump.rpm} rpm, 1X = ${hz(map10.fr)} Hz, 날개 ${pump.count}개, 볼 ${pump.balls}개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(${hz(map10.fr)} ~ ${hz(10 * map10.fr)} Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 ${hz(map10.highest)} Hz다.`,
+  panels: [
+    {
+      series: [],
+      annotations: [
+        { type: 'band', x1: L(map10.zones[0].f1), x2: L(map10.zones[0].f2), color: 'muted' },
+        { type: 'band', x1: L(map10.zones[2].f1), x2: L(map10.zones[2].f2), color: 'muted' },
+        ...zoneLabels,
+        ...laneAnnotations,
+      ],
+      x: { range: [L(MAP_RANGE[0]), L(MAP_RANGE[1])], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4), label: '주파수 [Hz] (로그 눈금)' },
+      y: { range: [0.35, nRows + 1.05], ticks: 'none' },
+      height: 250,
+    },
+  ],
 };

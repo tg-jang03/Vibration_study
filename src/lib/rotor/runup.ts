@@ -1,5 +1,5 @@
 /**
- * 1자유도 불평형 런업 데이터와 Bode/Polar·Half-power AF·분리여유 (P4-1, LAB-AF-01).
+ * 1자유도 불평형 런업 데이터와 Bode/Polar·Half-power AF·분리여유 (P5-2, LAB-AF-01).
  * 순수 함수만 둔다 (AGENTS §6). 진폭은 변위 Peak [m], 위상은 지연각 [rad] (Contents §3 위상 관례).
  * 1X 벡터 = A e^{-jφ}. 표시(µm pp, °, rpm)는 UI에서만 바꾼다 (D-012).
  */
@@ -32,7 +32,7 @@ export interface RunUpOptions {
   rpmStep: number;
   /** 측정 잡음: 1X 벡터의 실수·허수 성분마다 더하는 정규분포 표준편차 [m] */
   noise?: number;
-  /** 런아웃 벡터 (회전수와 무관하게 더해짐, P2-2·P2-3) */
+  /** 런아웃 벡터 (회전수와 무관하게 더해짐, P3-2·P3-3) */
   runout?: { amp: number; lag: number };
   seed?: number;
 }
@@ -109,7 +109,7 @@ export function simulateRunUp(rotor: UnbalanceRotor, options: RunUpOptions): Run
   });
 }
 
-/** Slow roll 보상: 모든 점에서 기준 회전수(가장 가까운 측정점)의 벡터를 복소수로 뺀다 (P2-3 §5) */
+/** Slow roll 보상: 모든 점에서 기준 회전수(가장 가까운 측정점)의 벡터를 복소수로 뺀다 (P3-3 §5) */
 export function compensateSlowRoll(points: readonly RunUpPoint[], slowRollRpm: number): { reference: RunUpPoint; points: RunUpPoint[] } {
   if (points.length === 0) throw new RangeError('points must not be empty');
   let ref = points[0];
@@ -186,7 +186,7 @@ export function separationMargin(operatingRpm: number, criticalRpm: number): num
   return (Math.abs(operatingRpm - criticalRpm) / operatingRpm) * 100;
 }
 
-/** P4-1 본문 그림과 LAB-AF-01이 함께 쓰는 예시 로터 (교육용 값, 실제 기계 자료 아님) */
+/** P5-2 본문 그림과 LAB-AF-01이 함께 쓰는 예시 로터 (교육용 값, 실제 기계 자료 아님) */
 export const P41_EXAMPLE = {
   rotor: { naturalRpm: 3000, zeta: 0.05, eccentricity: 5e-6 } as UnbalanceRotor,
   operatingRpm: 3600,

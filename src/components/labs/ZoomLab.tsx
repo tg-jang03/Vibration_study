@@ -11,7 +11,7 @@ import type { SignalSpec } from '../../lib/dsp/signal';
 import type { WindowType } from '../../lib/dsp/window';
 
 /**
- * LAB-ZOOM-01 Zoom FFT (P1-3, Contents §5-1).
+ * LAB-ZOOM-01 Zoom FFT (P2-4, Contents §5-1).
  *
  * 목적:
  * 광대역 신호에서 관심 있는 좁은 대역(예: 기어 물림 GMF 주변의 미세 측대역)을

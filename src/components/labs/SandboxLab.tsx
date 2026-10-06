@@ -13,8 +13,8 @@ import {
 } from '../../lib/sandbox';
 
 /**
- * LAB-SBX-01 Signal Lab 샌드박스 (P1-8 §6, /lab/sbx-01/, Contents §5-1).
- * 기계 신호를 직접 만들고 Part 1의 설정을 모두 바꿔 가며, 성분마다 "지금 설정으로 보이는가"를 판정한다.
+ * LAB-SBX-01 Signal Lab 샌드박스 (P2-9 §6, /lab/sbx-01/, Contents §5-1).
+ * 기계 신호를 직접 만들고 Part 2의 설정을 모두 바꿔 가며, 성분마다 "지금 설정으로 보이는가"를 판정한다.
  * 목적을 고르면 설정 도우미가 출발점 설정과 이유를 채운다 (예시값, I-014). 계산: src/lib/sandbox.ts (그림과 같은 엔진).
  */
 
@@ -101,7 +101,7 @@ export default function SandboxLab({ initialPurpose = 'custom' }: SandboxLabProp
         <ParamSelect label="F_max" value={settings.fmax} options={FMAX_OPTIONS.map((f) => ({ value: f, label: `${f} Hz (f_s ${formatNumber(2.56 * f, 5)} Hz)` }))} onChange={(v) => setS({ fmax: v })} />
         <ParamSelect label="라인 수" value={settings.lor} options={LOR_OPTIONS.map((l) => ({ value: l, label: `${l} 라인 (Δf ${formatNumber(settings.fmax / l, 3)} Hz)` }))} onChange={(v) => setS({ lor: v })} />
         <ParamSelect label="윈도우" value={settings.window} options={WINDOWS} onChange={(v) => setS({ window: v })} />
-        <ParamToggle label="AAF (안티에일리어싱 필터)" checked={settings.aaf} onChange={(v) => setS({ aaf: v })} hint="끄면 F_max 위 성분이 접혀 들어옵니다 (P1-2)" />
+        <ParamToggle label="AAF (안티에일리어싱 필터)" checked={settings.aaf} onChange={(v) => setS({ aaf: v })} hint="끄면 F_max 위 성분이 접혀 들어옵니다 (P2-3)" />
         <ParamSelect label="평균" value={settings.average} options={AVERAGES} onChange={(v) => setS({ average: v })} />
         <ParamSlider label="평균 횟수 M" value={settings.count} min={1} max={32} step={1} disabled={settings.average === 'none'} onChange={(v) => setS({ count: v })} />
         <ParamSelect label="오버랩" value={settings.overlap} options={[{ value: 0, label: '0 %' }, { value: 0.5, label: '50 %' }, { value: 0.75, label: '75 %' }]} onChange={(v) => setS({ overlap: v })} />
@@ -112,9 +112,9 @@ export default function SandboxLab({ initialPurpose = 'custom' }: SandboxLabProp
         <ParamSlider label="회전수" value={machine.rpm} min={600} max={6000} step={30} unit="rpm" format={(v) => `${v} (1X ${formatNumber(v / 60, 4)} Hz)`} onChange={(v) => setM({ rpm: v })} />
         <ParamSlider label="1X 크기" value={machine.x1 * 1000} min={0} max={8} step={0.1} unit="mm/s Peak" format={(v) => v.toFixed(1)} onChange={(v) => setM({ x1: v / 1000 })} />
         <ParamSlider label="2X · 3X 크기" value={machine.x2 * 1000} min={0} max={3} step={0.1} unit="mm/s Peak" format={(v) => `${v.toFixed(1)} · ${(v * 5 / 12).toFixed(2)}`} onChange={(v) => setM({ x2: v / 1000, x3: (v / 1000) * 5 / 12 })} />
-        <ParamSlider label="0.45X 크기" value={machine.sub * 1000} min={0} max={2} step={0.05} unit="mm/s Peak" format={(v) => v.toFixed(2)} onChange={(v) => setM({ sub: v / 1000 })} hint="1X보다 낮은 성분. 미끄럼 베어링 유막의 불안정에서 생길 수 있다 (Part 6)" />
+        <ParamSlider label="0.45X 크기" value={machine.sub * 1000} min={0} max={2} step={0.05} unit="mm/s Peak" format={(v) => v.toFixed(2)} onChange={(v) => setM({ sub: v / 1000 })} hint="1X보다 낮은 성분. 미끄럼 베어링 유막의 불안정에서 생길 수 있다 (Part 7)" />
         <ParamSlider label="기어 맞물림 크기 (15X)" value={machine.gear * 1000} min={0} max={2} step={0.05} unit="mm/s Peak" format={(v) => v.toFixed(2)} onChange={(v) => setM({ gear: v / 1000 })} />
-        <ParamSlider label="축 B가 맞물림을 흔드는 정도 m" value={machine.gearM} min={0} max={0.8} step={0.05} format={(v) => v.toFixed(2)} onChange={(v) => setM({ gearM: v })} hint={`측대역 간격 = 축 B 회전 주파수 ${formatNumber(f1 / 4, 4)} Hz (P1-7)`} />
+        <ParamSlider label="축 B가 맞물림을 흔드는 정도 m" value={machine.gearM} min={0} max={0.8} step={0.05} format={(v) => v.toFixed(2)} onChange={(v) => setM({ gearM: v })} hint={`측대역 간격 = 축 B 회전 주파수 ${formatNumber(f1 / 4, 4)} Hz (P2-8)`} />
         <ParamSlider label="구름베어링형 충격 크기" value={machine.bearing * 1000} min={0} max={5} step={0.1} unit="mm/s" format={(v) => v.toFixed(1)} onChange={(v) => setM({ bearing: v / 1000 })} hint="한 바퀴에 3.26번 '딱', 3 kHz로 울림" />
         <ParamSlider label="잡음 크기 (기본 = 1)" value={noiseScale} min={0} max={5} step={0.1} format={(v) => v.toFixed(1)} onChange={setNoiseScale} />
       </>}
@@ -127,7 +127,7 @@ export default function SandboxLab({ initialPurpose = 'custom' }: SandboxLabProp
             <ol>{recipe.reasons.map((r) => <li key={r}>{r}</li>)}</ol>
           </div>
         ) : (
-          <p>판정 기준: 이웃 성분과 {MIN_SEPARATION[settings.window]} bin 이상 떨어져야 "갈라짐"(지금 윈도우, P1-3), 주변 바닥보다 6 dB 이상 높아야 "보임".</p>
+          <p>판정 기준: 이웃 성분과 {MIN_SEPARATION[settings.window]} bin 이상 떨어져야 "갈라짐"(지금 윈도우, P2-4), 주변 바닥보다 6 dB 이상 높아야 "보임".</p>
         )}
       </>}
       readouts={<>
@@ -162,11 +162,11 @@ export default function SandboxLab({ initialPurpose = 'custom' }: SandboxLabProp
         { question: '"0.4 ~ 0.5X 성분 확인" 시나리오: 0.45X가 정확히 몇 Hz인지 0.25 Hz 단위로 읽으려면 F_max·라인 수를 어떻게 정할까요? 회전수를 6000 rpm으로 올리면?',
           answer: '3000 rpm이면 0.45X = 22.5 Hz. F_max 200 Hz, 800 라인이면 Δf 0.25 Hz, T 4 s입니다(도우미 설정). 6000 rpm이면 1X 100 Hz, 0.45X 45 Hz로 올라가 F_max 500 Hz가 필요합니다. 0.25 Hz 단위로 읽으려면 2000 라인이 필요하므로 3200 라인(Δf 0.16 Hz, T 6.4 s)을 고릅니다. T가 길어지는 만큼 회전수가 일정해야 합니다.' },
         { question: '"밸런싱 전 1X 측정": 회전수를 2970 rpm으로 바꾸고 윈도우를 Hann ↔ Flat top으로 바꾸면 1X 읽음값이 어떻게 다른가요?',
-          answer: '2970 rpm이면 1X = 49.5 Hz로 bin 사이에 와서, Hann은 약 10 % 낮게 읽습니다(가리비 손실, P1-4). Flat top은 0.1 % 안쪽으로 정확합니다(1X 4 mm/s Peak → 약 2.83 mm/s RMS).' },
+          answer: '2970 rpm이면 1X = 49.5 Hz로 bin 사이에 와서, Hann은 약 10 % 낮게 읽습니다(가리비 손실, P2-5). Flat top은 0.1 % 안쪽으로 정확합니다(1X 4 mm/s Peak → 약 2.83 mm/s RMS).' },
         { question: '"구름베어링 충격" 시나리오: F_max 2000 Hz에서 울림이 보이나요? F_max 1000 Hz에서 AAF를 끄면 어디에 무엇이 생기나요?',
           answer: 'F_max 2000 Hz에서는 3 kHz 울림이 "F_max 밖"입니다. 5000 Hz로 올리면 보입니다. F_max 1000 Hz(f_s 2560 Hz)에서 AAF를 끄면 3000 Hz가 2560 − 3000 → 440 Hz 근처로 접혀 들어와 가짜 막대가 섭니다.' },
         { question: '잡음 크기를 4로 올리면 어떤 성분부터 "바닥에 묻힘"이 되나요? 평균 횟수를 늘리면 다시 보이나요?',
-          answer: '작은 성분(0.45X, 측대역, 울림 대역)부터 묻힙니다. 파워 평균은 바닥의 흔들림만 줄이고 높이는 낮추지 않으므로(P1-5), 바닥보다 작아진 성분은 평균을 늘려도 다시 보이지 않습니다. 라인 수를 늘려 bin 하나의 잡음을 줄이는 편(P1-6)이 효과가 있습니다.' },
+          answer: '작은 성분(0.45X, 측대역, 울림 대역)부터 묻힙니다. 파워 평균은 바닥의 흔들림만 줄이고 높이는 낮추지 않으므로(P2-6), 바닥보다 작아진 성분은 평균을 늘려도 다시 보이지 않습니다. 라인 수를 늘려 bin 하나의 잡음을 줄이는 편(P2-7)이 효과가 있습니다.' },
       ]}
       footer={<p>기계: 축 A {MACHINE_CONST.teethA}개 이빨 기어(맞물림 = 15X), 축 B {MACHINE_CONST.teethB}개(회전 1X/4), 충격은 한 바퀴에 {MACHINE_CONST.bearingOrder}번. 잡음은 1 Hz당 크기(PSD)가 고정이라 F_max를 바꿔도 바닥 밀도는 같습니다. 판정은 학습용 단순 규칙입니다 (이웃 {MIN_SEPARATION.hann} bin·바닥 +6 dB, Hann 기준).</p>}
     >

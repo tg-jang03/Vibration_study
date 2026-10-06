@@ -15,8 +15,8 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import { createWindow, type WindowType } from '../../lib/dsp/window';
 
 /**
- * LAB-AVG-01 평균화 (P1-5, Contents §5-1).
- * 본문 그림(src/figures/p1-5.ts)과 같은 신호·시드를 쓴다: 32 Hz 0.025 mm/s Peak(잡음 바닥보다 작음),
+ * LAB-AVG-01 평균화 (P2-6, Contents §5-1).
+ * 본문 그림(src/figures/p2-6.ts)과 같은 신호·시드를 쓴다: 32 Hz 0.025 mm/s Peak(잡음 바닥보다 작음),
  * 70 Hz 0.07 mm/s Peak(바닥보다 조금 큼), 백색 잡음. 페이지의 절마다 다른 시작 상태로 놓을 수 있다.
  */
 

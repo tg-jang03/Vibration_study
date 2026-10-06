@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SOURCES, RING_DECAY, RING_RATE, SOURCE_PHASES, sourceFrequencies, synthesizeSources } from './sourceSynthesis';
 
-describe('P0-8 source synthesis', () => {
-  it('reuses the P0-7 frequency map: 3000 rpm, 12 blades → 50 / 100 / 600 Hz', () => {
+describe('P1-8 source synthesis', () => {
+  it('reuses the P1-7 frequency map: 3000 rpm, 12 blades → 50 / 100 / 600 Hz', () => {
     expect(sourceFrequencies(50, 12)).toEqual({ oneX: 50, twoX: 100, blade: 600, ring: 85 });
     expect(sourceFrequencies(60, 12)).toEqual({ oneX: 60, twoX: 120, blade: 720, ring: 85 });
   });

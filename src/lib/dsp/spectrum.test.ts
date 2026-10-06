@@ -196,8 +196,8 @@ describe('singleSidedSpectrum', () => {
 });
 
 
-// P1-1 그림 8·9, LAB-FOU-01 (c)의 본문 주장 (D-026): 제로패딩은 분해능을 올리지 않는다
-describe('제로패딩과 측정 시간 (P1-1 §4)', () => {
+// P2-2 그림 8·9, LAB-FOU-01 (c)의 본문 주장 (D-026): 제로패딩은 분해능을 올리지 않는다
+describe('제로패딩과 측정 시간 (P2-2 §4)', () => {
   const FS = 32;
   /** 구간 안 극댓값 중 최댓값의 50 % 이상인 봉우리 위치 */
   const peaksIn = (freq: Float64Array, amp: Float64Array, lo: number, hi: number) => {

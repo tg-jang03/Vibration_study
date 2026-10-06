@@ -9,7 +9,7 @@ import { texNumber } from '../../lib/format';
 import { crestFactor, peak, rms } from '../../lib/dsp/stats';
 
 /**
- * LAB-BAS-02 진폭을 숫자 하나로: Peak · Pk-Pk · RMS · Crest factor (P1-0)
+ * LAB-BAS-02 진폭을 숫자 하나로: Peak · Pk-Pk · RMS · Crest factor (P2-1)
  * 네 신호 모두 꼭대기 높이(Peak)를 1로 맞춘 뒤 크기 배율을 곱한다 → Peak가 같아도 RMS는 다르다.
  */
 

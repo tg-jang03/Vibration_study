@@ -1,5 +1,5 @@
 /**
- * 도식 그림 예시 (개발용, /dev/figures/ 갤러리 전용). Part 0 질량-스프링 그림을 그릴 때 따라 쓰는 견본이다.
+ * 도식 그림 예시 (개발용, /dev/figures/ 갤러리 전용). Part 1 질량-스프링 그림을 그릴 때 따라 쓰는 견본이다.
  * - 도식 패널: frame: false + squareYRange로 x·y 축척을 같게 → 원은 원으로, 정사각형은 정사각형으로 보인다.
  * - 도형: ground(벽·바닥) · spring · damper · rect(질량) · arrow(힘·변위) · line(기준선) · circle(원판) · point · text.
  * - 실제 페이지 그림의 응답 데이터는 lib/mck(M2.1)로 계산한다. 여기서는 견본이라 감쇠 자유진동 식을 직접 쓴다.

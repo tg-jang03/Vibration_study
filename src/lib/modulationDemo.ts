@@ -1,5 +1,5 @@
 /**
- * P1-7 그림과 랩(LAB-MOD-01)이 같이 쓰는 신호와 계산 (PageGuide §6-4: 그림 = 랩 숫자).
+ * P2-8 그림과 랩(LAB-MOD-01)이 같이 쓰는 신호와 계산 (PageGuide §6-4: 그림 = 랩 숫자).
  * 속도 진동 [m/s], 표시할 때 mm/s Peak로 바꾼다 (D-012). f_s = 1024 Hz, 측정 시간 T [s] → N = 1024·T, Δf = 1/T.
  */
 import { acquire } from './dsp/sampling';

@@ -11,8 +11,8 @@ import { texNumber } from '../../lib/format';
 import { simulateRunUp, SR_ROTOR, toDeg, toRad, type AmpLag, type CompensationMode } from '../../lib/phase';
 
 /**
- * LAB-SRO-01 Slow roll 보상: 런아웃이 섞인 런업 Bode·Polar와 보상 전후 (P2-3, Contents §5-1).
- * 예시 로터(P2-2와 같다: 임계 2000 rpm, ζ 0.1, 운전 3600 rpm에서 불평형 응답 45 µm pp) + 회전수와 무관한 런아웃 1X 벡터.
+ * LAB-SRO-01 Slow roll 보상: 런아웃이 섞인 런업 Bode·Polar와 보상 전후 (P3-3, Contents §5-1).
+ * 예시 로터(P3-2와 같다: 임계 2000 rpm, ζ 0.1, 운전 3600 rpm에서 불평형 응답 45 µm pp) + 회전수와 무관한 런아웃 1X 벡터.
  * 계산: src/lib/phase.ts (본문 그림 6 ~ 8과 같은 모델).
  */
 
@@ -138,7 +138,7 @@ export default function SlowRollLab({ initialSlowRollRpm = 300, initialMode = 'v
         { question: '런아웃 위상을 170°로, 그다음 350°로 바꾸면 3600 rpm의 측정값은 몇 µm pp인가요?',
           answer: '170°에서는 약 60 µm pp, 350°에서는 약 30 µm pp입니다. 참 응답(45 µm pp∠171°)과 같은 쪽을 향하면 15 µm pp가 그대로 더해지고, 반대쪽이면 그대로 빠집니다. 런아웃은 위상에 따라 진동을 크게도 작게도 보이게 합니다.' },
       ]}
-      footer={<p>예시 로터는 P2-2와 같습니다 (임계속도 {SR_ROTOR.criticalRpm} rpm, 감쇠비 {SR_ROTOR.zeta}, 운전 {SR_ROTOR.operatingRpm} rpm에서 불평형 응답 45 µm pp). 참값의 위상은 불평형 응답의 위상 지연 그대로입니다 (키페이저·센서·무거운 점의 각도가 더하는 일정한 값은 0으로 둠). 보상 곡선은 Slow roll 회전수보다 위에서만 그립니다.</p>}
+      footer={<p>예시 로터는 P3-2와 같습니다 (임계속도 {SR_ROTOR.criticalRpm} rpm, 감쇠비 {SR_ROTOR.zeta}, 운전 {SR_ROTOR.operatingRpm} rpm에서 불평형 응답 45 µm pp). 참값의 위상은 불평형 응답의 위상 지연 그대로입니다 (키페이저·센서·무거운 점의 각도가 더하는 일정한 값은 0으로 둠). 보상 곡선은 Slow roll 회전수보다 위에서만 그립니다.</p>}
     >
       <h4>Bode: 1X 진폭</h4>
       <Plot series={ampSeries} x={{ label: '회전수 [rpm]', range: [0, 4000] }} y={{ label: '[µm pp]', range: [0, 220] }} height={230} ariaLabel="런업 1X 진폭: 측정, 보상, 참값" />

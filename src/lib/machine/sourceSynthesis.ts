@@ -1,4 +1,4 @@
-/** P0-8: 센서 한 위치의 선형 응답 합. 힘·결함 심각도를 추정하는 모델은 아니다. */
+/** P1-8: 센서 한 위치의 선형 응답 합. 힘·결함 심각도를 추정하는 모델은 아니다. */
 import { acquire } from '../dsp/sampling';
 import { type SignalSpec } from '../dsp/signal';
 import { singleSidedSpectrum } from '../dsp/spectrum';

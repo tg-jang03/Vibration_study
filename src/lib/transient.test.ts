@@ -3,7 +3,7 @@ import { cascadeLines, countIn, runupResponse, runupRpm, runupTimeAt, RUNUP_ROTO
 
 const um = (m: number) => m * 1e6;
 
-describe('예시 기동 프로파일과 응답 (P2-5)', () => {
+describe('예시 기동 프로파일과 응답 (P3-5)', () => {
   it('300 → 1500 rpm (10 rpm/s), 임계 구간 1500 → 2500 (20 rpm/s), 3600 rpm에 320 s', () => {
     expect(runupRpm(0)).toBe(300);
     expect(runupRpm(120)).toBeCloseTo(1500, 9);

@@ -9,7 +9,7 @@ import { texNumber } from '../../lib/format';
 import { acquire } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 
-/** LAB-FOU-01 (c) 제로패딩 vs 측정 시간 — 제로패딩은 분해능을 올리지 않는다 (P1-1) */
+/** LAB-FOU-01 (c) 제로패딩 vs 측정 시간 — 제로패딩은 분해능을 올리지 않는다 (P2-2) */
 
 const FS = 32; // Hz
 const F1 = 8.3; // Hz (bin 중심에서 벗어나게)
@@ -99,7 +99,7 @@ export default function ZeroPaddingLab() {
         {
           question: '패딩은 그대로 두고 N을 128로(측정 시간 4초) 바꾸면?',
           answer:
-            '두 봉우리로 갈라지고 위치도 8.3·8.8 Hz 가까이로 옵니다. 톤 하나가 만드는 둔덕의 폭(약 2/T)이 T가 길어질수록 좁아지기 때문입니다. "가까운 성분을 가르려면 오래 잰다" (P1-3).',
+            '두 봉우리로 갈라지고 위치도 8.3·8.8 Hz 가까이로 옵니다. 톤 하나가 만드는 둔덕의 폭(약 2/T)이 T가 길어질수록 좁아지기 때문입니다. "가까운 성분을 가르려면 오래 잰다" (P2-4).',
         },
         {
           question: '이번엔 Δ = 1 Hz, N = 32, 제로패딩 ×16으로 두세요. 두 봉우리처럼 보이나요? 봉우리 위치는 실제 톤 위치(점선)와 맞나요?',

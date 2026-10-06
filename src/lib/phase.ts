@@ -1,8 +1,8 @@
 /**
- * 키페이저 · 위상 · 1X 벡터 (P2-3, LAB-PHS-01 · LAB-SRO-01). 순수 함수, 각도는 rad, 길이는 m (D-012).
+ * 키페이저 · 위상 · 1X 벡터 (P3-3, LAB-PHS-01 · LAB-SRO-01). 순수 함수, 각도는 rad, 길이는 m (D-012).
  * 위상 관례 (Contents §3, D-034): 지연각 φ (0 ≤ φ < 2π) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각.
  * 1X 신호 x(θ) = A cos(θ − φ) (축이 센서 쪽으로 오면 +), 1X 벡터 V = A e^{−jφ}.
- * 키페이저 펄스는 P2-2의 교정 곡선(`proximity.ts`)으로, 회전수에 따른 응답은 `lib/mck`의 불평형 응답으로 만든다.
+ * 키페이저 펄스는 P3-2의 교정 곡선(`proximity.ts`)으로, 회전수에 따른 응답은 `lib/mck`의 불평형 응답으로 만든다.
  */
 import { unbalanceResponseFactor } from './mck';
 import { gapVoltage, ROTOR } from './proximity';
@@ -68,9 +68,9 @@ export function delayFromLag(lag: number, fr: number): number {
 }
 
 /**
- * 위상 관례 (P2-3 §3). 같은 1X 신호 A cos(θ − φ)를 장비마다 다른 숫자로 적는다.
+ * 위상 관례 (P3-3 §3). 같은 1X 신호 A cos(θ − φ)를 장비마다 다른 숫자로 적는다.
  * - lag: 키페이저 → 다음 양의 피크까지 지연 (0 ~ 2π) — 이 사이트의 기준
- * - lead: cos 기준 앞섬각 ψ, x = A cos(θ + ψ) (−π ~ π) — FFT 분석기의 위상 (P1-1)
+ * - lead: cos 기준 앞섬각 ψ, x = A cos(θ + ψ) (−π ~ π) — FFT 분석기의 위상 (P2-2)
  * - zeroCross: 키페이저 → 다음 위로 지나는 영점까지 지연 (0 ~ 2π) — 영점 기준 (피크보다 1/4 바퀴 앞)
  */
 export type PhaseConvention = 'lag' | 'lead' | 'zeroCross';
@@ -83,7 +83,7 @@ export function phaseInConvention(lag: number, convention: PhaseConvention): num
 
 /**
  * 동기 DFT: 키페이저 펄스에서 시작해 한 바퀴에 samplesPerRev점씩 정수 바퀴를 담은 샘플열의 n차 성분.
- * X = (2/N) Σ x[i] e^{−j 2π n i / samplesPerRev} — x = A cos(nθ − φ)이면 X = A e^{−jφ} (단일측 진폭, P1-1).
+ * X = (2/N) Σ x[i] e^{−j 2π n i / samplesPerRev} — x = A cos(nθ − φ)이면 X = A e^{−jφ} (단일측 진폭, P2-2).
  */
 export function orderVector(x: ArrayLike<number>, samplesPerRev: number, order = 1): Complex {
   const revs = Math.floor(x.length / samplesPerRev);
@@ -166,7 +166,7 @@ export function highestPeakAngle(f: (theta: number) => number, samples = 7200): 
 
 // ── 런업과 Slow roll 보상 ──
 
-/** 예시 로터 (P2-2와 같다): 임계 2000 rpm, ζ 0.1, 운전 3600 rpm */
+/** 예시 로터 (P3-2와 같다): 임계 2000 rpm, ζ 0.1, 운전 3600 rpm */
 export const SR_ROTOR = ROTOR;
 
 /**

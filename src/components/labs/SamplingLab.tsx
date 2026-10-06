@@ -11,7 +11,7 @@ import { acquire, aliasComponent } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 
 /**
- * LAB-SMP-01 샘플링 & 에일리어싱 (P1-2, Contents §5-1).
+ * LAB-SMP-01 샘플링 & 에일리어싱 (P2-3, Contents §5-1).
  *
  * 목적:
  * fs가 신호 주파수의 2배보다 작으면(f > fs/2) 다른 주파수로 접혀 보인다는 것을

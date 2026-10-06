@@ -20,7 +20,7 @@ export interface LabRef {
   pageTitle: string;
   /** 랩 바로 앞의 제목 (수식 기호는 지운 글자) */
   heading?: string;
-  /** /p1-4/#… (withBase 전) */
+  /** /p2-5/#… (withBase 전) */
   href: string;
 }
 

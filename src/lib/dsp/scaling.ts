@@ -3,8 +3,8 @@ import type { Samples } from './sampling';
 import { createWindow, windowProperties, type WindowType } from './window';
 
 /**
- * 스펙트럼의 세로축 스케일링 (P1-6, Contents §3 "파워 스펙트럼", "PSD").
- * - 파워 PS_k [SI²]: 정현파 성분이 bin 중심에 있으면 그 bin 값이 성분의 RMS² (ACF 기준, P1-4).
+ * 스펙트럼의 세로축 스케일링 (P2-7, Contents §3 "파워 스펙트럼", "PSD").
+ * - 파워 PS_k [SI²]: 정현파 성분이 bin 중심에 있으면 그 bin 값이 성분의 RMS² (ACF 기준, P2-5).
  * - PSD_k [SI²/Hz] = PS_k / (ENBW · Δf): bin 하나가 실제로 모으는 폭(ENBW·Δf)으로 나눠 Δf와 무관하게 만든 값.
  * - 대역 RMS = √(Σ PS_k / ENBW) = √(Σ PSD_k · Δf): 윈도우가 이웃 bin에 나눠 담은 몫을 ENBW로 되돌린다.
  * 제로패딩은 다루지 않는다 (Δf = f_s / N).

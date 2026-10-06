@@ -11,7 +11,7 @@ import { crestFactor, peak, rms } from '../../lib/dsp/stats';
 import { IMPACT, impactComponents, MACHINE, machineComponents } from '../../lib/scalingDemo';
 
 /**
- * LAB-SPC-02 진폭 표기 · dB (P1-6 §5, §7, Contents §5-1).
+ * LAB-SPC-02 진폭 표기 · dB (P2-7 §5, §7, Contents §5-1).
  * (1) 충격이 섞인 가속도: 진짜 Peak vs √2 × RMS(derived peak). (2) 기계 속도 신호: 선형 축에서 안 보이는 작은 성분을 dB로.
  * 본문 그림 5·7과 같은 신호(src/lib/scalingDemo.ts).
  */

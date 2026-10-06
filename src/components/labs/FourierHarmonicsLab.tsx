@@ -12,7 +12,7 @@ import { createRng } from '../../lib/dsp/random';
 import { acquire } from '../../lib/dsp/sampling';
 import { crestFactor, peak, rms } from '../../lib/dsp/stats';
 
-/** LAB-FOU-01 (a) 하모닉 쌓기 — 신호는 정현파의 합 (P1-1, Contents §5-1) */
+/** LAB-FOU-01 (a) 하모닉 쌓기 — 신호는 정현파의 합 (P2-2, Contents §5-1) */
 
 const F0 = 10; // Hz
 const FS = 6000; // Hz, 화면용 (15차 150 Hz까지 충분)
@@ -220,7 +220,7 @@ export default function FourierHarmonicsLab() {
         {
           question: '사각파에서 "위상 섞기"를 켜면 진폭 스펙트럼, RMS, 파형, Crest factor 중 무엇이 바뀔까요?',
           answer:
-            '진폭 스펙트럼과 RMS는 그대로입니다(RMS는 진폭만으로 정해진다 — Parseval). 파형 모양과 Crest factor는 바뀝니다. 진폭 스펙트럼만 보면 이 차이를 놓치므로 시간파형도 함께 봐야 합니다 (P5-1).',
+            '진폭 스펙트럼과 RMS는 그대로입니다(RMS는 진폭만으로 정해진다 — Parseval). 파형 모양과 Crest factor는 바뀝니다. 진폭 스펙트럼만 보면 이 차이를 놓치므로 시간파형도 함께 봐야 합니다 (P6-1).',
         },
         {
           question: '사각파에는 왜 짝수 하모닉이 없을까요? 성분 표시를 켜고 반주기 뒤의 모양을 보세요.',
@@ -235,7 +235,7 @@ export default function FourierHarmonicsLab() {
         {
           question: '펄스열에서 듀티비를 0.05로 줄이면(펄스를 좁게) 진폭 스펙트럼은 어떻게 될까요?',
           answer:
-            '고차까지 진폭이 고르게 퍼집니다. 시간에서 짧은 것은 주파수에서 넓다 — 그래서 짧은 임팩트(해머 타격)는 넓은 대역을 한 번에 가진합니다 (P8-1 임팩트 시험).',
+            '고차까지 진폭이 고르게 퍼집니다. 시간에서 짧은 것은 주파수에서 넓다 — 그래서 짧은 임팩트(해머 타격)는 넓은 대역을 한 번에 가진합니다 (P9-1 임팩트 시험).',
         },
       ]}
     >

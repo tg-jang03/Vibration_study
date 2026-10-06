@@ -11,7 +11,7 @@ import { correlationTerms, dftAt } from '../../lib/dsp/fourier';
 import { acquire } from '../../lib/dsp/sampling';
 
 /**
- * LAB-FOU-01 (b) DFT = 템플릿과의 상관 (P1-1, Contents §5-1)
+ * LAB-FOU-01 (b) DFT = 템플릿과의 상관 (P2-2, Contents §5-1)
  * N = 32, fs = 32 Hz → 프레임 1 s, bin k = k Hz.
  */
 
@@ -137,7 +137,7 @@ export default function DftCorrelationLab() {
         {
           question: '신호 주파수를 4.5 Hz(두 bin 사이)로 바꾸면 정수 bin(아래 그래프의 점)은 어떻게 될까요?',
           answer:
-            '모든 정수 bin이 0이 아니게 됩니다. 신호와 정확히 맞는 템플릿이 없어서 에너지가 여러 bin에 퍼지는 것 — 이것이 누설(Spectral Leakage)이고 P1-4 윈도우에서 다룹니다.',
+            '모든 정수 bin이 0이 아니게 됩니다. 신호와 정확히 맞는 템플릿이 없어서 에너지가 여러 bin에 퍼지는 것 — 이것이 누설(Spectral Leakage)이고 P2-5 윈도우에서 다룹니다.',
         },
         {
           question: '위상 φ₁을 90°로 바꾸면 cos 템플릿과 sin 템플릿의 누적합은 어떻게 변할까요?',

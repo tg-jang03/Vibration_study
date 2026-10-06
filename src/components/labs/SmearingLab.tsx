@@ -16,7 +16,7 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import type { WindowType } from '../../lib/dsp/window';
 
 /**
- * LAB-RES-02 Smearing: 변하는 회전수 (P1-3, Contents §5-1).
+ * LAB-RES-02 Smearing: 변하는 회전수 (P2-4, Contents §5-1).
  *
  * 목적:
  * 코스트다운이나 가속 중 회전수가 변할 때,
@@ -352,7 +352,7 @@ export default function SmearingLab() {
           question:
             'LOR을 400 line (T = 0.4 s)으로 대폭 낮추면 스미어링 bin 수는 어떻게 변하나요? 왜 그럴까요?',
           answer:
-            '번진 bin 수는 T²에 비례합니다. T가 3.2 s → 0.4 s로 8배 줄면 번짐은 8² = 64배 줄어 약 0.16 bin이 됩니다. 회전수가 변하는 동안에는 라인 수를 낮춰 T를 짧게 하거나, 회전 각도에 맞춰 샘플링하는 차수 추적(Order Tracking, P3-5)을 씁니다.',
+            '번진 bin 수는 T²에 비례합니다. T가 3.2 s → 0.4 s로 8배 줄면 번짐은 8² = 64배 줄어 약 0.16 bin이 됩니다. 회전수가 변하는 동안에는 라인 수를 낮춰 T를 짧게 하거나, 회전 각도에 맞춰 샘플링하는 차수 추적(Order Tracking, P4-5)을 씁니다.',
         },
       ]}
     >

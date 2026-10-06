@@ -37,7 +37,7 @@ describe('linearScale · grid', () => {
   });
 });
 
-describe('도식 도우미 (Part 0 질량-스프링 그림)', () => {
+describe('도식 도우미 (Part 1 질량-스프링 그림)', () => {
   it('squareYRange: x와 같은 px/단위', () => {
     const [y0, y1] = squareYRange([0, 10], 200);
     expect(y0).toBe(0);

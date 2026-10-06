@@ -10,7 +10,7 @@ import { formatNumber } from '../../lib/format';
 import { DEFAULT_ALARM, evaluateAlarms, scenarioSignal, type ProtScenario, type Voting } from '../../lib/protection';
 
 /**
- * LAB-ALM-01 보호 시스템 알람 논리 (P2-5, Contents §5-1).
+ * LAB-ALM-01 보호 시스템 알람 논리 (P3-5, Contents §5-1).
  * 한 베어링 X·Y 채널의 진폭에 Alert·Danger 레벨, 시간 지연, 보팅, 기동 중 트립 배율을 적용해 알람·트립 시각을 본다.
  * 계산: src/lib/protection.ts (본문 그림 5·6과 같은 모델). 레벨·지연·배율은 예시값.
  */
@@ -31,7 +31,7 @@ const STORY: Record<ProtScenario, string> = {
   spike: '3600 rpm 운전 중. 20 s에 X 채널에만 0.3초짜리 전기적 튐이 들어온다. 기계는 멀쩡하다.',
   growing: '3600 rpm 운전 중. 10 s부터 두 채널이 함께 서서히 커진다 — 실제로 나빠지는 기계다.',
   faultyProbe: '3600 rpm 운전 중. Y 채널 케이블이 가끔 끊겨 15·32·45 s에 1 ~ 2초씩 값이 튄다. 기계는 멀쩡하다.',
-  oneDirection: '3600 rpm 운전 중. X 방향으로만 진동이 커진다 (직선에 가까운 오빗, P2-3). 실제로 나빠지는 기계다.',
+  oneDirection: '3600 rpm 운전 중. X 방향으로만 진동이 커진다 (직선에 가까운 오빗, P3-3). 실제로 나빠지는 기계다.',
   runup: '300 rpm에서 기동해 3600 rpm까지 올린다. 145 s에 임계속도(2000 rpm)를 지나며 몇 초 동안 진동이 커진다.',
 };
 

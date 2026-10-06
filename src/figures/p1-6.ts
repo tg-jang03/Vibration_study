@@ -1,276 +1,361 @@
-/**
- * P1-6 "스펙트럼 스케일링과 진동 단위" 본문 그림 데이터 (빌드 시 계산, D-026).
- * 신호는 랩(LAB-SPC-01·02)과 같은 `src/lib/scalingDemo.ts`를 쓴다.
- * 계산은 SI(m/s, m/s²), 그림에 넣을 때만 mm/s·µm·g로 바꾼다 (D-012).
- */
-import { grid, type FigAnnotation, type FigPanel, type FigureSpec } from '../lib/figure';
+/** P1-6 "회전기계의 진동: 불평형과 1X" 본문 그림. 계산은 lib/mck 해석해에서 수행한다. */
+import { grid, squareYRange, type FigPanel, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { acquire } from '../lib/dsp/sampling';
-import { cumulativeBandRms, scaledSpectrum } from '../lib/dsp/scaling';
-import { crestFactor, peak, rms } from '../lib/dsp/stats';
-import { IMPACT, impactComponents, MACHINE, machineComponents, noiseBinPower, noisePsd, TONE_NOISE, toneNoiseSpectrum } from '../lib/scalingDemo';
-import { convertSine } from '../lib/units';
+import { unbalanceForce, unbalancePeak, unbalanceResponseFactor, unbalanceSteadyState } from '../lib/mck';
 
-const MM = 1000;
-const { toneFreq, noiseRms, fs } = TONE_NOISE;
-const db10 = (v: number) => 10 * Math.log10(Math.max(v, 1e-30));
-const meanOf = (a: ArrayLike<number>, from: number, to: number) => {
-  let s = 0;
-  for (let k = from; k < to; k++) s += a[k];
-  return s / (to - from);
-};
-/** f0 ~ f1 [Hz]의 bin 번호 범위 */
-const bins = (df: number, f0: number, f1: number) => [Math.round(f0 / df), Math.round(f1 / df)] as const;
-const sliceF = (s: { frequency: Float64Array }, df: number, f0: number, f1: number, y: ArrayLike<number>) => {
-  const [a, b] = bins(df, f0, f1);
-  return { x: Array.from(s.frequency.slice(a, b + 1)), y: Array.from(y).slice(a, b + 1) };
-};
+const TOTAL_MASS = 100; // 100 kg
+const FN = 50; // 50 Hz (3000 rpm)
+const OMEGA_N = 2 * Math.PI * FN; // 314.159 rad/s
+const ME = 0.01; // mu * e = 0.01 kg*m
+const E_CG_MM = (ME / TOTAL_MASS) * 1000; // 0.1 mm (100 um)
+const ZETA = 0.05;
 
-const LOW = toneNoiseSpectrum({ lor: 400 });
-const HIGH = toneNoiseSpectrum({ lor: 3200 });
-/** 잡음만 있는 구간(60 ~ 490 Hz)의 평균 파워 */
-const floorPower = (s: typeof LOW) => meanOf(s.power, ...bins(s.df, 60, 490));
-const floorPsd = (s: typeof LOW) => meanOf(s.psd, ...bins(s.df, 60, 490));
-const toneBin = (s: typeof LOW) => Math.round(toneFreq / s.df);
-const lowFloorDb = db10(floorPower(LOW) * MM * MM);
-const highFloorDb = db10(floorPower(HIGH) * MM * MM);
-const lowFloorTheoryDb = db10(noiseBinPower(noiseRms, LOW.n, LOW.enbw) * MM * MM);
-const highFloorTheoryDb = db10(noiseBinPower(noiseRms, HIGH.n, HIGH.enbw) * MM * MM);
-const toneDb = (s: typeof LOW) => db10(s.power[toneBin(s)] * MM * MM);
+const low1500 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 25, OMEGA_N, ZETA);
+const res3000 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 50, OMEGA_N, ZETA);
+const high6000 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 100, OMEGA_N, ZETA);
+const peak = unbalancePeak(ZETA)!;
 
-const fTicks = [0, 25, 50, 75, 100, 125, 150, 175, 200];
+const deg = (rad: number) => (rad * 180) / Math.PI;
+const f = (v: number, sig = 3) => formatNumber(v, sig);
+const mm = (m: number) => 1000 * m;
 
-// 그림 1 — 라인 수를 늘리면 톤은 그대로, 잡음 바닥은 내려간다
-function ampDbPanel(s: typeof LOW, lor: number, last: boolean, measuredDb: number): FigPanel {
-  const view = sliceF(s, s.df, 0, 200, Array.from(s.power, (p) => db10(p * MM * MM)));
-  return {
-    title: `${lor} 라인 (Δf = ${formatNumber(s.df, 3)} Hz, 측정 ${formatNumber(s.n / fs, 3)} s)`,
-    series: [{ x: view.x, y: view.y, color: 'c1', width: 1.3 }],
-    annotations: [
-      { type: 'hline', y: measuredDb, color: 'warn', dash: true },
-      { type: 'text', x: 197, y: measuredDb + 10, text: `잡음 바닥 ${formatNumber(measuredDb, 3)} dB`, anchor: 'end', color: 'warn', bold: true },
-      { type: 'point', x: toneFreq, y: toneDb(s), color: 'text', label: `톤 ${toneDb(s).toFixed(1)} dB`, dx: 10, dy: 2 },
-    ],
-    x: last ? { range: [0, 200], ticks: fTicks, label: '주파수 [Hz]' } : { range: [0, 200], ticks: 'none' },
-    y: { range: [-50, 8], ticks: [-40, -30, -20, -10, 0], label: last ? 'dB (0 dB = 1 mm/s RMS)' : undefined },
-    height: last ? 150 : 132,
-  };
-}
-export const linesVsFloor: FigureSpec = {
+export const P0_6_REFERENCE = {
+  fn: FN,
+  omegaN: OMEGA_N,
+  eCgMm: E_CG_MM,
+  low: {
+    rpm: 1500,
+    r: 0.5,
+    force: low1500.forceAmplitude,
+    factor: low1500.responseFactor,
+    amplitudeMm: mm(low1500.displacementAmplitude),
+    phaseDeg: deg(low1500.phaseLag),
+  },
+  resonance: {
+    rpm: 3000,
+    r: 1.0,
+    force: res3000.forceAmplitude,
+    factor: res3000.responseFactor,
+    amplitudeMm: mm(res3000.displacementAmplitude),
+    phaseDeg: deg(res3000.phaseLag),
+  },
+  high: {
+    rpm: 6000,
+    r: 2.0,
+    force: high6000.forceAmplitude,
+    factor: high6000.responseFactor,
+    amplitudeMm: mm(high6000.displacementAmplitude),
+    phaseDeg: deg(high6000.phaseLag),
+  },
+  peak: {
+    r: peak.frequencyRatio,
+    factor: peak.responseFactor,
+    rpm: peak.frequencyRatio * 3000,
+  },
+} as const;
+
+// ── 그림 1: 불평형 회전체 물리 모델 도식 ──────────────────────
+export const unbalanceModel: FigureSpec = {
   id: 'fig-p1-6-1',
-  caption: `그림 1. 같은 신호 — 50 Hz 톤 1 mm/s RMS + 0 ~ 640 Hz에 고르게 퍼진 잡음 1 mm/s RMS — 를 400 라인과 3200 라인으로 쟀다 (F_max 500 Hz, Hann, 파워 평균 8회). 세로축은 진폭 RMS를 dB로 그렸다 (0 dB = 1 mm/s). 톤의 높이는 두 경우 모두 ${toneDb(LOW).toFixed(1)} dB(약 1 mm/s)로 같다. 그런데 잡음 바닥(주황 점선)은 ${formatNumber(lowFloorDb, 3)} dB에서 ${formatNumber(highFloorDb, 3)} dB로 약 ${formatNumber(lowFloorDb - highFloorDb, 2)} dB 내려갔다. 잡음은 그대로인데 화면의 바닥 높이가 바뀐 것이다.`,
-  panels: [ampDbPanel(LOW, 400, false, lowFloorDb), ampDbPanel(HIGH, 3200, true, highFloorDb)],
+  caption:
+    '그림 1. 불평형이 있는 1자유도 회전체 모델. 회전체와 함께 흔들리는 기계 전체(회색 상자, 질량 M)가 스프링 k와 감쇠기 c로 지지되어 있다. 원판(파랑)의 회전 중심 O에서 거리 e만큼 떨어진 곳에 불평형 질량 m_u가 붙어 각속도 Ω로 회전한다. 함께 도는 원심력 F_u = m_u e Ω²의 수평 성분 F_x(t) = F_u cos(Ωt)가 기계를 좌우로 흔든다.',
+  panels: [
+    {
+      frame: false,
+      height: 200,
+      x: { range: [0, 14] },
+      y: { range: squareYRange([0, 14], 200) },
+      series: [],
+      annotations: [
+        // 기초 벽 및 베어링 지지대
+        { type: 'ground', x1: 1.2, y1: 0.5, x2: 1.2, y2: 3.5, side: 'left' },
+        { type: 'spring', x1: 1.2, y1: 2.5, x2: 4.5, y2: 2.5, coils: 6, label: '강성 k' },
+        { type: 'damper', x1: 1.2, y1: 1.5, x2: 4.5, y2: 1.5, label: '감쇠 c' },
+        // 회전체와 함께 흔들리는 기계 전체(질량 M). 글자는 원판과 겹치지 않게 왼쪽 위에 따로 쓴다
+        { type: 'rect', x1: 4.5, x2: 11.5, y1: 0.8, y2: 3.2, color: 'muted' },
+        { type: 'text', x: 4.75, y: 2.85, text: '진동하는 전체 질량 M', color: 'muted' },
+        // 회전 원판 (반지름 0.85 단위 → px: 820 px / 14 단위)
+        { type: 'circle', x: 8.0, y: 2.0, r: 0.85 * (820 / 14), fill: true, color: 'c1' },
+        { type: 'text', x: 7.05, y: 1.95, text: '회전 Ω', anchor: 'end', color: 'muted' },
+        // 회전 중심 O (글자는 원판 안 아래쪽)
+        { type: 'point', x: 8.0, y: 2.0, color: 'text' },
+        { type: 'text', x: 8.0, y: 2.0, text: '회전 중심 O', anchor: 'middle', color: 'text', dy: 22 },
+        { type: 'text', x: 8.12, y: 2.3, text: 'e', anchor: 'end', color: 'warn', dx: -4 },
+        // 편심 질량 mu (45도 위치)
+        {
+          type: 'line',
+          x1: 8.0,
+          y1: 2.0,
+          x2: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y2: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          color: 'warn',
+          width: 2,
+        },
+        {
+          type: 'point',
+          x: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          color: 'warn',
+        },
+        { type: 'text', x: 8.95, y: 2.2, text: '불평형 질량 m_u', anchor: 'start', color: 'warn' },
+        // 원심력 화살표
+        {
+          type: 'arrow',
+          x1: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y1: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          x2: 8.0 + 1.2 * Math.cos(Math.PI / 4),
+          y2: 2.0 + 1.2 * Math.sin(Math.PI / 4),
+          label: '원심력 F_u',
+          color: 'warn',
+          double: false,
+          labelDx: 8,
+        },
+        // 수평 변위 화살표
+        { type: 'arrow', x1: 7.0, y1: 3.5, x2: 9.0, y2: 3.5, label: '수평 변위 x(t)', color: 'c1', double: false },
+      ],
+    },
+  ],
 };
 
-// 그림 2 — bin 하나는 Δf 폭의 바구니: 같은 10 Hz 폭의 잡음을 몇 개로 나눠 담나
-const LOW_N = toneNoiseSpectrum({ lor: 400, toneRms: 0 });
-const HIGH_N = toneNoiseSpectrum({ lor: 3200, toneRms: 0 });
-const bandSum = (s: typeof LOW) => {
-  const [a, b] = bins(s.df, 45, 55);
-  let sum = 0;
-  for (let k = a; k < b; k++) sum += s.power[k];
-  return { sum: sum * MM * MM, count: b - a };
-};
-const lowBand = bandSum(LOW_N);
-const highBand = bandSum(HIGH_N);
-/** 아주 작은 값도 지수 표기 없이 (예: 0.00037) */
-const fixed = (v: number) => (v < 0.001 ? v.toFixed(5) : formatNumber(v, 2));
-const bandTheory = noisePsd(noiseRms) * 10 * MM * MM; // 10 Hz 폭에 실제로 있는 잡음 파워
-function basketPanel(s: typeof LOW, lor: number, last: boolean): FigPanel {
-  const v = sliceF(s, s.df, 45, 55, Array.from(s.power, (p) => p * MM * MM));
-  return {
-    title: `${lor} 라인: bin 하나의 폭 ${formatNumber(s.df, 3)} Hz → 10 Hz에 ${lor === 400 ? lowBand.count : highBand.count}개`,
-    series: [{ x: v.x, y: v.y, kind: 'stem', color: lor === 400 ? 'c1' : 'c3', radius: lor === 400 ? 3.5 : 2, width: 1.6 }],
-    annotations: [
-      { type: 'hline', y: noiseBinPower(noiseRms, s.n, s.enbw) * MM * MM, color: 'muted', dash: true },
-      { type: 'text', x: 55.5, y: noiseBinPower(noiseRms, s.n, s.enbw) * MM * MM + 0.0013, text: `bin 하나의 평균 ${fixed(noiseBinPower(noiseRms, s.n, s.enbw) * MM * MM)} (점선)`, anchor: 'end', color: 'muted', bold: true },
-    ],
-    x: last ? { range: [44.4, 55.6], ticks: [45, 47.5, 50, 52.5, 55], label: '주파수 [Hz]' } : { range: [44.4, 55.6], ticks: 'none' },
-    y: { range: [0, 0.0065], ticks: [0, 0.002, 0.004, 0.006], label: last ? '파워 [(mm/s)²]' : undefined },
-    height: last ? 130 : 112,
-  };
-}
-export const binBasket: FigureSpec = {
+// ── 그림 2: 회전수 제곱에 비례하는 원심력 ──────────────────────
+const rpmAxis = grid(0, 6000, 301);
+const forceCurve = rpmAxis.map((rpm) => {
+  const omega = (2 * Math.PI * rpm) / 60;
+  return unbalanceForce(ME, omega);
+});
+
+export const centrifugalForceCurve: FigureSpec = {
   id: 'fig-p1-6-2',
-  caption: `그림 2. 그림 1에서 톤을 빼고 잡음만 45 ~ 55 Hz로 확대해 bin마다 파워(RMS²)를 막대로 세웠다. 400 라인(파랑)은 이 10 Hz를 ${lowBand.count}개의 넓은 bin으로, 3200 라인(초록)은 ${highBand.count}개의 좁은 bin으로 나눠 담는다. 막대 하나의 높이는 약 1/8로 낮아졌지만, 10 Hz 안의 막대를 모두 더하면 ${formatNumber(lowBand.sum, 3)}과 ${formatNumber(highBand.sum, 3)} (mm/s)²로 거의 같다. 잡음의 양은 그대로이고, 나눠 담는 바구니가 작아졌을 뿐이다.`,
-  panels: [basketPanel(LOW_N, 400, false), basketPanel(HIGH_N, 3200, true)],
+  caption: `그림 2. 회전수(rpm)에 따른 불평형 원심력 크기(F_u = m_u e Ω², m_u e = ${f(ME, 2)} kg·m). 1500 rpm에서 약 ${f(P0_6_REFERENCE.low.force, 3)} N이던 원심력이 회전수가 2배인 3000 rpm에서는 4배인 ${f(P0_6_REFERENCE.resonance.force, 3)} N, 4배인 6000 rpm에서는 16배인 ${f(P0_6_REFERENCE.high.force, 4)} N이 된다. 회전수가 올라갈수록 곡선이 가팔라지는 것이 제곱 비례의 모양이다.`,
+  panels: [
+    {
+      series: [{ x: rpmAxis, y: forceCurve, label: '원심력 F_u [N]', color: 'warn', width: 2.4 }],
+      annotations: [
+        // 아래로 볼록한 곡선이라 점의 왼쪽 위는 비어 있다 → 글자를 왼쪽 위에 둔다
+        { type: 'point', x: 1500, y: P0_6_REFERENCE.low.force, color: 'warn' },
+        { type: 'text', x: 1500, y: P0_6_REFERENCE.low.force, text: `1500 rpm: ${f(P0_6_REFERENCE.low.force, 3)} N`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 3000, y: P0_6_REFERENCE.resonance.force, color: 'warn' },
+        { type: 'text', x: 3000, y: P0_6_REFERENCE.resonance.force, text: `3000 rpm: ${f(P0_6_REFERENCE.resonance.force, 3)} N (4배)`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 6000, y: P0_6_REFERENCE.high.force, color: 'warn' },
+        { type: 'text', x: 6000, y: P0_6_REFERENCE.high.force, text: `6000 rpm: ${f(P0_6_REFERENCE.high.force, 4)} N (16배)`, anchor: 'end', color: 'warn', dx: -10, dy: -4, bold: true },
+      ],
+      x: { range: [0, 6000], ticks: [0, 1500, 3000, 4500, 6000], label: '회전수 [rpm]' },
+      y: { range: [0, 4500], ticks: [0, 1000, 2000, 3000, 4000], label: '원심력 크기 F_u [N]' },
+      height: 220,
+    },
+  ],
 };
 
-// 그림 3 — PSD: 잡음 바닥은 그대로, 톤이 커진다
-const psdDb = (s: typeof LOW) => Array.from(s.psd, (p) => db10(p * MM * MM));
-const psdFloorTheoryDb = db10(noisePsd(noiseRms) * MM * MM);
-const tonePsdDb = (s: typeof LOW) => db10(s.psd[toneBin(s)] * MM * MM);
-function psdPanel(s: typeof LOW, lor: number, last: boolean): FigPanel {
-  const v = sliceF(s, s.df, 0, 200, psdDb(s));
-  const floorDb = db10(floorPsd(s) * MM * MM);
-  return {
-    title: `${lor} 라인`,
-    series: [{ x: v.x, y: v.y, color: 'c4', width: 1.3 }],
-    annotations: [
-      { type: 'hline', y: floorDb, color: 'warn', dash: true },
-      { type: 'text', x: 197, y: floorDb + 11, text: `잡음 바닥 ${formatNumber(floorDb, 3)} dB`, anchor: 'end', color: 'warn', bold: true },
-      { type: 'point', x: toneFreq, y: tonePsdDb(s), color: 'text', label: `톤 ${formatNumber(tonePsdDb(s), 2)} dB`, dx: 10, dy: 2 },
-    ],
-    x: last ? { range: [0, 200], ticks: fTicks, label: '주파수 [Hz]' } : { range: [0, 200], ticks: 'none' },
-    y: { range: [-45, 15], ticks: [-40, -30, -20, -10, 0, 10], label: last ? 'dB (0 dB = 1 (mm/s)²/Hz)' : undefined },
-    height: last ? 150 : 132,
-  };
-}
-export const psdView: FigureSpec = {
+// ── 그림 3: 1X 진동 시간파형과 위상 지연 ───────────────────────
+const t3 = grid(0, 0.06, 601); // 50 Hz(T = 0.02 s) 기준 3주기
+const fx3 = t3.map((t) => res3000.forceAmplitude * Math.cos(2 * Math.PI * FN * t));
+const x3 = t3.map((t) => mm(res3000.displacementAmplitude) * Math.cos(2 * Math.PI * FN * t - res3000.phaseLag));
+
+export const timeWaveform1X: FigureSpec = {
   id: 'fig-p1-6-3',
-  caption: `그림 3. 그림 1과 같은 측정을 PSD로 그렸다 (보라, 0 dB = 1 (mm/s)²/Hz). 이번에는 반대다. 잡음 바닥은 두 경우 모두 약 ${formatNumber(psdFloorTheoryDb, 3)} dB(이론 2σ²/f_s)로 같고, 톤이 ${formatNumber(tonePsdDb(LOW), 2)} dB에서 ${formatNumber(tonePsdDb(HIGH), 2)} dB로 약 9 dB(8배) 커졌다. PSD는 잡음의 크기를 Δf와 상관없이 읽게 해 주지만, 톤의 높이는 Δf에 따라 달라진다.`,
-  panels: [psdPanel(LOW, 400, false), psdPanel(HIGH, 3200, true)],
+  caption: `그림 3. 3000 rpm(50 Hz) 정상상태에서 세 바퀴(60 ms, 한 바퀴 T = 20 ms) 동안의 불평형 외력 수평 성분(위, 주황 점선)과 수평 변위 응답(아래, 파랑 실선). 회전수가 50 Hz이므로 수평 진동도 정확히 50 Hz 정현파로 나타난다(1X 진동). 공진(3000 rpm)에서는 변위가 힘보다 90°(1/4 주기, 5 ms) 늦게 정점을 찍는다.`,
+  panels: [
+    {
+      title: '수평 외력 성분 F_x(t)',
+      series: [{ x: t3, y: fx3.map((v) => v / 1000), label: '수평 외력 F_x [kN]', color: 'warn', width: 2, dash: true }],
+      annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
+      x: { range: [0, 0.06], label: '시간 t [s]', ticks: [0, 0.02, 0.04, 0.06] },
+      y: { range: [-1.2, 1.2], ticks: [-1, 0, 1], label: '외력 [kN]' },
+      height: 120,
+    },
+    {
+      title: '수평 변위 응답 x(t) (위상 지연 φ = 90°)',
+      series: [{ x: t3, y: x3, label: '수평 변위 x [mm]', color: 'c1', width: 2.2 }],
+      annotations: [
+        { type: 'hline', y: 0, color: 'muted', dash: true },
+        { type: 'arrow', x1: 0, y1: 1.05, x2: 0.005, y2: 1.05, label: '위상 지연 90° (5 ms)', color: 'warn', double: true, labelDy: -8 },
+      ],
+      x: { range: [0, 0.06], label: '시간 t [s]', ticks: [0, 0.02, 0.04, 0.06] },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1], label: '변위 [mm]' },
+      height: 140,
+    },
+  ],
 };
 
-// 그림 4 — 스펙트럼에서 전체 크기(overall) 구하기: ENBW로 나누기
-const cumWith = cumulativeBandRms(HIGH.power, HIGH.enbw);
-const cumWithout = cumulativeBandRms(HIGH.power, HIGH.enbw, false);
-const step4 = 8;
-const cumX = Array.from(HIGH.frequency).filter((_, k) => k % step4 === 0);
-const pick = (a: Float64Array) => Array.from(a).filter((_, k) => k % step4 === 0).map((v) => v * MM);
-const totalWith = cumWith[cumWith.length - 1] * MM;
-const totalWithout = cumWithout[cumWithout.length - 1] * MM;
-const timeRmsMm = HIGH.timeRms * MM;
-export const overallFromSpectrum: FigureSpec = {
+// ── 그림 4: 불평형 진폭비 및 위상 곡선 (Bode 선도) ─────────────
+const rAxis = grid(0, 3, 601);
+const curveZ005 = rAxis.map((r) => unbalanceResponseFactor(r, 0.05));
+const curveZ010 = rAxis.map((r) => unbalanceResponseFactor(r, 0.1));
+const curveZ020 = rAxis.map((r) => unbalanceResponseFactor(r, 0.2));
+
+export const unbalanceBode: FigureSpec = {
   id: 'fig-p1-6-4',
-  caption: `그림 4. 3200 라인 스펙트럼(Hann)의 파워를 0 Hz부터 차례로 더해 제곱근을 취했다 — 그 주파수까지의 "대역 RMS". 50 Hz에서 톤 몫(1 mm/s)이 한꺼번에 더해지고, 그 뒤로 잡음 몫이 고르게 쌓인다. 파워 합을 ENBW(Hann 1.5)로 나눈 파랑은 끝에서 ${formatNumber(totalWith, 3)} mm/s로, 시간 파형에서 직접 잰 RMS ${formatNumber(timeRmsMm, 3)} mm/s(회색)와 맞는다. 나누지 않은 주황은 ${formatNumber(totalWithout, 3)} mm/s로 √1.5 ≈ 1.22배 크다.`,
+  caption: `그림 4. 불평형 응답의 무차원 진폭비(위)와 위상각(아래). 일반 강제진동(P1-4)과 달리 정지 시(r = 0) 진폭비가 0에서 출발한다. r = 1(임계속도) 근처에서 진폭이 1/(2ζ)로 크게 치솟고 위상은 90°를 지나며, r ≫ 1인 초임계 영역에서는 진폭비가 정확히 1로 수렴한다(변위 X → m_u e / M = ${f(P0_6_REFERENCE.eCgMm, 2)} mm). 위상은 180°로 수렴한다.`,
+  panels: [
+    {
+      title: '무차원 진폭비 X / (m_u e / M)',
+      series: [
+        { x: rAxis, y: curveZ005.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.05', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ010.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.10', color: 'c2', width: 2 },
+        { x: rAxis, y: curveZ020.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.20', color: 'c3', width: 1.8 },
+      ],
+      annotations: [
+        { type: 'hline', y: 1, color: 'muted', dash: true },
+        { type: 'vline', x: 1, label: 'r = 1 (임계속도)', color: 'warn', dash: true },
+        // 세로선 글자(오른쪽 위)와 겹치지 않게 봉우리 왼쪽에 쓴다
+        { type: 'point', x: 1, y: 10, color: 'c1' },
+        { type: 'text', x: 1, y: 10, text: 'ζ = 0.05: 1/(2ζ) = 10', anchor: 'end', color: 'c1', dx: -10, dy: 4, bold: true },
+      ],
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 11], ticks: [0, 1, 2, 4, 6, 8, 10], label: '진폭비' },
+      height: 180,
+    },
+    {
+      title: '위상 지연 φ [°]',
+      series: [
+        { x: rAxis, y: curveZ005.map((c) => deg(c.phaseLag)), label: 'ζ = 0.05', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ010.map((c) => deg(c.phaseLag)), label: 'ζ = 0.10', color: 'c2', width: 2 },
+        { x: rAxis, y: curveZ020.map((c) => deg(c.phaseLag)), label: 'ζ = 0.20', color: 'c3', width: 1.8 },
+      ],
+      annotations: [
+        { type: 'hline', y: 90, color: 'muted', dash: true },
+        { type: 'hline', y: 180, color: 'muted', dash: true },
+        { type: 'point', x: 1, y: 90, label: '공진 시 90° 지연', color: 'warn', dx: 10, dy: -10 },
+      ],
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 190], ticks: [0, 45, 90, 135, 180], label: '위상 지연 [°]' },
+      height: 160,
+    },
+  ],
+};
+
+// ── 그림 5: 외력 일정 강제진동 vs 불평형 강제진동 ──────────────
+const staticFactor = rAxis.map((r) => {
+  const den = Math.hypot(1 - r ** 2, 2 * ZETA * r);
+  return den === 0 ? 12 : Math.min(1 / den, 12);
+});
+
+export const staticVsUnbalance: FigureSpec = {
+  id: 'fig-p1-6-5',
+  caption:
+    '그림 5. 일반 강제진동(파랑, P1-4)과 불평형 진동(주황, P1-6)의 증폭 특성 비교 (ζ = 0.05). 일반 강제진동은 힘의 크기가 일정하여 r = 0에서 정적 처짐 1을 가지며 고속에서는 0으로 줄어든다. 반면 불평형 진동은 힘이 속도 제곱에 비례하므로 r = 0에서 0이고, 고속(r ≫ 1)에서는 진폭비 1(편심 거리 m_u e / M)로 수렴한다.',
   panels: [
     {
       series: [
-        { x: cumX, y: pick(cumWithout), color: 'warn', width: 2.2, label: '파워 합 (ENBW로 나누지 않음)' },
-        { x: cumX, y: pick(cumWith), color: 'c1', width: 2.4, label: '파워 합 ÷ ENBW' },
+        { x: rAxis, y: staticFactor, label: '외력 일정 강제진동 (P1-4)', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ005.map((c) => Math.min(c.factor, 12)), label: '불평형 원심력 진동 (P1-6)', color: 'c2', width: 2.2 },
       ],
       annotations: [
-        { type: 'hline', y: timeRmsMm, color: 'muted', dash: true },
-        { type: 'text', x: 75, y: timeRmsMm + 0.2, text: `파형의 RMS ${formatNumber(timeRmsMm, 3)} mm/s (회색 점선)`, anchor: 'start', color: 'muted', bold: true },
+        { type: 'point', x: 0, y: 1, color: 'c1' },
+        { type: 'text', x: 0, y: 1, text: 'P1-4: 1에서 출발', color: 'c1', dx: 8, dy: -10, bold: true },
+        { type: 'point', x: 0, y: 0, color: 'c2' },
+        { type: 'text', x: 0, y: 0, text: 'P1-6: 0에서 출발', color: 'c2', dx: 8, dy: -4, bold: true },
+        { type: 'hline', y: 1, color: 'muted', dash: true },
+        { type: 'vline', x: 1, color: 'muted', dash: true },
       ],
-      x: { range: [0, 640], ticks: [0, 50, 100, 200, 300, 400, 500, 640], label: '여기까지 더한 주파수 [Hz]' },
-      y: { range: [0, 2], ticks: [0, 0.5, 1, 1.5, 2], label: '대역 RMS [mm/s]' },
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 11], ticks: [0, 1, 2, 4, 6, 8, 10], label: '응답 진폭비' },
+      height: 220,
+    },
+  ],
+};
+
+// ── 그림 6: 런업 중 임계속도 통과 파형 ────────────────────────
+// 회전수를 1초에 1200 rpm(20 Hz)씩 0 → 6000 rpm(100 Hz)까지 올린다. t = 2.5 s에 50 Hz(임계속도) 통과.
+// 각 순간의 정상상태 진폭·위상으로 그린 개념도. 100 Hz에서도 한 주기에 12점 이상이 되도록 점을 촘촘히 둔다.
+const RUN_T = 5;
+const RUN_RATE_HZ = 20; // Hz/s
+const tRun = grid(0, RUN_T, 6001);
+const runUpEnvT = grid(0, RUN_T, 501);
+const runUpAmp = (t: number) => unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).factor * E_CG_MM;
+const runUpDisp = tRun.map((t) => {
+  const phi = unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).phaseLag;
+  // 회전 각도 θ(t) = 2π ∫ 20τ dτ = 2π · 10 t²
+  const theta = 2 * Math.PI * (RUN_RATE_HZ / 2) * t ** 2;
+  return runUpAmp(t) * Math.cos(theta - phi);
+});
+const runUpEnv = runUpEnvT.map(runUpAmp);
+const RUN_PEAK_MM = E_CG_MM * peak.responseFactor;
+
+export const runUpTransient: FigureSpec = {
+  id: 'fig-p1-6-6',
+  caption: `그림 6. 회전수를 1초에 1200 rpm씩 0에서 6000 rpm까지 올리는 런업(Run-up) 중의 수평 변위 파형(파랑)과 진폭(회색 점선). 각 순간의 정상상태 진폭으로 그린 개념도다. 저속에서는 진폭이 작다가, 고유진동수(50 Hz, 3000 rpm)를 지나는 2.5초 근처에서 ${f(RUN_PEAK_MM, 2)} mm(편심 거리 ${f(E_CG_MM, 2)} mm의 10배)까지 커진다. 지나고 나면 다시 줄어 6000 rpm(r = 2)에서 ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm가 되고, 회전수를 더 올리면 편심 거리 ${f(E_CG_MM, 2)} mm에 다가간다.`,
+  panels: [
+    {
+      series: [
+        { x: tRun, y: runUpDisp, label: '수평 변위 x(t)', color: 'c1', width: 1.2 },
+        { x: runUpEnvT, y: runUpEnv, label: '진폭 X', color: 'muted', width: 1.4, dash: true },
+        { x: runUpEnvT, y: runUpEnv.map((v) => -v), color: 'muted', width: 1.4, dash: true },
+      ],
+      annotations: [
+        { type: 'hline', y: 0, color: 'muted', dash: true },
+        { type: 'vline', x: 2.5, color: 'warn', dash: true },
+        { type: 'point', x: 2.5, y: RUN_PEAK_MM, color: 'warn' },
+        { type: 'text', x: 2.5, y: RUN_PEAK_MM, text: `공진 피크 ${f(RUN_PEAK_MM, 2)} mm (3000 rpm, t = 2.5 s)`, color: 'warn', dx: 10, dy: 4, bold: true },
+        { type: 'text', x: RUN_T, y: P0_6_REFERENCE.high.amplitudeMm, text: `6000 rpm(r = 2): ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm`, anchor: 'end', color: 'text', dx: -4, dy: -14, bold: true },
+      ],
+      x: { range: [0, RUN_T], label: '가속 시간 t [s] (회전수 = 1200 × t rpm)', ticks: [0, 1, 2, 2.5, 3, 4, 5] },
+      y: { range: [-1.3, 1.3], ticks: [-1, -0.5, 0, 0.5, 1], label: '변위 [mm]' },
       height: 200,
     },
   ],
 };
 
-// 그림 5 — derived peak (√2 × RMS) vs 진짜 Peak
-const imp = acquire({ components: impactComponents() }, { fs: IMPACT.fs, n: IMPACT.n });
-const impRms = rms(imp.x);
-const impPeak = peak(imp.x);
-const impDerived = Math.SQRT2 * impRms;
-const impCf = crestFactor(imp.x);
-const SHOW = Math.round(0.05 * IMPACT.fs);
-const impT = Array.from({ length: SHOW }, (_, i) => (i / IMPACT.fs) * 1000);
-export const derivedPeak: FigureSpec = {
-  id: 'fig-p1-6-5',
-  caption: `그림 5. 1X(${IMPACT.x1} Hz, 1 m/s² Peak)에 1초에 ${IMPACT.rate}번 되풀이되는 짧은 충격이 섞인 가속도 파형. 시간 파형에서 잰 진짜 Peak(true peak, 주황)는 ${formatNumber(impPeak, 3)} m/s²다. 이 신호의 RMS는 ${formatNumber(impRms, 3)} m/s²(회색)이고, 많은 분석기가 "Peak"라고 표시하는 √2 × RMS(derived peak, 초록)는 ${formatNumber(impDerived, 3)} m/s²로 진짜 Peak의 ${formatNumber((impDerived / impPeak) * 100, 2)} %밖에 안 된다. Crest factor가 ${formatNumber(impCf, 3)}으로 정현파의 √2보다 훨씬 크기 때문이다.`,
-  panels: [
-    {
-      series: [{ x: impT, y: Array.from(imp.x.slice(0, SHOW)), color: 'c1', width: 1.1 }],
-      annotations: [
-        { type: 'hline', y: impPeak, color: 'warn', dash: true, label: `진짜 Peak ${formatNumber(impPeak, 3)}`, labelAt: 'end' },
-        { type: 'hline', y: impDerived, color: 'c3', dash: true, label: `√2 × RMS ${formatNumber(impDerived, 3)}`, labelAt: 'end' },
-        { type: 'hline', y: impRms, color: 'muted', label: `RMS ${formatNumber(impRms, 3)}`, labelAt: 'start', labelBelow: true },
-      ],
-      x: { range: [0, 50], ticks: [0, 10, 20, 30, 40, 50], label: '시간 [ms]' },
-      y: { range: [-8, 8.5], ticks: [-8, -4, 0, 4, 8], label: '가속도 [m/s²]' },
-      height: 210,
-    },
-  ],
-};
+// ── 그림 7: 초임계 영역의 질량 중심 회전 (Self-centering) ──────
+// 로터를 축 방향에서 본 모습: 베어링 중심 B, 축 중심 O가 그리는 궤도(점선), 축 단면(파랑 원), O에서 본 무거운 점 방향(화살표).
+const PX = 820 / 10; // 단위 → px (x 범위 10)
+const B_X = 2.6;
+const C_Y = 1.4;
+const ORBIT_R = 0.8;
+const O_X = B_X + ORBIT_R;
+const SHAFT_R = 0.3;
+const HEAVY_LEN = 0.5;
 
-// 그림 6 — 같은 속도 5 mm/s RMS를 변위·가속도로 보면 (log-log)
-const V_RMS = 5;
-const lf = grid(0, 4, 81);
-const dispPp = lf.map((l) => convertSine({ value: V_RMS, unit: 'mm/s', detector: 'rms' }, { unit: 'um', detector: 'pp' }, 10 ** l));
-const accPk = lf.map((l) => convertSine({ value: V_RMS, unit: 'mm/s', detector: 'rms' }, { unit: 'g', detector: 'pk' }, 10 ** l));
-const fLabels = [{ value: 0, label: '1' }, { value: 1, label: '10' }, { value: 2, label: '100' }, { value: 3, label: '1k' }, { value: 4, label: '10k' }];
-const marks = [10, 100, 1000];
-const dAt = (f: number) => convertSine({ value: V_RMS, unit: 'mm/s', detector: 'rms' }, { unit: 'um', detector: 'pp' }, f);
-const aAt = (f: number) => convertSine({ value: V_RMS, unit: 'mm/s', detector: 'rms' }, { unit: 'g', detector: 'pk' }, f);
-const logPanel = (title: string, y: number[], color: 'c1' | 'c3', yr: [number, number], yLabels: { value: number; label: string }[], at: (f: number) => number, unit: string, last: boolean): FigPanel => ({
-  title,
-  series: [{ x: lf, y: y.map(Math.log10), color, width: 2.4 }],
-  annotations: marks.map((f): FigAnnotation => ({ type: 'point', x: Math.log10(f), y: Math.log10(at(f)), color: 'warn', label: `${f >= 1000 ? `${f / 1000}k` : f} Hz: ${formatNumber(at(f), 3)} ${unit}`, dx: 8, dy: color === 'c1' ? -8 : 14 })),
-  x: last ? { range: [0, 4], ticks: [0, 1, 2, 3, 4], tickLabels: fLabels, label: '주파수 [Hz] (로그 눈금)' } : { range: [0, 4], ticks: [0, 1, 2, 3, 4], tickLabels: fLabels },
-  y: { range: yr, ticks: yLabels.map((t) => t.value), tickLabels: yLabels },
-  height: 165,
-});
-export const sameVelocity: FigureSpec = {
-  id: 'fig-p1-6-6',
-  caption: `그림 6. 속도가 늘 ${V_RMS} mm/s RMS인 정현파 진동을 주파수만 바꿔 가며 변위(µm Peak-Peak, 파랑)와 가속도(g Peak, 초록)로 바꿨다. 두 축 모두 로그 눈금이다. 변위는 주파수에 반비례해 10 Hz에서 ${formatNumber(dAt(10), 3)} µm지만 1 kHz에서는 ${formatNumber(dAt(1000), 3)} µm로 작아지고, 가속도는 주파수에 비례해 10 Hz의 ${formatNumber(aAt(10), 2)} g가 1 kHz에서 ${formatNumber(aAt(1000), 3)} g가 된다. 같은 진동이라도 낮은 주파수는 변위로, 높은 주파수는 가속도로 볼 때 숫자가 커서 잘 보인다.`,
-  panels: [
-    logPanel('변위 [µm Peak-Peak]', dispPp, 'c1', [-1, 4], [-1, 0, 1, 2, 3, 4].map((v) => ({ value: v, label: String(10 ** v) })), dAt, 'µm', false),
-    logPanel('가속도 [g Peak]', accPk, 'c3', [-3, 2], [-3, -2, -1, 0, 1, 2].map((v) => ({ value: v, label: String(10 ** v) })), aAt, 'g', true),
-  ],
-};
+function selfCenteringPanel(supercritical: boolean): FigPanel {
+  const tipX = supercritical ? O_X - HEAVY_LEN : O_X + HEAVY_LEN;
+  const lines = supercritical
+    ? ['변위가 힘의 반대쪽 (위상 ≈ 180°)', '축 중심 O가 무거운 점 반대쪽으로 밀린다', '무거운 점은 궤도 안쪽, G는 베어링 중심에 머문다']
+    : ['변위가 힘과 같은 쪽 (위상 ≈ 0°)', '축 중심 O가 무거운 점 쪽으로 밀린다', '무거운 점은 궤도 바깥쪽을 향한다'];
+  return {
+    title: supercritical
+      ? '초임계 (r ≫ 1, 고속): 위상 지연 ≈ 180° — 질량 중심 회전'
+      : '아임계 (r ≪ 1, 저속): 위상 지연 ≈ 0°',
+    frame: false,
+    height: 190,
+    x: { range: [0, 10] },
+    y: { range: squareYRange([0, 10], 190) },
+    series: [],
+    annotations: [
+      // 궤도와 베어링 중심
+      { type: 'circle', x: B_X, y: C_Y, r: ORBIT_R * PX, dash: true, color: 'muted' },
+      { type: 'text', x: B_X, y: C_Y + ORBIT_R, text: 'O의 궤도', anchor: 'middle', color: 'muted', dy: -6 },
+      { type: 'line', x1: B_X - 0.1, y1: C_Y, x2: B_X + 0.1, y2: C_Y, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.1, x2: B_X, y2: C_Y + 0.1, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.12, x2: B_X, y2: 0.42, color: 'muted', dash: true, width: 1 },
+      {
+        type: 'text',
+        x: B_X,
+        y: 0.2,
+        text: supercritical ? '베어링 중심 = 질량 중심 G' : '베어링 중심',
+        anchor: 'middle',
+        color: supercritical ? 'c3' : 'text',
+        bold: true,
+      },
+      // 축 단면과 축 중심 O
+      { type: 'circle', x: O_X, y: C_Y, r: SHAFT_R * PX, fill: true, color: 'c1' },
+      { type: 'point', x: O_X, y: C_Y, color: 'c1' },
+      { type: 'text', x: O_X, y: C_Y, text: 'O', anchor: 'middle', color: 'c1', dy: -9, bold: true },
+      // O에서 본 무거운 점의 방향
+      { type: 'arrow', x1: O_X, y1: C_Y, x2: tipX, y2: C_Y, color: 'warn', double: false },
+      supercritical
+        ? { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'end', color: 'warn', dy: -10, bold: true }
+        : { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'start', color: 'warn', dx: 6, dy: 4, bold: true },
+      // 설명
+      { type: 'text', x: 5.2, y: C_Y + 0.4, text: lines[0], color: 'text', bold: true },
+      { type: 'text', x: 5.2, y: C_Y, text: lines[1], color: 'text' },
+      { type: 'text', x: 5.2, y: C_Y - 0.4, text: lines[2], color: 'warn' },
+    ],
+  };
+}
 
-// 그림 7 — 선형 축 vs dB: 작은 성분은 dB에서 보인다
-const machN = Math.round(2.56 * MACHINE.lor);
-const mach = scaledSpectrum(acquire({ components: machineComponents() }, { fs: MACHINE.fs, n: machN }), { window: 'hann' });
-const machRms = Array.from(mach.power, (p) => Math.sqrt(p) * MM);
-const machDb = machRms.map((a) => 20 * Math.log10(Math.max(a, 1e-12)));
-const near = (f: number) => {
-  const k = Math.round(f / mach.df);
-  let best = k;
-  for (let j = k - 2; j <= k + 2; j++) if (machRms[j] > machRms[best]) best = j;
-  return best;
-};
-const smallK = near(MACHINE.smallFreq);
-const small2K = near(2 * MACHINE.smallFreq);
-const x1K = near(MACHINE.x1);
-const machView = sliceF(mach, mach.df, 0, 320, machRms);
-const machViewDb = sliceF(mach, mach.df, 0, 320, machDb);
-const mTicks = [0, 25, 50, 75, 100, 125, 147, 200, 250, 294];
-export const linearVsDb: FigureSpec = {
+export const selfCenteringDiagram: FigureSpec = {
   id: 'fig-p1-6-7',
-  caption: `그림 7. 1X(25 Hz)와 그 정수배 성분 넷, 그리고 1X의 정수배가 아닌 작은 성분 두 개(147 Hz, 294 Hz)가 섞인 속도 스펙트럼 (1600 라인, Hann). 위: 선형 축 — 1X ${formatNumber(machRms[x1K], 3)} mm/s RMS 옆에서 147 Hz의 ${formatNumber(machRms[smallK], 2)} mm/s는 막대가 보이지 않는다. 아래: 같은 스펙트럼을 dB(0 dB = 1 mm/s RMS)로 그리면 1X ${formatNumber(machDb[x1K], 2)} dB, 147 Hz ${formatNumber(machDb[smallK], 3)} dB, 294 Hz ${formatNumber(machDb[small2K], 3)} dB가 잡음 바닥 위에 또렷이 선다. 크기 차이가 수백 배인 성분을 한 화면에 보려면 dB가 필요하다.`,
-  panels: [
-    {
-      title: '선형 축 (mm/s RMS)',
-      series: [{ x: machView.x, y: machView.y, color: 'c1', width: 1.4 }],
-      annotations: [{ type: 'vline', x: MACHINE.smallFreq, color: 'warn', dash: true, label: '147 Hz' }],
-      x: { range: [0, 320], ticks: 'none' },
-      y: { range: [0, 2.4], ticks: [0, 0.5, 1, 1.5, 2] },
-      height: 130,
-    },
-    {
-      title: 'dB (0 dB = 1 mm/s RMS)',
-      series: [{ x: machViewDb.x, y: machViewDb.y, color: 'c1', width: 1.2 }],
-      annotations: [
-        { type: 'vline', x: MACHINE.smallFreq, color: 'warn', dash: true },
-        { type: 'point', x: mach.frequency[smallK], y: machDb[smallK], color: 'warn', label: `${formatNumber(machDb[smallK], 3)} dB`, dx: 8, dy: -6 },
-      ],
-      x: { range: [0, 320], ticks: mTicks, label: '주파수 [Hz]' },
-      y: { range: [-80, 15], ticks: [-80, -60, -40, -20, 0], label: 'dB' },
-      height: 165,
-    },
-  ],
-};
-
-/** 본문 숫자 확인용 (테스트에서 사용) */
-export const P16_VALUES = {
-  lowFloorDb,
-  highFloorDb,
-  lowFloorTheoryDb,
-  highFloorTheoryDb,
-  toneDbLow: toneDb(LOW),
-  toneDbHigh: toneDb(HIGH),
-  lowBandSum: lowBand.sum,
-  highBandSum: highBand.sum,
-  bandTheory,
-  psdFloorLowDb: db10(floorPsd(LOW) * MM * MM),
-  psdFloorHighDb: db10(floorPsd(HIGH) * MM * MM),
-  psdFloorTheoryDb,
-  tonePsdLowDb: tonePsdDb(LOW),
-  tonePsdHighDb: tonePsdDb(HIGH),
-  totalWith,
-  totalWithout,
-  timeRmsMm,
-  impPeak,
-  impRms,
-  impDerived,
-  impCf,
-  machX1Db: machDb[x1K],
-  machSmallDb: machDb[smallK],
-  machSmall2Db: machDb[small2K],
-  machSmallRms: machRms[smallK],
+  caption:
+    '그림 7. 로터를 축 방향에서 본 모습. 점선 원은 축 중심 O가 그리는 궤도, 파란 원은 축 단면, 주황 화살표는 O에서 본 무거운 점(m_u)의 방향이다 (크기는 보기 쉽게 과장했다). 위(아임계): 변위가 힘과 같은 쪽으로 나서 O가 무거운 점 쪽으로 밀리고, 무거운 점은 궤도 바깥쪽을 향한다. 아래(초임계): 변위가 힘의 반대쪽으로 나서 O가 무거운 점의 반대쪽으로 밀리고, 무거운 점은 궤도 안쪽을 향한다. 이때 전체 질량 중심 G가 베어링 중심에 머물고, O는 그 둘레를 반지름 e_cg로 돈다(질량 중심 회전).',
+  panels: [selfCenteringPanel(false), selfCenteringPanel(true)],
 };

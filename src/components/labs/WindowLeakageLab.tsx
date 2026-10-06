@@ -11,11 +11,11 @@ import { createWindow, type WindowType } from '../../lib/dsp/window';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 
 /**
- * LAB-WIN-01 누설과 가리비 손실 (P1-4, Contents §5-1).
+ * LAB-WIN-01 누설과 가리비 손실 (P2-5, Contents §5-1).
  *
  * 성분 주파수가 bin(눈금) 위에서 벗어날 때 (1) 에너지가 옆 bin으로 새고(누설)
  * (2) 가장 높은 막대가 깎이는(가리비 손실) 것을, 윈도우를 바꿔 가며 시간·주파수 양쪽에서 본다.
- * 조건은 본문 그림(src/figures/p1-4.ts)과 같다: f_s = 1024 Hz, N = 1024 → Δf = 1 Hz, T = 1 s.
+ * 조건은 본문 그림(src/figures/p2-5.ts)과 같다: f_s = 1024 Hz, N = 1024 → Δf = 1 Hz, T = 1 s.
  */
 
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [

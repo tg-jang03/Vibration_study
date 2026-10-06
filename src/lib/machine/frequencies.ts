@@ -1,7 +1,7 @@
 /**
- * 기계 요소가 만드는 주파수 (P0-7, LAB-FMAP-01, D-032). 순수 함수, 단위는 Hz·m (D-012).
+ * 기계 요소가 만드는 주파수 (P1-7, LAB-FMAP-01, D-032). 순수 함수, 단위는 Hz·m (D-012).
  * 세는 규칙: 한 바퀴에 k번 일어나는 사건 → k × f_r. 요소마다 "한 바퀴에 몇 번"만 다르다.
- * Part 6(LAB-BRG-01, LAB-GEAR-01)이 이 모듈을 확장한다.
+ * Part 7(LAB-BRG-01, LAB-GEAR-01)이 이 모듈을 확장한다.
  */
 
 /** 한 바퀴에 k번 일어나는 사건의 주파수 (k는 정수가 아니어도 된다) */
@@ -84,7 +84,7 @@ export function electromagneticForce(lineFrequency: number): number {
   return 2 * lineFrequency;
 }
 
-/** 미끄럼 베어링 기름막이 불안정할 때 나타나는 대역 (0.38 ~ 0.48X, Curriculum 6-3) */
+/** 미끄럼 베어링 기름막이 불안정할 때 나타나는 대역 (0.38 ~ 0.48X, Curriculum 7-4) */
 export function oilWhirlBand(fr: number): [number, number] {
   return [0.38 * fr, 0.48 * fr];
 }

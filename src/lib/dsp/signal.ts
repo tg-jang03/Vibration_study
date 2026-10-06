@@ -64,7 +64,7 @@ export interface ImpulsesComponent {
 }
 
 /**
- * 변조된 정현파 (P1-7): x(t) = amp · (1 + am·cos(2π modFreq t + amPhase)) · cos(2π carrier t + fm·sin(2π modFreq t) + phase).
+ * 변조된 정현파 (P2-8): x(t) = amp · (1 + am·cos(2π modFreq t + amPhase)) · cos(2π carrier t + fm·sin(2π modFreq t) + phase).
  * am은 AM 변조 지수 m(크기가 오르내리는 비율), fm은 FM 변조 지수 β(위상이 흔들리는 크기, 최대 주파수 흔들림 = β·modFreq).
  * 둘 다 주면 AM과 FM이 같은 주파수로 함께 걸린 신호 (amPhase가 둘 사이의 위상차).
  */

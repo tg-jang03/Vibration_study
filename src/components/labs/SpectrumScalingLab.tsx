@@ -11,7 +11,7 @@ import { bandRms, spectrumIn } from '../../lib/dsp/scaling';
 import { noiseBinPower, noisePsd, TONE_NOISE, toneNoiseSpectrum } from '../../lib/scalingDemo';
 
 /**
- * LAB-SPC-01 스펙트럼의 세로축: 진폭 · 파워 · PSD (P1-6 §3, Contents §5-1).
+ * LAB-SPC-01 스펙트럼의 세로축: 진폭 · 파워 · PSD (P2-7 §3, Contents §5-1).
  * 50 Hz 톤 + 백색 잡음을 라인 수 400 ~ 3200(F_max 500 Hz)으로 잰다. 본문 그림 1 ~ 4와 같은 신호·시드(src/lib/scalingDemo.ts).
  */
 
@@ -105,7 +105,7 @@ export default function SpectrumScalingLab() {
         <Formula display tex={'\\Delta f = \\frac{F_{max}}{\\mathrm{LOR}} = \\frac{500}{' + lor + '} = ' + texNumber(s.df, 4) + '\\ \\mathrm{Hz}'} />
         <Formula display tex={'PSD_k = \\frac{PS_k}{\\mathrm{ENBW}\\cdot\\Delta f} = \\frac{PS_k}{' + texNumber(s.enbw, 3) + '\\times' + texNumber(s.df, 4) + '\\ \\mathrm{Hz}}'} />
         <Formula display tex={'\\text{대역 RMS} = \\sqrt{\\frac{\\sum PS_k}{\\mathrm{ENBW}}} = \\sqrt{\\frac{' + texNumber(bandRaw ** 2, 4) + '}{' + texNumber(s.enbw, 3) + '}} = ' + texNumber(band, 4) + '\\ \\mathrm{mm/s}'} />
-        <p>PS는 bin의 파워(RMS²), ENBW는 bin 하나가 실제로 모으는 폭(P1-4). 진폭(RMS) = √PS, ASD = √PSD입니다.</p>
+        <p>PS는 bin의 파워(RMS²), ENBW는 bin 하나가 실제로 모으는 폭(P2-5). 진폭(RMS) = √PS, ASD = √PSD입니다.</p>
       </>}
       readouts={<ReadoutTable caption="읽음값 (지금 라인 수)" rows={[
         { label: '분해능 Δf', value: s.df, unit: 'Hz' },
@@ -126,11 +126,11 @@ export default function SpectrumScalingLab() {
         { question: '세로축을 PSD로 바꾸고 같은 일을 하면?',
           answer: '이번에는 잡음 바닥이 약 −28 dB(= 2σ²/f_s = 0.00156 (mm/s)²/Hz)에 그대로이고, 톤이 약 −2.6 dB에서 +6.4 dB로 9 dB 올라갑니다. PSD는 잡음을 1 Hz 폭당으로 나타내므로 Δf와 무관하지만, 한 bin에 몰린 톤은 Δf로 나눈 만큼 커집니다.' },
         { question: '윈도우를 "윈도우 없음"으로 바꾸면 두 대역 RMS 읽음값은 어떻게 되나요?',
-          answer: '윈도우가 없으면 ENBW = 1이라 나누든 안 나누든 같습니다. Hann에서는 나누지 않은 값이 √1.5 ≈ 1.22배 큽니다 — 윈도우가 정현파 막대 높이를 맞추려고(ACF) 잡음 파워를 1.5배로 부풀렸기 때문입니다 (P1-4).' },
+          answer: '윈도우가 없으면 ENBW = 1이라 나누든 안 나누든 같습니다. Hann에서는 나누지 않은 값이 √1.5 ≈ 1.22배 큽니다 — 윈도우가 정현파 막대 높이를 맞추려고(ACF) 잡음 파워를 1.5배로 부풀렸기 때문입니다 (P2-5).' },
         { question: '톤 크기를 0으로 하고 잡음 σ를 1 → 2 mm/s로 올리면 PSD 바닥은 몇 dB 오를까요?',
           answer: '잡음 파워가 4배이므로 PSD 바닥이 10 log 4 ≈ 6 dB 오릅니다 (−28 → −22 dB). 대역 RMS도 1 → 2 mm/s로 따라갑니다.' },
       ]}
-      footer={<p>F_max 500 Hz, f_s = 1280 Hz, 라인 수에 따라 N = 1024 ~ 8192. 바닥이 덜 들쭉날쭉하도록 프레임 8개를 파워 평균했습니다 (P1-5). 50 Hz 톤은 모든 라인 수에서 bin 중심에 있습니다. 잡음은 시드가 고정되어 같은 설정은 같은 결과입니다.</p>}
+      footer={<p>F_max 500 Hz, f_s = 1280 Hz, 라인 수에 따라 N = 1024 ~ 8192. 바닥이 덜 들쭉날쭉하도록 프레임 8개를 파워 평균했습니다 (P2-6). 50 Hz 톤은 모든 라인 수에서 bin 중심에 있습니다. 잡음은 시드가 고정되어 같은 설정은 같은 결과입니다.</p>}
     >
       <h4>스펙트럼 ({SCALES.find((o) => o.value === scale)?.label}{db ? ', dB' : ''})</h4>
       <Plot series={view.spectrum} x={{ label: '주파수 [Hz]', range: [0, 200] }}

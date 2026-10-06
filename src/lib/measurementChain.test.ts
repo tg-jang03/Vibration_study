@@ -46,13 +46,13 @@ const velLine = (r: ChainResult, f: number) => {
   return Math.sqrt(s / r.enbw);
 };
 
-describe('설치 응답 (가속도계 = 기초가진 1자유도, P2-1)', () => {
+describe('설치 응답 (가속도계 = 기초가진 1자유도, P3-1)', () => {
   it('DC 이득 1, f_n에서 이득 1/(2ζ) — 손으로 대기(2 kHz, ζ 0.1)면 5배', () => {
     expect(sineGain(5, 12800, 2000, 0.1)).toBeCloseTo(1, 2);
     expect(sineGain(2000, 12800, 2000, 0.1)).toBeCloseTo(5, 1);
   });
 
-  it('공진 아래·위 모두 P2-1의 H(r)와 0.5 % 안에서 같다 (정확한 응답을 주파수 영역에서 곱한다)', () => {
+  it('공진 아래·위 모두 P3-1의 H(r)와 0.5 % 안에서 같다 (정확한 응답을 주파수 영역에서 곱한다)', () => {
     for (const f of [200, 1000, 1800, 2500, 4000]) {
       const ideal = sensorResponse('accelerometer', f, 2000, 0.1).ratio;
       expect(Math.abs(sineGain(f, 12800, 2000, 0.1) / ideal - 1)).toBeLessThan(0.005);
@@ -61,7 +61,7 @@ describe('설치 응답 (가속도계 = 기초가진 1자유도, P2-1)', () => {
   });
 });
 
-describe('가속도 → 속도 (÷ 2πf, P1-6)', () => {
+describe('가속도 → 속도 (÷ 2πf, P2-7)', () => {
   it('0.001 g rms는 1 Hz에서 1.561 mm/s, 100 Hz에서 0.01561 mm/s', () => {
     const a = 0.001 * G;
     const v = accelToVelocityPower([a * a, a * a, a * a], [0, 1, 100]);

@@ -1,4 +1,4 @@
-/** 시간영역 기본 통계 (P1-1, P1-6에서 사용). 입력 단위 그대로. */
+/** 시간영역 기본 통계 (P2-2, P2-7에서 사용). 입력 단위 그대로. */
 
 export function rms(x: ArrayLike<number>): number {
   if (x.length === 0) return 0;

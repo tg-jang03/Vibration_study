@@ -9,7 +9,7 @@ import { formatNumber, texNumber } from '../../lib/format';
 import { flatBand, MOUNTS, sensorResponse, type MountKind } from '../../lib/sensor';
 
 /**
- * LAB-SNS-01 센서 = 질량-스프링 계 (P2-1, Contents §5-1).
+ * LAB-SNS-01 센서 = 질량-스프링 계 (P3-1, Contents §5-1).
  * 가속도계(공진 아래 r ≪ 1)와 동전형 속도계(고유진동수 위 r ≫ 1)의 응답, 마운팅에 따른 설치 공진, 측정 스펙트럼의 왜곡.
  * 계산: src/lib/sensor.ts (lib/mck의 H(r)·r²H(r)). 본문 그림 3 ~ 6과 같은 모델.
  */
@@ -110,7 +110,7 @@ export default function SensorLab({ initialKind = 'accelerometer', initialMount 
         { question: '속도계의 감쇠를 0.1 → 0.6 → 0.7로 바꾸면 ±10 % 아래 경계는 어떻게 움직이나요?',
           answer: '0.1에서는 약 33 Hz, 0.6에서 약 11 Hz로 내려갑니다. 0.7로 더 키우면 오히려 약 14 Hz로 올라갑니다 — 부풀림은 사라지지만 고유진동수 근처가 1보다 작아지기 때문입니다. 적당한 감쇠(0.6 안팎)가 가장 넓습니다.' },
       ]}
-      footer={<p>센서는 통 안의 질량-스프링(기초가진 1자유도 계)으로 보고 계산했습니다 (P0-4의 진폭비 H(r)). 실제 센서에는 이 밖에도 전기적 필터·케이블·증폭기의 대역이 더해집니다 (P2-4).</p>}
+      footer={<p>센서는 통 안의 질량-스프링(기초가진 1자유도 계)으로 보고 계산했습니다 (P1-4의 진폭비 H(r)). 실제 센서에는 이 밖에도 전기적 필터·케이블·증폭기의 대역이 더해집니다 (P3-4).</p>}
     >
       <h4>센서의 응답 (읽은 값 ÷ 실제 값, 로그 주파수)</h4>
       <Plot series={respSeries} x={{ label: '주파수 [Hz]', log: true }} y={{ label: '진폭비', range: [0, 3] }} height={260} ariaLabel="센서의 진폭 응답" />

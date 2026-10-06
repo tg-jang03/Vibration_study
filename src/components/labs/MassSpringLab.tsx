@@ -189,7 +189,7 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
         { question: '질량이 평형 위치 x = 0을 지날 때 멈출까요, 가장 빠를까요?', answer: '가장 빠릅니다. 10 mm에서 놓으면 속도 크기는 약 0.316 m/s입니다. T/4 앞으로를 한 번 누르면 그 순간에서 멈춰 읽을 수 있습니다.' },
         { question: '당기는 거리를 두 배 늘리면 한 번 왕복 시간 T도 두 배가 될까요?', answer: '아닙니다. 움직이는 폭·복원력·최대 속도는 두 배가 되지만 T는 약 0.1987 s로 같습니다.' },
       ]}
-      footer={expanded ? '감쇠가 없는 선형 질량-스프링 모델. 모든 계산은 SI 단위의 해석해를 사용합니다.' : '기본값: m = 1 kg, k = 1000 N/m, 감쇠 없음. P0-2에서 m·k·초기 속도를 직접 바꿉니다.'}
+      footer={expanded ? '감쇠가 없는 선형 질량-스프링 모델. 모든 계산은 SI 단위의 해석해를 사용합니다.' : '기본값: m = 1 kg, k = 1000 N/m, 감쇠 없음. P1-2에서 m·k·초기 속도를 직접 바꿉니다.'}
     >
       <div role="img" aria-label={`벽에 연결된 스프링과 질량. 질량은 평형에서 ${currentMm.toFixed(2)} mm 떨어져 있다.`} style={{ background: 'var(--surface-2)', borderRadius: 'var(--radius)', padding: '0.35rem 0.5rem' }}>
         <svg viewBox="0 0 700 185" width="100%" style={{ display: 'block', minHeight: 180 }}>

@@ -1,307 +1,228 @@
-/**
- * P1-4 "윈도우" 본문 그림 데이터 (빌드 시 계산, D-026).
- * 스펙트럼은 랩(LAB-WIN-01)과 같은 조건: f_s = 1024 Hz, N = 1024 → Δf = 1 Hz, T = 1 s.
- * 색은 그림마다 같게 쓴다: Uniform c1, Hann c3, Flat top c2, Blackman-Harris c4.
- */
-import { grid, type FigAnnotation, type FigColor, type FigPanel, type FigureSpec } from '../lib/figure';
+/** P1-4 "강제진동과 공진" 본문 그림. 응답은 lib/mck 해석해에서 계산한다. */
+import { grid, squareYRange, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { fft, zeroPad } from '../lib/dsp/fft';
-import { acquire } from '../lib/dsp/sampling';
-import type { SignalComponent } from '../lib/dsp/signal';
-import { singleSidedSpectrum } from '../lib/dsp/spectrum';
-import { createWindow, type WindowType } from '../lib/dsp/window';
+import { forcedResponse, halfPowerPoints, resonancePeak, steadyStateResponse } from '../lib/mck';
 
-const FS = 1024;
-const N = 1024;
-const DB_FLOOR = -120;
-const toDb = (a: number) => Math.max(DB_FLOOR, 20 * Math.log10(Math.max(a, 1e-12)));
-const WIN_COLOR: Record<'uniform' | 'hann' | 'flatTop' | 'blackmanHarris', FigColor> = {
-  uniform: 'c1',
-  hann: 'c3',
-  flatTop: 'c2',
-  blackmanHarris: 'c4',
+const MASS = 1;
+const FN = 5;
+const OMEGA_N = 2 * Math.PI * FN;
+const STIFFNESS = MASS * OMEGA_N ** 2;
+/** 같은 힘을 아주 천천히 걸었을 때의 처짐 X_st = F₀/k [m]. 그림은 모두 이 값을 10 mm로 둔다 */
+const X_ST = 0.01;
+const F0 = STIFFNESS * X_ST;
+
+function systemFor(zeta: number) {
+  return { mass: MASS, stiffness: STIFFNESS, damping: 2 * zeta * MASS * OMEGA_N };
+}
+
+const deg = (rad: number) => (rad * 180) / Math.PI;
+const ZETA = 0.05;
+const at = (r: number, zeta = ZETA) => steadyStateResponse(r, zeta);
+
+export const P0_4_REFERENCE = {
+  low: { amplitudeRatio: at(0.5).amplitudeRatio, phaseDeg: deg(at(0.5).phaseLag) },
+  resonance: { amplitudeRatio: at(1).amplitudeRatio, phaseDeg: deg(at(1).phaseLag) },
+  high: { amplitudeRatio: at(2).amplitudeRatio, phaseDeg: deg(at(2).phaseLag) },
+  peak: resonancePeak(ZETA)!,
+  halfPower: halfPowerPoints(ZETA)!,
+  halfPowerHalfZeta: halfPowerPoints(ZETA / 2)!,
+  transientTau: 1 / (ZETA * OMEGA_N),
+  example: { r: 1.6, amplitudeRatio: at(1.6).amplitudeRatio, phaseDeg: deg(at(1.6).phaseLag) },
+  beat: { r: 0.9, zeta: 0.01, amplitudeRatio: at(0.9, 0.01).amplitudeRatio, periodS: 1 / (FN - 0.9 * FN) },
+} as const;
+
+const f = (v: number, sig = 3) => formatNumber(v, sig);
+
+// ── 그림 1: 모델 ──────────────────────────────────────────────
+const forceTime = grid(0, 0.5, 301);
+export const forcedModel: FigureSpec = {
+  id: 'fig-p1-4-1',
+  caption:
+    '그림 1. P1-3의 질량-스프링-감쇠계에 바깥 힘 F₀ cos ωt를 계속 건다. 위는 모델, 아래는 그 힘의 시간파형(ω = 2π × 4 Hz 예)이다. 힘은 일정한 박자로 오른쪽·왼쪽을 번갈아 민다.',
+  panels: [
+    {
+      frame: false,
+      height: 150,
+      x: { range: [0, 10] },
+      y: { range: squareYRange([0, 10], 150) },
+      series: [],
+      annotations: [
+        { type: 'ground', x1: 0.8, y1: 0.15, x2: 0.8, y2: 1.65, side: 'left' },
+        { type: 'spring', x1: 0.8, y1: 1.25, x2: 4.6, y2: 1.25, coils: 8, label: '강성 k' },
+        { type: 'damper', x1: 0.8, y1: 0.55, x2: 4.6, y2: 0.55, width: 18, label: '감쇠 계수 c' },
+        { type: 'rect', x1: 4.6, x2: 6.15, y1: 0.25, y2: 1.55, label: '질량 m', color: 'c1' },
+        { type: 'arrow', x1: 6.15, y1: 0.9, x2: 7.6, y2: 0.9, label: 'F₀ cos ωt', color: 'c2', double: false },
+        { type: 'text', x: 8.75, y: 1.45, text: 'mẍ + cẋ + kx', anchor: 'middle', color: 'text', bold: true },
+        { type: 'text', x: 8.75, y: 1.05, text: '= F₀ cos ωt', anchor: 'middle', color: 'c2', bold: true },
+      ],
+    },
+    {
+      height: 100,
+      series: [{ x: forceTime, y: forceTime.map((t) => Math.cos(2 * Math.PI * 4 * t)), label: '힘 F(t)/F₀', color: 'c2', width: 2.2 }],
+      annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
+      x: { range: [0, 0.5], label: '시간 t [s]' },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1], label: 'F/F₀' },
+    },
+  ],
 };
-const WIN_NAME = { uniform: 'Uniform (윈도우 없음)', hann: 'Hann', flatTop: 'Flat top', blackmanHarris: 'Blackman-Harris' } as const;
 
-function spectrum(components: SignalComponent[], window: WindowType) {
-  return singleSidedSpectrum(acquire({ components }, { fs: FS, n: N }), { window });
-}
-const tone = (freq: number, amp = 1): SignalComponent => ({ type: 'sine', freq, amp });
-function band(spec: { frequency: Float64Array; amplitude: Float64Array }, lo: number, hi: number) {
-  const f: number[] = [];
-  const a: number[] = [];
-  for (let i = 0; i < spec.frequency.length; i++) {
-    if (spec.frequency[i] >= lo && spec.frequency[i] <= hi) {
-      f.push(spec.frequency[i]);
-      a.push(spec.amplitude[i]);
-    }
-  }
-  return { f, a, db: a.map(toDb) };
-}
-const at = (b: { f: number[]; a: number[] }, freq: number) => b.a[b.f.indexOf(freq)];
+// ── 그림 2: 과도 + 정상상태 ───────────────────────────────────
+const exampleTime = grid(0, 2.5, 1501);
+const exampleInput = { forceAmplitude: F0, forcingOmega: 1.6 * OMEGA_N };
+const exampleResponse = forcedResponse(systemFor(ZETA), exampleInput, { x0: 0, v0: 0 }, exampleTime);
+const mm = (v: number) => 1000 * v;
+export const transientAndSteady: FigureSpec = {
+  id: 'fig-p1-4-2',
+  caption: `그림 2. 고유진동수 5 Hz, ζ = 0.05인 계에 8 Hz(r = 1.6) 힘을 정지 상태에서 걸기 시작했다. 위: 실제 변위(파랑)는 처음 1초 정도 들쭉날쭉하다가 점점 회색 점선(정상상태 응답, 8 Hz)과 겹친다. 아래: 둘의 차이인 과도 응답(초록)은 5 Hz 근처 박자로 흔들리며 P1-3의 포락선처럼 줄어든다. 약 ${f(3 * P0_4_REFERENCE.transientTau, 2)}초(3τ) 뒤에는 처음의 5 % 아래다.`,
+  panels: [
+    {
+      series: [
+        { x: exampleTime, y: exampleResponse.map((s) => mm(s.x)), label: '실제 변위 x(t)', color: 'c1', width: 2.1 },
+        { x: exampleTime, y: exampleResponse.map((s) => mm(s.steady)), label: '정상상태 응답 (8 Hz)', color: 'muted', dash: true, width: 1.6 },
+      ],
+      annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
+      x: { range: [0, 2.5], label: '시간 t [s]' },
+      y: { range: [-14, 14], ticks: [-10, 0, 10], label: '변위 x [mm]' },
+      height: 190,
+    },
+    {
+      series: [
+        { x: exampleTime, y: exampleResponse.map((s) => mm(s.transient)), label: '과도 응답 = 실제 − 정상상태', color: 'c3', width: 2 },
+      ],
+      annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
+      x: { range: [0, 2.5], label: '시간 t [s]' },
+      y: { range: [-8, 8], ticks: [-5, 0, 5], label: '과도 [mm]' },
+      height: 150,
+      legend: true,
+    },
+  ],
+};
 
-// 그림 1 — FFT는 프레임이 계속 되풀이된다고 본다: 끝과 시작이 이어지나?
-function framePanel(cycles: number, title: string, last: boolean): FigPanel {
-  const t = grid(0, 1, 600);
-  const x = t.map((tt) => Math.sin(2 * Math.PI * cycles * tt));
+// ── 그림 3: 세 구간의 힘과 응답 ───────────────────────────────
+const cycles = grid(0, 2, 401);
+function regimePanel(r: number, yMax: number, ticks: number[], title: string) {
+  const res = at(r);
+  const lagCycles = res.phaseLag / (2 * Math.PI);
   return {
     title,
     series: [
-      { x: t, y: x, color: 'c1', width: 2.2, label: '잰 프레임 (1초)' },
-      { x: t.map((tt) => tt + 1), y: x, color: 'muted', dash: true, width: 1.8, label: 'FFT가 가정하는 다음 반복' },
+      { x: cycles, y: cycles.map((n) => Math.cos(2 * Math.PI * n)), label: '힘 F/k (X_st 단위)', color: 'c2' as const, width: 1.8 },
+      { x: cycles, y: cycles.map((n) => res.amplitudeRatio * Math.cos(2 * Math.PI * n - res.phaseLag)), label: '변위 x/X_st', color: 'c1' as const, width: 2.3 },
     ],
     annotations: [
-      { type: 'vline', x: 1, label: '프레임 경계', color: 'warn', dash: true },
-      ...(Number.isInteger(cycles)
-        ? []
-        : [{ type: 'arrow' as const, x1: 1.06, y1: Math.sin(2 * Math.PI * cycles), x2: 1.06, y2: 0, double: true, label: '끊김(불연속)', color: 'warn' as const }]),
+      { type: 'hline' as const, y: 0, color: 'muted' as const, dash: true },
+      { type: 'vline' as const, x: 1, color: 'c2' as const, dash: true },
+      { type: 'vline' as const, x: 1 + lagCycles, color: 'c1' as const, dash: true },
     ],
-    x: last ? { range: [0, 2], ticks: [0, 0.5, 1, 1.5, 2], label: '시간 [s]' } : { range: [0, 2], ticks: 'none' },
-    y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
-    height: last ? 130 : 115,
-    legend: !last,
+    x: { range: [0, 2] as [number, number], label: '힘의 주기 수 (ωt / 2π)' },
+    y: { range: [-yMax, yMax] as [number, number], ticks, label: '× X_st' },
+    height: 125,
   };
 }
-export const frameEnds: FigureSpec = {
-  id: 'fig-4-1',
-  caption:
-    '그림 1. FFT는 잰 1초 프레임이 앞뒤로 똑같이 되풀이된다고 보고 계산한다(점선). 위: 프레임 안에 정확히 3주기가 들어가면 끝과 다음 시작이 매끄럽게 이어져, 에너지가 3 Hz bin 하나에 모인다. 아래: 3.5주기면 프레임 경계에서 신호가 뚝 끊긴다. 이 끊김을 만들려면 여러 주파수가 필요하므로, 에너지가 주변 bin들로 새어 나간다 — 누설이다.',
-  panels: [framePanel(3, '3.0주기: 끝과 시작이 이어진다', false), framePanel(3.5, '3.5주기: 경계에서 끊긴다', true)],
-};
-
-// 그림 2 — 윈도우 없이(Uniform) 60.0 Hz와 60.5 Hz를 잰 스펙트럼
-const u60 = band(spectrum([tone(60)], 'uniform'), 50, 70);
-const u605 = band(spectrum([tone(60.5)], 'uniform'), 50, 70);
-const u605wide = band(spectrum([tone(60.5)], 'uniform'), 30, 90);
-const uPeak = Math.max(...u605.a);
-const uFar = toDb(at(u605wide, 70));
-export const leakage: FigureSpec = {
-  id: 'fig-4-2',
-  caption: `그림 2. 진폭 1인 정현파를 윈도우 없이 1초 동안 잰 스펙트럼 (Δf = 1 Hz). 위: 60.0 Hz는 1초에 정확히 60주기라 60 Hz 막대 하나에 높이 1로 모인다. 가운데: 60.5 Hz는 60.5주기라 프레임 끝이 끊기고(그림 1), 에너지가 양옆 막대로 새면서 가장 높은 막대도 ${formatNumber(uPeak, 2)}로 낮아진다. 아래: 가운데와 같은 스펙트럼을 dB로 그리면, 10 bin 떨어진 70 Hz에도 ${formatNumber(uFar, 2)} dB(약 1/30)가 남아 있다. 새어 나간 에너지가 아주 멀리까지 깔린다.`,
+const R = P0_4_REFERENCE;
+export const threeRegimes: FigureSpec = {
+  id: 'fig-p1-4-3',
+  caption: `그림 3. 같은 힘(주황, 크기 1 = X_st)을 ζ = 0.05인 계에 세 박자로 건 정상상태. 점선은 힘의 꼭대기(주황)와 변위의 꼭대기(파랑) 시각이다. r = 0.5에서는 변위가 힘을 거의 그대로 따라가고(${f(R.low.amplitudeRatio, 4)}배, ${f(R.low.phaseDeg, 2)}° 늦음), r = 1에서는 ${f(R.resonance.amplitudeRatio, 3)}배로 커지며 정확히 1/4주기(90°) 늦고, r = 2에서는 ${f(R.high.amplitudeRatio, 3)}배로 작아지며 거의 반대(${f(R.high.phaseDeg, 4)}°)로 움직인다. 세 패널의 세로 눈금이 다르다는 점에 주의.`,
   panels: [
-    {
-      title: '60.0 Hz (1초에 정확히 60주기): 막대 하나',
-      series: [{ x: u60.f, y: u60.a, kind: 'stem', color: 'c1', width: 2.6, radius: 3.6 }],
-      x: { range: [50, 70], ticks: 'none' },
-      y: { range: [0, 1.2], ticks: [0, 0.5, 1] },
-      height: 95,
-    },
-    {
-      title: '60.5 Hz (60.5주기): 옆으로 퍼지고 낮아진다',
-      series: [{ x: u605.f, y: u605.a, kind: 'stem', color: 'c1', width: 2.6, radius: 3.6 }],
-      annotations: [
-        { type: 'vline', x: 60.5, color: 'warn', dash: true },
-        { type: 'text', x: 61, y: uPeak, text: `가장 높은 막대 ${formatNumber(uPeak, 2)}`, dx: 10, dy: 4, color: 'c1', bold: true },
-      ],
-      x: { range: [50, 70], ticks: [50, 55, 60, 65, 70], label: '주파수 [Hz]' },
-      y: { range: [0, 1.2], ticks: [0, 0.5, 1] },
-      height: 110,
-    },
-    {
-      title: '같은 60.5 Hz를 dB로 보면: 멀리까지 깔린다',
-      series: [
-        { x: u605wide.f, y: u605wide.db, color: 'c1', width: 1.4 },
-        { x: u605wide.f, y: u605wide.db, kind: 'dots', color: 'c1', radius: 2.6 },
-      ],
-      annotations: [{ type: 'point', x: 70, y: uFar, label: `10 bin 떨어진 곳: ${formatNumber(uFar, 2)} dB`, color: 'warn', dx: 10, dy: -8 }],
-      x: { range: [30, 90], ticks: [30, 40, 50, 60, 70, 80, 90], label: '주파수 [Hz]' },
-      y: { range: [-60, 5], ticks: [-60, -40, -20, 0], label: '[dB]' },
-      height: 130,
-    },
+    regimePanel(0.5, 1.6, [-1, 0, 1], 'r = 0.5 (천천히 밀 때)'),
+    regimePanel(1, 11.5, [-10, -5, 0, 5, 10], 'r = 1 (고유진동수로 밀 때)'),
+    regimePanel(2, 1.25, [-1, 0, 1], 'r = 2 (빠르게 밀 때)'),
   ],
 };
 
-// 그림 3 — 윈도우: 프레임 양 끝을 0으로 줄인다
-const tw = grid(0, 1, 600);
-const hannCurve = tw.map((t) => 0.5 - 0.5 * Math.cos(2 * Math.PI * t));
-const raw35 = tw.map((t) => Math.sin(2 * Math.PI * 3.5 * t));
-const win35 = raw35.map((v, i) => v * hannCurve[i]);
-export const windowTime: FigureSpec = {
-  id: 'fig-4-3',
-  caption:
-    '그림 3. 그림 1 아래의 3.5주기 신호에 Hann 윈도우를 곱한 모습. 위: Hann 가중치(주황 점선)는 프레임 가운데에서 1, 양 끝에서 0인 종 모양이다. 아래: 곱한 신호는 양 끝이 0으로 모이므로, FFT가 가정하는 다음 반복(점선)과 경계에서 끊김 없이 이어진다. 끊김이 없으니 멀리까지 새는 에너지가 크게 줄어든다.',
-  panels: [
-    {
-      title: '원래 신호와 Hann 가중치',
-      series: [
-        { x: tw, y: raw35, color: 'c1', width: 1.8, label: '잰 신호 (3.5주기)' },
-        { x: tw, y: hannCurve, color: 'warn', dash: true, width: 2.2, label: 'Hann 가중치 w(t)' },
-      ],
-      x: { range: [0, 2], ticks: 'none' },
-      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
-      height: 115,
-    },
-    {
-      title: '가중치를 곱한 신호: 양 끝이 0이라 반복해도 끊기지 않는다',
-      series: [
-        { x: tw, y: win35, color: 'c3', width: 2.2, label: '곱한 신호' },
-        { x: tw.map((t) => t + 1), y: win35, color: 'muted', dash: true, width: 1.8, label: 'FFT가 가정하는 다음 반복' },
-      ],
-      annotations: [{ type: 'vline', x: 1, label: '프레임 경계', color: 'warn', dash: true }],
-      x: { range: [0, 2], ticks: [0, 0.5, 1, 1.5, 2], label: '시간 [s]' },
-      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1] },
-      height: 130,
-    },
-  ],
-};
-
-// 그림 4 — 같은 60.5 Hz: 윈도우 없음 vs Hann (dB)
-const h605 = band(spectrum([tone(60.5)], 'hann'), 30, 90);
-const hPeak = Math.max(...h605.a);
-const hFar = toDb(at(h605, 70));
-const dbPanel = (title: string, b: { f: number[]; db: number[] }, color: FigColor, far: number, last: boolean): FigPanel => ({
-  title,
-  series: [
-    { x: b.f, y: b.db, color, width: 1.4 },
-    { x: b.f, y: b.db, kind: 'dots', color, radius: 2.6 },
-  ],
-  annotations: [
-    { type: 'vline', x: 60.5, color: 'warn', dash: true },
-    { type: 'point', x: 70, y: far, label: `70 Hz: ${formatNumber(far, 2)} dB`, color: 'warn', dx: 10, dy: -8 },
-  ],
-  x: last ? { range: [30, 90], ticks: [30, 40, 50, 60, 70, 80, 90], label: '주파수 [Hz]' } : { range: [30, 90], ticks: 'none' },
-  y: { range: [-100, 5], ticks: [-100, -80, -60, -40, -20, 0], label: '[dB]' },
-  height: last ? 125 : 110,
-});
-export const uniformVsHann: FigureSpec = {
-  id: 'fig-4-4',
-  caption: `그림 4. 같은 60.5 Hz 신호(진폭 1)를 윈도우 없이(위)와 Hann 윈도우로(아래) 잰 dB 스펙트럼. Hann은 가운데 봉우리가 조금 넓어지지만, 10 bin 떨어진 70 Hz의 누설이 ${formatNumber(uFar, 2)} dB에서 ${formatNumber(hFar, 2)} dB로 약 ${formatNumber(Math.round(uFar - hFar), 2)} dB(1/100) 내려가고, 가장 높은 막대도 ${formatNumber(uPeak, 2)} → ${formatNumber(hPeak, 2)}로 실제 값 1에 가까워진다.`,
-  panels: [
-    dbPanel('윈도우 없음 (Uniform)', u605wide, 'c1', uFar, false),
-    dbPanel('Hann 윈도우', h605, 'c3', hFar, true),
-  ],
-};
-
-// 그림 5 — 성분이 bin 사이 어디에 있느냐에 따라 가장 높은 막대가 깎이는 정도 (가리비 모양)
-const SC_WINDOWS = ['uniform', 'hann', 'flatTop'] as const;
-const scF = grid(59, 62, 151);
-const scallopCurves = SC_WINDOWS.map((w) => ({
-  w,
-  y: scF.map((f) => {
-    const s = spectrum([tone(f)], w);
-    let m = 0;
-    for (let k = 56; k <= 65; k++) m = Math.max(m, s.amplitude[k]);
-    return m;
-  }),
-}));
-const MID = scF.findIndex((f) => Math.abs(f - 60.5) < 1e-9);
-const mid = (w: (typeof SC_WINDOWS)[number]) => scallopCurves.find((c) => c.w === w)!.y[MID];
-export const scallop: FigureSpec = {
-  id: 'fig-4-5',
-  caption: `그림 5. 진폭 1인 성분의 주파수를 59 Hz에서 62 Hz까지 조금씩 옮기며, 스펙트럼에서 가장 높은 막대의 높이를 그렸다 (Δf = 1 Hz, 세로축은 0.55부터). 성분이 눈금(59, 60, 61, 62 Hz) 위에 있으면 모두 1이지만, 눈금 한가운데(예: 60.5 Hz)에서는 윈도우 없음 ${formatNumber(mid('uniform'), 2)}, Hann ${formatNumber(mid('hann'), 2)}, Flat top ${formatNumber(mid('flatTop'), 3)}으로 깎인다. 눈금마다 되풀이되는 아치 모양 때문에 이 깎임을 가리비 손실(Scallop Loss)이라 부른다.`,
-  panels: [
-    {
-      series: scallopCurves.map((c) => ({ x: scF, y: c.y, color: WIN_COLOR[c.w], width: 2.4, label: WIN_NAME[c.w] })),
-      annotations: [59, 60, 61, 62].map((f) => ({ type: 'vline' as const, x: f, color: 'muted' as const, dash: true })),
-      x: { range: [59, 62], ticks: [59, 59.5, 60, 60.5, 61, 61.5, 62], label: '성분의 주파수 [Hz] (눈금 = 59, 60, 61, 62 Hz)' },
-      y: { range: [0.55, 1.05], ticks: [0.6, 0.7, 0.8, 0.9, 1], label: '가장 높은 막대' },
-      height: 200,
-    },
-  ],
-};
-
-// 그림 6 — 윈도우 모양을 주파수로 본 것: 메인로브와 사이드로브
-const KW = ['uniform', 'hann', 'flatTop', 'blackmanHarris'] as const;
-const KN = 512;
-const KPAD = 16;
-const kernels = KW.map((w) => {
-  const r = fft(zeroPad(createWindow(w, KN), KN * KPAD));
-  const dc = Math.hypot(r.real[0], r.imag[0]);
-  const count = 12 * KPAD + 1;
-  const x = Array.from({ length: count }, (_, k) => k / KPAD);
-  const mag = x.map((_, k) => Math.hypot(r.real[k], r.imag[k]) / dc);
-  return { w, x, mag, db: mag.map(toDb) };
-});
-const sideLevel = (w: (typeof KW)[number], from: number) => {
-  const k = kernels.find((c) => c.w === w)!;
-  return Math.max(...k.db.filter((_, i) => k.x[i] >= from));
-};
-const side = { uniform: sideLevel('uniform', 1), hann: sideLevel('hann', 2), flatTop: sideLevel('flatTop', 5), blackmanHarris: sideLevel('blackmanHarris', 4) };
-export const kernelShapes: FigureSpec = {
-  id: 'fig-4-6',
-  caption: `그림 6. 진폭 1인 성분 하나가 각 윈도우에서 어떤 모양으로 그려지는지를, 성분에서 떨어진 거리(bin)에 따라 그렸다. 위(그대로의 높이): 가운데 봉우리 — 메인로브 — 가 처음 0이 되는 곳이 윈도우 없음 1 bin, Hann 2 bin, Blackman-Harris 4 bin, Flat top 5 bin이다. 봉우리가 넓을수록 가까운 두 성분이 하나로 뭉치기 쉽다. 아래(dB): 메인로브 바깥의 작은 봉우리들 — 사이드로브 — 의 가장 높은 값(점선)이 윈도우 없음 ${formatNumber(side.uniform, 3)} dB, Hann ${formatNumber(side.hann, 3)} dB, Blackman-Harris ${formatNumber(side.blackmanHarris, 3)} dB, Flat top ${formatNumber(side.flatTop, 3)} dB이다. 사이드로브가 낮을수록 큰 성분 옆의 작은 성분이 덜 가려진다.`,
-  panels: [
-    {
-      title: '그대로의 높이: 메인로브 폭',
-      series: kernels.map((k) => ({ x: k.x, y: k.mag, color: WIN_COLOR[k.w], width: 2.2, label: WIN_NAME[k.w] })),
-      annotations: [
-        { type: 'point', x: 1, y: 0, label: '1', color: 'c1', dx: -4, dy: -10 },
-        { type: 'point', x: 2, y: 0, label: '2', color: 'c3', dx: -4, dy: -10 },
-        { type: 'point', x: 4, y: 0, label: '4', color: 'c4', dx: -4, dy: -10 },
-        { type: 'point', x: 5, y: 0, label: '5', color: 'c2', dx: -4, dy: -10 },
-      ],
-      x: { range: [0, 6], ticks: [0, 1, 2, 3, 4, 5, 6] },
-      y: { range: [0, 1.08], ticks: [0, 0.5, 1] },
-      height: 150,
-    },
-    {
-      title: 'dB로 본 높이: 사이드로브 높이',
-      series: kernels.map((k) => ({ x: k.x, y: k.db, color: WIN_COLOR[k.w], width: 1.8, label: WIN_NAME[k.w] })),
-      // 가장 높은 사이드로브 높이 (값은 캡션에). 글자는 곡선과 겹치므로 선만 긋는다
-      annotations: [
-        { type: 'hline', y: side.uniform, color: 'c1' },
-        { type: 'hline', y: side.hann, color: 'c3' },
-        { type: 'hline', y: side.blackmanHarris, color: 'c4' },
-      ],
-      x: { range: [0, 12], ticks: [0, 2, 4, 6, 8, 10, 12], label: '성분에서 떨어진 거리 [bin]' },
-      y: { range: [-120, 5], ticks: [-120, -100, -80, -60, -40, -20, 0], label: '[dB]' },
-      height: 190,
-      legend: false,
-    },
-  ],
-};
-
-// 그림 7 — 큰 성분 옆의 작은 성분 (−70 dB, 8 bin 떨어짐)
-const SMALL_DB = -70;
-const BIG_F = 100.5;
-const SMALL_F = 108.5;
-const drComponents = [tone(BIG_F), tone(SMALL_F, 10 ** (SMALL_DB / 20))];
-const drWindows = ['uniform', 'hann', 'blackmanHarris'] as const;
-const dr = drWindows.map((w) => {
-  const withSmall = band(spectrum(drComponents, w), 85, 125);
-  const bigOnly = band(spectrum([tone(BIG_F)], w), 85, 125);
-  return { w, b: withSmall, leakAtSmall: Math.max(toDb(at(bigOnly, 108)), toDb(at(bigOnly, 109))) };
-});
-const drTitle = {
-  uniform: '윈도우 없음: 큰 성분의 누설에 완전히 묻힌다',
-  hann: 'Hann: 아직 묻힌다',
-  blackmanHarris: 'Blackman-Harris: 작은 성분이 드러난다',
-} as const;
-export const dynamicRange: FigureSpec = {
-  id: 'fig-4-7',
-  caption: `그림 7. 큰 성분(${BIG_F} Hz, 진폭 1)에서 8 bin 떨어진 곳(${SMALL_F} Hz, 주황 점선)에 ${formatNumber(SMALL_DB)} dB(약 1/3000) 작은 성분이 있다. 작은 성분 자리에 큰 성분이 흘린 누설은 윈도우 없음 ${formatNumber(dr[0].leakAtSmall, 2)} dB, Hann ${formatNumber(dr[1].leakAtSmall, 2)} dB, Blackman-Harris ${formatNumber(dr[2].leakAtSmall, 2)} dB이다. 이 누설보다 작은 성분이 커야 보인다. 작은 성분이 −50 dB였다면 Hann으로도 보였을 것이다.`,
-  panels: dr.map((d, i) => ({
-    title: drTitle[d.w],
-    series: [
-      { x: d.b.f, y: d.b.db, color: WIN_COLOR[d.w], width: 1.4 },
-      { x: d.b.f, y: d.b.db, kind: 'dots', color: WIN_COLOR[d.w], radius: 2.4 },
+// ── 그림 4·5: 진폭비·위상 vs r ────────────────────────────────
+const rAxis = grid(0, 3, 601);
+const curveZetas = [
+  { zeta: 0.05, color: 'c1' as const, width: 2.4 },
+  { zeta: 0.1, color: 'c2' as const, width: 2 },
+  { zeta: 0.25, color: 'c3' as const, width: 2 },
+  { zeta: 0.5, color: 'c4' as const, width: 2 },
+];
+export const amplitudeCurve: FigureSpec = {
+  id: 'fig-p1-4-4',
+  caption: `그림 4. 진동수비 r에 따른 진폭비 X/X_st (같은 힘 F₀, 감쇠비만 다름). r이 0이면 1(정적 처짐), r = 1 근처에서 솟고, r이 커지면 0으로 내려간다. 봉우리 높이는 감쇠비가 정한다 — ζ = 0.05(파랑)는 ${f(R.peak.amplitudeRatio, 4)}배(r = ${f(R.peak.frequencyRatio, 4)}), ζ = 0.5(보라)는 봉우리가 거의 없다. r = √2보다 빠르면 감쇠와 관계없이 1보다 작아진다.`,
+  panels: [{
+    series: curveZetas.map(({ zeta, color, width }) => ({
+      x: rAxis,
+      y: rAxis.map((r) => Math.min(at(r, zeta).amplitudeRatio, 12)),
+      label: `ζ = ${zeta}`,
+      color,
+      width,
+    })),
+    annotations: [
+      { type: 'hline', y: 1, label: 'X_st (정적 처짐)', color: 'muted', dash: true, labelAt: 'end' },
+      { type: 'vline', x: Math.SQRT2, label: 'r = √2', color: 'muted', dash: true },
+      { type: 'point', x: R.peak.frequencyRatio, y: R.peak.amplitudeRatio, label: `≈ 1/(2ζ) = ${f(R.peak.amplitudeRatio, 3)}`, color: 'c1', dx: 14, dy: 4 },
     ],
-    annotations: [{ type: 'vline', x: SMALL_F, color: 'warn', dash: true, label: i === 0 ? `작은 성분 (${formatNumber(SMALL_DB)} dB)` : undefined }] as FigAnnotation[],
-    x: i === dr.length - 1 ? { range: [85, 125], ticks: [85, 90, 95, 100, 105, 110, 115, 120, 125], label: '주파수 [Hz]' } : { range: [85, 125], ticks: 'none' },
-    y: { range: [-120, 5], ticks: [-120, -90, -60, -30, 0], label: '[dB]' },
-    height: i === dr.length - 1 ? 120 : 105,
-  })),
+    x: { range: [0, 3], label: '진동수비 r = ω/ωₙ' },
+    y: { range: [0, 11.5], ticks: [0, 1, 2, 4, 6, 8, 10], label: '진폭비 X/X_st' },
+    height: 240,
+  }],
 };
 
-// 그림 8 — 진폭 보정과 에너지 보정의 차이: w의 평균과 w²의 평균
-const hannSq = hannCurve.map((v) => v * v);
-export const windowAverages: FigureSpec = {
-  id: 'fig-4-8',
-  caption:
-    '그림 8. Hann 가중치 w(t)(파랑)와 그 제곱 w²(t)(초록). 정현파 막대의 높이는 신호에 w를 곱한 만큼 줄어드는데, w의 평균이 0.5이므로 막대가 절반이 된다 → 2배 해 주는 진폭 보정(ACF = 2). 잡음처럼 넓게 퍼진 신호는 에너지(제곱)로 따지므로 w²의 평균 0.375만큼 줄어든다 → 에너지를 되돌리려면 1/√0.375 ≈ 1.63배 하는 에너지 보정(ECF ≈ 1.63). 두 평균이 다르기 때문에 보정도 두 가지가 필요하다.',
-  panels: [
-    {
-      series: [
-        { x: tw, y: hannCurve, color: 'c1', width: 2.4, label: '가중치 w(t)' },
-        { x: tw, y: hannSq, color: 'c3', width: 2.4, label: '가중치의 제곱 w²(t)' },
-      ],
-      annotations: [
-        { type: 'hline', y: 0.5, label: 'w의 평균 0.5', color: 'c1', labelAt: 'start' },
-        { type: 'hline', y: 0.375, label: 'w²의 평균 0.375', color: 'c3', labelAt: 'start', labelBelow: true },
-      ],
-      x: { range: [0, 1], ticks: [0, 0.25, 0.5, 0.75, 1], label: '프레임 안의 시간 (0 = 시작, 1 = 끝)' },
-      y: { range: [0, 1.08], ticks: [0, 0.25, 0.5, 0.75, 1] },
-      height: 180,
-    },
-  ],
+export const phaseCurve: FigureSpec = {
+  id: 'fig-p1-4-5',
+  caption: '그림 5. 같은 네 감쇠비의 위상 지연 φ (변위가 힘보다 늦은 각도). 모든 곡선이 r = 1에서 정확히 90°를 지난다. 감쇠가 작을수록(파랑) 0° → 180°로 넘어가는 구간이 r = 1 근처에 좁게 몰리고, 감쇠가 크면(보라) 완만하게 넘어간다.',
+  panels: [{
+    series: curveZetas.map(({ zeta, color, width }) => ({
+      x: rAxis,
+      y: rAxis.map((r) => deg(at(r, zeta).phaseLag)),
+      label: `ζ = ${zeta}`,
+      color,
+      width,
+    })),
+    annotations: [
+      { type: 'hline', y: 90, label: '90°', color: 'muted', dash: true, labelAt: 'start' },
+      { type: 'vline', x: 1, label: 'r = 1', color: 'muted', dash: true },
+    ],
+    x: { range: [0, 3], label: '진동수비 r = ω/ωₙ' },
+    y: { range: [0, 185], ticks: [0, 45, 90, 135, 180], label: '위상 지연 φ [°]' },
+    height: 220,
+  }],
+};
+
+// ── 그림 6: 봉우리 높이와 폭 ──────────────────────────────────
+const zoomAxis = grid(0.8, 1.2, 801);
+const hp = R.halfPower;
+const hp2 = R.halfPowerHalfZeta;
+const peak2 = resonancePeak(ZETA / 2)!;
+export const peakWidth: FigureSpec = {
+  id: 'fig-p1-4-6',
+  caption: `그림 6. r = 1 근처를 확대했다. 봉우리 높이의 1/√2(약 0.707배)가 되는 두 점 사이 폭을 Half-power 폭이라 한다. ζ = 0.05(파랑)는 높이 ${f(R.peak.amplitudeRatio, 4)}, 폭 Δr = ${f(hp.width, 3)} ≈ 2ζ. 감쇠를 절반(ζ = 0.025, 주황)으로 줄이면 높이는 ${f(peak2.amplitudeRatio, 4)}로 약 2배, 폭은 ${f(hp2.width, 3)}로 약 절반이 된다. 고유진동수 5 Hz라면 파랑의 폭은 약 ${f(hp.width * FN, 2)} Hz다.`,
+  panels: [{
+    series: [
+      { x: zoomAxis, y: zoomAxis.map((r) => at(r, ZETA / 2).amplitudeRatio), label: 'ζ = 0.025', color: 'c2', width: 2 },
+      { x: zoomAxis, y: zoomAxis.map((r) => at(r, ZETA).amplitudeRatio), label: 'ζ = 0.05', color: 'c1', width: 2.4 },
+    ],
+    annotations: [
+      { type: 'arrow', x1: hp.lower, y1: R.peak.amplitudeRatio / Math.SQRT2, x2: hp.upper, y2: R.peak.amplitudeRatio / Math.SQRT2, label: `Δr = ${f(hp.width, 3)}`, color: 'c1', double: true, labelDy: 16 },
+      { type: 'arrow', x1: hp2.lower, y1: peak2.amplitudeRatio / Math.SQRT2, x2: hp2.upper, y2: peak2.amplitudeRatio / Math.SQRT2, label: `Δr = ${f(hp2.width, 3)}`, color: 'c2', double: true, labelDy: -10 },
+      { type: 'hline', y: 1, color: 'muted', dash: true },
+    ],
+    x: { range: [0.8, 1.2], label: '진동수비 r = ω/ωₙ' },
+    y: { range: [0, 21.5], ticks: [0, 5, 10, 15, 20], label: '진폭비 X/X_st' },
+    height: 230,
+  }],
+};
+
+// ── 그림 7: 맥놀이 ────────────────────────────────────────────
+const beatTime = grid(0, 8, 4001);
+const beatInput = { forceAmplitude: F0, forcingOmega: R.beat.r * OMEGA_N };
+const beatResponse = forcedResponse(systemFor(R.beat.zeta), beatInput, { x0: 0, v0: 0 }, beatTime);
+export const beatStart: FigureSpec = {
+  id: 'fig-p1-4-7',
+  caption: `그림 7. ζ = 0.01로 감쇠가 아주 작은 계(5 Hz)에 4.5 Hz(r = 0.9) 힘을 정지 상태에서 걸기 시작했다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 한동안 함께 남아, 둘이 같은 방향일 때는 더해지고 반대일 때는 상쇄된다. 그래서 진폭이 ${f(R.beat.periodS, 2)}초(= 1/(5 − 4.5) s)마다 출렁인다. 과도 응답이 사라지면 출렁임도 줄어 회색 점선(정상상태 진폭 ${f(R.beat.amplitudeRatio, 3)} × X_st)에 머문다.`,
+  panels: [{
+    series: [
+      { x: beatTime, y: beatResponse.map((s) => s.x / X_ST), label: '변위 x/X_st', color: 'c1', width: 1.5 },
+    ],
+    annotations: [
+      { type: 'hline', y: R.beat.amplitudeRatio, color: 'muted', dash: true },
+      { type: 'hline', y: -R.beat.amplitudeRatio, color: 'muted', dash: true },
+      { type: 'arrow', x1: 0, y1: 10.6, x2: R.beat.periodS, y2: 10.6, label: `${f(R.beat.periodS, 2)} s`, color: 'warn', double: true, labelDy: -8 },
+    ],
+    x: { range: [0, 8], label: '시간 t [s]' },
+    y: { range: [-11.5, 12], ticks: [-10, -5, 0, 5, 10], label: '변위 x/X_st' },
+    height: 220,
+  }],
 };

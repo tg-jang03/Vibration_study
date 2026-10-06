@@ -17,7 +17,7 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import type { WindowType } from '../../lib/dsp/window';
 
 /**
- * LAB-RES-01 분해능: 두 성분 분리 (P1-3, Contents §5-1).
+ * LAB-RES-01 분해능: 두 성분 분리 (P2-4, Contents §5-1).
  *
  * 목적:
  * Δf · T = 1의 기본 관계와, "가까운 두 주파수 성분을 분리하려면 측정 시간 T가 길어야 한다"는
@@ -54,7 +54,7 @@ const LOR_OPTIONS: ParamOption<number>[] = [
   { value: 6400, label: '6400 line' },
 ];
 
-// 윈도우 자체는 P1-4에서 다룬다. 여기서는 "둔덕 폭이 달라져 필요한 간격이 달라진다"만 본다.
+// 윈도우 자체는 P2-5에서 다룬다. 여기서는 "둔덕 폭이 달라져 필요한 간격이 달라진다"만 본다.
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
   { value: 'hann', label: 'Hann (분석기 기본값, 필요 간격 약 3.5 bin)' },
   { value: 'uniform', label: '윈도우 없음 (필요 간격 약 2 bin)' },

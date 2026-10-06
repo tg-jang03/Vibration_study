@@ -7,7 +7,7 @@ interface Props {
   frontmatter: {
     title?: string;
     description?: string;
-    /** 커리큘럼 절 ID (예: 'P1-1'). 있으면 경로 표시, Part 사이드바, 이전/다음 절 이동을 붙인다 */
+    /** 커리큘럼 절 ID (예: 'P2-2'). 있으면 경로 표시, Part 사이드바, 이전/다음 절 이동을 붙인다 */
     sectionId?: string;
   };
   /** Astro가 MDX 레이아웃에 넘겨 주는 제목 목록 */
@@ -124,7 +124,7 @@ const last = current ? JSON.stringify({ id: current.id, title: current.title, hr
     current && (
       <script is:inline define:vars={{ last }}>
         try {
-          localStorage.setItem('vs-last-section', last);
+          localStorage.setItem('vs-last-section-v2', last);
         } catch (e) {}
       </script>
     )

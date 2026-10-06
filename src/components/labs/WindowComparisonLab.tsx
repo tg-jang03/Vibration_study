@@ -7,7 +7,7 @@ import { createWindow, windowProperties, type WindowType } from '../../lib/dsp/w
 import { fft, zeroPad } from '../../lib/dsp/fft';
 
 /**
- * LAB-WIN-02 윈도우 비교: 메인로브 폭과 사이드로브 높이 (P1-4, Contents §5-1).
+ * LAB-WIN-02 윈도우 비교: 메인로브 폭과 사이드로브 높이 (P2-5, Contents §5-1).
  *
  * 두 윈도우의 시간 모양과, 성분 하나가 그 윈도우에서 그려지는 모양(|W|)을 겹쳐 비교한다.
  * 읽음값은 본문에서 설명한 세 숫자(메인로브 반폭, 가장 높은 사이드로브, 가리비 손실)만 쓴다.

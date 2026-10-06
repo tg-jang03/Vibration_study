@@ -9,7 +9,7 @@ import { formatNumber, texNumber } from '../../lib/format';
 import { convertSine, DETECTOR_LABEL, UNITS, type Detector, type UnitId } from '../../lib/units';
 
 /**
- * LAB-UNIT-01 진동 단위 환산기 (P1-6 §6, Contents §5-1).
+ * LAB-UNIT-01 진동 단위 환산기 (P2-7 §6, Contents §5-1).
  * 정현파 하나를 가정하고 변위·속도·가속도 × Peak·Peak-Peak·RMS × SI·인치 단위를 서로 바꾼다 (src/lib/units.ts).
  */
 

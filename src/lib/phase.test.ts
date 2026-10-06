@@ -87,7 +87,7 @@ describe('시간 차이 → 지연각과 관례', () => {
   });
 });
 
-describe('동기 DFT (P1-1의 DFT를 키페이저에서 시작한 정수 바퀴에)', () => {
+describe('동기 DFT (P2-2의 DFT를 키페이저에서 시작한 정수 바퀴에)', () => {
   const spr = 64;
   const sig = (oneX: number, lag1: number, twoX = 0, lag2 = 0) =>
     Float64Array.from({ length: spr * 3 }, (_, i) => {
@@ -120,7 +120,7 @@ describe('동기 DFT (P1-1의 DFT를 키페이저에서 시작한 정수 바퀴�
   });
 });
 
-describe('키페이저 펄스 (P2-2 교정 곡선 위)', () => {
+describe('키페이저 펄스 (P3-2 교정 곡선 위)', () => {
   it('홈 없는 곳 −9.45 V, 홈 바닥 −17.3 V, 앞 가장자리 θ = 0에서 문턱 −13.4 V', () => {
     expect(keyphasorVoltage(Math.PI)).toBeCloseTo(gapVoltage(KEY_NOTCH.gap), 9);
     expect(keyphasorVoltage(KEY_NOTCH.width / 2)).toBeCloseTo(gapVoltage(KEY_NOTCH.gap + KEY_NOTCH.depth), 1);

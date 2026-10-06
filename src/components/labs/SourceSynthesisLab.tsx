@@ -83,7 +83,7 @@ export default function SourceSynthesisLab() {
     {split && <>
       <h4>나눠 보기 — 막대 스펙트럼 미리 보기</h4>
       <Plot series={spectrum} x={{ label: '주파수 [Hz]', range: [0, spectrumMax] }} y={{ label: '성분 진폭 [µm]' }} height={300} ariaLabel="합 신호에서 계산한 진폭 스펙트럼" />
-      <p>가로는 주파수, 세로는 그 성분의 크기입니다. 막대는 원인 이름이 아닙니다. 계산하면서 중심 성분 주위에 작은 막대도 생깁니다. 방법과 눈금은 Part 1에서 다룹니다.</p>
+      <p>가로는 주파수, 세로는 그 성분의 크기입니다. 막대는 원인 이름이 아닙니다. 계산하면서 중심 성분 주위에 작은 막대도 생깁니다. 방법과 눈금은 Part 2에서 다룹니다.</p>
     </>}
   </LabFrame>;
 }

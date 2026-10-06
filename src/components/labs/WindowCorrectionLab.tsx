@@ -10,7 +10,7 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import { createRng } from '../../lib/dsp/random';
 
 /**
- * LAB-WIN-03 진폭 보정(ACF)과 에너지 보정(ECF) (P1-4, Contents §5-1).
+ * LAB-WIN-03 진폭 보정(ACF)과 에너지 보정(ECF) (P2-5, Contents §5-1).
  *
  * 정현파 하나와 넓게 퍼진 잡음에 각각 ACF·ECF를 곱해 보고,
  * 어느 쪽에 어느 보정이 맞는지(정현파 → 막대 높이 → ACF, 잡음 → 전체 RMS → ECF)를 숫자로 확인한다.

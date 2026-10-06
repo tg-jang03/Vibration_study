@@ -34,7 +34,7 @@ describe('harmonicPreset', () => {
     for (let i = 0; i < 5; i++) expect(pulse[i]).toBeCloseTo(square[i] / 2, 12);
   });
 
-  it('위상만 바꾸면 진폭 스펙트럼은 같지만 Crest factor는 달라진다 (P1-1 과제 1)', () => {
+  it('위상만 바꾸면 진폭 스펙트럼은 같지만 Crest factor는 달라진다 (P2-2 과제 1)', () => {
     const { amps, phases } = harmonicPreset('square', 9);
     const shuffled = phases.map((p, i) => p + i * 1.3);
     const make = (ph: number[]) =>
@@ -81,7 +81,7 @@ describe('dftAt', () => {
   });
 });
 
-describe('제로패딩 (P1-1 과제 3)', () => {
+describe('제로패딩 (P2-2 과제 3)', () => {
   it('정수배 P로 패딩하면 원래 bin k의 값 = 패딩 후 bin P·k의 값 (Contents §6)', () => {
     const s = acquire(
       { components: [{ type: 'sine', freq: 10.3, amp: 1 }, { type: 'sine', freq: 11.3, amp: 1 }] },

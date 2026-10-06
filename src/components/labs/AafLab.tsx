@@ -14,7 +14,7 @@ import {
 } from '../../lib/dsp/sampling';
 
 /**
- * LAB-SMP-02 AAF와 fs = 2.56 F_max (P1-2, Contents §5-1).
+ * LAB-SMP-02 AAF와 fs = 2.56 F_max (P2-3, Contents §5-1).
  *
  * 목적:
  * 상용 진동 분석기가 왜 fs = 2.56 F_max를 쓰는지,

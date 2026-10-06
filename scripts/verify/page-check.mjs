@@ -2,7 +2,7 @@
 // 전체 페이지를 1500px씩 잘라 PNG로 저장한다. 매번 캡처·검사 스크립트를 새로 쓰지 않기 위한 공용 도구.
 //
 // 사용: 먼저 `npm run build` → `npx astro preview` (기본 http://localhost:4321)
-//   npm run verify:page -- /p2-5/ /lab/            (여러 경로)
+//   npm run verify:page -- /p3-5/ /lab/            (여러 경로)
 //   옵션: --base <URL>  --out <폴더(기본 dist/qa)>  --width <px(기본 1100)>  --no-shots  --edge <msedge 경로>
 // 결과: 경로마다 한 줄 요약 + JSON(<out>/report.json). 오류가 있으면 종료 코드 1.
 import { spawn } from 'node:child_process';
@@ -24,7 +24,7 @@ const outDir = opt('out', 'dist/qa');
 const width = Number(opt('width', '1100'));
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
-// Git Bash는 '/p2-5/'를 'C:/Program Files/Git/p2-5/'로 바꿔 넘긴다 → 되돌린다
+// Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

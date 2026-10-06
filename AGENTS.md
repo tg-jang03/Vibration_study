@@ -5,7 +5,7 @@
 
 ## 1. 프로젝트
 
-기초 진동 역학(MCK·모드)에서 대형 회전기계(GT/ST) 진단까지 잇는 **개인 학습용 공개 웹사이트**. 커리큘럼 Part 0 ~ 10(`docs/Curriculum.md`)을 페이지로 만들고, 신호처리는 가상 신호를 직접 조작하는 **랩 + 수식**으로 만든다. 결정권자 = 사용자, 작업자 = Claude·Codex(·Antigravity), 공유 수단 = 이 저장소와 `docs/`.
+기초 진동 역학(MCK·모드)에서 대형 회전기계(GT/ST) 진단까지 잇는 **개인 학습용 공개 웹사이트**. 커리큘럼 Part 1 ~ 11(`docs/Curriculum.md`)을 페이지로 만들고, 신호처리는 가상 신호를 직접 조작하는 **랩 + 수식**으로 만든다. 결정권자 = 사용자, 작업자 = Claude·Codex(·Antigravity), 공유 수단 = 이 저장소와 `docs/`.
 
 ## 2. 문서 지도 (등급: D-030)
 
@@ -35,10 +35,10 @@
 
   | 트랙 | 범위 | 담당 | 작업 폴더 | 최신 받기 → push |
   |---|---|---|---|---|
-  | A | M1 Part 1·M3 Part 2 (세부 완료, 확인 대기) → **M4 Part 3** (D-034) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
-  | B | M2 Part 0 (완료) → **M5 Part 4 (M5.0 ~ M5.3, D-034·D-036)** | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
+  | A | M1 Part 2·M3 Part 3 (세부 완료, 확인 대기) → **M4 Part 4** (D-034) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | B | M2 Part 1 (완료) → **M5 Part 5 (M5.0 ~ M5.3, D-034·D-036)** | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
 
-- **파일 소유** (D-029·D-031·D-034): A = `p1-1 ~ p1-8`·`p2-*`·`p3-*`, 그 `figures/`, `lib/dsp` 등 Part 1·2·3 계산 모듈, 그 랩, `index.astro` / B = `p0-*`·`p4-*`·`p1-0`, 그 `figures/`, `lib/mck`·`lib/rotor`·`lib/machine`, 그 랩, `SineBasicsLab`. **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, 갤러리의 자기 절, **랩 모음 `src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩을 만들면 두 곳에 한 줄씩 — `labs.test.ts`가 빠진 줄을 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.
+- **파일 소유** (D-029·D-031·D-034): A = `p2-2 ~ p2-9`·`p3-*`·`p4-*`, 그 `figures/`, `lib/dsp` 등 Part 2·3·4 계산 모듈, 그 랩, `index.astro` / B = `p1-*`·`p5-*`·`p2-1`, 그 `figures/`, `lib/mck`·`lib/rotor`·`lib/machine`, 그 랩, `SineBasicsLab`. **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, 갤러리의 자기 절, **랩 모음 `src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩을 만들면 두 곳에 한 줄씩 — `labs.test.ts`가 빠진 줄을 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.
 - 순서: 최신 받기 → 작업 → 커밋 → 다시 최신 받기 → 검사 → push (거절되면 자기 커밋만 rebase). rebase 충돌은 문서에서만 난다 → **양쪽 내용을 모두 살린다**, 다른 트랙의 행·절은 origin 쪽 그대로 (I-026). 새 D·I 번호는 push 직전 origin 확인, 겹치면 나중 쪽이 올린다.
 - 다른 트랙의 작업 폴더에서는 설치·빌드·git 명령을 실행하지 않는다 (I-024). 사용자가 요청하면 세 번째 작업은 별도 worktree (D-021).
 - 커밋: `[M{n}.{m}] {feat|fix|docs|test|refactor|chore}: {요약}`. 세부 하나에 커밋 하나가 기본. force push·이미 push한 커밋 재작성 금지 (되돌릴 때는 `git revert`).
@@ -53,7 +53,7 @@
 
 ## 6. 코드 규칙
 
-- 명령: `npm run dev` · `check` · `build` · `test` · **`npm run verify:page -- /p2-5/ /lab/`**(미리보기 서버 필요: `npx astro preview`. hydration·콘솔 오류·모바일 넘침·1500px 구간 캡처를 `dist/qa`에, D-038).
+- 명령: `npm run dev` · `check` · `build` · `test` · **`npm run verify:page -- /p3-5/ /lab/`**(미리보기 서버 필요: `npx astro preview`. hydration·콘솔 오류·모바일 넘침·1500px 구간 캡처를 `dist/qa`에, D-038).
 - 내부 링크·정적 파일은 `withBase()` (`/Vibration_study/` 하위 배포). 목차 `src/data/curriculum.ts` = Curriculum 절 구성 = Contents §4 상태.
 - `lib/`의 계산 모듈은 **순수 함수**(DOM·React·플롯 의존 없음), 내부 단위 SI (변환은 UI에서, D-012), 난수는 시드 고정, 새 계산에는 **해석해·문헌값 테스트**(기준값 Contents §6), 기호는 Contents §3.
 - 랩: 사양(Contents §5)을 먼저 쓰고 구현. `LabFrame` + `ParamSlider`·`ParamSelect`·`ParamToggle`·`ReadoutTable`·`Formula`·`Plot`(극좌표는 `PolarPlot`, D-035). 첫 렌더에 시간·시드 없는 난수·`window`를 쓰지 않고, 이론상 0인 값은 0으로 표시 (I-019). 랩 모음 등록은 §4 공유 규칙.

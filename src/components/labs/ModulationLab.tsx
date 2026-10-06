@@ -12,7 +12,7 @@ import { evaluateRange, type SignalComponent } from '../../lib/dsp/signal';
 import { BEAT_EXAMPLE, GEAR_EXAMPLE, MOD_AMP, modSpectrum, peakNear, relDb } from '../../lib/modulationDemo';
 
 /**
- * LAB-MOD-01 변조 · 측대역 · 맥놀이 (P1-7, Contents §5-1).
+ * LAB-MOD-01 변조 · 측대역 · 맥놀이 (P2-8, Contents §5-1).
  * 반송파의 크기(AM)·주파수(FM)를 변조 주파수로 흔들거나, 가까운 두 주파수를 더해(맥놀이) 파형·포락선과 스펙트럼을 함께 본다.
  * 본문 그림과 같은 신호 정의(src/lib/modulationDemo.ts, signal.ts의 'modulated').
  */
@@ -175,9 +175,9 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
         { question: 'AM + FM에서 위상차를 0° → 90° → 180°로 바꾸면 측대역 좌우 높이는?',
           answer: '0°에서는 위쪽(f_c + f_m)이 크고, 90°에서는 양쪽이 같고, 180°에서는 아래쪽이 큽니다. 측대역이 비대칭이면 AM과 FM이 함께 있다는 표시입니다.' },
         { question: '맥놀이에서 차이를 0.25 Hz로 두면 포락선 주기는? 측정 시간 T를 1 s로 줄이면 두 막대가 갈라지나요?',
-          answer: '주기는 1/0.25 = 4 s입니다. T = 1 s(Δf 1 Hz)에서는 두 막대가 0.25 bin 떨어져 하나로 붙습니다. Hann으로 가르려면 약 3.5 bin, 즉 T ≥ 14 s가 필요합니다 (P1-3).' },
+          answer: '주기는 1/0.25 = 4 s입니다. T = 1 s(Δf 1 Hz)에서는 두 막대가 0.25 bin 떨어져 하나로 붙습니다. Hann으로 가르려면 약 3.5 bin, 즉 T ≥ 14 s가 필요합니다 (P2-4).' },
       ]}
-      footer={<p>f_s = 1024 Hz, 반송파(맥놀이는 f₁)의 크기 1 mm/s Peak. 스펙트럼은 Hann 윈도우 한 프레임입니다. 주파수가 Δf = 1/T의 배수가 아니면 막대가 가리비 손실(P1-4)만큼 낮게 읽힙니다.</p>}
+      footer={<p>f_s = 1024 Hz, 반송파(맥놀이는 f₁)의 크기 1 mm/s Peak. 스펙트럼은 Hann 윈도우 한 프레임입니다. 주파수가 Δf = 1/T의 배수가 아니면 막대가 가리비 손실(P2-5)만큼 낮게 읽힙니다.</p>}
     >
       <h4>파형과 포락선</h4>
       <Plot series={waveSeries} x={{ label: '시간 [s]', range: [0, data.tShow] }} y={{ label: '[mm/s]' }} height={240} ariaLabel="파형과 포락선" />

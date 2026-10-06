@@ -9,7 +9,7 @@ import { formatNumber, texNumber } from '../../lib/format';
 import { gapVoltage, PROBE, ROTOR, simulateProbe, type RunoutKind } from '../../lib/proximity';
 
 /**
- * LAB-PROX-01 비접촉 변위 센서: gap 전압과 런아웃 (P2-2, Contents §5-1).
+ * LAB-PROX-01 비접촉 변위 센서: gap 전압과 런아웃 (P3-2, Contents §5-1).
  * 교정 곡선 위의 동작 구간, 출력 전압(DC + AC), 전압에서 환산한 거리와 실제 거리, 진동·런아웃 성분.
  * 계산: src/lib/proximity.ts (본문 그림 2 ~ 5와 같은 모델).
  */
@@ -76,7 +76,7 @@ export default function ProximityLab({ initialGap = 1.2, initialRpm = 3600, init
       controls={<>
         <ParamSlider label="평균 gap d₀" value={gapMm} min={0.1} max={2.8} step={0.01} unit="mm" format={(v) => v.toFixed(2)} onChange={setGapMm} />
         <ParamSlider label="회전수" value={rpm} min={100} max={4000} step={50} unit="rpm" onChange={setRpm} hint={`예시 로터: 임계속도 ${ROTOR.criticalRpm} rpm, 운전 ${ROTOR.operatingRpm} rpm`} />
-        <ParamSlider label="축 진동 (운전 3600 rpm에서)" value={vib} min={0} max={300} step={5} unit="µm pp" onChange={setVib} hint="다른 회전수의 진동은 불평형 응답으로 정해집니다 (P0-6)" />
+        <ParamSlider label="축 진동 (운전 3600 rpm에서)" value={vib} min={0} max={300} step={5} unit="µm pp" onChange={setVib} hint="다른 회전수의 진동은 불평형 응답으로 정해집니다 (P1-6)" />
         <ParamSelect label="런아웃" value={runout} options={RUNOUT_OPTIONS} onChange={setRunout} />
         <ParamSelect label="표적 재질" value={target} options={TARGET_OPTIONS} onChange={setTarget} hint="환산에는 늘 교정 감도 7.87 V/mm를 씁니다" />
       </>}
@@ -98,7 +98,7 @@ export default function ProximityLab({ initialGap = 1.2, initialRpm = 3600, init
         { question: '평균 gap 2.4 mm, 진동 300 µm pp로 두면 환산 진동은 실제보다 얼마나 작게 읽히나요? 1.2 mm로 옮기면?',
           answer: '2.4 mm에서는 먼 쪽이 선형 범위 밖이라 약 193 µm pp로 36 % 작게 읽힙니다. 1.2 mm로 옮기면 300 µm pp 그대로입니다. 그래서 gap을 선형 범위 가운데쯤에 맞춰 설치합니다.' },
         { question: '런아웃 "둘 다"로 두고 회전수를 300 rpm으로 내리면 무엇이 남나요?',
-          answer: '진동은 1 µm pp 정도로 거의 사라지고, 약 13 µm pp의 런아웃이 남습니다. 축이 거의 흔들리지 않는데도 센서는 신호를 냅니다. 이 저속 값을 운전 중 값에서 빼는 것이 Slow roll 보상입니다 (P2-3).' },
+          answer: '진동은 1 µm pp 정도로 거의 사라지고, 약 13 µm pp의 런아웃이 남습니다. 축이 거의 흔들리지 않는데도 센서는 신호를 냅니다. 이 저속 값을 운전 중 값에서 빼는 것이 Slow roll 보상입니다 (P3-3).' },
         { question: '표적 재질을 "다른 재질"로 바꾸면 진동이 몇 % 틀리게 읽히나요? 평균 거리는?',
           answer: '실제 감도가 12 % 낮은데 교정 감도로 나누므로 진동도 평균 거리도 12 % 작게 읽힙니다. 축 재질이 교정 표적과 다르면 그 재질로 다시 교정해야 합니다.' },
       ]}

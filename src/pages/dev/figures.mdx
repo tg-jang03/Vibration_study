@@ -6,30 +6,30 @@ description: 개발용 — 본문 예시 그림(정적 SVG)과 강조 상자 확
 
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
-import * as P01 from '../../figures/p0-1';
-import * as P02 from '../../figures/p0-2';
-import * as P03 from '../../figures/p0-3';
-import * as P04 from '../../figures/p0-4';
-import * as P05 from '../../figures/p0-5';
-import * as P06 from '../../figures/p0-6';
-import * as P07 from '../../figures/p0-7';
-import * as P08 from '../../figures/p0-8';
-import * as F0 from '../../figures/p1-0';
-import * as F1 from '../../figures/p1-1';
-import * as F2 from '../../figures/p1-2';
-import * as F3 from '../../figures/p1-3';
-import * as F4 from '../../figures/p1-4';
-import * as F5 from '../../figures/p1-5';
-import * as F6 from '../../figures/p1-6';
-import * as F7 from '../../figures/p1-7';
-import * as F8 from '../../figures/p1-8';
-import * as F21 from '../../figures/p2-1';
-import * as F22 from '../../figures/p2-2';
-import * as F23 from '../../figures/p2-3';
-import * as F24 from '../../figures/p2-4';
-import * as F25 from '../../figures/p2-5';
-import * as F40 from '../../figures/p4-0';
-import * as F41 from '../../figures/p4-1';
+import * as P01 from '../../figures/p1-1';
+import * as P02 from '../../figures/p1-2';
+import * as P03 from '../../figures/p1-3';
+import * as P04 from '../../figures/p1-4';
+import * as P05 from '../../figures/p1-5';
+import * as P06 from '../../figures/p1-6';
+import * as P07 from '../../figures/p1-7';
+import * as P08 from '../../figures/p1-8';
+import * as F0 from '../../figures/p2-1';
+import * as F1 from '../../figures/p2-2';
+import * as F2 from '../../figures/p2-3';
+import * as F3 from '../../figures/p2-4';
+import * as F4 from '../../figures/p2-5';
+import * as F5 from '../../figures/p2-6';
+import * as F6 from '../../figures/p2-7';
+import * as F7 from '../../figures/p2-8';
+import * as F8 from '../../figures/p2-9';
+import * as F21 from '../../figures/p3-1';
+import * as F22 from '../../figures/p3-2';
+import * as F23 from '../../figures/p3-3';
+import * as F24 from '../../figures/p3-4';
+import * as F25 from '../../figures/p3-5';
+import * as F40 from '../../figures/p5-1';
+import * as F41 from '../../figures/p5-2';
 import * as FD from '../../figures/dev-schematic';
 
 export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
@@ -48,103 +48,103 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 <Callout type="try">따라 하기 상자</Callout>
 <Callout type="field">현장 상자</Callout>
 
-## P0-1
+## P1-1
 
 {byId(P01).map((f) => <Figure {...f} />)}
 
-## P0-2
+## P1-2
 
 {byId(P02).map((f) => <Figure {...f} />)}
 
-## P0-3
+## P1-3
 
 {byId(P03).map((f) => <Figure {...f} />)}
 
-## P0-4
+## P1-4
 
 {byId(P04).map((f) => <Figure {...f} />)}
 
-## P0-5
+## P1-5
 
 {byId(P05).map((f) => <Figure {...f} />)}
 
-## P0-6
+## P1-6
 
 {byId(P06).map((f) => <Figure {...f} />)}
 
-## P0-7
+## P1-7
 
 {byId(P07).map((f) => <Figure {...f} />)}
 
-## P0-8
+## P1-8
 
 {byId(P08).map((f) => <Figure {...f} />)}
 
-## P1-0
+## P2-1
 
 {byId(F0).map((f) => <Figure {...f} />)}
 
-## P1-1
+## P2-2
 
 {byId(F1).map((f) => <Figure {...f} />)}
 
-## P1-2
+## P2-3
 
 {byId(F2).map((f) => <Figure {...f} />)}
 
-## P1-3
+## P2-4
 
 {byId(F3).map((f) => <Figure {...f} />)}
 
-## P1-4
+## P2-5
 
 {byId(F4).map((f) => <Figure {...f} />)}
 
-## P1-5
+## P2-6
 
 {byId(F5).map((f) => <Figure {...f} />)}
 
-## P1-6
+## P2-7
 
 {byId(F6).map((f) => <Figure {...f} />)}
 
-## P1-7
+## P2-8
 
 {byId(F7).map((f) => <Figure {...f} />)}
 
-## P1-8
+## P2-9
 
 {byId(F8).map((f) => <Figure {...f} />)}
 
-## P2-1
+## P3-1
 
 {byId(F21).map((f) => <Figure {...f} />)}
 
-## P2-2
+## P3-2
 
 {byId(F22).map((f) => <Figure {...f} />)}
 
-## P2-3
+## P3-3
 
 {byId(F23).map((f) => <Figure {...f} />)}
 
-## P2-4
+## P3-4
 
 {byId(F24).map((f) => <Figure {...f} />)}
 
-## P2-5
+## P3-5
 
 {byId(F25).map((f) => <Figure {...f} />)}
 
-## P4-0
+## P5-1
 
 {byId(F40).map((f) => <Figure {...f} />)}
 
-## P4-1
+## P5-2
 
 {byId(F41).map((f) => <Figure {...f} />)}
 
-## 도식 견본 (Part 0용)
+## 도식 견본 (Part 1용)
 
 축 없는 패널(`frame: false`)에 벽·스프링·감쇠기·질량·원판을 그린 견본이다. 데이터: `src/figures/dev-schematic.ts`.
 
