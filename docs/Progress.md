@@ -10,10 +10,10 @@
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
 | **A** | M1 신호처리 기초 (Part 1) → **M3 센서와 측정 체인 (Part 2)** | Claude | `진동공부` | M1 18 / 18, **M3 0 / 5** | **M3.1** 센서 원리와 선택 (P2-1: LAB-SNS-01) — M1은 사용자 확인 대기 | **진행 중** (2026-10-06~, D-031) |
-| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 5 / 9 | **M2.4** P0-4 · LAB-FRC-01 | **완료 — 사용자 검토** |
+| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 6 / 9 | **M2.5** P0-5 · LAB-2DOF-01 | **완료 — 사용자 검토** |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
-- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P1-6 스케일링·단위(M1.13)**, **P1-7 변조·맥놀이(M1.14)**, **P1-8 측정 설정 종합·Signal Lab(M1.15)**, **P0-1~P0-4** (M2.1~M2.4)
+- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P1-6 스케일링·단위(M1.13)**, **P1-7 변조·맥놀이(M1.14)**, **P1-8 측정 설정 종합·Signal Lab(M1.15)**, **P0-1~P0-5** (M2.1~M2.5)
 
 ## 핸드오프 — 공통
 
@@ -26,7 +26,7 @@
 ## 핸드오프 — 트랙 A (Claude, Part 1)
 
 - **방금 끝냄 (M1.15, M1의 마지막 세부)**: P1-8 측정 설정 종합 — 그림 4(`src/figures/p1-8.ts`, 결정 순서 도식 포함), Signal Lab 샌드박스 LAB-SBX-01 `SandboxLab`(P1-8 §6 + 독립 페이지 `src/pages/lab.mdx` → `/lab/`). 엔진 `lib/sandbox.ts`(기계 신호·AAF·평균·성분별 판정·목적별 도우미 `RECIPES`). 홈에 Signal Lab 카드.
-- **다음 (D-031)**: M3 Part 2 — M3.1 P2-1 → M3.2 P2-2 → M3.3 P2-3 → M3.4 P2-4 → M3.5 P2-5. M1은 P1-5 ~ P1-8 사용자 확인 뒤 완료 처리(세부 표·회고를 `archive/Milestones.md`로).
+- **다음**: M1 전 페이지(P1-5 ~ P1-8) 사용자 확인 → M1 완료 처리(세부 표·회고를 `archive/Milestones.md`로, D-030) → **다음 큰 마일스톤을 사용자와 정한다** (Roadmap 순서로는 M3 센서와 측정 체인, Part 2. 트랙 B의 M2와 파일이 겹치지 않음).
 - 화면 확인 요령: 앱 브라우저 창이 숨겨져 있으면 `client:visible` 랩이 깨어나지 않는다. 헤드리스 Edge를 `--window-size=1100,23500`으로 전체 페이지를 한 번에 찍고, PowerShell `System.Drawing`으로 1500px씩 잘라 본다 (앵커 캡처는 랩 계산 중이면 빈 화면).
 - 그림: dB 스펙트럼은 선 + 점. 그림 숫자 회귀 테스트 예: `src/figures/figures-p1-4-5.test.ts`. 같은 랩을 여러 곳에 둘 때는 props로 시작 상태 + `client:visible` (`AveragingLab`).
 - **P1-0은 트랙 B 소유** (M2.2·M2.8). 고칠 일이 생기면 트랙 B 핸드오프에 요청으로 남긴다.
@@ -36,8 +36,8 @@
 - **작업 폴더**: `C:\Users\AX\Desktop\ATG\업무\진동공부-Codex` (Codex가 2026-10-06에 만든 기존 git worktree, detached HEAD). 기본 폴더 `진동공부`는 트랙 A가 쓰므로 들어가지 않는다.
 - **시작할 때마다**: `git fetch origin` → `git rebase origin/main` (로컬 커밋이 없으면 `git checkout --detach origin/main`). **push**: 검사 통과 후 `git push origin HEAD:main`. 거절되면 다시 fetch·rebase.
 - **먼저 읽을 것**: `AGENTS.md` → `docs/PageGuide.md`(특히 §5-4 도식, §6-4 랩, §10 Part 0 특기 사항) → `Roadmap.md` §6-4(M2 표) → `Curriculum.md` Part 0 → `Contents.md` §1-2 Part 0 척추, §5 LAB-MCK-01 ~ LAB-SRC-01, §6 기준값(고유진동수 ~ 불평형 응답 행) → D-027, D-029.
-- **M2.4 완료**: P0-4 본문(9절)·정적 그림 7개, LAB-FRC-01(가진 주파수·ζ·시간파형 선택, r·진폭비·위상·봉우리 읽음값, Bode 플롯 연동), `forced.ts`에 `resonancePeak`·`halfPowerPoints` 추가 및 테스트 10개.
-- **다음은 사용자 확인 뒤 M2.5**: P0-5 여러 질량과 모드(P0-5, LAB-2DOF-01: 2자유도 모드, m₁=m₂, k_c, 모드 형상 [1, 1], [1, -1]). `lib/mck/twoDof.ts`를 사용한다.
+- **M2.5 완료**: P0-5 본문(10절)·정적 그림 7개(`src/figures/p0-5.ts`) 및 회귀 테스트 5개(`p0-5.test.ts`), 그림 갤러리 등록, LAB-2DOF-01(`TwoDofModeLab`: k_c 슬라이더, 초기조건 선택, 두 질량 SVG 애니메이션, 시간파형, 모드분해 토글, ReadoutTable, 실험과제 4문항), `lib/mck/twoDof.ts` 해석해 코어.
+- **다음은 사용자 확인 뒤 M2.6**: P0-6 회전기계의 진동: 불평형과 1X (P0-6, LAB-UNB-01: 불평형 런업 입문, rpm 슬라이더, 도는 원판과 원심력 화살표, 1X 진동).
 - 이 Codex 실행 셸에서는 Node가 PATH에 없을 때가 있었다. 그 경우 검사 명령 앞에 현재 프로세스용으로 `$env:Path = 'C:\Program Files\nodejs;' + $env:Path`를 붙이면 된다.
 - **고치지 않는 것**: `src/pages/p1-1 ~ p1-8.mdx`, `src/figures/p1-*.ts`, `src/lib/dsp/`(읽기·import는 자유), Part 1 랩, `docs/Progress.md`의 트랙 A 행·절.
 - **P1-0**: M2.2(LAB-BAS-01 이동)부터 트랙 B 소유.
@@ -49,7 +49,7 @@
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
 | M1 | 신호처리 기초 (Part 1) · 트랙 A | **세부 완료 — 사용자 확인 대기** | 18 / 18 | — |
 | M2 | 진동의 기초 (Part 0) · 트랙 B | 진행 중 | 5 / 9 | — |
-| M3 | 센서와 측정 체인 (Part 2) · 트랙 A | 진행 중 | 0 / 5 | — |
+| M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
 | M5 | 회전체 동역학 기초 (Part 4) | 대기 | 0 / 3 | — |
 | M6 | 현장 플롯 읽기 (Part 5) | 대기 | 0 / 6 | — |
@@ -88,16 +88,6 @@
 - 잘된 점: 그림 데이터를 `lib/dsp`로 계산하고 본문 숫자를 회귀 테스트로 묶어, 본문 = 그림 = 랩이 어긋나지 않았다. 사용자 피드백(D-025 → D-026)으로 정한 페이지 형식을 PageGuide(D-028)로 굳힌 뒤에는 P1-5 ~ P1-8을 같은 리듬으로 빠르게 썼다. 전체 페이지 헤드리스 캡처로 라벨 겹침·잘못된 표시를 push 전에 잡았다.
 - 바꿀 점: 초기(M1.1 ~ M1.10)에는 페이지를 쓴 뒤 두 번 갈아엎었다(M1.T, M1.T2) — 작성 기준을 먼저 합의했으면 덜 들었다. 병렬 트랙에서 공유 문서(Contents·Glossary·Progress)가 자주 겹친다 → 커밋 직전 최신 받기를 습관으로. 헤드리스 캡처는 앵커·가상 시간에 약하다 → 긴 창 + 잘라 보기.
 
-## 세부 마일스톤 현황 — M3 센서와 측정 체인 (Part 2) · 트랙 A
-
-| 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
-|---|---|---|---|---|---|
-| M3.1 | 센서 원리와 선택 (P2-1, LAB-SNS-01) | **진행 중** | Claude | — | — |
-| M3.2 | 프록시미티 프로브 시스템 (P2-2, LAB-PROX-01) | 대기 | Claude | — | — |
-| M3.3 | 키페이저 · 위상 · 1X 벡터 (P2-3, LAB-PHS-01, LAB-SRO-01) | 대기 | Claude | — | — |
-| M3.4 | 측정 체인 함정 (P2-4, 퀴즈) | 대기 | Claude | — | — |
-| M3.5 | 과도 데이터 수집과 보호 시스템 (P2-5, LAB-ALM-01) | 대기 | Claude | — | — |
-
 ## 세부 마일스톤 현황 — M2 진동의 기초 (Part 0) · 트랙 B
 
 | 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
@@ -107,7 +97,7 @@
 | M2.2 | 고유진동수 (P0-2, LAB-MCK-01 확장, LAB-BAS-01 이동) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
 | M2.3 | 감쇠 (P0-3, LAB-DAMP-01) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
 | M2.4 | 강제진동과 공진 (P0-4, LAB-FRC-01) | **완료** (사용자 검토 대기) | Codex / Antigravity | main | 2026-10-06 |
-| M2.5 | 여러 질량과 모드 (P0-5, LAB-2DOF-01) | 대기 | Codex | — | — |
+| M2.5 | 여러 질량과 모드 (P0-5, LAB-2DOF-01) | **완료** (사용자 검토 대기) | Codex | main | 2026-10-06 |
 | M2.6 | 불평형과 1X (P0-6, LAB-UNB-01) | 대기 | Codex | — | — |
 | M2.7 | 응답에서 원인으로 (P0-7, LAB-SRC-01) | 대기 | Codex | — | — |
 | M2.8 | P1-0 정리 | 대기 | Codex | — | — |
@@ -146,6 +136,15 @@
 
 ## 세션 로그 — 트랙 B (Codex, Part 0) · 최근 3개, 최신이 위
 
+### 2026-10-06 · Codex · M2.5 여러 질량과 모드 — P0-5, LAB-2DOF-01
+- 요청: 사용자 — "그럼 이제 다음 작업 ㄱㄱ"
+- P0-5: 자유도·연성 운동방정식 → 고유진동수 2개·모드 형상(동상 vs 역상) → 순수 모드 진동 → 모드 중첩과 약한 결합 맥놀이 → 2자유도 FRF → 연속체 굽힘 모드. 정적 그림 7개와 숫자 회귀 테스트 5개
+- LAB-2DOF-01: 가운데 스프링 kc 슬라이더 (50~2000 N/m)·초기 조건 4종·슬로우 모션·모드 분해 토글, 두 질량 물리 SVG 애니메이션, 시간파형 플롯, 읽음값 6개, 실험 과제 4문항
+- 코어: `lib/mck/twoDof.ts`에 `twoDofFreeResponseAt`, `twoDofFreeResponse`, `twoDofForcedFRF` 순수 함수 추가 및 테스트 6개
+- 문서: Contents P0-5·LAB-2DOF-01 검토 상태, Glossary 8개 신규 용어 반영, curriculum.ts review 링크, M2.2 로그 archive로 이동
+- 확인: `npm run check` 0 errors, `npm test` 통과, `npm run build` 정적 빌드 및 헤드리스 캡처 검증
+- 다음: 사용자 검토 뒤 M2.6 불평형과 1X
+
 ### 2026-10-06 · Codex · M2.4 강제진동과 공진 — P0-4, LAB-FRC-01
 - 요청: 사용자 — M2.4 강제진동과 공진 이어서 진행
 - P0-4: 가진력·운동방정식 → 과도 vs 정상상태 → 진동수비와 세 구간 → 공진과 Q·Half-power 폭 → FRF와 Bode 선도 → 맥놀이. 정적 그림 7개와 숫자 회귀 테스트 4개
@@ -163,11 +162,3 @@
 - 확인: 최신 main(M1.13 포함)에서 `npm run check` 0 errors, `npm test` 206개, `npm run build` 25페이지, P0-3 전체 헤드리스 캡처 정상
 - 다음: 사용자 검토 뒤 M2.4 강제진동과 공진
 
-### 2026-10-06 · Codex · M2.2 고유진동수와 질량-스프링 확장
-- 요청: 사용자 — 다음 세부 마일스톤 진행
-- P0-2: 운동방정식 → 정현파 세 숫자 → 고유진동수 → 진폭·초기조건 → x/v/a → 정적 처짐. 정적 그림 7개와 숫자 회귀 테스트 2개
-- LAB-MCK-01: P0-1 기본 모드를 유지하며 P0-2 확장 모드(m·k·x₀·v₀, x/v/a 선택, fₙ·T·A·현재 상태 읽음값) 추가
-- LAB-BAS-01: P1-0에서 P0-2로 이동하고 P1-0에는 `withBase()` 위치 안내 링크만 남김
-- 문서: Curriculum·Contents·Glossary·curriculum.ts 상태와 최초 용어 위치 갱신
-- 확인: `npm run check` 0 errors, `npm test` 181개, `npm run build` 23페이지, P0-2 헤드리스 상단 캡처에서 그림·첫 랩 정렬 확인
-- 다음: 사용자 검토 뒤 M2.3 감쇠
