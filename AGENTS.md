@@ -59,10 +59,10 @@
 
   | 트랙 | 범위 | 담당 | 작업 폴더 | 최신 받기 → push |
   |---|---|---|---|---|
-  | A | M1 Part 1 (M1.12 ~ M1.15) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | A | M1 Part 1 (세부 완료, 확인 대기) → **M3 Part 2 (M3.1 ~ M3.5, D-031)** | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
   | B | M2 Part 0 (M2.1 ~ M2.8) | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
 
-  - 파일 소유 (자세히는 D-029): A만 `p1-1 ~ p1-8`·`figures/p1-*`·`lib/dsp`·Part 1 랩·`index.astro` / B만 `p0-*`·`figures/p0-*`·`lib/mck`·Part 0 랩·`p1-0.mdx`·`SineBasicsLab` / 공유는 자기 구역만(`curriculum.ts`의 자기 Part, 갤러리의 자기 절, 문서의 자기 트랙 행·절) / 공용 코어(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`)는 하위 호환으로만 고치고 핸드오프에 적는다.
+  - 파일 소유 (자세히는 D-029, D-031): A만 `p1-1 ~ p1-8`·`p2-*`·`figures/p1-*`·`figures/p2-*`·`lib/dsp`·`lib/sensor.ts` 등 Part 2 계산 모듈·Part 1·2 랩·`index.astro` / B만 `p0-*`·`figures/p0-*`·`lib/mck`·Part 0 랩·`p1-0.mdx`·`SineBasicsLab` / 공유는 자기 구역만(`curriculum.ts`의 자기 Part, 갤러리의 자기 절, 문서의 자기 트랙 행·절) / 공용 코어(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`)는 하위 호환으로만 고치고 핸드오프에 적는다.
   - rebase 충돌은 문서의 같은 자리에서만 난다 → 양쪽 내용을 모두 살린다. 새 `D-`·`I-` 번호는 push 직전에 `origin/main`의 마지막 번호를 확인하고, 겹치면 나중에 push하는 쪽이 올린다.
   - **다른 트랙의 작업 폴더에서는 설치·빌드·git 명령을 실행하지 않는다.** worktree를 만들기 전에 `git worktree list`와 상위 폴더를 확인한다 (Windows는 폴더 이름의 대소문자를 구분하지 않는다, I-024).
 - 그 밖의 짧은 병렬 (D-021): 사용자가 요청하면 세 번째 작업은 별도 worktree(`git worktree add --detach ../진동공부-<에이전트> main`)에서 파일이 겹치지 않는 세부 마일스톤을 한다.
