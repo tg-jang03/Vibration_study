@@ -72,7 +72,7 @@ export const PARTS: Part[] = [
       { id: 'P2-2', title: '프록시미티 프로브 시스템', status: 'review', href: '/p2-2/' },
       { id: 'P2-3', title: '키페이저 · 위상 · 1X 벡터', status: 'review', href: '/p2-3/' },
       { id: 'P2-4', title: '측정 체인 함정', status: 'review', href: '/p2-4/' },
-      { id: 'P2-5', title: '과도 데이터 수집과 보호 시스템', status: 'planned' },
+      { id: 'P2-5', title: '과도 데이터 수집과 보호 시스템', status: 'review', href: '/p2-5/' },
     ],
   },
   {
