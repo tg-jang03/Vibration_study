@@ -58,7 +58,7 @@ export const PARTS: Part[] = [
       { id: 'P1-4', title: '윈도우', status: 'done', href: '/p1-4/' },
       { id: 'P1-5', title: '평균화와 TSA', status: 'review', href: '/p1-5/' },
       { id: 'P1-6', title: '스펙트럼 스케일링과 진동 단위', status: 'review', href: '/p1-6/' },
-      { id: 'P1-7', title: '변조 · 측대역 · 맥놀이', status: 'planned' },
+      { id: 'P1-7', title: '변조 · 측대역 · 맥놀이', status: 'review', href: '/p1-7/' },
       { id: 'P1-8', title: '측정 설정 종합: 목적별 의사결정', status: 'planned' },
     ],
   },

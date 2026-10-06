@@ -63,7 +63,30 @@ export interface ImpulsesComponent {
   offset?: number;
 }
 
-export type DeterministicComponent = SineComponent | HarmonicsComponent | ChirpComponent | ImpulsesComponent;
+/**
+ * 변조된 정현파 (P1-7): x(t) = amp · (1 + am·cos(2π modFreq t + amPhase)) · cos(2π carrier t + fm·sin(2π modFreq t) + phase).
+ * am은 AM 변조 지수 m(크기가 오르내리는 비율), fm은 FM 변조 지수 β(위상이 흔들리는 크기, 최대 주파수 흔들림 = β·modFreq).
+ * 둘 다 주면 AM과 FM이 같은 주파수로 함께 걸린 신호 (amPhase가 둘 사이의 위상차).
+ */
+export interface ModulatedComponent {
+  type: 'modulated';
+  /** 반송파 주파수 f_c [Hz] */
+  carrier: number;
+  /** 반송파 진폭 A (Peak) */
+  amp: number;
+  /** 변조 주파수 f_m [Hz] */
+  modFreq: number;
+  /** AM 변조 지수 m (0 이상, 보통 0 ~ 1) */
+  am?: number;
+  /** FM 변조 지수 β */
+  fm?: number;
+  /** AM 포락선의 위상 [rad] — FM과의 위상차 */
+  amPhase?: number;
+  /** 반송파 위상 [rad] */
+  phase?: number;
+}
+
+export type DeterministicComponent = SineComponent | HarmonicsComponent | ChirpComponent | ImpulsesComponent | ModulatedComponent;
 export type SignalComponent = DeterministicComponent | NoiseComponent;
 
 export interface SignalSpec {
@@ -103,6 +126,12 @@ export function evaluate(spec: SignalSpec, t: number): number {
           if (tau < 0) continue;
           x += c.amp * Math.exp(-tau / c.decay) * Math.sin(TWO_PI * c.ringFreq * tau);
         }
+        break;
+      }
+      case 'modulated': {
+        const wm = TWO_PI * c.modFreq * t;
+        const env = 1 + (c.am ?? 0) * Math.cos(wm + (c.amPhase ?? 0));
+        x += c.amp * env * Math.cos(TWO_PI * c.carrier * t + (c.fm ?? 0) * Math.sin(wm) + (c.phase ?? 0));
         break;
       }
       case 'noise':
