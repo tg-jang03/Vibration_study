@@ -36,7 +36,7 @@
 │   └─ 1-4 윈도우
 ├─ Part 2  센서와 측정 체인          (프록시미티, 위상·1X 벡터, 과도 수집)
 ├─ Part 3  신호처리 확장             (필터, STFT, 2채널, 차수추적, 엔벨로프, 켑스트럼)
-├─ Part 4  회전체 동역학 기초        (불평형 응답 Bode/Polar·AF, Jeffcott, 유막 안정성)
+├─ Part 4  회전체 동역학 기초        (회전기계 구성·지지계 → Bode/Polar·AF, Jeffcott, 유막 안정성)
 ├─ Part 5  현장 플롯 읽기            (파형, 스펙트럼, 오빗, Centerline, Bode/Polar, 트렌드)
 ├─ Part 6  결함별 진단               (1X, 미스얼라인, 불안정, 베어링, 기어, 전기, 공력, 비틀림)
 ├─ Part 7  GT/ST 특화 현상           (기동·정지, bow·Morton, ST, GT, 발전기)
@@ -135,7 +135,7 @@ scripts/bench/           플롯 성능 측정 (I-020)
 | M2 | 진동의 기초 | Part 0 | 10 | 질량-스프링 계산 코어 `lib/mck` + Part 0 전 페이지·미니 랩, P1-0 정리 (M2.0 착수 준비 포함) |
 | M3 | 센서와 측정 체인 | Part 2 | 5 | 센서 모델·프로브·위상·측정 체인 점검·보호 시스템 (D-031) |
 | M4 | 신호처리 확장 (트랙 A, M3 다음) | Part 3 | 8 | 필터·STFT·2채널·차수추적·엔벨로프·켑스트럼 |
-| M5 | 회전체 동역학 기초 | Part 4 | 3 | 로터 모델 라이브러리 `lib/rotor` + Part 4 (트랙 B, D-034) |
+| M5 | 회전체 동역학 기초 | Part 4 | 4 | 회전기계 구성·지지계 도입 + 로터 모델 라이브러리 `lib/rotor` + Part 4 (트랙 B, D-034·D-036) |
 | M6 | 현장 플롯 읽기 | Part 5 | 6 | 현장 플롯 6종 |
 | M7 | 결함별 진단 | Part 6 | 7 | 결함 합성기 + Part 6 |
 | M8 | GT/ST 특화 현상 | Part 7 | 4 | GT/ST 시나리오 프리셋 |
@@ -207,9 +207,10 @@ scripts/bench/           플롯 성능 측정 (I-020)
 
 | 세부 | 내용 | 페이지 · 랩 | 산출물 · 완료 기준 |
 |---|---|---|---|
-| M5.1 | 로터 계산 코어 + Bode/Polar·증폭계수 | P4-1 · LAB-AF-01 | `src/lib/rotor/` 순수 함수(`lib/mck` 위에): 런업 데이터 생성(rpm 간격·측정 잡음·런아웃, 시드 고정), 1X 벡터 → Bode·Polar 점, Half-power AF 추정, 분리여유. 검증: ζ = 0.05 → 추정 AF ≈ 10(허용오차 명시), 진폭 피크 r = 1.0025 vs 위상 90° r = 1. 본문·그림(heavy spot vs high spot 도식 포함)·랩 |
-| M5.2 | Jeffcott 로터 | P4-2 · LAB-JEF-01 | `lib/rotor/jeffcott.ts`(x·y 해석해, A_f·A_b). 검증: Contents §6 Jeffcott 행. 오빗·정/역 성분을 페이지에서 직접 계산(P3-4 전) |
-| M5.3 | 유막 베어링과 안정성 | P4-3 · LAB-STB-01 | `lib/rotor/stability.ts`(복소 계수 2차 방정식 근, δ, 한계). 저널 베어링 도식(간극·편심률·자세각), whirl/whip·Campbell 개념 그림. 검증: Contents §6 안정성 행 |
+| M5.0 | 회전기계 구성·지지계 도입 (D-036) | P4-0 · LAB-SUP-01 | 구동기/피동기·모터/로터·축/커플링·베어링/지지계·운동 방향·MCK 대응의 본문과 도식. `lib/machine/supportModel.ts`의 무질량 직렬 강성 예제 + 해석해 테스트, 조작 → f_n 곡선 → 수식 → 과제. 실제 축계 일반식이 아님을 명시. 목차·문서·첫 용어 위치 동기화 |
+| M5.1 | 로터 계산 코어 + Bode/Polar·증폭계수 | P4-1 · LAB-AF-01 | P4-0의 구성과 P0-6 응답을 되짚은 뒤 `src/lib/rotor/` 순수 함수(`lib/mck` 위에): 런업 데이터 생성(rpm 간격·측정 잡음·런아웃, 시드 고정), 1X 벡터 → Bode·Polar 점, Half-power AF 추정, 분리여유. 검증: ζ = 0.05 → 추정 AF ≈ 10(허용오차 명시), 진폭 피크 r = 1.0025 vs 위상 90° r = 1. 본문·그림(heavy spot vs high spot 도식 포함)·랩 |
+| M5.2 | Jeffcott 로터 | P4-2 · LAB-JEF-01 | 자전/선회·강체 병진/기울기와 축 굽힘 도입 → `lib/rotor/jeffcott.ts`(x·y 해석해, A_f·A_b). 검증: Contents §6 Jeffcott 행. 오빗·정/역 성분을 페이지에서 직접 계산(P3-4 전) |
+| M5.3 | 유막 베어링과 안정성 | P4-3 · LAB-STB-01 | 유막의 하중 지지부터 설명 → `lib/rotor/stability.ts`(복소 계수 2차 방정식 근, δ, 한계). 저널 베어링 도식(간극·편심률·자세각), whirl/whip·Campbell 개념 그림. 검증: Contents §6 안정성 행 |
 
 ### 6-7. 세부 마일스톤 — M4, M6~M11 (목록만, 시작 시 구체화)
 

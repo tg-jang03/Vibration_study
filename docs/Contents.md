@@ -60,13 +60,14 @@
 | P2-4 | 측정 체인 함정: 마운팅 대역, IEPE 바이어스, 저주파 적분 증폭(ski-slope), 그라운드 루프, 케이블 잡음, 센서 공진, 확인 습관 | P2-1 ~ P2-3, P1-2, P1-6 |
 | P2-5 | 과도 수집(Δrpm·Δt 트리거, 동기 샘플링), 보호 시스템 알람 로직(레벨·지연·보팅·트립 배율) | P2-3, P1-3, P1-5 |
 
-**Part 4 개념 척추** (D-034, 2026-10-06 — 트랙 B가 M5에서 쓴다)
+**Part 4 개념 척추** (D-034·D-036, 2026-10-06 — 트랙 B가 M5에서 쓴다)
 
 | 페이지 | 새로 도입하는 개념 | 기대고 있는 개념 |
 |---|---|---|
-| P4-1 | 불평형 응답의 Bode(1X 진폭·위상 vs rpm)와 Polar(1X 벡터 궤적), heavy spot vs high spot, 증폭계수 AF = N_c/(N₂ − N₁) ≈ 1/(2ζ)·Half-power, 분리여유 SM(개념, 규격 수치 없음), 런업 데이터의 오차(rpm 간격·잡음·런아웃) | P0-4, P0-6, P2-3(1X 벡터·위상 관례, §3) |
-| P4-2 | Jeffcott 로터(원판 + 탄성축), 복소 좌표 z = x + jy, 선회(whirl)와 자전, 정방향 동기 선회·원형 오빗, 비등방 지지 → 타원 오빗·임계속도 2개·역방향 선회, 정/역 성분 A_f·A_b(페이지에서 직접 계산 — Full spectrum P3-4는 아직 없다), 강체/굽힘 모드·강성/유연 로터 | P0-5, P0-6, P4-1, P1-1(복소 표현) |
-| P4-3 | 저널 베어링(간극·편심률·자세각), 유막 계수(K_xx … C_yy)와 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P0-3, P0-7(기름막 0.38 ~ 0.48X), P4-2 |
+| P4-0 | 구동기/피동기·모터/로터/고정자·축/커플링/축계, 베어링의 방식(구름/유막)과 하중 방향(반경/추력), 하우징/받침대/기초, 횡/축/비틀림 운동, 구성 → MCK 대응, 무질량 직렬 강성 예제 | P0-1~P0-5. P0-7의 요소 주파수는 다시 계산하지 않고 Part 2의 측정·Part 6의 결함과 경계를 둔다 |
+| P4-1 | 불평형 응답의 Bode(1X 진폭·위상 vs rpm)와 Polar(1X 벡터 궤적), heavy spot vs high spot, 증폭계수 AF = N_c/(N₂ − N₁) ≈ 1/(2ζ)·Half-power, 분리여유 SM(개념, 규격 수치 없음), 런업 데이터의 오차(rpm 간격·잡음·런아웃) | P4-0, P0-4, P0-6, P2-3(1X 벡터·위상 관례, §3) |
+| P4-2 | 자전/선회·강체 병진/기울기와 축 굽힘 도입 → Jeffcott 로터(원판 + 탄성축), 복소 좌표 z = x + jy, 정방향 동기 선회·원형 오빗, 비등방 지지 → 타원 오빗·임계속도 2개·역방향 선회, 정/역 성분 A_f·A_b(페이지에서 직접 계산 — Full spectrum P3-4는 아직 없다), 강성/유연 로터 | P4-0, P0-5, P0-6, P4-1, P1-1(복소 표현) |
+| P4-3 | 유막의 압력 생성·하중 지지 → 저널 베어링(간극·편심률·자세각), 유막 계수(K_xx … C_yy)와 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P4-0, P0-3, P0-7(기름막 0.38 ~ 0.48X), P4-2 |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -132,6 +133,7 @@
 | k_xy | 교차연성 강성 | N/m | 유막·씰 (P4-3) |
 | λ = σ ± jω_d | 복소 고유치 | 1/s | σ > 0이면 불안정 (P4-3) |
 | ζ | 감쇠비 | — | |
+| k_eq, k_sh, k_br, k_sup | 직렬 예제의 등가 / 축 / 베어링 / 지지 강성 | N/m | P4-0 한 방향·무질량 연결 예제. k_br은 한 경로의 등가 값, 실제 두 베어링 일반식이 아님 |
 | AF | 증폭계수 (Amplification Factor) | — | |
 | G_xy | 교차 스펙트럼 | | |
 | γ² | 코히어런스 | — | 0~1 |
@@ -167,6 +169,7 @@
 - 증폭계수 (Half-power): `AF = \dfrac{N_c}{N_2 - N_1} \approx \dfrac{1}{2\zeta}` (N₁, N₂: 피크 진폭의 0.707배 지점, I-004)
 - 1자유도 불평형 응답: `\dfrac{X}{m_u e / M} = \dfrac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}},\quad \phi = \operatorname{atan2}(2\zeta r,\ 1-r^2),\quad r = \dfrac{N}{N_n}`
 - Log decrement: `\delta = -\dfrac{2\pi\sigma}{\omega_d} \approx 2\pi\zeta`
+- 지지 강성 직렬 예제(P4-0): `\dfrac{1}{k_{eq}} = \dfrac{1}{k_{sh}} + \dfrac{1}{k_{br}} + \dfrac{1}{k_{sup}}`, `f_n = \dfrac{1}{2\pi}\sqrt{\dfrac{k_{eq}}{m}}` (연결부 질량 무시, 같은 힘, 각 변형 합의 가정)
 - 1X 벡터와 Slow roll 보상: `\vec V = A\,e^{-j\phi}`, `\vec V_c = \vec V - \vec V_{sr}`
 - **위상 관례 (P2-3·P4-1·P5-5 공통, D-034)**: 위상 φ는 **지연각**(0° ≤ φ < 360°) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각. 1X 벡터 = A∠φ (A의 단위·Peak/Pk-Pk를 함께 적는다), 복소수로는 `A\,e^{-j\phi}`. Polar 플롯은 0°를 위쪽(센서 방향)에 두고 지연이 커지는 쪽을 **회전 반대 방향**으로 그린다(기본 회전은 반시계 → 지연은 시계 방향). 시간에서 각도로: `arphi = 360^circ 	imes Delta t / T`. 장비마다 다른 관례(P2-3 §3): 앞섬각(cos 기준, FFT 위상) `psi = -arphi`, 영점 기준 `arphi - 90^circ`. Polar 플롯 랩은 `components/ui/PolarPlot`(D-035)
 - 비접촉 변위 센서: `d = V_{gap} / S`, AC `d_{pp} = \Delta V_{pp} / S` (출력은 음전압, gap이 클수록 더 음)
@@ -226,6 +229,7 @@
 | P3-6 | 트래킹 · 노치 필터 | LAB-FLT-02 | M4.6 | 계획 |
 | P3-7 | 엔벨로프 · Spectral Kurtosis | LAB-ENV-01, LAB-SK-01 | M4.7 | 계획 |
 | P3-8 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 계획 |
+| P4-0 | 회전기계의 구성: 무엇이 돌고, 무엇이 받치나? | LAB-SUP-01 | M5.0 | 검토 (구성·지지계 본문, 그림 7, 지지 강성 랩) |
 | P4-1 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 사양 |
 | P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 계획 |
 | P4-3 | 유막 베어링과 안정성 입문 | LAB-STB-01 | M5.3 | 계획 |
@@ -607,6 +611,15 @@
 - 표시·해석: 내부는 m·s·Hz, UI만 µm·ms·rpm. 1 s 신호를 계산하고 앞 80 ms를 확대한다. 나눠 보기는 **합 신호를 계산한** 단일측 진폭 스펙트럼(8192 Hz·8192점·Hann), 원인 이름표가 아니다. 정현파는 Peak 진폭, 울림 입력은 각 충격의 포락선 초기 크기. 진폭 조작은 **센서 위치의 응답 크기**이지 힘이나 결함 심각도가 아니며, rpm 변화 때 진폭은 고정(실제 런업 예측은 P0-6).
 - 가리기: 원인별 조작·파형·주파수 읽음값·수식을 숨겨 합 파형만 제시. 나눠 보기 버튼은 가린 상태에서도 쓸 수 있고 원인 설정은 드러내지 않는다.
 
+#### LAB-SUP-01 지지 강성과 고유진동수 (D-036)
+- P4-0 · M5.0 · 검토 (`SupportStiffnessLab`, `lib/machine/supportModel.ts`). 목적: 강성 k가 축만의 속성이 아니라 지지 경로의 변형에도 영향을 받음을 조작한다.
+- 모델: 한 질량 m에 무질량 직렬 스프링 k_sh·k_br·k_sup 연결. 같은 힘·변형 합 → §3 식. 축/베어링은 고정 1/2 MN/m, 기본 m = 100 kg·k_sup = 1 MN/m. 실제 로터의 일반식을 주장하지 않는다.
+- 조작: k_sup = 0.1~10 MN/m(0.05 간격, 기본 1), m = 50~200 kg(10 간격, 기본 100), 처음 값으로 초기화.
+- 출력: k_sup vs f_n 곡선·현재 점·지지 강성 무한대 극한(축과 베어링의 변형은 남음), 읽음값 k_eq·f_n·극한 f_n. 단위 변환은 UI, 내부 SI. 수식에 현재 입력 대입.
+- 과제: 지지 1→0.25 MN/m에서 f_n 변화, 지지 4 MN/m 비교, m 100→200 kg일 때 1/√2배.
+- 검증: 기본 k_eq = 400000 N/m·f_n = 10.06584242 Hz; k_sup = 250000 N/m → k_eq = 181818.1818 N/m·f_n ≈ 6.78639 Hz; 지지 무한대 → k_eq = 666666.6667 N/m·f_n ≈ 12.99495 Hz. 해석해·단조성·범위 오류 테스트.
+- 배치: 구성→MCK 도식 뒤, 따라 하기 → 랩 → 숫자 해석. 안정성·임계속도·운전 진폭은 계산하지 않는다.
+
 #### LAB-AF-01 Run-up Bode & 증폭계수
 - P4-1 · M5.1 · 사양 (D-027 이전: P0-2 · M2.2)
 - 목적: P0-6에서 입문으로 본 1자유도 불평형 응답(진폭·위상 vs rpm)을 Bode·Polar 플롯으로 보고, Half-power법으로 AF(≈ 1/2ζ)를 "데이터에서" 뽑는다.
@@ -770,6 +783,8 @@
 | 구름베어링 6205 | N_r 9, d 7.94 mm, D 39.04 mm, α 0 (CWRU 시험 베어링 치수, R-10) | FTF 0.3983X, BPFO 3.585X, BPFI 5.415X, BSF 2.357X (2× 4.713X, CWRU 표는 2×). BPFO + BPFI = 9X |
 | 전자기력 | 전원 60 Hz | 2 f_L = 120 Hz (3600 rpm 2극이면 2X와 같음) |
 
+P4-0 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 1 MN/m → k_eq = 0.4 MN/m, f_n = 10.06584242 Hz. 같은 강성 3개면 k_eq = k/3, 지지 강성을 키우면 f_n 단조 증가, m 두 배면 f_n/√2. §5 LAB-SUP-01과 테스트가 함께 확인한다.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -789,6 +804,7 @@
 
 | R-13 | [NI Spectrum Averaging Mode](https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html) | RMS·피크홀드·벡터 평균과 트리거 조건 (P1-5) | 공식 문서, 2026-10-02 확인 |
 | R-14 | [SciPy Welch](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html) | 겹친 구간의 파워 평균·오버랩 조건 (P1-5) | 공식 문서, 2026-10-02 확인 |
+| R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P4-0) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
