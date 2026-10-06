@@ -67,7 +67,7 @@ export const PARTS: Part[] = [
     title: '센서와 측정 체인',
     question: '이 숫자는 무엇을, 얼마나 믿을 만하게 쟀나?',
     sections: [
-      { id: 'P2-1', title: '센서 원리와 선택', status: 'planned' },
+      { id: 'P2-1', title: '센서 원리와 선택', status: 'review', href: '/p2-1/' },
       { id: 'P2-2', title: '프록시미티 프로브 시스템', status: 'planned' },
       { id: 'P2-3', title: '키페이저 · 위상 · 1X 벡터', status: 'planned' },
       { id: 'P2-4', title: '측정 체인 함정', status: 'planned' },
