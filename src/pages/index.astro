@@ -5,16 +5,23 @@ import { withBase } from '../lib/site';
 ---
 
 <BaseLayout>
-  <h1>회전체 진동 진단 공부</h1>
+  <h1>기계 진동 분석과 회전체 진단</h1>
   <p class="lead">
-    기초 진동 역학(MCK·모드해석)부터 대형 회전기계(GT/ST) 진동 진단까지. 신호처리는 가상 신호를 직접 조작하는 인터랙티브 랩으로 원리를 체득합니다.
+    진동의 물리와 신호처리부터 대형 회전기계(GT/ST)의 상태 진단까지, 수식·시각화·인터랙티브 실험으로 하나의 흐름 안에서 익힙니다.
   </p>
 
   <h2>커리큘럼 지도</h2>
   <ol class="part-grid">
     {
       PARTS.map((part) => {
-        const { done, total } = partProgress(part);
+        const { review, done, ready, total } = partProgress(part);
+        const progressLabel = review > 0
+          ? done > 0
+            ? `검토 ${review} · 완료 ${done} / ${total}절`
+            : `검토 ${review} / ${total}절`
+          : done > 0
+            ? `완료 ${done} / ${total}절`
+            : `계획 / ${total}절`;
         return (
           <li>
             <a class="card part-card" href={withBase(`/parts/${part.num}/`)} data-featured={part.featured}>
@@ -25,9 +32,9 @@ import { withBase } from '../lib/site';
               </span>
               <span class="part-question">{part.question}</span>
               <span class="part-progress">
-                <span class="bar" style={`--p:${total ? (done / total) * 100 : 0}%`} />
+                <span class="bar" style={`--p:${total ? (ready / total) * 100 : 0}%`} />
                 <span class="count">
-                  {done} / {total} 절
+                  {progressLabel}
                 </span>
               </span>
             </a>

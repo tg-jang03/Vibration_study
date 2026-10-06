@@ -8,5 +8,5 @@ export function withBase(path = '/'): string {
   return `${base}${clean}`;
 }
 
-export const SITE_NAME = '진동공부';
+export const SITE_NAME = '기계 진동 분석';
 export const REPO_URL = 'https://github.com/tg-jang03/Vibration_study';

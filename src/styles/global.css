@@ -183,8 +183,6 @@ main.container {
 }
 
 .badge[data-status='planned'] { color: var(--status-planned); }
-.badge[data-status='spec'] { color: var(--status-spec); }
-.badge[data-status='wip'] { color: var(--status-wip); }
 .badge[data-status='review'] { color: var(--status-review); }
 .badge[data-status='done'] { color: var(--status-done); }
 

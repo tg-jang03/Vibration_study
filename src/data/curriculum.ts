@@ -4,12 +4,10 @@
  * 절을 추가·변경하거나 페이지 상태가 바뀌면 이 파일도 함께 고친다.
  */
 
-export type SectionStatus = 'planned' | 'spec' | 'wip' | 'review' | 'done';
+export type SectionStatus = 'planned' | 'review' | 'done';
 
 export const STATUS_LABEL: Record<SectionStatus, string> = {
   planned: '계획',
-  spec: '사양',
-  wip: '구현중',
   review: '검토',
   done: '완료',
 };
@@ -56,11 +54,11 @@ export const PARTS: Part[] = [
       { id: 'P1-0', title: '신호와 스펙트럼의 기본', status: 'review', href: '/p1-0/' },
       { id: 'P1-1', title: '푸리에 기초: 신호를 주파수로 보는 법', status: 'review', href: '/p1-1/' },
       { id: 'P1-2', title: '샘플링 · 에일리어싱 · AAF · ADC', status: 'review', href: '/p1-2/' },
-      { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'done', href: '/p1-3/' },
+      { id: 'P1-3', title: '분해능 · 측정 시간 · Zoom FFT', status: 'review', href: '/p1-3/' },
       { id: 'P1-4', title: '윈도우', status: 'review', href: '/p1-4/' },
       { id: 'P1-5', title: '평균화와 TSA', status: 'review', href: '/p1-5/' },
-      { id: 'P1-6', title: '스펙트럼 스케일링과 진동 단위', status: 'spec' },
-      { id: 'P1-7', title: '변조 · 측대역 · 맥놀이', status: 'spec' },
+      { id: 'P1-6', title: '스펙트럼 스케일링과 진동 단위', status: 'planned' },
+      { id: 'P1-7', title: '변조 · 측대역 · 맥놀이', status: 'planned' },
       { id: 'P1-8', title: '측정 설정 종합: 목적별 의사결정', status: 'planned' },
     ],
   },
@@ -96,7 +94,7 @@ export const PARTS: Part[] = [
     title: '회전체 동역학 기초',
     question: '회전체는 무엇이 다르고, 언제 스스로 흔들리나?',
     sections: [
-      { id: 'P4-1', title: '1자유도 불평형 응답을 Bode/Polar로', status: 'spec' },
+      { id: 'P4-1', title: '1자유도 불평형 응답을 Bode/Polar로', status: 'planned' },
       { id: 'P4-2', title: 'Jeffcott 로터: 회전체 응답의 기본', status: 'planned' },
       { id: 'P4-3', title: '유막 베어링과 안정성 입문', status: 'planned' },
     ],
@@ -174,10 +172,14 @@ export const PARTS: Part[] = [
   },
 ];
 
-/** 완료된 절 수 / 전체 절 수 */
-export function partProgress(part: Part): { done: number; total: number } {
+/** 검토·완료 단계에 들어간 절 수 / 전체 절 수 */
+export function partProgress(part: Part): { review: number; done: number; ready: number; total: number } {
+  const review = part.sections.filter((s) => s.status === 'review').length;
+  const done = part.sections.filter((s) => s.status === 'done').length;
   return {
-    done: part.sections.filter((s) => s.status === 'done').length,
+    review,
+    done,
+    ready: review + done,
     total: part.sections.length,
   };
 }

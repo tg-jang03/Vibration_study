@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = '회전체(GT/ST) 진동 진단을 인터랙티브 신호처리 랩과 수식으로 공부하는 개인 학습 사이트',
+  description = '진동의 물리와 신호처리부터 대형 회전기계(GT/ST) 상태 진단까지 연결하는 기계 진동 학습 아카이브',
 } = Astro.props;
 
 const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
@@ -42,7 +42,7 @@ const isHome = Astro.url.pathname.replace(/\/+$/, '') === withBase('/').replace(
     </main>
     <footer class="site-footer">
       <div class="container">
-        개인 학습용 사이트 · <a href={REPO_URL}>GitHub</a>
+        기계 진동 학습 아카이브 · <a href={REPO_URL}>GitHub</a>
       </div>
     </footer>
   </body>
