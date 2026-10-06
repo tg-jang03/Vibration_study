@@ -1,0 +1,68 @@
+# Milestones — 끝난 마일스톤 기록 (보관)
+
+> 완료된 큰 마일스톤의 세부 표·커밋·회고와, 끝난 세부 마일스톤의 산출물 상세·코어 설계 메모를 옮겨 둔 곳이다 (D-030). **평소에는 읽지 않는다.** 지금 기준은 코드·테스트와 `Roadmap.md`·`Contents.md`다. "왜 이렇게 만들었나"를 찾을 때만 본다.
+> 큰 마일스톤 순서로 둔다. 새로 끝난 것은 그 M 절에 덧붙인다.
+
+## M0 기반 구축 (2026-10-02 완료)
+
+### 세부 계획과 완료 기준 (옛 Roadmap §6-2)
+
+| 세부 | 내용 | 완료 기준 |
+|---|---|---|
+| M0.1 | 문서 체계 · 상세 커리큘럼 초안 | 문서 7종, 원본 보존, Part 1 랩 사양 (2026-10-02 완료) |
+| M0.2 | 저장소 연결 · 초기 커밋 | `origin` 연결, `main`에 문서 커밋·push |
+| M0.3 | 사이트 골격 | Astro + React + MDX + TS strict, 기본 레이아웃(헤더·Part 내비), 홈 커리큘럼 지도 골격, GitHub Pages용 `site`/`base` 설정, `npm run build` 통과 |
+| M0.4 | 수식 · 플롯 검증 | MDX 본문 KaTeX, 실시간 Formula 컴포넌트, Plot 래퍼(Plotly) + 슬라이더로 다시 그려지는 사인파 샘플 페이지 |
+| M0.5 | 테스트 · CI · 배포 | Vitest + 첫 DSP 함수 테스트, GitHub Actions(test + build + Pages 배포), 배포 URL 접속 확인 |
+
+### 결과·커밋·회고 (옛 Progress "완료된 큰 마일스톤")
+
+| 세부 | 내용 | 담당 | 커밋 |
+|---|---|---|---|
+| M0.1 | 문서 체계 · 상세 커리큘럼 초안 | Claude | `b2a4e16` (M0.2에 포함) |
+| M0.2 | 저장소 연결 · 초기 커밋 | Claude | `b2a4e16` |
+| M0.3 | 사이트 골격 | Claude | `ce07ee2` (PR #1, 병합 `e7b620c`) |
+| M0.4 | 수식 · 플롯 검증 | Claude | `3f1f019`, 수정 `850bc52` (I-017) |
+| M0.5 | 테스트 · CI · 배포 | Claude(1~2단계) · 사용자(3~5단계) | `3a15123`, `f98e472`, `ca771c1` |
+
+**회고**
+- 잘된 점
+  - 문서 체계(Decisions·Issues·Progress) 덕분에 계획 변경(커리큘럼 재구성, 2단계 마일스톤, main 단일 브랜치)을 근거와 함께 추적할 수 있었다.
+  - 헤드리스 Edge 캡처로 화면을 직접 확인하는 방법이 생겼다 → 사용자 제보(I-017) 재현·검증에 바로 쓰였다.
+  - CI가 첫 실행에서 빈 워크플로 파일 커밋을 바로 잡아냈다. 이제 검사·테스트를 통과하지 못한 코드는 배포되지 않는다.
+- 바꿀 점
+  - 처음의 브랜치·PR 흐름은 혼자 쓰는 저장소에 과했다 → D-019로 정리.
+  - 에이전트 작업(설치·검사)이 사용자의 실행 중인 개발 서버를 깨뜨릴 수 있었다 (I-017). 환경을 공유한다는 점을 늘 의식한다.
+  - push 후 Actions 결과 확인을 습관으로 한다 (AGENTS.md §4에 반영).
+
+## M1 신호처리 기초 — 끝난 세부의 메모
+
+### M1.2 산출물·완료 기준 (옛 Roadmap §6-3, 2026-10-02 · Codex)
+
+- `src/lib/dsp/fft.ts`: 실수·복소 입력의 radix-2 고속 푸리에 변환(Fast Fourier Transform), 입력을 보존하는 비정규화 전방 DFT, 명시적 제로패딩.
+- `src/lib/dsp/spectrum.ts`: `acquire()`의 `Samples`를 받아 0~나이퀴스트의 단일측 피크 진폭·위상(rad)·주파수(Hz)를 계산한다. DC·나이퀴스트는 두 배 하지 않는다.
+- 패딩 후에도 진폭 분모는 원래 샘플 수 N이다. 표시 bin 간격과 원래 분해능·측정 시간을 별도 반환한다. 위상 기준은 첫 샘플이다.
+- 해석해 검증: 직접 DFT와 복소 출력 비교, 임펄스, bin 중심 톤의 진폭·위상, DC·나이퀴스트, Parseval, 사각파 홀수 하모닉, 제로패딩 전후 원래 bin 보존. 빈 입력·잘못된 크기·비유한값은 오류로 처리한다.
+- `npm run check`·`npm test`·`npm run build` 통과 후 main 커밋·push, GitHub Actions 성공 확인.
+
+### M1.2·M1.11 코어 구현 사양 (옛 Contents §3-1)
+
+**M1.2 FFT·스펙트럼 — 완료 (Codex, 2026-10-02)**
+
+- `fft(real, imag?)` (`lib/dsp/fft.ts`): 길이가 같은 실수부·허수부 배열, 길이는 1 이상의 2의 거듭제곱. 허수부 생략 시 실신호. 반환 `{ real, imag }`는 전체 양측 DFT, 비정규화·음의 지수·표준 bin 순서(R-12). 입력을 변경하지 않는다.
+- `zeroPad(values, fftSize)` (`lib/dsp/fft.ts`): 원래 값 뒤에 0을 채운 새 `Float64Array`. 축소는 허용하지 않고 목표 크기는 2의 거듭제곱이어야 한다.
+- `singleSidedSpectrum(samples, { fftSize? })` (`lib/dsp/spectrum.ts`): `Samples`의 fs·x 사용. 기본 FFT 크기는 x 길이, 다른 길이는 명시적 패딩 필요. 반환은 `frequency` [Hz], `amplitude` [입력 SI 단위, Pk], `phase` [rad], `fs`, 원래 `n`, `fftSize`, `binSpacing = fs/fftSize`, `resolution = fs/n`, `duration = n/fs`.
+- 위상은 첫 샘플 기준, 정확히 0인 bin은 `NaN`. 매우 작은 bin의 위상 마스킹은 랩 표시 계층에서 처리한다. DC·나이퀴스트의 진폭은 샘플열의 크기이며 일반 톤의 Pk↔RMS 환산을 적용하지 않는다.
+- 패딩 후 표시 주파수는 f_k = k·f_s/N_FFT, 진폭 분모는 원래 N이다. DC·N_FFT/2 bin은 두 배 하지 않는다. 실제 측정 시간·분해능은 패딩 전과 같다.
+- 위상은 atan2(Im X[k], Re X[k]). `acquire`의 t₀가 0이 아니면 bin 중심 톤 위상은 φ + 2πft₀ (2π 주기).
+- 빈 입력, 비유한 샘플, 길이 불일치, 부적절한 크기·fs는 `RangeError`. fs는 유한한 양수. 윈도우 보정은 M1.9, 파워·PSD 스케일링은 M1.13에서 추가한다.
+- 검증 기준은 §6. 페이지·랩 상태 변화는 없음 (P1-1·LAB-FOU-01은 M1.4).
+
+### M1.11 평균화 코어 · 본문 검토안 (Codex, 2026-10-02)
+
+- 2026-10-02 갱신 (Claude, M1.T2): P1-5를 D-025·D-026 기준으로 다시 쓰고 AveragingLab을 연결했다 (§5 LAB-AVG-01). TSA는 M1.12에서 진행한다.
+- lib/dsp/average.ts: averagePower(frames, mode, alpha) — 파워 [SI²]의 선형·지수·피크홀드. 지수는 첫 프레임 초기화, alpha 기본값 1/M. 반환의 제곱근 표시는 UI 책임.
+- vectorAverage(frames): 같은 기준에 이미 정렬된 복소 스펙트럼의 실수부·허수부 평균. 위상 정렬은 수집/UI 책임.
+- frameLayout(N, M, r): H=N(1-r), 총 샘플 N+(M-1)H. 정수 hop만 허용. splitOverlappingFrames(x, N, r): 연속 수집을 실제로 겹쳐 복사, 불완전 꼬리 제외.
+- overlapPowerCv(w, M, H): 정상 백색 가우시안 잡음 내부 bin의 선형 파워 평균 std/mean 근사. ρ_l=Σw[n]w[n+lH]/Σw[n]², CV²=(1/M)[1+2Σ(1-l/M)ρ_l²]. DC·나이퀴스트 제외, 겹친 구간만 합산. 등가 독립 수=1/CV².
+- 입력을 변경하지 않는 순수 함수. 크기 불일치·비유한 입력·음의 파워·잘못된 M/r/alpha는 RangeError. 기준값은 §6.

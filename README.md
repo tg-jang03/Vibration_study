@@ -5,7 +5,8 @@
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (`main`에 push하면 GitHub Actions가 검사 후 자동 배포)
 - 작업 규칙과 문서 목록: [AGENTS.md](AGENTS.md)
-- 커리큘럼: [docs/Curriculum.md](docs/Curriculum.md) · 로드맵: [docs/Roadmap.md](docs/Roadmap.md) · 진행 상황: [docs/Progress.md](docs/Progress.md)
+- 커리큘럼: [docs/Curriculum.md](docs/Curriculum.md) · 로드맵: [docs/Roadmap.md](docs/Roadmap.md) · 진행 상황: [docs/Progress.md](docs/Progress.md) · 페이지 작성 지침: [docs/PageGuide.md](docs/PageGuide.md)
+- 끝난 기록(닫힌 이슈, 대체된 결정, 지난 세션·마일스톤)은 [docs/archive/](docs/archive/)에 보관한다
 
 ## 개발
 

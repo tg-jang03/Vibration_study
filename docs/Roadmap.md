@@ -47,9 +47,9 @@
 └─ 레퍼런스 — 공식 모음 · 용어집 · 참고자료/데이터셋
 ```
 
-## 4. 기술 구조 (제안: Decisions D-006~D-012, D-018)
+## 4. 기술 구조 (Decisions D-006~D-012, D-018)
 
-| 층 | 선택 (제안) | 결정 |
+| 층 | 선택 | 결정 |
 |---|---|---|
 | 저장소 · 배포 | GitHub `tg-jang03/Vibration_study`(공개) · GitHub Pages | D-018 |
 | 프레임워크 | Astro + MDX + React(island) + TypeScript, npm | D-007 |
@@ -80,22 +80,29 @@ SignalSpec  (성분 목록: 정현파 · 하모닉 열 · AM/FM · 감쇠 임펄
 
 질량-스프링 모델(Part 0: 1자유도 자유·감쇠·강제 응답, 불평형 가진, 2자유도 모드)은 `lib/mck/`, 로터 모델(Part 4: 불평형 응답 Bode/Polar·Jeffcott·안정성)은 `lib/rotor/`에 별도 순수 함수로 둔다. `lib/rotor/`는 `lib/mck/` 위에 쌓는다. 두 모델의 출력(시간 응답, X/Y 응답)은 같은 파이프라인에 신호로 넣는다.
 
-### 4-2. 디렉터리 (계획)
+### 4-2. 디렉터리 (2026-10-06 기준)
 
 ```
-AGENTS.md  CLAUDE.md
-docs/                    계획·진행·콘텐츠 문서
+AGENTS.md  CLAUDE.md  README.md
+docs/                    계획·진행·콘텐츠 문서 (등급은 AGENTS.md §2)
+  archive/               끝난 기록 보관 — 평소 읽지 않음 (D-030)
+  source/                원본 커리큘럼 (수정 금지, D-004)
 src/
   lib/dsp/               순수 DSP 함수 + *.test.ts
-  lib/mck/               순수 질량-스프링 모델 함수 + *.test.ts (M2부터)
-  lib/rotor/             순수 로터 모델 함수 + *.test.ts (M5부터)
-  components/ui/         Plot, Formula, ParamSlider, Toggle, ReadoutTable …
+  lib/mck/               순수 질량-스프링 모델 함수 + *.test.ts (M2.1~)
+  lib/rotor/             순수 로터 모델 함수 + *.test.ts (M5부터, 아직 없음)
+  lib/figure.ts          본문 그림 데이터 형식·도식 도우미 (D-026)
+  lib/format.ts, site.ts 숫자 표기(유효숫자), withBase 경로
+  lib/gearbox.ts         P1-5 TSA 기어 상자 신호 (그림·랩 공용)
+  figures/               p{Part}-{절}.ts — 본문 그림 데이터 (+ 그림 숫자 테스트)
+  components/ui/         LabFrame, Plot, Formula, Param*, ReadoutTable
+  components/content/    Figure.astro(정적 SVG), Callout.astro
   components/labs/       LAB-xxx 구현 (랩 1개 = 컴포넌트 1개 이상)
-  content/               페이지 본문 (MDX)
-  data/                  커리큘럼 목차 등 사이트 데이터
-  layouts/  pages/       레이아웃, 라우팅
+  data/curriculum.ts     사이트 목차·페이지 상태
+  layouts/  styles/      레이아웃, global.css
+  pages/                 p{Part}-{절}.mdx 절 페이지, parts/ Part 목록, dev/ 갤러리·랩 UI 견본
 public/
-scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
+scripts/bench/           플롯 성능 측정 (I-020)
 ```
 
 ## 5. 인터랙티브 랩 설계 원칙
@@ -123,7 +130,7 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 | M | 범위 | 커리큘럼 | 세부 수 | 끝나면 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | — | 5 | 사이트 골격, 수식·플롯, 테스트, CI, 배포가 동작 |
-| M1 | 신호처리 기초 ★ | Part 1 | 15 | Part 1 전 페이지·랩 + 샌드박스 |
+| M1 | 신호처리 기초 ★ | Part 1 | 18 | Part 1 전 페이지·랩 + 샌드박스 |
 | M2 | 진동의 기초 | Part 0 | 9 | 질량-스프링 계산 코어 `lib/mck` + Part 0 전 페이지·미니 랩, P1-0 정리 (M2.0 착수 준비 포함) |
 | M3 | 센서와 측정 체인 | Part 2 | 4 | Part 2 |
 | M4 | 신호처리 확장 | Part 3 | 8 | 필터·STFT·2채널·차수추적·엔벨로프·켑스트럼 |
@@ -137,13 +144,7 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 
 ### 6-2. 세부 마일스톤 — M0 기반 구축
 
-| 세부 | 내용 | 완료 기준 |
-|---|---|---|
-| M0.1 | 문서 체계 · 상세 커리큘럼 초안 | 문서 7종, 원본 보존, Part 1 랩 사양 (2026-10-02 완료) |
-| M0.2 | 저장소 연결 · 초기 커밋 | `origin` 연결, `main`에 문서 커밋·push |
-| M0.3 | 사이트 골격 | Astro + React + MDX + TS strict, 기본 레이아웃(헤더·Part 내비), 홈 커리큘럼 지도 골격, GitHub Pages용 `site`/`base` 설정, `npm run build` 통과 |
-| M0.4 | 수식 · 플롯 검증 | MDX 본문 KaTeX, 실시간 Formula 컴포넌트, Plot 래퍼(Plotly) + 슬라이더로 다시 그려지는 사인파 샘플 페이지 |
-| M0.5 | 테스트 · CI · 배포 | Vitest + 첫 DSP 함수 테스트, GitHub Actions(test + build + Pages 배포), 배포 URL 접속 확인 |
+완료 (2026-10-02). 세부 표는 `archive/Milestones.md`로 옮겼다 (D-030).
 
 ### 6-3. 세부 마일스톤 — M1 신호처리 기초 (Part 1)
 
@@ -168,13 +169,7 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 | M1.14 | 변조 · 맥놀이 | P1-7 · LAB-MOD-01 | AM/FM 측대역 테스트 |
 | M1.15 | 측정 설정 종합 · 샌드박스 | P1-8 · LAB-SBX-01, HOME | 모든 Part 1 컨트롤, 설정 도우미, 홈 지도 갱신 |
 
-#### M1.2 산출물·완료 기준 (2026-10-02 구체화 · Codex)
-
-- `src/lib/dsp/fft.ts`: 실수·복소 입력의 radix-2 고속 푸리에 변환(Fast Fourier Transform), 입력을 보존하는 비정규화 전방 DFT, 명시적 제로패딩.
-- `src/lib/dsp/spectrum.ts`: `acquire()`의 `Samples`를 받아 0~나이퀴스트의 단일측 피크 진폭·위상(rad)·주파수(Hz)를 계산한다. DC·나이퀴스트는 두 배 하지 않는다.
-- 패딩 후에도 진폭 분모는 원래 샘플 수 N이다. 표시 bin 간격과 원래 분해능·측정 시간을 별도 반환한다. 위상 기준은 첫 샘플이다.
-- 해석해 검증: 직접 DFT와 복소 출력 비교, 임펄스, bin 중심 톤의 진폭·위상, DC·나이퀴스트, Parseval, 사각파 홀수 하모닉, 제로패딩 전후 원래 bin 보존. 빈 입력·잘못된 크기·비유한값은 오류로 처리한다.
-- `npm run check`·`npm test`·`npm run build` 통과 후 main 커밋·push, GitHub Actions 성공 확인.
+끝난 세부의 산출물 상세(예: M1.2)는 `archive/Milestones.md`에 있다.
 
 ### 6-4. 세부 마일스톤 — M2 진동의 기초 (Part 0) · 트랙 B (2026-10-06 구체화 · Claude)
 
