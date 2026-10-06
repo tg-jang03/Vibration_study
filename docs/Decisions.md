@@ -340,7 +340,7 @@
      | 트랙 | 범위 | 담당 | 작업 폴더 |
      |---|---|---|---|
      | A | M1 신호처리 기초 (Part 1): M1.12 ~ M1.15 | Claude | 기본 폴더 `진동공부` (`main` 체크아웃) |
-     | B | M2 진동의 기초 (Part 0): M2.1 ~ M2.8 | Codex | worktree `../진동공부-codex` (detached, `origin/main` 기준) |
+     | B | M2 진동의 기초 (Part 0): M2.1 ~ M2.8 | Codex | worktree `../진동공부-Codex` (detached, `origin/main` 기준) |
 
   2. **파일 소유**
      - A만: `src/pages/p1-1 ~ p1-8.mdx`, `src/figures/p1-*.ts`, `src/lib/dsp/`, Part 1 랩 컴포넌트, `src/pages/index.astro`(M1.15)
@@ -352,7 +352,7 @@
   4. **ID 충돌**: 새 D-xxx·I-xxx를 쓰기 직전에 `origin/main`의 마지막 번호를 확인한다. rebase에서 같은 번호가 겹치면 나중에 push하는 쪽이 번호를 올린다.
   5. **진행 기록** (`Progress.md`): 맨 위 **트랙 현황 표**에서 두 트랙의 담당·지금 세부·상태를 한눈에 본다. 핸드오프와 세션 로그는 트랙별 절로 나눈다(같은 줄에 동시에 쓰지 않도록). 세션 로그 보관 규칙(D-020)은 트랙마다 최근 3개로 적용한다. 세부 마일스톤 현황 표도 M1·M2를 따로 둔다.
   6. **CI**: push마다 Actions가 검사·배포한다 (`concurrency: pages`, 순서대로 실행). 다른 트랙의 push 뒤 Actions가 실패하면 실패를 만든 커밋의 트랙이 고친다.
-  7. **끝낼 때**: 트랙의 큰 마일스톤이 끝나면 회고를 쓰고 worktree를 지운다(`git worktree remove ../진동공부-codex`). 다음 배정은 사용자가 정한다.
+  7. **끝낼 때**: 트랙의 큰 마일스톤이 끝나면 회고를 쓰고 worktree를 지운다(`git worktree remove ../진동공부-Codex`). 다음 배정은 사용자가 정한다.
 - 대안: 같은 폴더에서 두 에이전트 → 기각 (서로의 `git add -A`에 섞이고 개발 서버 캐시가 꼬임, I-017·D-021). 트랙별 브랜치 → D-019 위반, 병합 비용. 트랙별 Progress 파일 → 사용자가 두 진행을 한곳에서 보기 어렵다.
 - 보완: D-019(한 번에 하나 → 트랙마다 하나), D-020(세션 로그 3개 → 트랙마다 3개), D-021(짧은 병렬 절차는 그대로, 긴 병렬은 이 결정)
 - 영향: `AGENTS.md` §3·§4, `docs/Progress.md` 구조, `docs/Roadmap.md` §6

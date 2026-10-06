@@ -182,7 +182,7 @@ scripts/verify/          (선택) numpy/scipy 교차검증 스크립트
 
 | 세부 | 내용 | 페이지 · 랩 | 산출물 · 완료 기준 |
 |---|---|---|---|
-| M2.0 | Part 0 착수 준비 (Claude, 2026-10-06) | — | 페이지 작성 지침서 `docs/PageGuide.md`(D-028), 도식 그림(`frame: false`·`spring`·`damper`·`ground`·`circle`, 견본 `src/figures/dev-schematic.ts`), 병렬 트랙 규칙(D-029), 이 표, worktree `../진동공부-codex` |
+| M2.0 | Part 0 착수 준비 (Claude, 2026-10-06) | — | 페이지 작성 지침서 `docs/PageGuide.md`(D-028), 도식 그림(`frame: false`·`spring`·`damper`·`ground`·`circle`, 견본 `src/figures/dev-schematic.ts`), 병렬 트랙 규칙(D-029), 이 표, worktree `../진동공부-Codex` |
 | M2.1 | 질량-스프링 계산 코어 + 진동이란 | P0-1 · LAB-MCK-01(기본) | `src/lib/mck/` 순수 함수 + 해석해 테스트: 1자유도 자유 응답(비감쇠, 부족·임계·과감쇠), ω_n·f_n·ζ·ω_d·대수감쇠율, 강제 정상상태 진폭비·위상, 과도 + 정상상태 시간 응답, 2자유도 고유진동수·모드 형상, 불평형 응답(F ∝ Ω²). 기준값 `Contents.md` §6(고유진동수 ~ 불평형 응답 행). P0-1 본문 + 그림(도식 + x(t)) + LAB-MCK-01 기본 모드(당기는 거리, 재생/정지, 끝점·평형점 표시) |
 | M2.2 | 고유진동수 | P0-2 · LAB-MCK-01 확장, LAB-BAS-01 | LAB-MCK-01에 m·k·x₀·v₀ 조작과 x·v·a 표시, 읽음값 f_n·T·A. LAB-BAS-01(`SineBasicsLab`)을 P1-0에서 P0-2로 옮기고 P1-0의 그 자리에는 위치 안내 한 줄. 정현파·진폭·주파수·위상 용어의 첫 위치를 Glossary에서 P0-2로 |
 | M2.3 | 감쇠 | P0-3 · LAB-DAMP-01 | ζ·포락선·ω_d·연속 피크 비 → δ → ζ 추정. 검증 ζ = 0.05 → δ = 0.3146, ω_d/ω_n = 0.99875, 반감 ≈ 2.2주기 |

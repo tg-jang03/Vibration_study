@@ -9,7 +9,7 @@
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
 | **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 14 / 18 | **M1.12 TSA** (P1-5에 LAB-AVG-02) | 진행 중 |
-| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-codex` (worktree) | 1 / 9 | **M2.1** `lib/mck` + P0-1 · LAB-MCK-01 | 대기 — 시작 가능 |
+| **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 1 / 9 | **M2.1** `lib/mck` + P0-1 · LAB-MCK-01 | 대기 — 시작 가능 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
 - 사용자 확인 대기: P1-5 TSA 절(M1.12 끝나면), Part 0 페이지(M2.1부터 차례로)
@@ -30,7 +30,8 @@
 
 ## 핸드오프 — 트랙 B (Codex, Part 0)
 
-- **작업 폴더**: `C:\Users\AX\Desktop\ATG\업무\진동공부-codex` (git worktree, detached HEAD, `npm ci` 완료). 기본 폴더 `진동공부`는 트랙 A가 쓰므로 들어가지 않는다.
+- **작업 폴더**: `C:\Users\AX\Desktop\ATG\업무\진동공부-Codex` (Codex가 2026-10-06에 만든 기존 git worktree, detached HEAD). 기본 폴더 `진동공부`는 트랙 A가 쓰므로 들어가지 않는다.
+- **push 전 커밋 있음 (2026-10-06 기준)**: `00acf62` "[M1.T2] fix: 홈 문구와 커리큘럼 상태 정리"는 `fdf7a23` 위에 있다. `origin/main`은 그 뒤 `1a72540`(M2.0)으로 나아갔지만 고친 파일이 겹치지 않으므로 `git fetch origin` → `git rebase origin/main` → 검사 → `git push origin HEAD:main`이면 된다. 이 폴더의 `node_modules`는 I-024 사고 뒤 복구했다 (테스트 144 통과).
 - **시작할 때마다**: `git fetch origin` → `git rebase origin/main` (로컬 커밋이 없으면 `git checkout --detach origin/main`). **push**: 검사 통과 후 `git push origin HEAD:main`. 거절되면 다시 fetch·rebase.
 - **먼저 읽을 것**: `AGENTS.md` → `docs/PageGuide.md`(특히 §5-4 도식, §6-4 랩, §10 Part 0 특기 사항) → `Roadmap.md` §6-4(M2 표) → `Curriculum.md` Part 0 → `Contents.md` §1-2 Part 0 척추, §5 LAB-MCK-01 ~ LAB-SRC-01, §6 기준값(고유진동수 ~ 불평형 응답 행) → D-027, D-029.
 - **첫 작업 M2.1** (제안 구성, 바꿔도 됨)
@@ -182,6 +183,6 @@
   - `docs/PageGuide.md` 신설 (D-028): 독자·말투·피할 표현, 개념 순서 적용법, MDX 뼈대 견본·절의 리듬·제목·분량(P1-0 ~ P1-5 실측), 도입과 마무리, 그림(만드는 법·id·색·도식·회귀 테스트), 상자 6종 쓰임표, 따라 하기 → 랩 → 해석, 랩 컴포넌트·hydration, 수식과 숫자, MDX 함정 표, 작업 순서, Part 0 특기 사항, 체크리스트, 기준 페이지 색인. `Contents.md` §1은 개념 척추만 남기고 나머지는 PageGuide로 옮김
   - 도식 그림: `lib/figure.ts`에 `frame: false`, 주석 `line`·`spring`·`damper`·`ground`·`circle`, `squareYRange`·`springPoints`·`damperSegments`·`groundSegments`·`FIG_LAYOUT`(+테스트 4), `Figure.astro` 렌더링. 견본 `src/figures/dev-schematic.ts`(벽–스프링·감쇠기–질량, 감쇠 자유진동 x(t), 도는 원판과 불평형)를 갤러리 맨 아래에
   - 병렬 트랙 (D-029): 트랙 A(Claude, M1) ∥ 트랙 B(Codex, M2), 파일 소유·git 흐름·ID 충돌·CI 규칙. `AGENTS.md` §2·§3·§4·§6, Progress 트랙 현황 표·트랙별 핸드오프·세션 로그, Roadmap §6-4에 M2.0 ~ M2.8 산출물·완료 기준
-  - worktree `../진동공부-codex` 생성 + `npm ci`
-- 확인: `npm test`, `npm run check`, `npm run build` 통과, 갤러리의 도식 견본 헤드리스 캡처
+  - 트랙 B 폴더: Codex가 이미 쓰던 worktree `진동공부-Codex`를 그대로 쓴다. 새 worktree를 만들다 대소문자만 다른 같은 폴더에서 `npm ci`가 실행되어 Codex의 `node_modules` 일부를 지웠고, `npm install`로 복구했다 (I-024)
+- 확인: `npm test` 145개, `npm run check` 0 errors, `npm run build` 21페이지, 갤러리의 도식 견본 헤드리스 캡처. 커밋 `1a72540` push
 - 다음: Codex가 M2.1 시작 (트랙 B 핸드오프)
