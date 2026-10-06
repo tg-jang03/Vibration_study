@@ -6,6 +6,7 @@ sectionId: P1-5
 ---
 
 import Figure from '../components/content/Figure.astro';
+import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
 import AveragingLab from '../components/labs/AveragingLab';
 import TsaLab from '../components/labs/TsaLab';
@@ -295,7 +296,7 @@ $$
 
 <Callout type="term" title="기어 맞물림 주파수 (Gear Mesh Frequency)">
 
-기어가 돌면 이빨이 하나씩 차례로 맞물리며 힘을 주고받습니다. 이빨이 $z$개인 기어가 $f_r$로 돌면 1초에 $z f_r$번 맞물리므로 그 주파수에 성분이 생깁니다. 이빨 15개, 20 Hz(1200 rpm)면 300 Hz, 축 회전 주파수의 15배(15차)입니다. 이빨 하나가 상하면 그 이빨이 맞물리는 순간, 즉 한 바퀴에 한 번 충격이 생깁니다.
+기어가 돌면 이빨이 하나씩 차례로 맞물리며 힘을 주고받습니다. 이빨이 $z$개인 기어가 $f_r$로 돌면 1초에 $z f_r$번 맞물리므로 그 주파수에 성분이 생깁니다. 이빨 15개, 20 Hz(1200 rpm)면 300 Hz, 축 회전 주파수의 15배(15차)입니다. 이빨 하나가 상하면 그 이빨이 맞물리는 순간, 즉 한 바퀴에 한 번 충격이 생깁니다. 맞물린 두 기어의 회전수 관계와 다른 기계 요소의 주파수는 <a href={withBase('/p0-7/#2-날개와-기어-지나가는-수-맞물리는-수')}>P0-7 기계 요소가 만드는 주파수</a>에서 셉니다.
 
 </Callout>
 

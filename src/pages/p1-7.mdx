@@ -6,6 +6,7 @@ sectionId: P1-7
 ---
 
 import Figure from '../components/content/Figure.astro';
+import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
 import ModulationLab from '../components/labs/ModulationLab';
 import * as F from '../figures/p1-7';
@@ -87,8 +88,8 @@ AM 진동은 정현파 셋의 합입니다. 반송파 자리에 $A$, 양옆 $f_c
 
 <Callout type="field" title="측대역이 서는 곳">
 
-- **기어**: 기어가 축에 조금 비뚤게(편심) 달리면 한 바퀴에 한 번 맞물림이 세집니다 → 맞물림 주파수 ± 그 축의 1X. 이빨 하나가 상하면 짧게 커져 측대역이 여러 쌍 섭니다 (P1-5의 TSA로 그 축만 골라 보면 더 또렷합니다).
-- **구름베어링**: 안쪽 바퀴(내륜)의 결함은 축과 함께 돌면서 한 바퀴에 한 번 하중을 크게 받는 아래쪽을 지납니다 → 결함 주파수 ± 1X. 결함 주파수는 Part 6에서 다룹니다.
+- **기어**: 기어가 축에 조금 비뚤게(편심) 달리면 한 바퀴에 한 번 맞물림이 세집니다 → 맞물림 주파수(<a href={withBase('/p0-7/#2-날개와-기어-지나가는-수-맞물리는-수')}>P0-7</a>) ± 그 축의 1X. 이빨 하나가 상하면 짧게 커져 측대역이 여러 쌍 섭니다 (P1-5의 TSA로 그 축만 골라 보면 더 또렷합니다).
+- **구름베어링**: 안쪽 바퀴(내륜)의 결함은 축과 함께 돌면서 한 바퀴에 한 번 하중을 크게 받는 아래쪽을 지납니다 → 결함 주파수 ± 1X. 결함 주파수(볼이 내륜의 한 점을 지나는 주파수)를 세는 법은 <a href={withBase('/p0-7/#3-구름베어링-1x의-정수배가-아닌-줄')}>P0-7</a>, 결함의 판별은 Part 6에서 다룹니다.
 
 </Callout>
 

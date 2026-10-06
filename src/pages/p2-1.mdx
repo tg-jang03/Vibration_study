@@ -6,6 +6,7 @@ sectionId: P2-1
 ---
 
 import Figure from '../components/content/Figure.astro';
+import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
 import SensorLab from '../components/labs/SensorLab';
 import * as F from '../figures/p2-1';
@@ -184,6 +185,8 @@ $$
 ---
 
 ## 7. 정리
+
+어느 대역을 재야 하는지는 기계에 든 요소가 정합니다 (<a href={withBase('/p0-7/#7-관심-주파수-구간-지도-기계-구성에서-어디까지-볼지-정한다')}>P0-7 관심 주파수 구간 지도</a>). 그 대역에 맞춰 센서를 고릅니다. 구름베어링·기어 충격처럼 수 kHz가 필요한 이유는 <a href={withBase('/p0-7/#4-흠집의-충격은-높은-주파수를-울린다')}>P0-7 §4</a>에 있습니다.
 
 | 재려는 것 | 고를 센서 | 쓰는 대역 | 함께 확인할 것 |
 |---|---|---|---|

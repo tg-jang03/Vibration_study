@@ -123,7 +123,8 @@ scripts/bench/           플롯 성능 측정 (I-020)
 - 세부 목록은 계획이다. 큰 마일스톤을 시작할 때 담당자가 세부 목록을 다시 확인하고, 각 세부를 시작할 때 산출물과 완료 기준을 이 문서에 구체화한다.
 - 번호 순서대로 진행한다. 같은 큰 마일스톤 안의 세부는 앞 번호에 의존할 수 있다.
 - M 번호는 실행 순서라 Part 번호와 다르다: M1 = Part 1, M2 = Part 0, M3 = Part 2, M4 = Part 3, M5 = Part 4, M6~M11 = Part 5~10 (D-027).
-- **2026-10-06부터 M1(트랙 A, Claude)과 M2(트랙 B, Antigravity)를 나란히 진행한다** (D-029). 두 트랙의 진행은 `Progress.md` 맨 위 트랙 현황 표에서 함께 본다.
+- **2026-10-06부터 M1(트랙 A, Claude)과 M2(트랙 B, Antigravity → 2026-10-06부터 Codex)를 나란히 진행한다** (D-029). 두 트랙의 진행은 `Progress.md` 맨 위 트랙 현황 표에서 함께 본다.
+- **다음 배정 (D-034, 2026-10-06)**: 트랙 A(Claude) M3 → M4, 트랙 B(Codex) M2 → **M5**. 트랙마다 자기 순서대로 가므로 M5가 M4보다 먼저 시작될 수 있다 (M 번호는 트랙 안의 순서).
 
 ### 6-1. 큰 마일스톤
 
@@ -133,8 +134,8 @@ scripts/bench/           플롯 성능 측정 (I-020)
 | M1 | 신호처리 기초 ★ | Part 1 | 18 | Part 1 전 페이지·랩 + 샌드박스 |
 | M2 | 진동의 기초 | Part 0 | 10 | 질량-스프링 계산 코어 `lib/mck` + Part 0 전 페이지·미니 랩, P1-0 정리 (M2.0 착수 준비 포함) |
 | M3 | 센서와 측정 체인 | Part 2 | 5 | 센서 모델·프로브·위상·측정 체인 점검·보호 시스템 (D-031) |
-| M4 | 신호처리 확장 | Part 3 | 8 | 필터·STFT·2채널·차수추적·엔벨로프·켑스트럼 |
-| M5 | 회전체 동역학 기초 | Part 4 | 3 | 로터 모델 라이브러리 `lib/rotor` + Part 4 |
+| M4 | 신호처리 확장 (트랙 A, M3 다음) | Part 3 | 8 | 필터·STFT·2채널·차수추적·엔벨로프·켑스트럼 |
+| M5 | 회전체 동역학 기초 | Part 4 | 3 | 로터 모델 라이브러리 `lib/rotor` + Part 4 (트랙 B, D-034) |
 | M6 | 현장 플롯 읽기 | Part 5 | 6 | 현장 플롯 6종 |
 | M7 | 결함별 진단 | Part 6 | 7 | 결함 합성기 + Part 6 |
 | M8 | GT/ST 특화 현상 | Part 7 | 4 | GT/ST 시나리오 프리셋 |
@@ -200,12 +201,21 @@ scripts/bench/           플롯 성능 측정 (I-020)
 | M3.4 | 측정 체인 함정 | P2-4 · 판정 퀴즈 | 마운팅 대역, IEPE 바이어스·정착 시간, 저주파 적분 증폭(ski-slope, P3-2 예고), 그라운드 루프(50·60 Hz), 케이블 잡음, 센서 공진 — "센서 문제인가 기계 문제인가" 판정 퀴즈 |
 | M3.5 | 과도 데이터 수집과 보호 시스템 | P2-5 · LAB-ALM-01 | Δrpm vs Δt 트리거, 회전당 고정 샘플 수(동기 샘플링), 보호 시스템 알람 로직(레벨·지연·보팅·트립 배율) 타임라인 |
 
-### 6-6. 세부 마일스톤 — M4~M11 (목록만, 시작 시 구체화)
+### 6-6. 세부 마일스톤 — M5 회전체 동역학 기초 (Part 4) · 트랙 B (2026-10-06 구체화 · Claude, D-034)
+
+공통 완료 기준: 교육 내용은 `Curriculum.md` Part 4의 그 절(머리의 "기대는 곳" 포함), 랩은 `Contents.md` §5 사양, 작성은 `PageGuide.md`. 체크리스트 + `npm run check`·`npm test`·`npm run build` + 전체 페이지 헤드리스 캡처 → `Contents.md` §4 `검토`·`curriculum.ts`·`Glossary.md` → push. 위상·Polar는 `Contents.md` §3의 공통 관례를 따른다. API 684 등 규격 수치는 옮겨 적지 않는다 (I-009).
+
+| 세부 | 내용 | 페이지 · 랩 | 산출물 · 완료 기준 |
+|---|---|---|---|
+| M5.1 | 로터 계산 코어 + Bode/Polar·증폭계수 | P4-1 · LAB-AF-01 | `src/lib/rotor/` 순수 함수(`lib/mck` 위에): 런업 데이터 생성(rpm 간격·측정 잡음·런아웃, 시드 고정), 1X 벡터 → Bode·Polar 점, Half-power AF 추정, 분리여유. 검증: ζ = 0.05 → 추정 AF ≈ 10(허용오차 명시), 진폭 피크 r = 1.0025 vs 위상 90° r = 1. 본문·그림(heavy spot vs high spot 도식 포함)·랩 |
+| M5.2 | Jeffcott 로터 | P4-2 · LAB-JEF-01 | `lib/rotor/jeffcott.ts`(x·y 해석해, A_f·A_b). 검증: Contents §6 Jeffcott 행. 오빗·정/역 성분을 페이지에서 직접 계산(P3-4 전) |
+| M5.3 | 유막 베어링과 안정성 | P4-3 · LAB-STB-01 | `lib/rotor/stability.ts`(복소 계수 2차 방정식 근, δ, 한계). 저널 베어링 도식(간극·편심률·자세각), whirl/whip·Campbell 개념 그림. 검증: Contents §6 안정성 행 |
+
+### 6-7. 세부 마일스톤 — M4, M6~M11 (목록만, 시작 시 구체화)
 
 | 큰 M | 세부 |
 |---|---|
 | M4 신호처리 확장 (Part 3) | M4.1 필터 라이브러리 (P3-1, LAB-FLT-01) · M4.2 적분 (P3-2, LAB-INT-01) · M4.3 STFT (P3-3, LAB-STFT-01) · M4.4 2채널 (P3-4, LAB-XCH-01, LAB-FULL-01) · M4.5 차수추적 (P3-5, LAB-ORD-01) · M4.6 트래킹·노치 (P3-6, LAB-FLT-02) · M4.7 엔벨로프·SK (P3-7, LAB-ENV-01, LAB-SK-01) · M4.8 켑스트럼·특징량 (P3-8, LAB-CEP-01, LAB-FEAT-01) |
-| M5 회전체 동역학 (Part 4) | M5.1 로터 모델 라이브러리 `lib/rotor`(`lib/mck` 위에) + Bode/Polar·AF (P4-1, LAB-AF-01) · M5.2 Jeffcott (P4-2, LAB-JEF-01) · M5.3 안정성 (P4-3, LAB-STB-01) |
 | M6 현장 플롯 (Part 5) | M6.1 시간파형 (P5-1, LAB-TWF-01) · M6.2 Waterfall (P5-2, LAB-WF-01) · M6.3 오빗 (P5-3, LAB-ORB-01) · M6.4 Centerline (P5-4, LAB-SCL-01) · M6.5 Bode/Polar/APHT (P5-5, LAB-BODE-01) · M6.6 트렌드 (P5-6, LAB-TRND-01) |
 | M7 결함별 진단 (Part 6) | M7.1 결함 합성기 엔진 + 지도·회전수 추정 (P6-0, LAB-FAULT-01, LAB-RPM-01) · M7.2 1X 계열·미스얼라인·풀림·러브 (P6-1, P6-2) · M7.3 유체막 불안정·감별표 (P6-3) · M7.4 구름베어링 (P6-4, LAB-BRG-01) · M7.5 기어 (P6-5, LAB-GEAR-01) · M7.6 전기·공력 (P6-6, P6-7) · M7.7 비틀림·블레이드 (P6-8, LAB-CAMP-01) |
 | M8 GT/ST (Part 7) | M8.1 기동·정지, bow·Morton (P7-1, P7-2) · M8.2 ST 특화 (P7-3) · M8.3 GT 특화 (P7-4) · M8.4 발전기·축계 (P7-5) |
