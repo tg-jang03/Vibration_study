@@ -36,7 +36,7 @@ export const PARTS: Part[] = [
     title: '진동의 기초: 기계는 왜, 어떻게 흔들리나',
     question: '기계는 왜, 어떻게 흔들리나?',
     sections: [
-      { id: 'P0-1', title: '진동이란: 평형 · 복원력 · 관성', status: 'planned' },
+      { id: 'P0-1', title: '진동이란: 평형 · 복원력 · 관성', status: 'review', href: '/p0-1/' },
       { id: 'P0-2', title: '고유진동수: 물체마다 정해진 박자', status: 'planned' },
       { id: 'P0-3', title: '감쇠: 흔들림은 왜 잦아드나', status: 'planned' },
       { id: 'P0-4', title: '강제진동과 공진', status: 'planned' },
