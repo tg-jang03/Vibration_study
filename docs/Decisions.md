@@ -3,7 +3,7 @@
 > 되돌리기 어려운 선택을 기록한다 (ADR 형식). **추가만** 한다. 결정을 바꿀 때는 새 결정을 쓰고 이전 결정을 `대체됨 → D-xxx`로 표시한다.
 > 상태: `제안`(사용자 확인 전) · `확정` · `폐기` · `대체됨`
 > `대체됨`·`폐기`가 된 결정은 본문을 `archive/Decisions.md`로 옮긴다 (D-030). 보관: **D-001, D-013, D-016, D-024**. 일부만 대체된 결정은 여기 둔다.
-> **다음 번호: D-037**
+> **다음 번호: D-039**
 
 ## 요약
 
@@ -25,7 +25,7 @@
 | D-017 | 2단계 마일스톤 (큰 M → 세부 M) | 확정(원칙) / 제안(세부 목록, M 번호 대응은 D-027로 갱신) | 2026-10-02 | 사용자 지시 / Claude |
 | D-018 | GitHub 저장소 · GitHub Pages · PR 단위 병합 | 확정(저장소) / 제안(배포) / 대체됨(PR 흐름 → D-019) | 2026-10-02 | 사용자 지정 / Claude |
 | D-019 | main 단일 브랜치 작업 (브랜치·PR 없음) | 확정 | 2026-10-02 | 사용자 지시 / Claude 기록 |
-| D-020 | Progress 세션 로그는 최근 3개만, 나머지는 보관 파일로 | 확정 (트랙마다 3개, D-029) | 2026-10-02 | 사용자 지시 / Claude 기록 |
+| D-020 | Progress 세션 로그는 최근 3개만, 나머지는 보관 파일로 | 확정 (트랙마다 3개, D-029) → 개수는 D-038로 대체 (트랙마다 2개) | 2026-10-02 | 사용자 지시 / Claude 기록 |
 | D-021 | 사용자 요청 시 두 에이전트 병렬 작업 (별도 worktree) | 확정(사용자 요청) / 제안(절차), 긴 병렬은 D-029 | 2026-10-02 | 사용자 / Claude |
 | D-022 | Flat top 윈도우 계수 정의 선택 (I-010) | 제안 | 2026-10-02 | Antigravity |
 | D-023 | 절 페이지 구조: `src/pages/p{Part}-{절}.mdx` | 제안 | 2026-10-02 | Claude |
@@ -41,6 +41,8 @@
 | D-034 | 다음 배정: 트랙 A M3 → M4, 트랙 B(Codex) M2 마무리 → M5 Part 4. 위상·Polar 공통 관례 | 확정 | 2026-10-06 | 사용자 지시 / Claude |
 | D-035 | Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외) | 확정 | 2026-10-06 | 사용자 확인 / Claude |
 | D-036 | Part 4에 회전기계 구성 도입 P4-0 추가, M5.0 신설 | 확정 | 2026-10-06 | 사용자 / Codex |
+| D-037 | UI 개편: 홈 4단계 학습 지도, Part 사이드바, Signal Lab 랩 모음(랩별 단독 페이지 + 원문 링크) | 확정 | 2026-10-06 | 사용자 요청 / Claude |
+| D-038 | 문서 다이어트와 토큰 절약 수칙: AGENTS 축소, Progress 120줄·로그 2개, 구현된 랩 사양 보관, verify:page | 확정 | 2026-10-06 | 사용자 요청 / Claude |
 
 ---
 
@@ -417,3 +419,23 @@
   5. D-034의 담당·파일 소유·위상 관례는 유지하고 M5 세부 수·시작 순서만 보완한다. AGENTS 트랙 B 범위를 M5.0~M5.3으로 갱신한다.
 - 대안: Part 0에 기계 구성 장을 넣으면 신호처리 전 입문 분량이 더 늘어난다. P4-1 도입에 모두 넣으면 구성과 AF 계산이 한 장에 섞인다. 독립 도입 1장으로 경계를 둔다.
 - 영향: AGENTS·Roadmap·Curriculum·Contents·Glossary·Progress·사이트 목차, P4-0·그림·LAB-SUP-01. 트랙 A 본문·그림·랩과 공용 UI는 변경하지 않는다.
+
+## D-037 UI 개편: 홈 학습 지도 · Part 사이드바 · Signal Lab 랩 모음
+- 상태: **확정** (사용자 요청 2026-10-06 "커리큘럼 지도가 fancy하지 못해 / 같은 part에서 사이드로 바로 넘어가게 / part1만 색이 다르고 별표인 이유 개선 / Signal Lab에 LAB만 골라 보고 원문으로 이동") · 2026-10-06 · Claude
+- 맥락: 홈은 같은 모양의 카드 목록이었고, Part 1만 원본 커리큘럼의 "핵심(★)" 표시(`featured`)로 색과 별이 달랐다. 절 페이지에는 같은 Part의 다른 절로 가는 길이 이전/다음뿐이었다. 랩은 페이지 안에만 있어 하나만 골라 쓰기 어려웠다.
+- 결정
+  1. 홈 = 4단계 학습 지도(기초 0·1·2 / 도구와 모델 3·4 / 진단 5·6·7 / 조치와 종합 8·9·10, `curriculum.ts`의 `STAGES`). 모든 Part는 같은 모양, 단계마다 색 하나. `featured`·★ 삭제. 히어로에 처음부터·이어서 보기(마지막으로 본 절, 브라우저 저장)·랩 모음.
+  2. 절 페이지(MdxLayout) = 왼쪽 Part 사이드바(같은 Part의 절, 이 페이지 `##` 목차, 다른 Part 번호). 1200px 미만은 접힌 목록. `BaseLayout`에 `wide` 옵션(하위 호환).
+  3. Signal Lab = `/lab/` 랩 모음(Part 거르기·찾기, 샌드박스 강조) + 랩마다 `/lab/{slug}/` 단독 페이지. 목록은 `src/data/labs.ts`, 원문 링크는 `lib/labRefs.ts`가 페이지 MDX에서 랩 태그와 바로 앞 제목 id를 자동으로 모은다. `LabFrame` 머리에 "이 랩만 크게 보기" 링크. 옛 `/lab/` 샌드박스는 `/lab/sbx-01/`.
+  4. 새 랩은 `labs.ts`와 `pages/lab/[slug].astro`에 한 줄씩 더한다 (Astro는 동적으로 고른 컴포넌트에 `client:`를 못 붙인다). `labs.test.ts`가 빠진 줄을 잡는다. 공유 파일 규칙은 AGENTS §4.
+- 영향: `index.astro`, `parts/[part].astro`, `layouts/*`, `LabFrame`, `global.css`, `pages/lab/*`, `data/labs.ts`, `lib/labRefs.ts`, Roadmap §3, Contents §4·§5, AGENTS §4
+
+## D-038 문서 다이어트와 토큰 절약 수칙
+- 상태: **확정** (사용자 요청 2026-10-06 "문서 정리 및 토큰 절약방법 강구") · 2026-10-06 · Claude
+- 맥락: 세션마다 자동으로 읽는 AGENTS.md(15 KB)와 늘 읽는 Progress(26 KB)가 컸고, Contents(101 KB)의 절반이 이미 구현된 랩의 사양이었다. 화면 점검 스크립트를 세션마다 새로 쓰고, 캡션 숫자를 쓴 뒤 고치는 왕복이 잦았다.
+- 결정
+  1. AGENTS.md는 규칙만 짧게(약 8 KB), 작성 방법은 PageGuide에 둔다. §7에 토큰 절약 수칙.
+  2. Progress는 120줄 이하, 세션 로그는 트랙마다 2개·8줄 이내(D-020의 3개를 대체), 끝난 큰 마일스톤의 세부 표·회고는 세부가 끝나는 즉시 `archive/Milestones.md`로.
+  3. Contents §5: 구현된 랩은 한 줄 표, 원래 사양은 `archive/LabSpecs.md`. 아직 구현하지 않은 랩만 상세 사양을 둔다 (사양을 먼저 쓰는 규칙은 그대로).
+  4. 화면 점검은 `npm run verify:page -- /경로/` (`scripts/verify/page-check.mjs`: hydration·콘솔·HTTP·모바일 넘침·구간 캡처).
+- 영향: AGENTS.md, Progress, Contents §5, archive(LabSpecs·Milestones·SessionLog), PageGuide §9·§11, package.json

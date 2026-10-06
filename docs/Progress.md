@@ -1,6 +1,6 @@
 # Progress — 진행 상황
 
-> **매 세션 끝에 갱신한다** (AGENTS.md §3). 세션 로그는 **자기 트랙 절** 맨 위에 추가하고 트랙마다 최근 3개만 남긴다 (나머지는 `archive/SessionLog.md`, D-020·D-029). 로그 1건은 10줄 이내, 이 파일은 200줄 이하 (D-030).
+> **매 세션 끝에 갱신한다** (AGENTS.md §3). 세션 로그는 **자기 트랙 절** 맨 위에 추가하고 트랙마다 **최근 2개**만 남긴다 (나머지는 `archive/SessionLog.md`). 로그 1건은 8줄 이내, 이 파일은 120줄 이하 (D-030·D-038). 끝난 큰 마일스톤의 세부 표·회고는 `archive/Milestones.md`.
 > 세션 시작 때는 트랙 현황·공통 핸드오프·자기 트랙 핸드오프까지만 읽으면 된다. 아래 세부 현황·세션 로그는 필요할 때만.
 > 마일스톤은 2단계다: 큰 마일스톤 `M{n}` → 세부 마일스톤 `M{n}.{m}` (D-017, 목록은 `Roadmap.md` §6). 모든 작업은 `main`에서 한다 (D-019).
 > **2026-10-06부터 두 트랙이 나란히 간다 (D-029)**: 트랙 A = Claude가 Part 1(M1) → Part 2(M3), 트랙 B = Part 0(M2) → Part 4(M5), 담당은 2026-10-06부터 다시 **Codex** (D-034). 자기 트랙의 행·절만 고친다.
@@ -9,7 +9,7 @@
 
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
-| **A** | M1 신호처리 기초 (Part 1) → **M3 센서와 측정 체인 (Part 2)** → M4 (Part 3) | Claude | `진동공부` | M1 18 / 18, **M3 5 / 5** | 다음 **M4** Part 3 신호처리 확장 (세부 목록 사용자 확인 대기) | **대기** (M3 세부 완료 — 사용자 확인 대기) |
+| **A** | M1 (Part 1) → M3 (Part 2) → **M4 (Part 3)** | Claude | `진동공부` | M1 18 / 18, M3 5 / 5 (확인 대기), M0.6·M0.7 정비 완료 | 다음 **M4** Part 3 신호처리 확장 (세부 목록 사용자 확인 대기) | **대기** |
 | **B** | M2 진동의 기초 (Part 0) → **M5 회전체 동역학 기초 (Part 4)** | **Codex** | `진동공부-Codex` (worktree) | M2 10 / 10, **M5 2 / 4** | 다음 **M5.2** Jeffcott 로터 (P4-2, LAB-JEF-01) | **대기** (M5.1 구현 완료·사용자 검토 대기) |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
@@ -17,23 +17,20 @@
 
 ## 핸드오프 — 공통
 
-- **작성 기준은 `docs/PageGuide.md`** (D-028, 기준 페이지 P1-0 ~ P1-4). 개념 척추는 `Contents.md` §1-2. 핵심: 앞 페이지까지 나온 개념만, 개념마다 그림(`Figure`), 강조 상자는 `Callout` 6종, 랩 앞 따라 하기·뒤 해석, **코드 블록·아스키 도표 금지**, 정리는 표.
-- **커리큘럼 번호 (D-027, 2026-10-02)**: Part 0 = 진동 입문(P0-1 ~ P0-8, D-032로 한 절 추가), 회전체 동역학 = Part 4(P4-0 ~ P4-3, D-036), 옛 Part 4~9 → 5~10. M5 = Part 4, M6 ~ M11 = Part 5 ~ 10. 대응표는 D-027.
-- **함정**: `texNumber`/`formatNumber` 둘째 인자는 유효숫자. 이론상 0인 값은 0으로 정리(hydration). MDX 함정은 PageGuide §8. Node·gh는 시스템 PATH에 있으므로 `npm …`을 앞붙임 없이 바로 실행한다 (앞붙임이 있으면 허용 규칙에 안 걸려 승인 창이 뜬다, 2026-10-06). 다만 Node 설치 전부터 켜 둔 VS Code·에이전트 세션은 옛 PATH를 물려받아 `npm`을 못 찾는다 → 그 창을 다시 시작한다 (Git Bash는 `~/.bashrc`가 빠진 Node 경로를 보충한다). Python은 없다.
-- **문서 읽기·보관 (D-030, 2026-10-06)**: 문서는 등급대로 읽는다 (`AGENTS.md` §2). 큰 문서(Contents·Curriculum·PageGuide)는 목차(`grep -n "^##"`)로 위치를 찾아 그 절만. 닫힌 이슈·대체된 결정·끝난 마일스톤 상세는 `docs/archive/`로 옮기고 평소 읽지 않는다. 새 이슈·결정 번호는 `Issues.md`·`Decisions.md` 머리의 "다음 번호".
-- **Progress를 고칠 때 (I-026, 2026-10-06)**: rebase 충돌이 Progress에서 나면 **다른 트랙의 행·절은 origin/main 쪽을 그대로 살린다**. 자기 트랙 행만 고친다 (D-029). M2.5 커밋에서 트랙 A의 M3 표가 사라졌고, M2.6 커밋에서는 트랙 A의 세션 로그 내용이 바뀌었다 — **다른 트랙의 세션 로그는 고치지 않는다**.
-- **D-032 (2026-10-06)**: Part 0에 새 절 **P0-7 "기계 요소가 만드는 주파수"**(LAB-FMAP-01)를 넣었다. 옛 P0-7 "응답에서 원인으로" → **P0-8**(M2.8), P1-0 정리 → **M2.9**. 계획: Curriculum 0-7, Roadmap §6-4, Contents §5 LAB-FMAP-01·§6 기준값.
-- **공용 코어를 고쳤을 때**는 아래 자기 트랙 핸드오프에 적는다 (D-029). 최근 변경: 2026-10-06 Claude — `components/ui/PolarPlot.tsx` 새로 추가 (SVG Polar, 0° 위·지연은 회전 반대, D-035 확정). P4-1(LAB-AF-01)에서 그대로 쓸 수 있다. 기존 컴포넌트는 그대로. 2026-10-06 Claude — `layouts/BaseLayout.astro` 상단 메뉴의 "Signal Lab"을 `/lab/` 링크로 (`aria-current` 처리, 다른 메뉴는 그대로). 2026-10-06 Claude — `lib/figure.ts`·`Figure.astro`에 도식 기능(`frame: false`, `line`·`spring`·`damper`·`ground`·`circle`, `squareYRange`, `FIG_LAYOUT`). 기존 그림은 그대로. 2026-10-06 Claude — `components/ui/Plot.tsx`가 `'var(--plot-1)'` 같은 CSS 변수 색을 실제 색으로 풀어 준다 (전에는 Plotly가 무시해 기본색으로 그려졌다. 이 색을 쓰던 랩은 없었음). `lib/dsp/signal.ts`에 성분 `impulses`(감쇠 임펄스열) 추가.
+- **작성 기준** `docs/PageGuide.md` (D-028), 개념 척추 `Contents.md` §1-2. 번호 체계 D-027 (Part 0 = 진동 입문 P0-1 ~ P0-8, Part 4 = 회전체 P4-0 ~ P4-3, M5 = Part 4, M6 ~ M11 = Part 5 ~ 10).
+- **문서 다이어트·토큰 절약 (D-038, 2026-10-06)**: AGENTS.md를 반으로 줄였다(§7 토큰 절약 수칙). Progress는 120줄·트랙마다 로그 2개·끝난 마일스톤 표는 archive. Contents §5는 구현된 랩을 한 줄 표로, 원래 사양은 `archive/LabSpecs.md`. **트랙 B는 다음 세션에 자기 핸드오프·로그를 이 기준으로 줄여 주세요.**
+- **화면 점검은 `npm run verify:page -- /경로/`** (D-038): hydration·콘솔·HTTP·모바일 넘침·구간 캡처(`dist/qa`). Git Bash의 경로 변환도 처리한다. 매번 캡처 스크립트를 새로 쓰지 않는다.
+- **UI 개편 (D-037, 2026-10-06, 공용 코어)**: `MdxLayout`에 Part 사이드바(같은 Part 절·이 페이지 목차·다른 Part, 좁은 화면은 접힘)와 "이어서 보기" 기억, `BaseLayout`에 `wide`, `LabFrame` 머리에 "이 랩만 크게 보기" 링크, 홈 4단계 학습 지도(`curriculum.ts`의 `STAGES`, `featured` 삭제). **새 랩을 만들면 `src/data/labs.ts`와 `pages/lab/[slug].astro`에 한 줄씩** — `labs.test.ts`가 빠진 줄을 잡는다. 원문 링크는 `lib/labRefs.ts`가 자동 수집.
+- **이전 공용 코어 변경**: `ui/PolarPlot`(D-035), `Plot`의 CSS 변수 색, `lib/figure.ts` 도식 기능, `lib/dsp/signal.ts`의 `impulses`. 자세한 내용은 해당 커밋.
+- **함정**: 유효숫자 인자, 이론상 0 → 0 표시(hydration), MDX 함정 PageGuide §8. Node·gh는 PATH에 있으니 앞붙임 없이 `npm …` (옛 PATH를 물려받은 창은 다시 시작). Python 없음. rebase 충돌 때 다른 트랙의 행·절·로그는 origin 쪽 그대로 (I-026).
 
-## 핸드오프 — 트랙 A (Claude, Part 1)
+## 핸드오프 — 트랙 A (Claude, Part 1 → 2 → 3)
 
-- **M3 산출물**: P2-1(`lib/sensor.ts`, LAB-SNS-01) · P2-2(`lib/proximity.ts`, LAB-PROX-01) · P2-3(`lib/phase.ts`, LAB-PHS-01·LAB-SRO-01, 공용 `ui/PolarPlot` D-035 확정) · P2-4(`lib/measurementChain.ts`, LAB-CHAIN-01) · P2-5(아래). 모두 사용자 확인 대기.
-- **방금 끝냄 (M3.5)**: P2-5 과도 데이터 수집과 보호 시스템 — 그림 6(`src/figures/p2-5.ts`: Δt vs Δrpm 수집·동기 샘플링·Cascade·보호 채널 도식·레벨과 지연·트립 배율), LAB-ALM-01 `AlarmLab`(3곳: 지연·보팅·배율), 모델 `lib/transient.ts`(예시 기동 프로파일·수집 방식·스미어링 vs 동기 샘플링·Cascade 성분)·`lib/protection.ts`(레벨·지연·보팅·배율 논리). P3-5(차수추적)·P5-2(Cascade)가 이어 쓸 수 있다. **M3 세부 5개 완료.**
-- **다음 (D-034)**: **M4 Part 3 신호처리 확장** — 세부 목록(Roadmap §6-7: M4.1 필터 ~ M4.8 켑스트럼·특징량)을 사용자와 확인한 뒤 시작한다. M1·M3은 사용자 확인 뒤 완료 처리. M1은 P1-5 ~ P1-8 사용자 확인 뒤 완료 처리.
-- **서브에이전트 요령**: 검토는 "읽기 전용 + 계산 재검증 + 전체 캡처"로 맡기고, 적용은 같은 에이전트에 파일 목록을 한정해 맡긴다. 에이전트는 빌드·git을 하지 않고, 빌드·캡처는 조정자가 한 번에. 고정 빌드를 따로 띄울 때는 `dist`를 복사해 정적 서버(scratchpad `review-server.mjs`, 4330)로 낸다.
-- 화면 확인 요령: 앱 브라우저 창이 숨겨져 있으면 `client:visible` 랩이 깨어나지 않는다. 헤드리스 Edge를 `--window-size=1100,23500`으로 전체 페이지를 한 번에 찍고, PowerShell `System.Drawing`으로 1500px씩 잘라 본다 (앵커 캡처는 랩 계산 중이면 빈 화면).
-- 그림: dB 스펙트럼은 선 + 점. 그림 숫자 회귀 테스트 예: `src/figures/figures-p1-4-5.test.ts`. 같은 랩을 여러 곳에 둘 때는 props로 시작 상태 + `client:visible` (`AveragingLab`).
-- **P1-0은 트랙 B 소유** (M2.2·M2.9). 고칠 일이 생기면 트랙 B 핸드오프에 요청으로 남긴다.
+- **상태**: M1(Part 1)·M3(Part 2) 세부 완료, 사용자 확인 대기 (표·회고는 `archive/Milestones.md`). 페이지마다 계산 코어: `lib/sensor`·`proximity`·`phase`·`measurementChain`·`transient`·`protection`.
+- **방금 끝냄 (M0.6·M0.7, D-037·D-038)**: 사용자 요청 "UI 개선 · Signal Lab 랩 모음 · 문서 정리" — 홈 학습 지도, Part 사이드바, /lab/ 랩 모음과 랩별 단독 페이지(36개), 문서 다이어트, `verify:page`.
+- **다음**: **M4 Part 3** — 세부 목록(Roadmap §6-7, M4.1 필터 ~ M4.8 켑스트럼)을 사용자와 확인한 뒤 시작. P3-2는 P2-4의 ski-slope·`measurementChain`을, P3-5는 P2-5의 `transient.smearDemo`를 이어 쓴다.
+- **요령**: 그림 숫자는 `figures-p*.test.ts`로 고정하고, 캡션·과제 문장은 쓰기 전에 계산으로 확인한다. 같은 랩을 여러 곳에 둘 때는 props로 시작 상태 + `client:visible`. 넓은 검토는 하위 에이전트에 "읽기 전용 + 계산 재검증"으로 맡긴다.
+- **P1-0은 트랙 B 소유**. 고칠 일은 트랙 B 핸드오프에 요청으로 남긴다.
 
 ## 핸드오프 — 트랙 B (Codex, Part 0 마무리 → Part 4)
 
@@ -73,47 +70,6 @@
 
 상태: `대기` → `진행 중` → `완료`
 
-## 세부 마일스톤 현황 — M1 신호처리 기초 (Part 1) · 트랙 A
-
-| 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
-|---|---|---|---|---|---|
-| M1.0 | 기초 페이지 (P1-0) | 완료 (D-025·D-026 개편) | Claude / Antigravity | main | 2026-10-02 |
-| M1.1 | DSP 코어 ① 신호 모델 | 완료 | Claude | main | 2026-10-02 |
-| M1.2 | DSP 코어 ② FFT · 스펙트럼 | 완료 | Codex | main | 2026-10-02 |
-| M1.3 | 공통 랩 UI | 완료 | Claude (M1.2와 병렬, D-021) | main | 2026-10-02 |
-| M1.4 | 푸리에 기초 (P1-1, LAB-FOU-01) | 완료 (D-025·D-026 개편) | Claude / Antigravity | main | 2026-10-02 |
-| M1.5 | 샘플링 · 에일리어싱 (LAB-SMP-01) | 완료 (D-025·D-026 개편) | Antigravity / Claude | main | 2026-10-02 |
-| M1.6 | AAF · ADC (LAB-SMP-02, 03) | 완료 (D-025·D-026 개편) | Antigravity / Claude | main | 2026-10-02 |
-| M1.7 | 분해능 · Smearing (LAB-RES-01, 02) | 완료 (D-025·D-026 개편) | Antigravity / Claude | main | 2026-10-02 |
-| M1.8 | Zoom FFT (LAB-ZOOM-01) | 완료 (D-025·D-026 개편) | Antigravity / Claude | main | 2026-10-02 |
-| M1.9 | 윈도우 라이브러리 | 완료 | Antigravity (M1.4와 병렬, D-021) | main | 2026-10-02 |
-| M1.10 | 윈도우 랩 (LAB-WIN-01~03, P1-4) | 완료 (M1.T2 보완) | Antigravity / Claude | main | 2026-10-02 |
-| M1.T | Part 1 전체 개편 (D-025 스토리텔링 & 랩 밀착형, 학교/현장 이분법 지양) | 완료 | Antigravity | main | 2026-10-02 |
-| M1.T2 | Part 1 개편 ② (그림·미니 랩·개념 순서, D-026) | **완료** (P1-0 ~ P1-5, 사용자 확인 대기) | Claude | main | 2026-10-02 |
-| M1.11 | 평균화 (LAB-AVG-01) | **완료** (M1.T2에서 본문 재작성·랩 연결) | Codex / Claude | main | 2026-10-02 |
-| M1.12 | TSA (LAB-AVG-02) | **완료** (P1-5 §6, 사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | **완료** (P1-6, 사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M1.14 | 변조 · 맥놀이 (LAB-MOD-01) | **완료** (P1-7, 사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M1.15 | 측정 설정 종합 · 샌드박스 (LAB-SBX-01) | **완료** (P1-8, `/lab/`, 사용자 확인 대기) | Claude | main | 2026-10-06 |
-
-**M1 회고 (2026-10-06, 세부 18개 완료 · 사용자 확인 전)**
-- 잘된 점: 그림 데이터를 `lib/dsp`로 계산하고 본문 숫자를 회귀 테스트로 묶어, 본문 = 그림 = 랩이 어긋나지 않았다. 사용자 피드백(D-025 → D-026)으로 정한 페이지 형식을 PageGuide(D-028)로 굳힌 뒤에는 P1-5 ~ P1-8을 같은 리듬으로 빠르게 썼다. 전체 페이지 헤드리스 캡처로 라벨 겹침·잘못된 표시를 push 전에 잡았다.
-- 바꿀 점: 초기(M1.1 ~ M1.10)에는 페이지를 쓴 뒤 두 번 갈아엎었다(M1.T, M1.T2) — 작성 기준을 먼저 합의했으면 덜 들었다. 병렬 트랙에서 공유 문서(Contents·Glossary·Progress)가 자주 겹친다 → 커밋 직전 최신 받기를 습관으로. 헤드리스 캡처는 앵커·가상 시간에 약하다 → 긴 창 + 잘라 보기.
-
-## 세부 마일스톤 현황 — M3 센서와 측정 체인 (Part 2) · 트랙 A
-
-| 세부 | 내용 | 상태 | 담당 | 커밋 | 완료일 |
-|---|---|---|---|---|---|
-| M3.1 | 센서 원리와 선택 (P2-1, LAB-SNS-01) | **완료** (사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M3.2 | 프록시미티 프로브 시스템 (P2-2, LAB-PROX-01) | **완료** (사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M3.3 | 키페이저 · 위상 · 1X 벡터 (P2-3, LAB-PHS-01, LAB-SRO-01) | **완료** (사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M3.4 | 측정 체인 함정 (P2-4, LAB-CHAIN-01 퀴즈) | **완료** (사용자 확인 대기) | Claude | main | 2026-10-06 |
-| M3.5 | 과도 데이터 수집과 보호 시스템 (P2-5, LAB-ALM-01) | **완료** (사용자 확인 대기) | Claude | main | 2026-10-06 |
-
-**M3 회고 (2026-10-06, 세부 5개 완료 · 사용자 확인 전)**
-- 잘된 점: 페이지마다 계산 코어 하나(sensor·proximity·phase·measurementChain·transient·protection)를 순수 함수로 두고 본문 숫자를 회귀 테스트로 묶었다. 예시 로터·펌프를 페이지끼리 이어 써 숫자가 연결된다. 전체 캡처 + CDP 조작 검사로 글자 겹침, 틀린 캡션, 랩 크기 문제를 push 전에 잡았다.
-- 바꿀 점: 캡션·랩 과제의 주장을 계산으로 먼저 확인하지 않고 쓴 곳이 있었다(클리핑 "바닥이 오름", 과제의 "Danger 80이면 트립") → 주장은 쓰기 전에 스크래치 계산이나 테스트로 확인한다. 쌍선형 필터 근사가 해석 모델과 어긋난 것을 늦게 알았다 → 새 모델은 처음부터 해석식과 넓은 구간에서 비교한다. 트랙 B와 같은 날 push가 겹쳐 문서 충돌이 잦았다(양쪽 보존으로 해결).
-
 ## M2 진동의 기초 — 구현 완료 · 사용자 검토 대기
 
 - 세부 10 / 10 구현 완료 (2026-10-06). 상세 표·회고는 `archive/Milestones.md` §M2. 사이트의 P0-1~P0-8·P1-0은 **검토** 유지.
@@ -132,9 +88,14 @@
 
 - **M0 기반 구축** (2026-10-02) — 세부 표·커밋·회고는 `archive/Milestones.md`
 
-## 세션 로그 — 트랙 A (Claude, Part 1) · 최근 3개, 최신이 위
+## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 
-> 트랙마다 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020, D-029). 트랙 B 세션 로그는 이 파일 맨 아래.
+### 2026-10-06 · Claude · M0.6 UI 개편·랩 모음 + M0.7 문서 다이어트 (D-037·D-038)
+- 요청: 사용자 — "UI 개선(지도·같은 Part 이동·Part 1만 다른 표시), Signal Lab에 랩만 골라 보기 + 원문 링크, 문서 정리·토큰 절약"
+- UI: 홈 4단계 학습 지도·히어로, 절 페이지 Part 사이드바, Part 페이지에 절별 랩. Part 1의 ★·색은 원본 커리큘럼의 "핵심" 표시(`featured`)였다 → 삭제
+- 랩 모음: /lab/ 허브(거르기·찾기) + 36개 단독 페이지, 원문 링크 자동 수집(앵커 전수 확인), LabFrame "이 랩만 크게 보기". 샌드박스는 /lab/sbx-01/
+- 문서: AGENTS 15 → 8 KB, Contents 101 → 53 KB(구현된 랩 사양 → archive/LabSpecs.md), Progress 정리, `verify:page` 도구
+- 확인: check, test, build 74 → 75페이지, verify:page로 홈·절·랩 페이지 hydration·오류 0·모바일 넘침 0
 
 ### 2026-10-06 · Claude · M3.5 과도 데이터 수집과 보호 시스템 — P2-5 (M3 완료)
 - 요청: 사용자 — "다음 작업 ㄱㄱ"
@@ -144,23 +105,6 @@
 - 문서: Contents §1-2·§4·§5(LAB-ALM-01 사양)·§6, Glossary 12행, Curriculum 2-5, M3 회고
 - 확인: check 0 errors, test, build, 전체 캡처로 그림 4 글자 겹침 수정, 과제 문장 하나를 계산으로 확인해 바로잡음(Danger 80 + 배율은 트립 없음 → 지연 3.5 s 비교로), CDP로 랩 3곳·보팅 전환·콘솔 오류 없음·모바일 0
 - 다음: M4 세부 목록 사용자 확인
-
-### 2026-10-06 · Claude · M3.4 측정 체인 함정 — P2-4 (D-035 확정)
-- 요청: 사용자 — "제안한거 확정으로 바꾸고 다음 진행시켜" → D-035 확정, M3.4
-- 한 일: P2-4 본문(9절) — 측정 체인 도식, 설치 공진 봉우리(손 2 kHz ×5, 자석 7 kHz ×10), IEPE·바이어스 전압(정상·끊김·합선)·정착, ski-slope(v = a/2πf, 전체 2.12 → 6.22 mm/s), 그라운드 루프(60·180·300 Hz, 회전수를 따라가지 않음), 케이블·커넥터, 입력 넘침(5X +25 dB, 1X −29 %), 확인 습관 표. 그림 7
-- 랩: LAB-CHAIN-01 `ChainQuizLab` — 사례 7(진짜 기계 진동 1 포함) × 확인 동작 7, 판정 피드백. 살펴보기 2곳 + 퀴즈 1곳
-- 코어: `lib/measurementChain.ts`(+테스트 12) — 설치 응답은 처음 쌍선형 필터로 했다가 공진 위에서 H(r)와 2배 어긋나 주파수 영역 곱셈으로 바꿈(0.5 % 안). 그림 숫자 테스트 8
-- 문서: Contents §1-2·§4·§5(LAB-CHAIN-01 사양)·§6, Glossary 9행, Curriculum 2-4 랩, Decisions D-035 확정
-- 확인: check 0 errors, test, build, 전체 캡처로 그림 5(180·300 Hz가 속도에서 안 보임)·그림 6(케이블 펄스가 묻힘) 크기 조정, 클리핑 캡션 바로잡음(바닥이 아니라 정수배 막대), CDP로 랩 3곳·퀴즈 피드백·콘솔 오류 없음·모바일 0
-- 다음: M3.5 P2-5
-
-### 2026-10-06 · Claude · M3.3 키페이저 · 위상 · 1X 벡터 — P2-3
-- 요청: 사용자 — "M3.3 진행시켜"
-- 한 일: P2-3 본문(9절) — 키페이저(회전수·0° 기준, 펄스 두 번 함정), 위상 = 360°·Δt/T(3600 rpm 5.56 ms → 120°)와 1X 성분(2X 섞이면 봉우리 138°), 관례(지연 120° = 앞섬 −120° = 영점 30°, 센서 종류·설치), 1X 벡터·Polar의 뜻(high spot 쪽)·런업 Bode vs Polar, Slow roll 보상(50∠120° − 15∠60° = 44.4∠137°, 크기만 빼면 −21 %·구간 고르기), 위상차 진단(X-Y 오빗, 동상·역상). 그림 10, 랩 2종 4곳
-- 코어: `lib/phase.ts`(+테스트 15), 그림 숫자 테스트 5, 공용 `ui/PolarPlot.tsx` (D-035 제안)
-- 문서: Contents §1-2·§3·§4·§5(LAB-PHS-01·LAB-SRO-01 사양)·§6, Glossary 15행, AGENTS §6·PageGuide §6-4 (Polar 예외)
-- 확인: `npm run check` 0 errors, `npm test`, `npm run build`, 전체 캡처로 Polar 글자 겹침·랩 Polar 크기(300 px로 줄던 것) 수정, CDP로 랩 4곳 hydration·콘솔 오류 없음·조작·모바일 넘침 0
-- 다음: M3.4 P2-4
 
 ## 세션 로그 — 트랙 B (Part 0 → Part 4) · 최근 3개, 최신이 위
 

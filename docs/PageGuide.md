@@ -335,8 +335,8 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 5. **본문**: 이 문서의 뼈대와 리듬대로.
 6. **랩**: 사양 → 구현 → 따라 하기·해석과 함께 연결.
 7. **숫자 대조**: 본문 숫자 = 그림 = 랩 읽음값. 본문이 인용한 그림 숫자는 회귀 테스트로.
-8. **검사**: `npm run check` · `npm test` · `npm run build`, 그리고 페이지를 헤드리스로 캡처해서 그림 글자 겹침, 랩 배치, 콘솔 오류를 본다 (AGENTS.md §6 화면 확인).
-9. **문서**: `Contents.md` §4(상태)·§5(랩), `Glossary.md`, `src/data/curriculum.ts`(`href`·`status`), `Progress.md`.
+8. **검사**: `npm run check` · `npm test` · `npm run build` → `npx astro preview` → `npm run verify:page -- /p{Part}-{절}/` (hydration·콘솔 오류·모바일 넘침·구간 캡처 `dist/qa`, D-038). 캡처는 그림 글자 겹침·랩 배치를 볼 구간만 연다.
+9. **등록·문서**: 새 랩은 `src/data/labs.ts`와 `src/pages/lab/[slug].astro`에 한 줄씩 (랩 모음, D-037). `Contents.md` §4(상태)·§5(구현되면 사양을 `archive/LabSpecs.md`로, 표에 한 줄), `Glossary.md`, `src/data/curriculum.ts`(`href`·`status`), `Progress.md`.
 
 ---
 
@@ -363,6 +363,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 - [ ] 정리 표, 확인 문제(답 숨김, 계산 + 판단), 다음 페이지 한 줄이 있는가?
 - [ ] `/dev/figures/`와 페이지 캡처에서 겹침·잘림·콘솔 오류가 없는가?
 - [ ] §8의 MDX 함정을 확인했는가?
+- [ ] 새 랩을 랩 모음(`labs.ts`·`lab/[slug].astro`)에 올렸는가? `npm run verify:page`가 OK인가?
 - [ ] `Contents.md` §4·§5, `Glossary.md`, `curriculum.ts`, `Progress.md`를 고쳤는가?
 
 ---
