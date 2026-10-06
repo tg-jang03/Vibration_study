@@ -4,6 +4,7 @@
  * 32 Hz 작은 성분 0.025 mm/s Peak(= 0.0177 mm/s RMS, 잡음 바닥보다 작음) + 70 Hz 성분 0.07 mm/s Peak(= 0.0495 mm/s RMS,
  * 잡음 바닥보다 조금 큼) + 백색 잡음 0.4 mm/s RMS, 시드 고정. 두 성분 모두 1초 프레임에 정수 주기라 프레임 시작에 동기다.
  * 계산은 SI(m/s)로 하고 그림에 넣을 때만 mm/s로 바꾼다 (D-012).
+ * TSA 그림(9 ~ 12)은 랩 LAB-AVG-02와 같은 기어 상자 신호(src/lib/gearbox.ts, 가속도 m/s²)를 쓴다.
  */
 import { grid, type FigAnnotation, type FigPanel, type FigSeries, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
@@ -12,7 +13,9 @@ import type { ComplexSpectrum } from '../lib/dsp/fft';
 import { createRng } from '../lib/dsp/random';
 import { acquire } from '../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../lib/dsp/spectrum';
+import { removeOrders, synchronousAverage, tsaGain } from '../lib/dsp/tsa';
 import { createWindow } from '../lib/dsp/window';
+import { GEARBOX, gearboxSpec } from '../lib/gearbox';
 
 const FS = 512;
 const N = 512;
@@ -300,8 +303,123 @@ export const overlapLayout: FigureSpec = {
   panels: [overlapPanel(0, '오버랩 0 %', false), overlapPanel(0.5, '오버랩 50 %', false), overlapPanel(0.75, '오버랩 75 %', true)],
 };
 
+// ── TSA (§6) — 랩 LAB-AVG-02와 같은 신호 (src/lib/gearbox.ts) ──
+const GB = GEARBOX;
+const SPR = GB.samplesPerRev;
+const TSA_REVS = 64;
+const gbFull = acquire(gearboxSpec(), { fs: GB.fs, n: SPR * TSA_REVS }).x;
+const gbPart = (o: Parameters<typeof gearboxSpec>[0]) => Array.from(acquire(gearboxSpec(o), { fs: GB.fs, n: SPR * 3 }).x);
+const gbTruth = synchronousAverage(acquire(gearboxSpec({ shaftB: false, noiseRms: 0 }), { fs: GB.fs, n: SPR }).x, SPR);
+const ANG = Array.from({ length: SPR }, (_, n) => (360 * n) / SPR);
+const T3 = Array.from({ length: SPR * 3 }, (_, i) => (1000 * i) / GB.fs);
+const tsaOf = (m: number) => synchronousAverage(gbFull, SPR, m);
+const rmsDiff = (a: ArrayLike<number>, b: ArrayLike<number>) => Math.sqrt(Array.from(a).reduce((s, v, i) => s + (v - b[i]) ** 2, 0) / a.length);
+const tsa4 = tsaOf(4);
+const tsa64 = tsaOf(TSA_REVS);
+const tsaDev = { m1: rmsDiff(tsaOf(1), gbTruth), m4: rmsDiff(tsa4, gbTruth), m64: rmsDiff(tsa64, gbTruth) };
+const kpLines = (label = false): FigAnnotation[] =>
+  [50, 100].map((t, i): FigAnnotation => ({ type: 'vline', x: t, color: 'muted', label: label && i === 0 ? '키페이저' : undefined }));
+const timePanel = (title: string, y: number[], color: FigSeries['color'], range: number, last: boolean, h = 80): FigPanel => ({
+  title,
+  series: [{ x: T3, y, color, width: last ? 1.4 : 1.6 }],
+  annotations: kpLines(),
+  x: last ? { range: [0, 150], ticks: [0, 25, 50, 75, 100, 125, 150], label: '시간 [ms] (점선: 축 A 키페이저 = 한 바퀴 시작)' } : { range: [0, 150], ticks: 'none' },
+  y: { range: [-range, range], ticks: [-range, 0, range] },
+  height: h,
+});
+
+// 그림 9 — 센서 신호 한 줄에 섞인 축 A·결함·축 B 성분
+export const tsaMixture: FigureSpec = {
+  id: 'fig-5-9',
+  caption: `그림 9. 기어 상자 센서 신호의 처음 세 바퀴(맨 위, 가속도 m/s²)와 그 안에 섞인 성분. 축 A는 ${GB.rpm} rpm(${GB.shaftHz} Hz)으로 돌고 기어 이빨이 ${GB.teeth}개라 맞물림 성분이 ${GB.teeth * GB.shaftHz} Hz(15차)에 생긴다(파랑). 120° 자리 이빨의 결함은 바퀴마다 한 번 '딱' 치고 울린다(주황). 축 A의 성분은 점선(키페이저) 사이 같은 자리에 같은 모양으로 되풀이된다. 이웃 축 B의 성분(보라, ${GB.bRatio} × ${GB.shaftHz} = ${formatNumber(GB.bRatio * GB.shaftHz, 3)} Hz)은 한 바퀴에 ${GB.bRatio}번 흔들려 바퀴마다 시작 위치가 다르다. 여기에 잡음(σ = ${GB.noiseRms} m/s²)까지 더해진 맨 위 신호에서는 결함 충격을 찾기 어렵다.`,
+  panels: [
+    { ...timePanel('센서 신호 (모두 + 잡음)', Array.from(gbFull.slice(0, SPR * 3)), 'text', 5, false, 120), annotations: kpLines(true) },
+    timePanel('축 A: 1X + 맞물림 성분 (15차·30차)', gbPart({ defect: false, shaftB: false, noiseRms: 0 }), 'c1', 2, false),
+    timePanel('축 A 결함 충격 (바퀴마다 120° 자리)', gbPart({ shaftA: false, shaftB: false, noiseRms: 0 }), 'warn', 1.5, false),
+    timePanel(`축 B 성분 (축 A 회전 주파수의 ${GB.bRatio}배)`, gbPart({ shaftA: false, defect: false, noiseRms: 0 }), 'c4', 1.5, true, 100),
+  ],
+};
+
+const anglePanel = (title: string, series: FigSeries[], range: number, last: boolean, extra: FigAnnotation[] = [], h = 95): FigPanel => ({
+  title,
+  series,
+  annotations: extra,
+  x: last ? { range: [0, 360], ticks: [0, 60, 120, 180, 240, 300, 360], label: '축 A 회전 각도 [°]' } : { range: [0, 360], ticks: 'none' },
+  y: { range: [-range, range], ticks: [-range, 0, range] },
+  height: h,
+});
+const truthLine: FigSeries = { x: ANG, y: gbTruth, color: 'muted', dash: true, width: 1.4, label: '축 A 성분만 (참값)' };
+
+// 그림 10 — 한 바퀴씩 잘라 같은 각도끼리 평균
+export const tsaStack: FigureSpec = {
+  id: 'fig-5-10',
+  caption: `그림 10. 키페이저 펄스마다 한 바퀴씩 잘라 가로축을 회전 각도로 바꿨다. 위: 처음 4바퀴를 겹쳐 그리면 바퀴마다 모양이 다르다(축 B 성분과 잡음이 매번 다르게 얹힌다). 가운데: 같은 각도끼리 4바퀴를 평균. 아래: 64바퀴를 평균하면 축 A 성분만의 참값(회색 점선)에 거의 겹친다. 참값과의 차이(RMS)는 한 바퀴 ${tsaDev.m1.toFixed(2)} → 4바퀴 ${tsaDev.m4.toFixed(2)} → 64바퀴 ${tsaDev.m64.toFixed(2)} m/s²로 줄어든다. 120° 근처의 결함 충격은 아래 그림에서 맞물림 파형이 일그러진 모양으로 보인다.`,
+  panels: [
+    anglePanel('한 바퀴씩 잘라 겹친 것 (처음 4바퀴)', [0, 1, 2, 3].map((r): FigSeries => ({ x: ANG, y: gbFull.slice(r * SPR, (r + 1) * SPR), color: 'c1', width: 1.1, opacity: 0.5 })), 5, false),
+    anglePanel('4바퀴 평균', [truthLine, { x: ANG, y: tsa4, color: 'c1', width: 1.6, label: '4바퀴 TSA' }], 3, false),
+    anglePanel('64바퀴 평균', [truthLine, { x: ANG, y: tsa64, color: 'c1', width: 1.6, label: '64바퀴 TSA' }], 3, true, [{ type: 'vline', x: GB.defectDeg, color: 'warn', label: '120°' }], 110),
+  ],
+};
+
+// 그림 11 — 빗살 모양 통과 특성 |H| vs ρ
+const RHO = grid(12, 15, 1201);
+const gainAt = { r134: tsaGain(13.4, 16), r1305: tsaGain(13.05, 16), r1305m64: tsaGain(13.05, 64) };
+export const tsaComb: FigureSpec = {
+  id: 'fig-5-11',
+  caption: `그림 11. 축 A 회전 주파수의 ρ배인 성분이 TSA 뒤에 남는 비율 |H|. 정수배(13, 14 …)는 1로 그대로 남고, 그 사이는 거의 지워진다 — 빗(comb)의 살처럼 생겼다. 평균 바퀴 수 M이 클수록 살이 가늘어진다(살이 0으로 떨어지는 곳까지의 거리 = 1/M). ρ = 13.4는 M = 16에서 ${formatNumber(gainAt.r134, 3)}(= 1/16)만 남지만, 정수에 가까운 ρ = 13.05는 ${formatNumber(gainAt.r1305, 3)}이 남는다. 13.05를 지우려면 M이 1/0.05 = 20 이상이어야 한다.`,
+  panels: [
+    {
+      series: [
+        { x: RHO, y: RHO.map((r) => tsaGain(r, 4)), color: 'c2', width: 1.6, label: 'M = 4' },
+        { x: RHO, y: RHO.map((r) => tsaGain(r, 16)), color: 'c1', width: 1.8, label: 'M = 16' },
+      ],
+      // 점 라벨은 13과 14 사이 위쪽 빈자리(곡선 없음)에 두고 화살표로 잇는다
+      annotations: [
+        { type: 'arrow', x1: 13.2, y1: 0.86, x2: 13.06, y2: gainAt.r1305 + 0.04, double: false, color: 'c4' },
+        { type: 'arrow', x1: 13.36, y1: 0.66, x2: 13.4, y2: gainAt.r134 + 0.04, double: false, color: 'c3' },
+        { type: 'point', x: 13.05, y: gainAt.r1305, color: 'c4' },
+        { type: 'point', x: 13.4, y: gainAt.r134, color: 'c3' },
+        { type: 'text', x: 13.22, y: 0.86, text: `13.05 → ${formatNumber(gainAt.r1305, 3)}`, color: 'c4', bold: true, dy: 5 },
+        { type: 'text', x: 13.38, y: 0.68, text: `13.4 → ${formatNumber(gainAt.r134, 3)}`, color: 'c3', bold: true, dy: 5 },
+      ],
+      x: { range: [12, 15], ticks: [12, 12.5, 13, 13.5, 14, 14.5, 15], label: 'ρ = 성분 주파수 ÷ 축 A 회전 주파수' },
+      y: { range: [0, 1.05], ticks: [0, 0.25, 0.5, 0.75, 1], label: '남는 비율 |H|' },
+      height: 190,
+    },
+  ],
+};
+
+// 그림 12 — 규칙적인 성분을 빼면 결함 충격만 남는다 (Residual)
+const res64 = removeOrders(tsa64, GB.regularOrders);
+const truthRes = removeOrders(gbTruth, GB.regularOrders);
+const inDefect = (deg: number) => deg >= GB.defectDeg && deg < GB.defectDeg + 45;
+const resIn = Array.from(res64).filter((_, n) => inDefect(ANG[n]));
+const resOut = Array.from(res64).filter((_, n) => !inDefect(ANG[n]));
+const resPeak = Math.max(...resIn.map(Math.abs));
+const resElse = Math.sqrt(resOut.reduce((s, v) => s + v * v, 0) / resOut.length);
+const toothDeg = 360 / GB.teeth;
+export const tsaResidual: FigureSpec = {
+  id: 'fig-5-12',
+  caption: `그림 12. 위: 64바퀴 TSA. 맞물림 성분이 커서 결함 충격은 파형의 작은 일그러짐일 뿐이다. 아래: 여기서 규칙적인 성분(1X, 맞물림 15차·30차)을 빼낸 나머지(Residual). 120° 자리에서 울림(최대 ${formatNumber(resPeak, 2)} m/s²)이 다른 각도의 남은 잡음(RMS ${formatNumber(resElse, 2)} m/s²)보다 확실히 크다. 이빨 하나가 ${formatNumber(toothDeg, 2)}°를 차지하므로 0°부터 세어 여섯 번째 이빨(120° ~ 144°) 자리다.`,
+  panels: [
+    anglePanel('64바퀴 TSA', [{ x: ANG, y: tsa64, color: 'c1', width: 1.6 }], 3, false),
+    anglePanel('1X·맞물림 성분을 뺀 나머지 (Residual)', [
+      { ...truthLine, y: truthRes, label: '참값에서 뺀 것' },
+      { x: ANG, y: res64, color: 'c1', width: 1.6, label: '64바퀴 TSA에서 뺀 것' },
+    ], 1.6, true, [{ type: 'band', x1: GB.defectDeg, x2: GB.defectDeg + 45, color: 'warn', label: '결함 충격' }], 120),
+  ],
+};
+
 /** 본문 숫자 확인용 (테스트에서 사용) */
 export const P15_VALUES = {
+  tsaDev1: tsaDev.m1,
+  tsaDev4: tsaDev.m4,
+  tsaDev64: tsaDev.m64,
+  tsaGain134: gainAt.r134,
+  tsaGain1305: gainAt.r1305,
+  tsaGain1305m64: gainAt.r1305m64,
+  tsaResPeak: resPeak,
+  tsaResElse: resElse,
   noiseRmsMm: NOISE_RMS_MM,
   toneRmsMm: TONE_RMS_MM,
   tone2RmsMm: TONE2_RMS_MM,

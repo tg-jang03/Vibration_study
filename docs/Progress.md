@@ -8,23 +8,23 @@
 
 | 트랙 | 범위 | 담당 | 작업 폴더 | 진행 | 지금 세부 | 상태 |
 |---|---|---|---|---|---|---|
-| **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 14 / 18 | **M1.12 TSA** (P1-5에 LAB-AVG-02) | 진행 중 |
+| **A** | M1 신호처리 기초 (Part 1) | Claude | `진동공부` | 15 / 18 | M1.12 TSA 완료 → 다음 **M1.13** 스케일링·단위 (P1-6) | 대기 (사용자 확인 뒤) |
 | **B** | M2 진동의 기초 (Part 0) | Codex | `진동공부-Codex` (worktree) | 1 / 9 | **M2.1** `lib/mck` + P0-1 · LAB-MCK-01 | 대기 — 시작 가능 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
-- 사용자 확인 대기: P1-5 TSA 절(M1.12 끝나면), Part 0 페이지(M2.1부터 차례로)
+- 사용자 확인 대기: **P1-5 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), Part 0 페이지(M2.1부터 차례로)
 
 ## 핸드오프 — 공통
 
 - **작성 기준은 `docs/PageGuide.md`** (D-028, 기준 페이지 P1-0 ~ P1-4). 개념 척추는 `Contents.md` §1-2. 핵심: 앞 페이지까지 나온 개념만, 개념마다 그림(`Figure`), 강조 상자는 `Callout` 6종, 랩 앞 따라 하기·뒤 해석, **코드 블록·아스키 도표 금지**, 정리는 표.
 - **커리큘럼 번호 (D-027, 2026-10-02)**: Part 0 = 진동 입문(P0-1 ~ P0-7), 회전체 동역학 = Part 4(P4-1 ~ P4-3), 옛 Part 4~9 → 5~10. M5 = Part 4, M6 ~ M11 = Part 5 ~ 10. 대응표는 D-027.
-- **함정**: `texNumber`/`formatNumber` 둘째 인자는 유효숫자. 이론상 0인 값은 0으로 정리(hydration). MDX 함정은 PageGuide §8. Node·gh는 PowerShell·Bash 모두 PATH에 있다 (2026-10-06 확인) — `$env:Path = …;` 같은 앞붙임 없이 `npm …`으로 바로 실행한다 (앞붙임이 있으면 허용 규칙에 안 걸려 승인 창이 뜬다). Python은 없다.
-- **공용 코어를 고쳤을 때**는 아래 자기 트랙 핸드오프에 적는다 (D-029). 최근 변경: 2026-10-06 Claude — `lib/figure.ts`·`Figure.astro`에 도식 기능(`frame: false`, `line`·`spring`·`damper`·`ground`·`circle`, `squareYRange`, `FIG_LAYOUT`). 기존 그림은 그대로.
+- **함정**: `texNumber`/`formatNumber` 둘째 인자는 유효숫자. 이론상 0인 값은 0으로 정리(hydration). MDX 함정은 PageGuide §8. Node·gh는 시스템 PATH에 있으므로 `npm …`을 앞붙임 없이 바로 실행한다 (앞붙임이 있으면 허용 규칙에 안 걸려 승인 창이 뜬다, 2026-10-06). 다만 Node 설치 전부터 켜 둔 VS Code·에이전트 세션은 옛 PATH를 물려받아 `npm`을 못 찾는다 → 그 창을 다시 시작한다 (Git Bash는 `~/.bashrc`가 빠진 Node 경로를 보충한다). Python은 없다.
+- **공용 코어를 고쳤을 때**는 아래 자기 트랙 핸드오프에 적는다 (D-029). 최근 변경: 2026-10-06 Claude — `lib/figure.ts`·`Figure.astro`에 도식 기능(`frame: false`, `line`·`spring`·`damper`·`ground`·`circle`, `squareYRange`, `FIG_LAYOUT`). 기존 그림은 그대로. 2026-10-06 Claude — `components/ui/Plot.tsx`가 `'var(--plot-1)'` 같은 CSS 변수 색을 실제 색으로 풀어 준다 (전에는 Plotly가 무시해 기본색으로 그려졌다. 이 색을 쓰던 랩은 없었음). `lib/dsp/signal.ts`에 성분 `impulses`(감쇠 임펄스열) 추가.
 
 ## 핸드오프 — 트랙 A (Claude, Part 1)
 
-- **지금**: M1.12 TSA — `lib/dsp`에 TSA 함수 + 테스트(동기 성분 이득 1, 비동기 이득 식), LAB-AVG-02, P1-5 §3 뒤에 TSA 절(그림 포함), 지금 있는 "TSA는 이어서 추가할 예정" 상자 교체.
-- **다음**: M1.13 스케일링·단위(P1-6) → M1.14 변조(P1-7) → M1.15 측정 설정 종합·샌드박스(P1-8, 홈).
+- **방금 끝냄 (M1.12)**: `lib/dsp/tsa.ts`(`synchronousAverage`·`tsaGain`·`removeOrders`, 테스트 9), 신호 `src/lib/gearbox.ts`(그림·랩 공용), `TsaLab.tsx`(LAB-AVG-02), P1-5 §6 TSA(그림 9 ~ 12) — 고르기·정리 표·확인 문제 Q6·Q7. 옛 §6 ~ §8은 §7 ~ §9로 밀림 (§1 ~ §5 번호는 그대로).
+- **다음**: 사용자 확인 → M1.13 스케일링·단위(P1-6: LAB-SPC-01·02, LAB-UNIT-01) → M1.14 변조(P1-7) → M1.15 측정 설정 종합·샌드박스(P1-8, 홈).
 - 그림: dB 스펙트럼은 선 + 점. 그림 숫자 회귀 테스트 예: `src/figures/figures-p1-4-5.test.ts`. 같은 랩을 여러 곳에 둘 때는 props로 시작 상태 + `client:visible` (`AveragingLab`).
 - **P1-0은 트랙 B 소유** (M2.2·M2.8). 고칠 일이 생기면 트랙 B 핸드오프에 요청으로 남긴다.
 
@@ -48,7 +48,7 @@
 | M | 범위 | 상태 | 세부 진행 | 완료일 |
 |---|---|---|---|---|
 | M0 | 기반 구축 | **완료** | 5 / 5 | 2026-10-02 |
-| M1 | 신호처리 기초 (Part 1) · 트랙 A | 진행 중 | 14 / 18 | — |
+| M1 | 신호처리 기초 (Part 1) · 트랙 A | 진행 중 | 15 / 18 | — |
 | M2 | 진동의 기초 (Part 0) · 트랙 B | 진행 중 | 1 / 9 | — |
 | M3 | 센서와 측정 체인 (Part 2) | 대기 | 0 / 4 | — |
 | M4 | 신호처리 확장 (Part 3) | 대기 | 0 / 8 | — |
@@ -80,7 +80,7 @@
 | M1.T | Part 1 전체 개편 (D-025 스토리텔링 & 랩 밀착형, 학교/현장 이분법 지양) | 완료 | Antigravity | main | 2026-10-02 |
 | M1.T2 | Part 1 개편 ② (그림·미니 랩·개념 순서, D-026) | **완료** (P1-0 ~ P1-5, 사용자 확인 대기) | Claude | main | 2026-10-02 |
 | M1.11 | 평균화 (LAB-AVG-01) | **완료** (M1.T2에서 본문 재작성·랩 연결) | Codex / Claude | main | 2026-10-02 |
-| M1.12 | TSA (LAB-AVG-02) | **진행 중** | Claude | — | — |
+| M1.12 | TSA (LAB-AVG-02) | **완료** (P1-5 §6, 사용자 확인 대기) | Claude | main | 2026-10-06 |
 | M1.13 | 스케일링 · 단위 (LAB-SPC-01, 02, LAB-UNIT-01) | 대기 | Claude | — | — |
 | M1.14 | 변조 · 맥놀이 (LAB-MOD-01) | 대기 | Claude | — | — |
 | M1.15 | 측정 설정 종합 · 샌드박스 (LAB-SBX-01) | 대기 | Claude | — | — |
@@ -125,6 +125,20 @@
 
 > 트랙마다 4번째부터는 `docs/archive/SessionLog.md` 맨 위로 옮긴다 (D-020, D-029). 트랙 B 세션 로그는 이 파일 맨 아래.
 
+### 2026-10-06 · Claude · M1.12 TSA — P1-5 §6, LAB-AVG-02
+- 요청: 사용자 — "P1-0 ~ P1-4 개편은 마음에 든다. P1-5는 아직 더 해야 하지? 다음 작업 진행해 봐." (같은 세션에서 M2.0 트랙 B 기반을 먼저 push)
+- 한 일
+  - 계산: `lib/dsp/tsa.ts` — `synchronousAverage`(한 바퀴씩 같은 각도 평균), `tsaGain`(빗살 통과 특성 ∣H∣, 큰 ρ·M에서도 정밀하게 정수 부분을 뺀 뒤 계산), `removeOrders`(지정 차수 제거 → Residual). `signal.ts`에 감쇠 임펄스열 성분 `impulses`. 테스트 9개(동기 이득 1, 비동기 = 해석해, 잡음 σ/√M, Residual, 임펄스)
+  - 신호: `src/lib/gearbox.ts` — 축 A 20 Hz·이빨 15개(맞물림 15차·30차·1X), 120° 이빨 결함 충격, 축 B 성분 13.4배, 잡음. 그림과 랩이 같은 신호·시드
+  - 랩 LAB-AVG-02 `TsaLab.tsx`: 센서 신호 + 키페이저, TSA(또는 Residual) vs 각도 + 참값, 차수 스펙트럼(한 바퀴 vs TSA), 읽음값(측정 시간, 축 B가 남은 비율, 남은 잡음, 15차 진폭), 과제 4
+  - P1-5 §6 TSA 새로 씀: 6.1 축이 여러 개 도는 기계(기어 맞물림 주파수 풀이) · 6.2 같은 각도끼리 평균 · 6.3 빗살 모양(숫자 예 13.4 vs 13.05) · 6.4 Residual로 결함 각도 찾기. 그림 9 ~ 12, 랩 두 곳, 주의·현장 상자, 고르기·정리 표에 TSA 행, 확인 문제 Q6·Q7. 제목 "평균화와 TSA", 다 읽으면 목록 5개로 정리
+  - 공용 코어: `Plot.tsx`가 `var(--…)` 색을 실제 색으로 풀도록 (Plotly는 CSS 변수를 몰라 기본색으로 그렸다). PageGuide §6-4에 색 지정 요령
+  - 그림 숫자 회귀 테스트 3개(`figures-p1-4-5.test.ts`: 참값과의 차이 1.04 → 0.45 → 0.10, ∣H∣ 1/16·0.235·0.059, Residual 울림 > 6 × 잡음)
+  - 문서: Contents §1-2 P1-5 행·§3 신호 성분·§4·§5 LAB-AVG-02·§6 TSA 행 5개, Glossary 용어 6개(기어 상자, 맞물림 주파수, 빗살 통과 특성, 차수 스펙트럼, Residual, 각도 재샘플링), Issues I-023
+  - 이 PC: Git Bash용 `~/.bashrc`·`~/.bash_profile` — Node가 PATH에 없을 때만 보충 (이 세션 셸은 Node 설치 전 환경이라 `npm`을 못 찾았다)
+- 확인: `npm test` 158개, `npm run check` 0 errors, `npm run build` 21페이지. P1-5 헤드리스 캡처로 그림 9 ~ 12·랩 확인 → 그림 11 라벨이 곡선과 겹쳐 빈자리 + 화살표로, 랩의 TSA 선이 주황(계열 순서 색)·회색 막대가 파랑(var 색 무시)이던 것을 수정
+- 다음: 사용자 확인 → M1.13 스케일링·단위(P1-6)
+
 ### 2026-10-02 · Claude · M1.T2 마무리 — P1-4·P1-5 개편, M1.11 완료, Part 0 재구성 계획 (D-027)
 - 요청: 사용자 — "P1-3까지 너무 좋다, P1-5까지 진행하자", "아까 Part 0 구성안도 계획에 반영해 줘" (Part 0을 진동을 전혀 모르는 사람용으로, Part 1과 연결되게)
 - 한 일
@@ -149,31 +163,6 @@
   - 문서: D-026, I-023, Contents §1 개정·랩 사양, Glossary, AGENTS §6
 - 확인: `npm test` 136개 통과, `npm run check` 0 errors, `npm run build` 20페이지, Part 1 여섯 페이지 헤드리스 캡처 콘솔 오류 0, 코드 블록 0
 - 다음: 사용자 확인 → P1-4·P1-5
-
-### 2026-10-02 · Antigravity · M1.T Part 1 전체 개편 (D-025 스토리텔링 & 랩 밀착형, 학교/현장 이분법 지양)
-- 요청: 사용자 — "글들이 너무 위키스럽고 읽기에 가독성도 별로고 학습하기에 적합하지 않다. 전체 다 개편하고 지침사항에 넣어달라. M1.T로 중간에 끼워넣어서 싹 다 개편해라. 그리고 너무 학교/현장 이분법적으로 나누지 마라. 그냥 내가 그랬다는 거지 다른 사람들도 그런 건 아니잖아."
-- 한 일:
-  - `docs/Decisions.md`: D-025 확정 (D-024 대체, 백과사전식 포맷 폐지, 스토리텔링 & 랩 밀착형 구조 도입, 학교/현장 이분법 금지 및 보편적 공학 톤 확립, M1.T 신설)
-  - `AGENTS.md` §1 & §6: 프로젝트 소개 및 페이지 작성 기준에 D-025 및 학교/현장 이분법 지양 규칙 반영
-  - `docs/Contents.md` §1: 신규 페이지 작성 기준을 스토리텔링 & 랩 밀착형 템플릿으로 교체, P1-0~P1-4 상태 갱신
-  - `docs/Roadmap.md` §6-3: M1.T 마일스톤 등록
-  - `src/components/labs/`:
-    - `WindowLeakageLab.tsx` (LAB-WIN-01): 주파수 오프셋 δ(0.0~0.5), Uniform/Hann/Flat-top 비교, 시간파형 및 스펙트럼, 스캘럽 손실 & 누설 진폭 실시간 표시
-    - `WindowComparisonLab.tsx` (LAB-WIN-02): 윈도우 8종 나란히 비교, 시간영역 형태, 주파수 응답(dB), 메인로브 폭 vs 사이드로브 감쇠율 트레이드오프
-    - `WindowCorrectionLab.tsx` (LAB-WIN-03): 단일 톤 vs 광대역 잡음, None/ACF/ECF 보정 모드, 잘못된 보정 계수 적용 시 18.4% 과소평가 및 50% 과대평가 오차 시각화
-  - `src/pages/p1-*.mdx` 전면 개편:
-    - `p1-0.mdx`: 심장박동/펄스 오프닝, 변위/속도/가속도, 사인파 3요소, 1X rpm, 4대 진폭 지표, DC/AC 분리
-    - `p1-1.mdx`: 레고 블록 비유, `FourierHarmonicsLab`, `DftCorrelationLab`, `ZeroPaddingLab` 밀착 배치
-    - `p1-2.mdx`: 마차바퀴 착시 오프닝, `SamplingLab`, `AafLab`, `AdcLab` 밀착 배치, AAF 2.56 메커니즘, ADC 클리핑 왜곡
-    - `p1-3.mdx`: $\Delta f \cdot T = 1$ 원리, `ResolutionLab`, `SmearingLab`, `ZoomLab` 밀착 배치
-    - `p1-4.mdx`: 피켓펜스 창살 착시 오프닝, `WindowLeakageLab`, `WindowComparisonLab`, `WindowCorrectionLab` 밀착 배치
-  - `README.md`, `src/pages/index.astro`, `src/data/curriculum.ts`: "학교 vs 현장" 이분법적 문구를 "기초 진동 역학(MCK)부터 대형 회전기계(GT/ST) 진동 진단까지"의 자연스러운 연결로 일괄 정비
-- 확인:
-  - 단위 테스트 127개 통과 (`npm test`)
-  - `npm run check`: 0 errors / 0 warnings / 0 hints
-  - `npm run build`: 정적 페이지 빌드 19개 성공
-  - Edge 헤드리스 캡처로 렌더링 정상 검증
-- 다음: 사용자 검토 후 M1.11(평균화) 착수
 
 ## 세션 로그 — 트랙 B (Codex, Part 0) · 최근 3개, 최신이 위
 

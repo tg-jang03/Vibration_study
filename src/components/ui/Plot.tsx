@@ -67,6 +67,11 @@ function readTheme() {
     border: v('--border'),
     surface: v('--surface'),
     palette: Array.from({ length: PALETTE_SIZE }, (_, i) => v(`--plot-${i + 1}`)),
+    /** 'var(--plot-2)'처럼 CSS 변수로 준 색을 실제 색으로 (Plotly는 var()를 모른다). 그 밖의 색은 그대로 */
+    resolve: (color: string) => {
+      const m = /^var\((--[\w-]+)\)$/.exec(color.trim());
+      return m ? v(m[1]) || color : color;
+    },
   };
 }
 
@@ -116,7 +121,7 @@ export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered
       if (cancelled || !el) return;
       const theme = readTheme();
       const data: Data[] = series.map((s, i): Data => {
-        const color = s.color ?? theme.palette[i % PALETTE_SIZE];
+        const color = s.color ? theme.resolve(s.color) : theme.palette[i % PALETTE_SIZE];
         const common = {
           x: s.x as unknown as number[],
           y: s.y as unknown as number[],

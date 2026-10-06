@@ -44,7 +44,26 @@ export interface ChirpComponent {
   phase?: number;
 }
 
-export type DeterministicComponent = SineComponent | HarmonicsComponent | ChirpComponent;
+/**
+ * 감쇠 임펄스열: 일정한 간격으로 '딱' 치고, 구조의 고유진동수로 울리다 잦아드는 충격의 반복 (기어 이빨 결함, 베어링 결함 등).
+ * 충격 시각 t_k = offset + k / rate (k = 0, 1, 2, …). 충격 하나의 응답 amp·e^(−(t − t_k)/decay)·sin(2π ringFreq (t − t_k)), t ≥ t_k.
+ * t < offset에는 0. 시정수의 12배보다 오래된 충격은 무시한다 (e^−12 ≈ 6e−6).
+ */
+export interface ImpulsesComponent {
+  type: 'impulses';
+  /** 충격 반복 주파수 [Hz] (한 바퀴에 한 번이면 회전 주파수) */
+  rate: number;
+  /** 피크 근처 크기 (울림의 진폭) */
+  amp: number;
+  /** 울림 주파수 [Hz] (구조의 고유진동수) */
+  ringFreq: number;
+  /** 울림이 e^−1로 줄어드는 시간 [s] */
+  decay: number;
+  /** 첫 충격 시각 [s] */
+  offset?: number;
+}
+
+export type DeterministicComponent = SineComponent | HarmonicsComponent | ChirpComponent | ImpulsesComponent;
 export type SignalComponent = DeterministicComponent | NoiseComponent;
 
 export interface SignalSpec {
@@ -72,6 +91,18 @@ export function evaluate(spec: SignalSpec, t: number): number {
       case 'chirp': {
         const phi = TWO_PI * (c.f0 * t + 0.5 * c.rate * t * t) + (c.phase ?? 0);
         x += c.amp * Math.cos(phi);
+        break;
+      }
+      case 'impulses': {
+        const offset = c.offset ?? 0;
+        if (t < offset || !(c.rate > 0) || !(c.decay > 0)) break;
+        const period = 1 / c.rate;
+        for (let k = Math.floor((t - offset) * c.rate); k >= 0; k--) {
+          const tau = t - (offset + k * period);
+          if (tau > 12 * c.decay) break;
+          if (tau < 0) continue;
+          x += c.amp * Math.exp(-tau / c.decay) * Math.sin(TWO_PI * c.ringFreq * tau);
+        }
         break;
       }
       case 'noise':

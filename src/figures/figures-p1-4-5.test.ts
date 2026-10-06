@@ -49,3 +49,25 @@ describe('P1-4·P1-5 그림 데이터', () => {
     expect(V.meff50).toBeCloseTo(15.2, 1);
   });
 });
+
+describe('P1-5 TSA 그림 (§6)', () => {
+  it('참값과의 차이가 본문 숫자(1.04 → 0.45 → 0.10 m/s²)와 같다', () => {
+    expect(V.tsaDev1.toFixed(2)).toBe('1.04');
+    expect(V.tsaDev4.toFixed(2)).toBe('0.45');
+    expect(V.tsaDev64.toFixed(2)).toBe('0.10');
+    expect(F5.tsaStack.caption).toContain('1.04 → 4바퀴 0.45 → 64바퀴 0.10');
+  });
+
+  it('빗살 통과 특성: 13.4배는 1/16, 13.05배는 0.235(M = 16)·0.059(M = 64)', () => {
+    expect(V.tsaGain134).toBeCloseTo(1 / 16, 12);
+    expect(V.tsaGain1305.toFixed(3)).toBe('0.235');
+    expect(V.tsaGain1305m64.toFixed(3)).toBe('0.059');
+    expect(F5.tsaComb.caption).toContain('0.0625');
+    expect(F5.tsaComb.caption).toContain('0.235');
+  });
+
+  it('Residual에서 120° 결함 울림이 남은 잡음보다 확실히 크다', () => {
+    expect(V.tsaResPeak).toBeGreaterThan(6 * V.tsaResElse);
+    expect(F5.tsaResidual.caption).toContain('여섯 번째 이빨');
+  });
+});

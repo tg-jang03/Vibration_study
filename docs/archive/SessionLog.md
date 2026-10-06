@@ -3,6 +3,31 @@
 > `Progress.md`에는 최근 세션 로그 3개만 둔다 (D-020). 넘친 로그는 이 파일 **맨 위**에 옮긴다 (최신이 위).
 > 세션 시작 때 읽을 필요는 없다. 과거 경위를 찾을 때만 본다.
 
+### 2026-10-02 · Antigravity · M1.T Part 1 전체 개편 (D-025 스토리텔링 & 랩 밀착형, 학교/현장 이분법 지양)
+- 요청: 사용자 — "글들이 너무 위키스럽고 읽기에 가독성도 별로고 학습하기에 적합하지 않다. 전체 다 개편하고 지침사항에 넣어달라. M1.T로 중간에 끼워넣어서 싹 다 개편해라. 그리고 너무 학교/현장 이분법적으로 나누지 마라. 그냥 내가 그랬다는 거지 다른 사람들도 그런 건 아니잖아."
+- 한 일:
+  - `docs/Decisions.md`: D-025 확정 (D-024 대체, 백과사전식 포맷 폐지, 스토리텔링 & 랩 밀착형 구조 도입, 학교/현장 이분법 금지 및 보편적 공학 톤 확립, M1.T 신설)
+  - `AGENTS.md` §1 & §6: 프로젝트 소개 및 페이지 작성 기준에 D-025 및 학교/현장 이분법 지양 규칙 반영
+  - `docs/Contents.md` §1: 신규 페이지 작성 기준을 스토리텔링 & 랩 밀착형 템플릿으로 교체, P1-0~P1-4 상태 갱신
+  - `docs/Roadmap.md` §6-3: M1.T 마일스톤 등록
+  - `src/components/labs/`:
+    - `WindowLeakageLab.tsx` (LAB-WIN-01): 주파수 오프셋 δ(0.0~0.5), Uniform/Hann/Flat-top 비교, 시간파형 및 스펙트럼, 스캘럽 손실 & 누설 진폭 실시간 표시
+    - `WindowComparisonLab.tsx` (LAB-WIN-02): 윈도우 8종 나란히 비교, 시간영역 형태, 주파수 응답(dB), 메인로브 폭 vs 사이드로브 감쇠율 트레이드오프
+    - `WindowCorrectionLab.tsx` (LAB-WIN-03): 단일 톤 vs 광대역 잡음, None/ACF/ECF 보정 모드, 잘못된 보정 계수 적용 시 18.4% 과소평가 및 50% 과대평가 오차 시각화
+  - `src/pages/p1-*.mdx` 전면 개편:
+    - `p1-0.mdx`: 심장박동/펄스 오프닝, 변위/속도/가속도, 사인파 3요소, 1X rpm, 4대 진폭 지표, DC/AC 분리
+    - `p1-1.mdx`: 레고 블록 비유, `FourierHarmonicsLab`, `DftCorrelationLab`, `ZeroPaddingLab` 밀착 배치
+    - `p1-2.mdx`: 마차바퀴 착시 오프닝, `SamplingLab`, `AafLab`, `AdcLab` 밀착 배치, AAF 2.56 메커니즘, ADC 클리핑 왜곡
+    - `p1-3.mdx`: $\Delta f \cdot T = 1$ 원리, `ResolutionLab`, `SmearingLab`, `ZoomLab` 밀착 배치
+    - `p1-4.mdx`: 피켓펜스 창살 착시 오프닝, `WindowLeakageLab`, `WindowComparisonLab`, `WindowCorrectionLab` 밀착 배치
+  - `README.md`, `src/pages/index.astro`, `src/data/curriculum.ts`: "학교 vs 현장" 이분법적 문구를 "기초 진동 역학(MCK)부터 대형 회전기계(GT/ST) 진동 진단까지"의 자연스러운 연결로 일괄 정비
+- 확인:
+  - 단위 테스트 127개 통과 (`npm test`)
+  - `npm run check`: 0 errors / 0 warnings / 0 hints
+  - `npm run build`: 정적 페이지 빌드 19개 성공
+  - Edge 헤드리스 캡처로 렌더링 정상 검증
+- 다음: 사용자 검토 후 M1.11(평균화) 착수
+
 ### 2026-10-02 · Codex · M1.11 평균화 본문 검토안 (D-024)
 - 진행: 사용자 승인 D-021 병렬 예외, 별도 detached worktree. origin/main rebase로 Claude의 P1-0 추가·P1-0~P1-2 review·D-024와 Antigravity의 M1.5~M1.8과 P1-4 검토안을 보존.
 - 본문: 선수 개념·흐름 표, 정의와 숫자 예 먼저, RMS와 벡터 평균 구분(I-005), 지수·피크홀드·오버랩, 실험 4단계의 할 일·화면 읽는 법·따라 하기·무엇을 봤나, 숨긴 문제 5개, 용어집.
