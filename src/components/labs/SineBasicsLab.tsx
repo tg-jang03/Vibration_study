@@ -8,7 +8,7 @@ import ReadoutTable from '../ui/ReadoutTable';
 import { texNumber } from '../../lib/format';
 import { evaluateRange } from '../../lib/dsp/signal';
 
-/** LAB-BAS-01 정현파 3요소 — 진폭·주파수·위상 (P1-0) */
+/** LAB-BAS-01 정현파 3요소 — 진폭·주파수·위상 (P0-2, D-027) */
 
 const DURATION = 1; // s
 const POINTS = 1500;

@@ -7,6 +7,7 @@ description: 개발용 — 본문 예시 그림(정적 SVG)과 강조 상자 확
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import * as P01 from '../../figures/p0-1';
+import * as P02 from '../../figures/p0-2';
 import * as F0 from '../../figures/p1-0';
 import * as F1 from '../../figures/p1-1';
 import * as F2 from '../../figures/p1-2';
@@ -34,6 +35,10 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P0-1
 
 {byId(P01).map((f) => <Figure {...f} />)}
+
+## P0-2
+
+{byId(P02).map((f) => <Figure {...f} />)}
 
 ## P1-0
 

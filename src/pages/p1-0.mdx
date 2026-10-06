@@ -7,9 +7,9 @@ sectionId: P1-0
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
-import SineBasicsLab from '../components/labs/SineBasicsLab';
 import AmplitudeMeasuresLab from '../components/labs/AmplitudeMeasuresLab';
 import * as F from '../figures/p1-0';
+import { withBase } from '../lib/site';
 
 # 1-0 신호와 스펙트럼의 기본
 
@@ -146,18 +146,7 @@ $$
 
 ### 2.3 직접 만져 보기
 
-아래 랩에서 세 숫자를 하나씩 바꿔 보세요. 점선은 비교용 기준 파형(진폭 1, 위상 0°)입니다.
-
-<Callout type="try">
-
-1. **주파수**만 5 Hz → 10 Hz로 올립니다. 화면 속 물결 개수와 주기 $T$를 보세요.
-2. 주파수를 5 Hz로 되돌리고 **위상**을 −90°로 둡니다. 꼭대기가 점선보다 얼마나 늦게 오는지 수식 칸의 $\Delta t$와 비교합니다.
-3. 위상을 180°로 둡니다. 점선과 어떤 관계인가요?
-4. **진폭**을 바꿔도 주기는 그대로인지 확인합니다.
-
-</Callout>
-
-<SineBasicsLab client:load />
+진폭·주파수·위상을 직접 바꾸는 LAB-BAS-01은 <a href={withBase('/p0-2/#21-정현파의-세-숫자를-직접-바꾸기')}>P0-2 고유진동수</a>로 옮겼습니다. 그곳에서 정현파의 세 숫자와 질량-스프링의 고유진동수를 먼저 연결해 볼 수 있습니다.
 
 ---
 
