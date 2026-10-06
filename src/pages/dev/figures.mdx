@@ -26,6 +26,7 @@ import * as F8 from '../../figures/p1-8';
 import * as F21 from '../../figures/p2-1';
 import * as F22 from '../../figures/p2-2';
 import * as F23 from '../../figures/p2-3';
+import * as F24 from '../../figures/p2-4';
 import * as F40 from '../../figures/p4-0';
 import * as FD from '../../figures/dev-schematic';
 
@@ -124,6 +125,10 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P2-3
 
 {byId(F23).map((f) => <Figure {...f} />)}
+
+## P2-4
+
+{byId(F24).map((f) => <Figure {...f} />)}
 
 ## P4-0
 

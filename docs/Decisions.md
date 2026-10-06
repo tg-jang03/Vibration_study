@@ -39,7 +39,7 @@
 | D-032 | Part 0에 "기계 요소가 만드는 주파수" 절 추가 (새 P0-7, 옛 P0-7 → P0-8, M2 세부 10개) | 확정 | 2026-10-06 | 사용자 요청 / Claude |
 | D-033 | 트랙 A(Claude)가 Part 0 전수 검토·수정과 M2.7(P0-7)을 맡음 (한 번만의 소유 예외) | 확정 | 2026-10-06 | 사용자 지시 / Claude |
 | D-034 | 다음 배정: 트랙 A M3 → M4, 트랙 B(Codex) M2 마무리 → M5 Part 4. 위상·Polar 공통 관례 | 확정 | 2026-10-06 | 사용자 지시 / Claude |
-| D-035 | Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외) | 제안 | 2026-10-06 | Claude |
+| D-035 | Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외) | 확정 | 2026-10-06 | 사용자 확인 / Claude |
 | D-036 | Part 4에 회전기계 구성 도입 P4-0 추가, M5.0 신설 | 확정 | 2026-10-06 | 사용자 / Codex |
 
 ---
@@ -399,7 +399,7 @@
 - 영향: AGENTS 트랙 표·파일 소유, Roadmap §6, Contents §1-2·§3·§5·§6, Curriculum Part 4 머리, Progress
 
 ## D-035 Polar 플롯은 SVG 컴포넌트 `PolarPlot` (Plot 래퍼의 예외)
-- 상태: **제안** (M3.3 구현 중 결정, 사용자 확인 전) · 2026-10-06 · Claude
+- 상태: **확정** (M3.3 구현 중 제안 → 사용자 확인 2026-10-06 "제안한거 확정으로 바꾸고") · 2026-10-06 · Claude
 - 맥락: 랩 플롯은 `Plot` 래퍼만 쓰는데(AGENTS §6), 래퍼가 싣는 Plotly는 카테시안 번들(`plotly.js-cartesian-dist-min`)이라 극좌표가 없다. P2-3(LAB-PHS-01·LAB-SRO-01), P4-1(LAB-AF-01), P5-5가 1X 벡터를 Polar로 그려야 한다. 번들을 바꾸면 모든 랩의 내려받기 크기가 커진다.
 - 결정
   1. `src/components/ui/PolarPlot.tsx`를 둔다. 라이브러리 없이 SVG로 그리고, Contents §3 관례(0°는 위 = 센서 방향, 지연각은 회전 반대 방향, 기본 회전 반시계)를 따른다. 계열 = 진폭·지연각[°] 배열, 선·점·화살촉, 색은 `var(--plot-n)`. 시간·난수·window를 쓰지 않아 서버 렌더와 같다 (I-019).
