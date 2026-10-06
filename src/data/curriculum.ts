@@ -26,7 +26,6 @@ export interface Part {
   title: string;
   /** 이 Part가 답하려는 핵심 질문 (Curriculum.md §1) */
   question: string;
-  featured?: boolean;
   sections: Section[];
 }
 
@@ -50,7 +49,6 @@ export const PARTS: Part[] = [
     num: 1,
     title: '신호처리 기초',
     question: '분석기 설정 하나하나가 스펙트럼을 어떻게 바꾸나?',
-    featured: true,
     sections: [
       { id: 'P1-0', title: '신호와 스펙트럼의 기본', status: 'review', href: '/p1-0/' },
       { id: 'P1-1', title: '푸리에 기초: 신호를 주파수로 보는 법', status: 'done', href: '/p1-1/' },
@@ -172,6 +170,25 @@ export const PARTS: Part[] = [
       { id: 'P10-3', title: '현장 데이터 복기 가이드', status: 'planned' },
     ],
   },
+];
+
+/**
+ * 홈의 학습 지도: Part를 네 단계로 묶는다 (D-037). 모든 Part를 같은 모양으로 보이고, 단계마다 색 하나를 쓴다.
+ * color는 CSS 변수 이름 (global.css의 --plot-n).
+ */
+export interface Stage {
+  num: number;
+  title: string;
+  summary: string;
+  color: string;
+  parts: number[];
+}
+
+export const STAGES: Stage[] = [
+  { num: 1, title: '기초: 흔들림 · 신호 · 센서', summary: '기계가 왜 흔들리는지, 그 흔들림을 어떻게 재고 스펙트럼으로 바꾸는지', color: 'var(--plot-1)', parts: [0, 1, 2] },
+  { num: 2, title: '도구와 모델', summary: '묻힌 신호를 꺼내는 분석 도구와 회전체가 흔들리는 원리', color: 'var(--plot-3)', parts: [3, 4] },
+  { num: 3, title: '진단', summary: '현장 플롯을 읽고 결함 메커니즘과 GT/ST 현상을 가려내기', color: 'var(--plot-2)', parts: [5, 6, 7] },
+  { num: 4, title: '조치와 종합', summary: '확인 시험·밸런싱·정렬, 판정 규격과 보고, 처음 보는 데이터로 연습', color: 'var(--plot-4)', parts: [8, 9, 10] },
 ];
 
 /** 검토·완료 단계에 들어간 절 수 / 전체 절 수 */

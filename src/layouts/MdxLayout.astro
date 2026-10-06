@@ -1,59 +1,132 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import { PARTS } from '../data/curriculum';
+import { PARTS, STATUS_LABEL, type Part } from '../data/curriculum';
 import { withBase } from '../lib/site';
 
 interface Props {
   frontmatter: {
     title?: string;
     description?: string;
-    /** 커리큘럼 절 ID (예: 'P1-1'). 있으면 경로 표시와 이전/다음 절 이동을 붙인다 */
+    /** 커리큘럼 절 ID (예: 'P1-1'). 있으면 경로 표시, Part 사이드바, 이전/다음 절 이동을 붙인다 */
     sectionId?: string;
   };
+  /** Astro가 MDX 레이아웃에 넘겨 주는 제목 목록 */
+  headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 
 const sections = PARTS.flatMap((part) => part.sections.map((section) => ({ ...section, part })));
 const index = frontmatter.sectionId ? sections.findIndex((s) => s.id === frontmatter.sectionId) : -1;
 const current = index >= 0 ? sections[index] : undefined;
 const prev = index > 0 ? sections[index - 1] : undefined;
 const next = index >= 0 ? sections[index + 1] : undefined;
+const part: Part | undefined = current?.part;
+/** 이 페이지의 ## 제목 (사이드바의 "이 페이지" 목록) */
+const toc = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text.replace(/\s+/g, ' ').trim() }));
+const last = current ? JSON.stringify({ id: current.id, title: current.title, href: withBase(current.href ?? '/') }) : '';
 ---
 
-<BaseLayout title={frontmatter.title} description={frontmatter.description}>
+<BaseLayout title={frontmatter.title} description={frontmatter.description} wide={!!part}>
+  <div class="page-layout" data-has-nav={part ? '' : undefined}>
+    {
+      part && current && (
+        <aside class="part-nav" aria-label={`Part ${part.num} 절 목록`}>
+          <details class="part-nav-box" open>
+            <summary>
+              <span class="part-nav-kicker">Part {part.num}</span>
+              <span class="part-nav-title">{part.title}</span>
+            </summary>
+            <ol class="part-nav-list">
+              {part.sections.map((s) => {
+                const here = s.id === current.id;
+                return (
+                  <li data-status={s.status} data-current={here ? '' : undefined}>
+                    {s.href ? (
+                      <a href={withBase(s.href)} aria-current={here ? 'page' : undefined} title={`${s.id} · ${STATUS_LABEL[s.status]}`}>
+                        <span class="nav-dot" aria-hidden="true" />
+                        <span class="nav-id">{s.id}</span>
+                        <span class="nav-text">{s.title}</span>
+                      </a>
+                    ) : (
+                      <span class="nav-planned" title={`${s.id} · 준비 중`}>
+                        <span class="nav-dot" aria-hidden="true" />
+                        <span class="nav-id">{s.id}</span>
+                        <span class="nav-text">{s.title}</span>
+                      </span>
+                    )}
+                    {here && toc.length > 0 && (
+                      <ul class="part-nav-toc" aria-label="이 페이지">
+                        {toc.map((h) => (
+                          <li>
+                            <a href={`#${h.slug}`}>{h.text}</a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+            <div class="part-nav-parts" aria-label="다른 Part">
+              {PARTS.map((p) => (
+                <a href={withBase(`/parts/${p.num}/`)} aria-current={p.num === part.num ? 'true' : undefined} title={`Part ${p.num}. ${p.title}`}>
+                  {p.num}
+                </a>
+              ))}
+            </div>
+          </details>
+          <script is:inline>
+            // 좁은 화면에서는 절 목록을 접어 둔다 (넓은 화면은 늘 펼침). 목록 바로 뒤에서 실행해 깜빡임이 없다
+            if (window.matchMedia('(max-width: 1199px)').matches) document.querySelector('.part-nav-box')?.removeAttribute('open');
+          </script>
+        </aside>
+      )
+    }
+    <div class="page-main">
+      {
+        current && (
+          <div class="breadcrumb">
+            <a href={withBase('/')}>커리큘럼</a> › <a href={withBase(`/parts/${current.part.num}/`)}>Part {current.part.num}. {current.part.title}</a> › {current.id}
+          </div>
+        )
+      }
+      <article class="prose">
+        <slot />
+      </article>
+      {
+        current && (
+          <nav class="section-pager" aria-label="절 이동">
+            {prev ? (
+              prev.href ? (
+                <a href={withBase(prev.href)}>← {prev.id} {prev.title}</a>
+              ) : (
+                <span class="pager-soon">← {prev.id} {prev.title} (준비 중)</span>
+              )
+            ) : (
+              <span />
+            )}
+            {next ? (
+              next.href ? (
+                <a href={withBase(next.href)}>{next.id} {next.title} →</a>
+              ) : (
+                <span class="pager-soon">{next.id} {next.title} (준비 중) →</span>
+              )
+            ) : (
+              <span />
+            )}
+          </nav>
+        )
+      }
+    </div>
+  </div>
   {
     current && (
-      <div class="breadcrumb">
-        <a href={withBase('/')}>커리큘럼</a> › <a href={withBase(`/parts/${current.part.num}/`)}>Part {current.part.num}. {current.part.title}</a> › {current.id}
-      </div>
-    )
-  }
-  <article class="prose">
-    <slot />
-  </article>
-  {
-    current && (
-      <nav class="section-pager" aria-label="절 이동">
-        {prev ? (
-          prev.href ? (
-            <a href={withBase(prev.href)}>← {prev.id} {prev.title}</a>
-          ) : (
-            <span class="pager-soon">← {prev.id} {prev.title} (준비 중)</span>
-          )
-        ) : (
-          <span />
-        )}
-        {next ? (
-          next.href ? (
-            <a href={withBase(next.href)}>{next.id} {next.title} →</a>
-          ) : (
-            <span class="pager-soon">{next.id} {next.title} (준비 중) →</span>
-          )
-        ) : (
-          <span />
-        )}
-      </nav>
+      <script is:inline define:vars={{ last }}>
+        try {
+          localStorage.setItem('vs-last-section', last);
+        } catch (e) {}
+      </script>
     )
   }
 </BaseLayout>

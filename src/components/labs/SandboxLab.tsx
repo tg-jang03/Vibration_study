@@ -13,7 +13,7 @@ import {
 } from '../../lib/sandbox';
 
 /**
- * LAB-SBX-01 Signal Lab 샌드박스 (P1-8 §6, /lab/, Contents §5-1).
+ * LAB-SBX-01 Signal Lab 샌드박스 (P1-8 §6, /lab/sbx-01/, Contents §5-1).
  * 기계 신호를 직접 만들고 Part 1의 설정을 모두 바꿔 가며, 성분마다 "지금 설정으로 보이는가"를 판정한다.
  * 목적을 고르면 설정 도우미가 출발점 설정과 이유를 채운다 (예시값, I-014). 계산: src/lib/sandbox.ts (그림과 같은 엔진).
  */

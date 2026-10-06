@@ -6,16 +6,20 @@ import { REPO_URL, SITE_NAME, withBase } from '../lib/site';
 interface Props {
   title?: string;
   description?: string;
+  /** 사이드바가 있는 절 페이지처럼 넓은 틀이 필요할 때 (기본 false, D-037) */
+  wide?: boolean;
 }
 
 const {
   title,
+  wide = false,
   description = '진동의 물리와 신호처리부터 대형 회전기계(GT/ST) 상태 진단까지 연결하는 기계 진동 학습 아카이브',
 } = Astro.props;
 
 const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
-const isHome = Astro.url.pathname.replace(/\/+$/, '') === withBase('/').replace(/\/+$/, '');
-const isLab = Astro.url.pathname.replace(/\/+$/, '') === withBase('/lab/').replace(/\/+$/, '');
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const isHome = path === withBase('/').replace(/\/+$/, '');
+const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
 ---
 
 <!doctype html>
@@ -38,7 +42,7 @@ const isLab = Astro.url.pathname.replace(/\/+$/, '') === withBase('/lab/').repla
         </nav>
       </div>
     </header>
-    <main class="container">
+    <main class:list={['container', { 'container-wide': wide }]}>
       <slot />
     </main>
     <footer class="site-footer">

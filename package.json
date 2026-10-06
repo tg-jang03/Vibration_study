@@ -11,7 +11,8 @@
     "check": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "astro": "astro"
+    "astro": "astro",
+    "verify:page": "node scripts/verify/page-check.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",

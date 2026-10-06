@@ -1,121 +1,535 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { PARTS, partProgress } from '../data/curriculum';
+import { PARTS, STAGES, STATUS_LABEL, partProgress } from '../data/curriculum';
+import { LABS } from '../data/labs';
 import { withBase } from '../lib/site';
+
+const allSections = PARTS.flatMap((p) => p.sections);
+const published = allSections.filter((s) => s.href).length;
+const first = allSections.find((s) => s.href);
+
+// 히어로 그림: 정현파 셋을 더한 파형 → 스펙트럼 막대 (장식, 계산은 빌드 때)
+const COMPS = [
+  { f: 3, a: 1, color: 'var(--plot-1)' },
+  { f: 7, a: 0.5, color: 'var(--plot-3)' },
+  { f: 13, a: 0.28, color: 'var(--plot-2)' },
+];
+const wave = Array.from({ length: 241 }, (_, i) => {
+  const t = i / 240;
+  const y = COMPS.reduce((sum, c, k) => sum + c.a * Math.sin(2 * Math.PI * c.f * t + k), 0);
+  return `${i === 0 ? 'M' : 'L'}${(16 + t * 308).toFixed(1)},${(62 - y * 24).toFixed(1)}`;
+}).join('');
+const fx = (f: number) => 26 + (f / 16) * 288;
 ---
 
 <BaseLayout>
-  <h1>기계 진동 분석과 회전체 진단</h1>
-  <p class="lead">
-    진동의 물리와 신호처리부터 대형 회전기계(GT/ST)의 상태 진단까지, 수식·시각화·인터랙티브 실험으로 하나의 흐름 안에서 익힙니다.
-  </p>
+  <section class="hero">
+    <div class="hero-text">
+    <p class="hero-kicker">진동 → 신호 → 센서 → 회전체 → 진단</p>
+    <h1>기계 진동 분석과 회전체 진단</h1>
+    <p class="lead">
+      진동의 물리와 신호처리부터 대형 회전기계(GT/ST)의 상태 진단까지, 그림과 수식, 직접 만져 보는 랩으로 하나의 흐름 안에서 익힙니다.
+    </p>
+    <div class="hero-actions">
+      {first && <a class="btn btn-primary" href={withBase(first.href ?? '/')}>처음부터 · {first.id} {first.title.split(':')[0]}</a>}
+      <a class="btn" id="resume" href={withBase('/')} hidden>이어서 보기</a>
+      <a class="btn" href={withBase('/lab/')}>Signal Lab 랩 모음</a>
+    </div>
+    <dl class="hero-stats">
+      <div><dt>읽을 수 있는 절</dt><dd>{published}<small> / {allSections.length}</small></dd></div>
+      <div><dt>직접 만져 보는 랩</dt><dd>{LABS.length}</dd></div>
+      <div><dt>Part</dt><dd>{PARTS.length}</dd></div>
+    </dl>
+    </div>
+    <svg class="hero-art" viewBox="0 0 340 236" aria-hidden="true">
+      <rect x="1" y="1" width="338" height="234" rx="14" class="art-bg" />
+      <text x="16" y="22" class="art-label">시간파형</text>
+      <line x1="16" y1="62" x2="324" y2="62" class="art-axis" />
+      <path d={wave} class="art-wave" />
+      <text x="170" y="122" text-anchor="middle" class="art-fft">FFT ↓</text>
+      <text x="16" y="146" class="art-label">스펙트럼</text>
+      <line x1="16" y1="214" x2="324" y2="214" class="art-axis" />
+      {Array.from({ length: 17 }, (_, f) => f).map((f) => {
+        const c = COMPS.find((k) => k.f === f);
+        const h = c ? c.a * 58 : 2 + ((f * 7) % 5);
+        return <rect x={fx(f) - 5} y={214 - h} width="10" height={h} rx="2" style={`fill:${c ? c.color : 'var(--border)'}`} />;
+      })}
+      {COMPS.map((c) => (
+        <text x={fx(c.f)} y={214 - c.a * 58 - 6} text-anchor="middle" class="art-tick" style={`fill:${c.color}`}>{c.f}X</text>
+      ))}
+    </svg>
+  </section>
 
-  <h2>커리큘럼 지도</h2>
-  <ol class="part-grid">
-    {
-      PARTS.map((part) => {
-        const { review, done, ready, total } = partProgress(part);
-        const progressLabel = review > 0
-          ? done > 0
-            ? `검토 ${review} · 완료 ${done} / ${total}절`
-            : `검토 ${review} / ${total}절`
-          : done > 0
-            ? `완료 ${done} / ${total}절`
-            : `계획 / ${total}절`;
-        return (
-          <li>
-            <a class="card part-card" href={withBase(`/parts/${part.num}/`)} data-featured={part.featured}>
-              <span class="part-num">Part {part.num}</span>
-              <span class="part-title">
-                {part.title}
-                {part.featured && <span class="star" aria-label="핵심">★</span>}
-              </span>
-              <span class="part-question">{part.question}</span>
-              <span class="part-progress">
-                <span class="bar" style={`--p:${total ? (ready / total) * 100 : 0}%`} />
-                <span class="count">
-                  {progressLabel}
-                </span>
-              </span>
-            </a>
+  <section class="map" aria-labelledby="map-title">
+    <div class="map-head">
+      <h2 id="map-title">학습 지도</h2>
+      <p>네 단계, {PARTS.length}개 Part입니다. 칸 하나가 절 하나이고, 색이 찬 칸은 지금 읽을 수 있습니다. 칸을 누르면 그 절로, Part 이름을 누르면 Part 목차로 갑니다.</p>
+      <ul class="legend">
+        <li><span class="cell" data-status="done"></span>{STATUS_LABEL.done}</li>
+        <li><span class="cell" data-status="review"></span>{STATUS_LABEL.review} (읽을 수 있음)</li>
+        <li><span class="cell" data-status="planned"></span>준비 중</li>
+      </ul>
+    </div>
+
+    <ol class="stages">
+      {
+        STAGES.map((stage) => (
+          <li class="stage" style={`--stage:${stage.color}`}>
+            <div class="stage-rail" aria-hidden="true">
+              <span class="stage-num">{stage.num}</span>
+            </div>
+            <div class="stage-body">
+              <header class="stage-head">
+                <span class="stage-label">단계 {stage.num}</span>
+                <h3>{stage.title}</h3>
+                <p>{stage.summary}</p>
+              </header>
+              <div class="stage-parts">
+                {stage.parts.map((num) => {
+                  const part = PARTS.find((p) => p.num === num)!;
+                  const { ready, total } = partProgress(part);
+                  const labs = LABS.filter((l) => l.part === num).length;
+                  return (
+                    <article class="part-tile">
+                      <a class="part-head" href={withBase(`/parts/${num}/`)}>
+                        <span class="ring" style={`--p:${total ? Math.round((ready / total) * 100) : 0}`}>
+                          <span>{num}</span>
+                        </span>
+                        <span class="part-text">
+                          <span class="part-title">{part.title.split(':')[0]}</span>
+                          <span class="part-q">{part.question}</span>
+                        </span>
+                      </a>
+                      <ol class="cells" aria-label={`Part ${num}의 절`}>
+                        {part.sections.map((s) => (
+                          <li>
+                            {s.href ? (
+                              <a class="cell" data-status={s.status} href={withBase(s.href)} title={`${s.id} ${s.title} · ${STATUS_LABEL[s.status]}`}>
+                                {s.id.split('-')[1]}
+                              </a>
+                            ) : (
+                              <span class="cell" data-status="planned" title={`${s.id} ${s.title} · 준비 중`}>
+                                {s.id.split('-')[1]}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                      <p class="part-meta">
+                        읽을 수 있는 절 {ready} / {total}
+                        {labs > 0 && <span> · 랩 {labs}</span>}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
           </li>
-        );
-      })
-    }
-  </ol>
-  <h2>Signal Lab</h2>
-  <a class="card lab-card" href={withBase('/lab/')}>
-    <span class="part-title">내 설정으로 무엇이 보이나</span>
-    <span class="part-question">1X·하모닉·기어 맞물림·충격·잡음이 섞인 기계 신호를 만들고, F_max·라인 수·윈도우·평균을 바꿔 가며 성분마다 보이는지 판정해 보는 실험장입니다 (Part 1 종합, P1-8).</span>
-  </a>
+        ))
+      }
+    </ol>
+  </section>
+
+  <script is:inline>
+    try {
+      const last = JSON.parse(localStorage.getItem('vs-last-section') || 'null');
+      const a = document.getElementById('resume');
+      if (last && last.href && a) {
+        a.href = last.href;
+        a.textContent = '이어서 보기 · ' + last.id + ' ' + String(last.title).split(':')[0];
+        a.hidden = false;
+      }
+    } catch (e) {}
+  </script>
 </BaseLayout>
 
 <style>
-  .part-grid {
+  .hero {
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+  }
+
+  .hero-art {
+    width: 100%;
+    max-width: 340px;
+    justify-self: center;
+  }
+
+  .art-bg {
+    fill: var(--surface);
+    stroke: var(--border);
+  }
+
+  .art-axis {
+    stroke: var(--border);
+    stroke-width: 1.2;
+  }
+
+  .art-wave {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+  }
+
+  .art-label {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--text-muted);
+  }
+
+  .art-fft {
+    font-size: 12px;
+    font-weight: 800;
+    fill: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .art-tick {
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .hero-kicker {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin: 0 0 0.6rem;
+  }
+
+  .hero .lead {
+    max-width: 46rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn:hover,
+  .btn:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--surface);
+  }
+
+  .btn[hidden] {
+    display: none;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  .hero-stats div {
+    min-width: 9rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .hero-stats dt {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .hero-stats dd {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .hero-stats small {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .map-head h2 {
+    margin: 0 0 0.3rem;
+  }
+
+  .map-head p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  .legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0;
+    margin: 0.7rem 0 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    --stage: var(--accent);
+  }
+
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .legend .cell {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .stages {
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .stage-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .stage-rail::before {
+    content: '';
+    position: absolute;
+    top: 2.4rem;
+    bottom: -0.4rem;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(var(--stage), var(--border));
+  }
+
+  .stage:last-child .stage-rail::before {
+    display: none;
+  }
+
+  .stage-num {
+    position: relative;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: var(--surface);
+    background: var(--stage);
+    box-shadow: 0 0 0 4px var(--bg);
+  }
+
+  .stage-body {
+    padding-bottom: 2rem;
+    min-width: 0;
+  }
+
+  .stage-head {
+    margin-bottom: 0.9rem;
+  }
+
+  .stage-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--stage);
+    letter-spacing: 0.04em;
+  }
+
+  .stage-head h3 {
+    margin: 0.1rem 0 0.2rem;
+    font-size: 1.25rem;
+  }
+
+  .stage-head p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .stage-parts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--gap);
   }
 
-  .part-card,
-  .lab-card {
+  .part-tile {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    height: 100%;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--stage);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .part-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .part-head {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
     color: inherit;
     text-decoration: none;
-    transition: border-color 0.15s ease;
   }
 
-  .part-card:hover,
-  .part-card:focus-visible,
-  .lab-card:hover,
-  .lab-card:focus-visible {
-    border-color: var(--accent);
+  .part-head:hover .part-title,
+  .part-head:focus-visible .part-title {
+    color: var(--stage);
   }
 
-  .part-card[data-featured] {
-    background: var(--accent-soft);
+  .ring {
+    flex: none;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--stage) calc(var(--p) * 1%), var(--surface-2) 0);
   }
 
-  .part-num {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent);
+  .ring span {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--surface);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .part-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
   }
 
   .part-title {
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
+    line-height: 1.35;
   }
 
-  .star {
-    color: var(--status-wip);
-    margin-left: 0.3rem;
-  }
-
-  .part-question {
+  .part-q {
+    font-size: 0.86rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
-    flex: 1;
+    line-height: 1.45;
   }
 
-  .part-progress {
+  .cells {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .cell {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid var(--stage);
+    transition: transform 0.1s ease;
+  }
+
+  .cell[data-status='done'] {
+    background: var(--stage);
+    color: var(--surface);
+  }
+
+  .cell[data-status='review'] {
+    background: color-mix(in srgb, var(--stage) 22%, var(--surface));
+    color: var(--text);
+  }
+
+  .cell[data-status='planned'] {
+    border: 1.5px dashed var(--border);
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  a.cell:hover,
+  a.cell:focus-visible {
+    transform: scale(1.12);
+  }
+
+  .part-meta {
+    margin: 0;
+    margin-top: auto;
     font-size: 0.8rem;
     color: var(--text-muted);
   }
 
-  .bar {
-    flex: 1;
-    height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(to right, var(--status-done) var(--p), var(--surface-2) var(--p));
+  @media (max-width: 560px) {
+    .stage {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.6rem;
+    }
+
+    .stage-num {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .stage-rail::before {
+      top: 2rem;
+    }
   }
 </style>

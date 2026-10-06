@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { LABS } from '../../data/labs';
+import { withBase } from '../../lib/site';
 
 export interface LabTask {
   /** 예측해 볼 질문 */
@@ -28,12 +30,22 @@ interface LabFrameProps {
  * 모든 랩의 공통 틀 (AGENTS.md §6): 조작 → 플롯 → 수식·읽음값 → 실험 과제.
  * MDX 본문 안에 있어도 컨테이너 폭까지 넓게 쓴다 (I-016).
  */
+/** 랩 모음의 단독 페이지 주소 (D-037). 한 ID를 여러 랩이 나눠 쓰면 제목으로 고른다 */
+function standaloneHref(id: string | undefined, title: string): string | undefined {
+  if (!id) return undefined;
+  const same = LABS.filter((l) => l.id === id);
+  const lab = same.length === 1 ? same[0] : same.find((l) => title.startsWith(l.title));
+  return lab ? withBase(`/lab/${lab.slug}/`) : undefined;
+}
+
 export default function LabFrame({ id, title, controls, children, formulas, readouts, tasks, footer }: LabFrameProps) {
+  const open = standaloneHref(id, title);
   return (
     <section className="lab-frame" aria-label={id ? `${id} ${title}` : title}>
       <header className="lab-header">
         {id && <span className="lab-id">{id}</span>}
         <h3>{title}</h3>
+        {open && <a className="lab-open" href={open}>이 랩만 크게 보기 ↗</a>}
       </header>
 
       {controls && <div className="lab-controls">{controls}</div>}

@@ -1,7 +1,8 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { PARTS, STATUS_LABEL } from '../../data/curriculum';
+import { PARTS, STAGES, STATUS_LABEL, partProgress } from '../../data/curriculum';
+import { labsInSection } from '../../lib/labRefs';
 import { withBase } from '../../lib/site';
 
 export const getStaticPaths = (() =>
@@ -13,44 +14,125 @@ export const getStaticPaths = (() =>
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const { part, prev, next } = Astro.props as Props;
+const stage = STAGES.find((s) => s.parts.includes(part.num));
+const { ready, total } = partProgress(part);
 ---
 
 <BaseLayout title={`Part ${part.num} ${part.title}`} description={part.question}>
-  <div class="breadcrumb"><a href={withBase('/')}>커리큘럼</a> › Part {part.num}</div>
-  <h1>Part {part.num}. {part.title}</h1>
-  <p class="lead">{part.question}</p>
+  <div class="part-page" style={`--stage:${stage?.color ?? 'var(--accent)'}`}>
+    <div class="breadcrumb"><a href={withBase('/')}>커리큘럼</a> › Part {part.num}</div>
+    <header class="part-hero">
+      <span class="ring" style={`--p:${total ? Math.round((ready / total) * 100) : 0}`}><span>{part.num}</span></span>
+      <div>
+        {stage && <p class="stage-label">단계 {stage.num} · {stage.title}</p>}
+        <h1>Part {part.num}. {part.title}</h1>
+        <p class="lead">{part.question}</p>
+        <p class="part-count">읽을 수 있는 절 {ready} / {total}</p>
+      </div>
+    </header>
 
-  <ol class="section-list">
-    {
-      part.sections.map((section) => (
-        <li class="card section-item">
-          <span class="section-id">{section.id}</span>
-          {section.href ? (
-            <a class="section-title" href={withBase(section.href)}>
-              {section.title}
-            </a>
-          ) : (
-            <span class="section-title">{section.title}</span>
-          )}
-          <span class="badge" data-status={section.status}>
-            {STATUS_LABEL[section.status]}
-          </span>
-        </li>
-      ))
-    }
-  </ol>
+    <ol class="section-list">
+      {
+        part.sections.map((section) => {
+          const labs = labsInSection(section.id);
+          return (
+            <li class="section-item" data-status={section.status}>
+              <span class="section-no">{section.id.split('-')[1]}</span>
+              <div class="section-body">
+                <div class="section-top">
+                  {section.href ? (
+                    <a class="section-title" href={withBase(section.href)}>
+                      {section.title}
+                    </a>
+                  ) : (
+                    <span class="section-title">{section.title}</span>
+                  )}
+                  <span class="badge" data-status={section.status}>
+                    {section.href ? STATUS_LABEL[section.status] : '준비 중'}
+                  </span>
+                </div>
+                <span class="section-id">{section.id}</span>
+                {labs.length > 0 && (
+                  <ul class="lab-chips" aria-label="이 절의 랩">
+                    {labs.map((l) => (
+                      <li>
+                        <a href={withBase(`/lab/${l.slug}/`)} title={l.summary}>
+                          {l.id} {l.title.split(':')[0]}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
 
-  <nav class="part-pager" aria-label="Part 이동">
-    {prev ? <a href={withBase(`/parts/${prev.num}/`)}>← Part {prev.num}. {prev.title}</a> : <span />}
-    {next ? <a href={withBase(`/parts/${next.num}/`)}>Part {next.num}. {next.title} →</a> : <span />}
-  </nav>
+    <nav class="part-pager" aria-label="Part 이동">
+      {prev ? <a href={withBase(`/parts/${prev.num}/`)}>← Part {prev.num}. {prev.title}</a> : <span />}
+      {next ? <a href={withBase(`/parts/${next.num}/`)}>Part {next.num}. {next.title} →</a> : <span />}
+    </nav>
+  </div>
 </BaseLayout>
 
 <style>
+  .part-page {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .part-hero {
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+    padding: 1rem 0 1.5rem;
+  }
+
+  .part-hero h1 {
+    margin: 0.1rem 0 0.4rem;
+  }
+
+  .stage-label {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--stage);
+    letter-spacing: 0.03em;
+  }
+
+  .part-count {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .ring {
+    flex: none;
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--stage) calc(var(--p) * 1%), var(--surface-2) 0);
+  }
+
+  .ring span {
+    width: 3.3rem;
+    height: 3.3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    font-weight: 800;
+    font-size: 1.4rem;
+  }
+
   .section-list {
     list-style: none;
     padding: 0;
-    margin: 1.5rem 0 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
@@ -58,24 +140,97 @@ const { part, prev, next } = Astro.props as Props;
 
   .section-item {
     display: flex;
-    align-items: center;
     gap: 0.9rem;
+    align-items: flex-start;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--stage);
+    border-radius: var(--radius);
+  }
+
+  .section-item[data-status='planned'] {
+    border-left-style: dashed;
+    border-left-color: var(--border);
+  }
+
+  .section-no {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    background: color-mix(in srgb, var(--stage) 18%, var(--surface));
+  }
+
+  .section-item[data-status='planned'] .section-no {
+    background: var(--surface-2);
+    color: var(--text-muted);
+  }
+
+  .section-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .section-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+
+  a.section-title {
+    text-decoration: none;
+  }
+
+  a.section-title:hover {
+    text-decoration: underline;
+  }
+
+  span.section-title {
+    color: var(--text-muted);
   }
 
   .section-id {
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
-    min-width: 3.2rem;
   }
 
-  .section-title {
-    flex: 1;
-    font-weight: 600;
+  .lab-chips {
+    list-style: none;
+    padding: 0;
+    margin: 0.3rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
   }
 
-  span.section-title {
+  .lab-chips a {
+    display: inline-block;
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     color: var(--text);
+    text-decoration: none;
+  }
+
+  .lab-chips a:hover {
+    border-color: var(--stage);
+    color: var(--stage);
   }
 
   .part-pager {

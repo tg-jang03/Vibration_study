@@ -1,0 +1,285 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STAGES } from '../../data/curriculum';
+import { LABS } from '../../data/labs';
+import { labRefs } from '../../lib/labRefs';
+import { withBase } from '../../lib/site';
+
+const sandbox = LABS.find((l) => l.id === 'LAB-SBX-01');
+const groups = PARTS.map((part) => ({
+  part,
+  color: STAGES.find((s) => s.parts.includes(part.num))?.color ?? 'var(--accent)',
+  labs: LABS.filter((l) => l.part === part.num && l !== sandbox),
+})).filter((g) => g.labs.length > 0);
+const sandboxRef = sandbox ? labRefs(sandbox)[0] : undefined;
+---
+
+<BaseLayout title="Signal Lab" description="사이트의 인터랙티브 랩을 한곳에 모았다. 랩 하나만 골라 크게 열고, 원문 설명으로 바로 돌아갈 수 있다.">
+  <section class="lab-hero">
+    <p class="kicker">Signal Lab</p>
+    <h1>랩 모음: 골라서 만져 보기</h1>
+    <p class="lead">페이지마다 흩어진 랩 {LABS.length}개를 모았습니다. 하나만 골라 크게 열고, 설명이 필요하면 "원문 설명" 링크로 그 랩이 나온 절로 돌아갑니다.</p>
+  </section>
+
+  {
+    sandbox && (
+      <a class="sandbox-card" href={withBase(`/lab/${sandbox.slug}/`)}>
+        <span class="lab-tag">{sandbox.id} · Part 1 종합</span>
+        <span class="sandbox-title">{sandbox.title}</span>
+        <span class="sandbox-text">{sandbox.summary}</span>
+        <span class="sandbox-go">열기 →</span>
+      </a>
+    )
+  }
+
+  <div class="lab-toolbar" role="search">
+    <div class="chips" role="group" aria-label="Part로 거르기">
+      <button type="button" class="chip" data-filter="all" aria-pressed="true">전체</button>
+      {groups.map((g) => (
+        <button type="button" class="chip" data-filter={String(g.part.num)} aria-pressed="false" style={`--c:${g.color}`}>
+          Part {g.part.num}
+        </button>
+      ))}
+    </div>
+    <input class="lab-search" type="search" placeholder="랩 이름·ID·내용으로 찾기 (예: 윈도우, 위상, AVG)" aria-label="랩 찾기" />
+  </div>
+
+  {
+    groups.map((g) => (
+      <section class="lab-group" data-part={String(g.part.num)} style={`--c:${g.color}`}>
+        <h2>
+          <span class="group-num">Part {g.part.num}</span> {g.part.title.split(':')[0]}
+        </h2>
+        <div class="lab-grid">
+          {g.labs.map((lab) => {
+            const refs = labRefs(lab);
+            return (
+              <article class="lab-card" data-search={`${lab.id} ${lab.title} ${lab.summary} ${refs.map((r) => r.sectionId).join(' ')}`.toLowerCase()}>
+                <span class="lab-tag">{lab.id}</span>
+                <a class="lab-title" href={withBase(`/lab/${lab.slug}/`)}>
+                  {lab.title}
+                </a>
+                <p class="lab-summary">{lab.summary}</p>
+                {refs[0] && (
+                  <p class="lab-ref">
+                    원문: <a href={withBase(refs[0].href)}>{refs[0].sectionId} {refs[0].heading ?? refs[0].pageTitle}</a>
+                    {refs.length > 1 && <span> 외 {refs.length - 1}곳</span>}
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))
+  }
+  <p class="no-result" hidden>찾는 랩이 없습니다.</p>
+  {sandboxRef && <p class="lab-foot">샌드박스의 설정 순서와 근거는 <a href={withBase(sandboxRef.href)}>{sandboxRef.sectionId} {sandboxRef.pageTitle}</a>에 있습니다.</p>}
+
+  <script is:inline>
+    (() => {
+      const chips = [...document.querySelectorAll('.chip')];
+      const input = document.querySelector('.lab-search');
+      const groups = [...document.querySelectorAll('.lab-group')];
+      const none = document.querySelector('.no-result');
+      let part = 'all';
+      const apply = () => {
+        const q = (input.value || '').trim().toLowerCase();
+        let shown = 0;
+        for (const g of groups) {
+          let n = 0;
+          const partOk = part === 'all' || g.dataset.part === part;
+          for (const c of g.querySelectorAll('.lab-card')) {
+            const ok = partOk && (!q || c.dataset.search.includes(q));
+            c.hidden = !ok;
+            if (ok) n++;
+          }
+          g.hidden = n === 0;
+          shown += n;
+        }
+        none.hidden = shown > 0;
+      };
+      for (const c of chips) {
+        c.addEventListener('click', () => {
+          part = c.dataset.filter;
+          for (const o of chips) o.setAttribute('aria-pressed', String(o === c));
+          apply();
+        });
+      }
+      input.addEventListener('input', apply);
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .lab-hero {
+    padding: 1rem 0 0.5rem;
+  }
+
+  .kicker {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lab-hero h1 {
+    margin: 0.2rem 0 0.5rem;
+  }
+
+  .sandbox-card {
+    display: grid;
+    gap: 0.3rem;
+    margin: 1rem 0 1.5rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .sandbox-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .sandbox-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .sandbox-text {
+    color: var(--text-muted);
+  }
+
+  .sandbox-go {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .lab-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.6rem 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .chip {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--c, var(--accent));
+    border-color: var(--c, var(--accent));
+    color: var(--surface);
+  }
+
+  .lab-search {
+    flex: 1;
+    min-width: 14rem;
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .lab-group {
+    margin-top: 1.5rem;
+  }
+
+  .lab-group h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--c);
+  }
+
+  .group-num {
+    color: var(--c);
+  }
+
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: var(--gap);
+  }
+
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--c);
+    border-radius: var(--radius);
+  }
+
+  .lab-card[hidden],
+  .lab-group[hidden] {
+    display: none;
+  }
+
+  .lab-tag {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+  }
+
+  .lab-title {
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    line-height: 1.4;
+  }
+
+  .lab-title:hover {
+    color: var(--c);
+    text-decoration: underline;
+  }
+
+  .lab-summary {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .lab-ref {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .no-result,
+  .lab-foot {
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+  }
+</style>

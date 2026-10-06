@@ -1,0 +1,217 @@
+---
+/**
+ * 랩 단독 페이지 (/lab/{slug}/, D-037). 랩 하나와 그 랩이 나온 절(원문 설명)로 가는 링크.
+ * Astro는 동적으로 고른 컴포넌트에 client: 지시어를 붙일 수 없으므로 랩마다 조건부로 적는다 —
+ * 새 랩을 src/data/labs.ts에 더하면 아래 목록에도 한 줄을 더한다 (테스트가 빠진 줄을 잡는다).
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STAGES } from '../../data/curriculum';
+import { LABS } from '../../data/labs';
+import { labRefs } from '../../lib/labRefs';
+import { withBase } from '../../lib/site';
+
+import AafLab from '../../components/labs/AafLab';
+import AdcLab from '../../components/labs/AdcLab';
+import AlarmLab from '../../components/labs/AlarmLab';
+import AmplitudeMeasuresLab from '../../components/labs/AmplitudeMeasuresLab';
+import AmplitudeScaleLab from '../../components/labs/AmplitudeScaleLab';
+import AveragingLab from '../../components/labs/AveragingLab';
+import ChainQuizLab from '../../components/labs/ChainQuizLab';
+import DampingLab from '../../components/labs/DampingLab';
+import DftCorrelationLab from '../../components/labs/DftCorrelationLab';
+import ForcedVibrationLab from '../../components/labs/ForcedVibrationLab';
+import FourierHarmonicsLab from '../../components/labs/FourierHarmonicsLab';
+import FrequencyMapLab from '../../components/labs/FrequencyMapLab';
+import MassSpringLab from '../../components/labs/MassSpringLab';
+import ModulationLab from '../../components/labs/ModulationLab';
+import PhaseLab from '../../components/labs/PhaseLab';
+import ProximityLab from '../../components/labs/ProximityLab';
+import ResolutionLab from '../../components/labs/ResolutionLab';
+import SamplingLab from '../../components/labs/SamplingLab';
+import SandboxLab from '../../components/labs/SandboxLab';
+import SensorLab from '../../components/labs/SensorLab';
+import SineBasicsLab from '../../components/labs/SineBasicsLab';
+import SlowRollLab from '../../components/labs/SlowRollLab';
+import SmearingLab from '../../components/labs/SmearingLab';
+import SourceSynthesisLab from '../../components/labs/SourceSynthesisLab';
+import SpectrumScalingLab from '../../components/labs/SpectrumScalingLab';
+import SupportStiffnessLab from '../../components/labs/SupportStiffnessLab';
+import TsaLab from '../../components/labs/TsaLab';
+import TwoDofModeLab from '../../components/labs/TwoDofModeLab';
+import UnbalanceLab from '../../components/labs/UnbalanceLab';
+import UnitConverterLab from '../../components/labs/UnitConverterLab';
+import WindowComparisonLab from '../../components/labs/WindowComparisonLab';
+import WindowCorrectionLab from '../../components/labs/WindowCorrectionLab';
+import WindowLeakageLab from '../../components/labs/WindowLeakageLab';
+import ZeroPaddingLab from '../../components/labs/ZeroPaddingLab';
+import ZoomLab from '../../components/labs/ZoomLab';
+
+export const getStaticPaths = (() =>
+  LABS.map((lab, i) => ({
+    params: { slug: lab.slug },
+    props: { lab, prev: LABS[i - 1], next: LABS[i + 1] },
+  }))) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { lab, prev, next } = Astro.props as Props;
+const part = PARTS.find((p) => p.num === lab.part);
+const color = STAGES.find((s) => s.parts.includes(lab.part))?.color ?? 'var(--accent)';
+const refs = labRefs(lab);
+const c = lab.component;
+---
+
+<BaseLayout title={`${lab.id} ${lab.title}`} description={lab.summary}>
+  <div class="lab-page" style={`--c:${color}`}>
+    <div class="breadcrumb">
+      <a href={withBase('/lab/')}>Signal Lab</a> › Part {lab.part}{part ? ` ${part.title.split(':')[0]}` : ''} › {lab.id}
+    </div>
+    <header class="lab-page-head">
+      <span class="lab-tag">{lab.id}</span>
+      <h1>{lab.title}</h1>
+      <p class="lead">{lab.summary}</p>
+    </header>
+
+    {
+      refs.length > 0 && (
+        <nav class="ref-box" aria-label="원문 설명">
+          <span class="ref-label">원문 설명</span>
+          <ul>
+            {refs.map((r) => (
+              <li>
+                <a href={withBase(r.href)}>
+                  <span class="ref-id">{r.sectionId}</span> {r.pageTitle}
+                  {r.heading && <span class="ref-heading"> › {r.heading}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <div class="lab-standalone">
+      {c === 'MassSpringLab' && <MassSpringLab client:load mode="expanded" />}
+      {c === 'SineBasicsLab' && <SineBasicsLab client:load />}
+      {c === 'DampingLab' && <DampingLab client:load />}
+      {c === 'ForcedVibrationLab' && <ForcedVibrationLab client:load />}
+      {c === 'TwoDofModeLab' && <TwoDofModeLab client:load />}
+      {c === 'UnbalanceLab' && <UnbalanceLab client:load />}
+      {c === 'FrequencyMapLab' && <FrequencyMapLab client:load />}
+      {c === 'SourceSynthesisLab' && <SourceSynthesisLab client:load />}
+      {c === 'AmplitudeMeasuresLab' && <AmplitudeMeasuresLab client:load />}
+      {c === 'FourierHarmonicsLab' && <FourierHarmonicsLab client:load />}
+      {c === 'DftCorrelationLab' && <DftCorrelationLab client:load />}
+      {c === 'ZeroPaddingLab' && <ZeroPaddingLab client:load />}
+      {c === 'SamplingLab' && <SamplingLab client:load />}
+      {c === 'AafLab' && <AafLab client:load />}
+      {c === 'AdcLab' && <AdcLab client:load />}
+      {c === 'ResolutionLab' && <ResolutionLab client:load />}
+      {c === 'SmearingLab' && <SmearingLab client:load />}
+      {c === 'ZoomLab' && <ZoomLab client:load />}
+      {c === 'WindowLeakageLab' && <WindowLeakageLab client:load />}
+      {c === 'WindowComparisonLab' && <WindowComparisonLab client:load />}
+      {c === 'WindowCorrectionLab' && <WindowCorrectionLab client:load />}
+      {c === 'AveragingLab' && <AveragingLab client:load />}
+      {c === 'TsaLab' && <TsaLab client:load />}
+      {c === 'SpectrumScalingLab' && <SpectrumScalingLab client:load />}
+      {c === 'AmplitudeScaleLab' && <AmplitudeScaleLab client:load />}
+      {c === 'UnitConverterLab' && <UnitConverterLab client:load />}
+      {c === 'ModulationLab' && <ModulationLab client:load />}
+      {c === 'SandboxLab' && <SandboxLab client:load />}
+      {c === 'SensorLab' && <SensorLab client:load />}
+      {c === 'ProximityLab' && <ProximityLab client:load />}
+      {c === 'PhaseLab' && <PhaseLab client:load />}
+      {c === 'SlowRollLab' && <SlowRollLab client:load />}
+      {c === 'ChainQuizLab' && <ChainQuizLab client:load />}
+      {c === 'AlarmLab' && <AlarmLab client:load />}
+      {c === 'SupportStiffnessLab' && <SupportStiffnessLab client:load />}
+    </div>
+
+    <nav class="lab-pager" aria-label="랩 이동">
+      {prev ? <a href={withBase(`/lab/${prev.slug}/`)}>← {prev.id} {prev.title.split(':')[0]}</a> : <span />}
+      <a href={withBase('/lab/')}>랩 모음</a>
+      {next ? <a href={withBase(`/lab/${next.slug}/`)}>{next.id} {next.title.split(':')[0]} →</a> : <span />}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .lab-page {
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
+
+  .lab-page-head {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .lab-page-head h1 {
+    margin: 0.2rem 0 0.4rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .lab-tag {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--c);
+  }
+
+  .ref-box {
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--c);
+  }
+
+  .ref-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .ref-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ref-box a {
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  .ref-box a:hover {
+    text-decoration: underline;
+  }
+
+  .ref-id {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .ref-heading {
+    color: var(--text-muted);
+  }
+
+  .lab-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+</style>
