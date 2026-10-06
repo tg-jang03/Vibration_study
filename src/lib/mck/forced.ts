@@ -23,6 +23,46 @@ export function steadyStateResponse(frequencyRatio: number, zeta: number): Frequ
   };
 }
 
+export interface ResonancePeak {
+  /** 진폭비가 최대가 되는 진동수비 r = √(1 − 2ζ²) */
+  frequencyRatio: number;
+  /** 최대 진폭비 1 / (2ζ√(1 − ζ²)) */
+  amplitudeRatio: number;
+}
+
+/** 힘 진폭이 일정한 1자유도 강제진동의 진폭비 최대점. ζ ≥ 1/√2이면 r = 0에서 최대(1)라 null. */
+export function resonancePeak(zeta: number): ResonancePeak | null {
+  const z = nonnegative('zeta', zeta);
+  if (z === 0) return { frequencyRatio: 1, amplitudeRatio: Number.POSITIVE_INFINITY };
+  if (2 * z ** 2 >= 1) return null;
+  return {
+    frequencyRatio: Math.sqrt(1 - 2 * z ** 2),
+    amplitudeRatio: 1 / (2 * z * Math.sqrt(1 - z ** 2)),
+  };
+}
+
+export interface HalfPowerPoints {
+  lower: number;
+  upper: number;
+  /** upper − lower (진동수비 단위). 작은 ζ에서 ≈ 2ζ */
+  width: number;
+}
+
+/**
+ * 진폭비가 최대값의 1/√2가 되는 두 진동수비 (Half-power 점).
+ * r² = 1 − 2ζ² ± 2ζ√(1 − ζ²). 아래 점이 없을 만큼 ζ가 크면 null.
+ */
+export function halfPowerPoints(zeta: number): HalfPowerPoints | null {
+  const z = nonnegative('zeta', zeta);
+  if (z === 0 || 2 * z ** 2 >= 1) return null;
+  const centre = 1 - 2 * z ** 2;
+  const spread = 2 * z * Math.sqrt(1 - z ** 2);
+  if (centre - spread <= 0) return null;
+  const lower = Math.sqrt(centre - spread);
+  const upper = Math.sqrt(centre + spread);
+  return { lower, upper, width: upper - lower };
+}
+
 export interface ForcedInput {
   forceAmplitude: number;
   forcingOmega: number;
