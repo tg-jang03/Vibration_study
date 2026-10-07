@@ -225,7 +225,7 @@
 | P3-4 | 측정 체인 함정 | LAB-CHAIN-01 (판정 퀴즈) | M3.4 | 검토 (그림 7, LAB-CHAIN-01 3곳: 살펴보기 2 + 퀴즈 1) |
 | P3-5 | 과도 데이터 수집과 보호 시스템 | LAB-ALM-01 | M3.5 | 검토 (그림 6, LAB-ALM-01 3곳) |
 | P4-1 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 검토 (본문 8절, 그림 7, LAB-AF-01) |
-| P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 계획 |
+| P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 검토 |
 | P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 계획 |
 | P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
 | P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 계획 |
@@ -308,21 +308,11 @@
 | LAB-SRC-01 | 원인 합성: 파형 한 줄에 섞인 원인들 | P1-9 | `SourceSynthesisLab` (/lab/src-01/) |
 | LAB-SUP-01 | 지지 강성과 고유진동수 (D-036) | P1-6 | `SupportStiffnessLab` (/lab/sup-01/) · lib/machine/supportModel.ts |
 | LAB-AF-01 | Run-up Bode & 증폭계수 | P4-1 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
+| LAB-JEF-01 | Jeffcott 로터: 선회와 오빗 | P4-2 | `JeffcottLab` (/lab/jef-01/) · lib/rotor/jeffcott.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
 새 랩은 여기에 사양을 먼저 쓰고 구현한다 (템플릿 §2). 구현이 끝나면 사양을 `archive/LabSpecs.md`로 옮기고 위 표에 한 줄을 더한다.
-
-#### LAB-JEF-01 Jeffcott 로터: 선회와 오빗
-- P4-2 · M5.2 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현)
-- 목적: 회전체의 응답을 축 단면이 그리는 궤적(오빗)으로 보고, 등방 지지면 원형 정방향 선회, 비등방이면 타원·임계속도 2개·두 임계속도 사이의 역방향 선회가 생긴다는 것을 본다.
-- 모델 (`lib/rotor/jeffcott.ts`, 해석해): `m\ddot x + c\dot x + k_x x = m e \Omega^2\cos\Omega t`, `m\ddot y + c\dot y + k_y y = m e \Omega^2\sin\Omega t` (감쇠는 두 방향 같게). 정/역 성분 A_f·A_b는 §3 식
-- 조작: 회전수 (0 ~ 2.5 N_x), k_y/k_x (1 ~ 1.6, 기본 1), ζ (0.01 ~ 0.2, 기본 0.05), 재생/정지 (오빗 위 점이 도는 애니메이션 — 표시용으로 느리게, 재생할 때만)
-- 출력: 오빗(X-Y, 정방향 파랑·역방향 주황, 회전 방향 화살표, 키페이저 점), X·Y 시간파형, 진폭 X·Y vs rpm(두 피크) + 현재 점, ∣A_f∣·∣A_b∣ vs rpm. 읽음값 — 두 임계속도, X·Y 진폭·위상, ∣A_f∣, ∣A_b∣, 선회 방향
-- 수식: 운동방정식, 등방 해 = P4-1의 불평형 응답, z = A_f e^{jΩt} + A_b e^{−jΩt}
-- 실험 과제: k_y = k_x와 1.3 k_x의 오빗·역방향 성분 비교 / 두 임계속도 사이에서 선회 방향은? / ζ를 키우면 역방향 구간은?
-- 검증 (§6): 등방 → A_b = 0, 원형 오빗, 반지름 = 1자유도 불평형 응답 / ζ = 0이면 두 임계속도 사이에서 ∣A_b∣ > ∣A_f∣
-- 주의: Full spectrum(P5-3)·오빗 판독(P6-3)보다 앞이므로 정/역 성분은 페이지에서 직접 계산해 보여 주고 판독은 그쪽으로 넘긴다.
 
 #### LAB-STB-01 안정성: 교차연성과 Log decrement
 - P4-4 · M5.4 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현. D-040으로 유막 베어링·Shaft centerline은 P4-3으로 나뉨)
@@ -454,6 +444,9 @@
 | gap 전압 → 거리 | −9.5 V, 7.87 V/mm | 1.207 mm |
 | Jeffcott 등방 (D-034, M5.2) | k_x = k_y | A_b = 0, 원형 오빗, 반지름 = 1자유도 불평형 응답 (P1-7·P4-1과 같다) |
 | Jeffcott 비등방 | ζ = 0, √(k_x/m) < Ω < √(k_y/m) | X·Y 부호 반대 → ∣A_b∣ > ∣A_f∣ (역방향 선회), 임계속도 2개 |
+| Jeffcott 수치 (M5.2) | m = 10 kg, e = 10 µm, Nₓ = 3000 rpm, kᵧ/kₓ = 1.3, 공통 c(ζₓ = 0.05), N = 3200 rpm | Nᵧ = 3420.526 rpm, X = 65.2985·Y = 58.6033 µm Peak, ∣A_f∣ = 36.1101·∣A_b∣ = 50.4498 µm → 역방향 |
+| Jeffcott 감쇠 증가 | 위 조건에서 ζₓ = 0.2 | ∣A_f∣ = 23.7295·∣A_b∣ = 8.33899 µm → 정방향 (두 고유 회전수 사이여도 역방향 보장 없음) |
+| Jeffcott 고속 질량중심 | 등방, e = 10 µm, ζ = 0.05, r = 5 | C 반지름 10.4144 µm, G 반지름 0.465746 µm; r → ∞에서 C → e, G → 0 |
 | 안정성 (M5.3) | k_xy = 0, ζ = 0.05 | σ = −ζω_n, δ = 0.3146 (P1-3과 같다) |
 | 안정 한계 | k_xy 독립 / k_xy = cΩ/2 | δ = 0 ↔ k_xy = cω_n = 2ζk / Ω = 2ω_n (c와 무관) |
 | 가속도계 평탄 대역 | 공진 25 kHz, ±10 %, 감쇠 무시 | ≈ 7.5 kHz |

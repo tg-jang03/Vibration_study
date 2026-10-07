@@ -24,6 +24,7 @@ const outDir = opt('out', 'dist/qa');
 const width = Number(opt('width', '1100'));
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
+const jeffcottSmoke = flag('jeffcott-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -97,6 +98,34 @@ for (const p of paths) {
   await sleep(2000);
   const labs = await ev(`[...document.querySelectorAll('.lab-frame')].map(f => ({ id: f.querySelector('.lab-id')?.textContent ?? '?', plots: f.querySelectorAll('.js-plotly-plot').length, svgs: f.querySelectorAll('svg').length }))`);
   const unhydrated = (labs ?? []).filter((l) => l.plots === 0 && l.svgs === 0).map((l) => l.id);
+  if (jeffcottSmoke) {
+    const smoke = await ev(`(async () => {
+      const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-JEF-01');
+      if (!lab) return { skipped: true };
+      const wait = () => new Promise(r => setTimeout(r, 220));
+      const sliders = lab.querySelectorAll('input[type="range"]'), toggle = lab.querySelector('input[type="checkbox"]');
+      const set = async (i,v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i], String(v)); sliders[i].dispatchEvent(new Event('input',{bubbles:true})); sliders[i].dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
+      const read = label => { const row = [...lab.querySelectorAll('.readout-table tbody tr')].find(r => r.cells[0].textContent.startsWith(label)); return parseFloat(row.cells[1].textContent.replace(/,/g,'')); };
+      const require = (v,message) => { if (!v) throw Error(message); };
+      const point = () => [...lab.querySelector('svg[role="img"]').querySelectorAll('circle')].at(-1).getAttribute('cx');
+      try {
+        require(Math.abs(read('X 진폭')-100)<.01 && read('|Ab|')===0, '등방 기본값');
+        toggle.click(); await wait(); const a = point(); await wait(); require(point()!==a, '재생 시 위치 변화');
+        toggle.click(); await wait(); const b=point(); await wait(); require(point()===b, '정지 시 위치 유지');
+        await set(1,1.3); await set(0,3200);
+        require(Math.abs(read('|Af|')-36.11)<.02 && Math.abs(read('|Ab|')-50.45)<.02, '비등방 읽음값');
+        require(lab.querySelector('svg[role="img"]').getAttribute('aria-label').includes('역방향'), '역방향 판정');
+        await set(2,.2); require(Math.abs(read('|Af|')-23.73)<.02 && read('|Af|')>read('|Ab|'), '감쇠 증가 시 정방향');
+        await set(0,0); require(read('X 진폭')===0 && read('|Ab|')===0 && lab.textContent.includes('위상이 정의되지'), '정지 상태');
+        toggle.click(); await wait(); require(!toggle.checked, '회전수 0 재생 방지');
+        [...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click(); await wait();
+        require(Number(sliders[0].value)===3000 && Number(sliders[1].value)===1 && Number(sliders[2].value)===.05 && !toggle.checked, '초기화');
+        return { ok:true, checks:9 };
+      } catch(e) { return { ok:false, error:e.message }; }
+    })()`);
+    if (smoke?.ok === false || !smoke) errors.push('Jeffcott 조작 검사: ' + (smoke?.error ?? '평가 실패'));
+    if (smoke?.ok) console.log('     Jeffcott 조작 9항목 OK (재생·정지·읽음값·감쇠·정지상태·초기화)');
+  }
   const shots = [];
   if (!noShots) {
     await ev('window.scrollTo(0, 0)');

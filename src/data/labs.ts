@@ -58,6 +58,7 @@ export const LABS: LabEntry[] = [
   { slug: 'alm-01', id: 'LAB-ALM-01', component: 'AlarmLab', part: 3, title: '보호 시스템 알람 논리', summary: '레벨·시간 지연·보팅·트립 배율을 바꿔 알람과 트립이 언제 서는지 본다.' },
   // Part 4
   { slug: 'af-01', id: 'LAB-AF-01', component: 'RunUpBodeLab', part: 4, title: 'Run-up Bode와 증폭계수 (AF)', summary: '고유 회전수·감쇠·측정 간격을 바꿔 런업 Bode·Polar에서 Half-power로 증폭계수를 읽는다.' },
+  { slug: 'jef-01', id: 'LAB-JEF-01', component: 'JeffcottLab', part: 4, title: 'Jeffcott 로터: 선회와 오빗', summary: '회전수·강성비·감쇠를 바꿔 원형·타원 오빗과 정방향·역방향 선회를 비교한다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

@@ -28,6 +28,7 @@ import ModulationLab from '../../components/labs/ModulationLab';
 import PhaseLab from '../../components/labs/PhaseLab';
 import ProximityLab from '../../components/labs/ProximityLab';
 import ResolutionLab from '../../components/labs/ResolutionLab';
+import JeffcottLab from '../../components/labs/JeffcottLab';
 import RunUpBodeLab from '../../components/labs/RunUpBodeLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
@@ -127,6 +128,7 @@ const c = lab.component;
       {c === 'ChainQuizLab' && <ChainQuizLab client:load />}
       {c === 'AlarmLab' && <AlarmLab client:load />}
       {c === 'SupportStiffnessLab' && <SupportStiffnessLab client:load />}
+      {c === 'JeffcottLab' && <JeffcottLab client:load />}
       {c === 'RunUpBodeLab' && <RunUpBodeLab client:load />}
     </div>
 
