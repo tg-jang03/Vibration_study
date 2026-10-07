@@ -3,7 +3,7 @@ import { trackOrder, reconstructOrder } from '../dsp/tracking';
 export const ORBIT = { fr: 50, fs: 6400, samplesPerRev: 128, warmRevs: 200, maxStart: 30, maxRevs: 8, bandwidth: 4 } as const;
 export type OrbitShape = 'circle'|'ellipse'|'banana'|'eight'|'loop'|'flower'|'flat'|'sub';
 export const ORBIT_LABELS: Record<OrbitShape,string> = { circle:'원 · 1X', ellipse:'타원 · 1X', banana:'바나나 · 1X+2X', eight:'8자 · X 1X / Y 2X', loop:'내부 루프 · 1X+비교 성분', flower:'꽃잎 · 1X+3X', flat:'평평한 면 · X 상단 절단', sub:'단독 비교 성분 · 점 실험' };
-export const EXTRA_DEFAULT: Record<OrbitShape,number> = { circle:0, ellipse:0, banana:12e-6, eight:20e-6, loop:35e-6, flower:8e-6, flat:0, sub:0 };
+export const EXTRA_DEFAULT: Record<OrbitShape,number> = { circle:0, ellipse:0, banana:12e-6, eight:20e-6, loop:12e-6, flower:8e-6, flat:0, sub:0 };
 export interface OrbitOptions { shape?: OrbitShape; extra?: number; phase?: number; order?: number; sign?: 1|-1 }
 export interface OrbitParams { shape: OrbitShape; extra:number; phase:number; order:number; sign:1|-1 }
 const clean = (v:number) => Math.abs(v)<1e-15 ? 0 : v;
