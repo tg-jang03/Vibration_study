@@ -106,7 +106,7 @@ export const PARTS: Part[] = [
     sections: [
       { id: 'P6-1', title: '시간파형', status: 'review', href: '/p6-1/' },
       { id: 'P6-2', title: '스펙트럼 · Waterfall · Cascade', status: 'review', href: '/p6-2/' },
-      { id: 'P6-3', title: '오빗 (Orbit)', status: 'planned' },
+      { id: 'P6-3', title: '오빗 (Orbit)', href: '/p6-3/', status: 'review' },
       { id: 'P6-4', title: '트렌드 · 벡터 트렌드 · APHT', status: 'review', href: '/p6-4/' },
     ],
   },

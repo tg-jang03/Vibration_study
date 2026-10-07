@@ -46,6 +46,7 @@ import FeatureLab from '../../components/labs/FeatureLab';
 import TimeWaveformLab from '../../components/labs/TimeWaveformLab';
 import TrendLab from '../../components/labs/TrendLab';
 import WaterfallLab from '../../components/labs/WaterfallLab';
+import OrbitLab from '../../components/labs/OrbitLab';
 import FaultMapLab from '../../components/labs/FaultMapLab';
 import FaultSynthLab from '../../components/labs/FaultSynthLab';
 import RpmLab from '../../components/labs/RpmLab';
@@ -167,6 +168,7 @@ const c = lab.component;
       {c === 'TimeWaveformLab' && <TimeWaveformLab client:load />}
       {c === 'TrendLab' && <TrendLab client:load />}
       {c === 'WaterfallLab' && <WaterfallLab client:load />}
+      {c === 'OrbitLab' && <OrbitLab client:load />}
       {c === 'FaultMapLab' && <FaultMapLab client:load />}
       {c === 'FaultSynthLab' && <FaultSynthLab client:load />}
       {c === 'RpmLab' && <RpmLab client:load />}

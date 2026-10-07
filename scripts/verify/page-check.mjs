@@ -30,6 +30,7 @@ const stabilitySmoke = flag('stability-smoke');
 const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const cascadeSmoke = flag('cascade-smoke');
+const orbitSmoke = flag('orbit-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -286,6 +287,45 @@ for (const p of paths) {
     })()`);
     if(smoke?.ok===false||!smoke) errors.push('Cascade 조작 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok) console.log('     Cascade 조작 '+smoke.checks+'항목 OK (추종·잠김·유지·정/역·축)');
+  }
+  if (orbitSmoke) {
+    const smoke=await ev(`(async()=>{
+      const lab=[...document.querySelectorAll('.lab-frame')].find(f=>f.querySelector('.lab-id')?.textContent==='LAB-ORB-01');
+      if(!lab) return {skipped:true};
+      const wait=(ms=300)=>new Promise(r=>setTimeout(r,ms)), sliders=lab.querySelectorAll('input[type="range"]'), selects=lab.querySelectorAll('select'), toggles=lab.querySelectorAll('input[type="checkbox"]');
+      const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const choose=async(i,v)=>{const values=[['circle','ellipse','banana','eight','loop','flower','flat','sub'],['0.5',String(1/3),'0.43','1','2'],['1','-1'],['2','4','8']];selects[i].value=String(values[i].indexOf(String(v)));selects[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+      const near=(label,v,t=.01)=>Math.abs(read(label)-v)<t;
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;};
+      const reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();};
+      const point=()=>{const c=lab.querySelector('.orbit-mark');return c?.getAttribute('cx')+','+c?.getAttribute('cy');};
+      const arrow=()=>lab.querySelector('.orbit-arrow');
+      try {
+        require(lab.querySelectorAll('svg[role="img"]').length===2&&lab.querySelectorAll('.js-plotly-plot').length===1,'2 orbits and time plot');
+        require(near('직접 X p-p',40)&&near('직접 Y p-p',40)&&near('필터 X 중앙 벡터',20)&&read('서로 다른 직접 점 자리')===1,'initial circle');
+        require(Number(arrow().getAttribute('y1'))>Number(arrow().getAttribute('y2')),'forward time arrow');
+        const a=point();await choose(2,-1);require(point()===a&&Number(arrow().getAttribute('y1'))<Number(arrow().getAttribute('y2'))&&near('직접 X p-p',40),'reverse keeps amplitude and pulse point');await choose(2,1);
+        toggles[0].click();await wait();require(!lab.querySelector('.orbit-mark')&&(lab.querySelector('.orbit-trace').getAttribute('d').match(/M/g)||[]).length===1,'marks off removes blank');toggles[0].click();await wait();
+        await choose(0,'banana');require(Number(sliders[0].value)===12&&near('필터 X 중앙 벡터',20)&&near('필터 Y 중앙 벡터',12),'banana filtering');
+        await set(0,24);require(near('필터 Y 중앙 벡터',12)&&lab.querySelector('.orbit-trace').getAttribute('d')!==null,'extra amplitude');await set(1,90);require(Number(sliders[1].value)===90,'phase control');
+        await choose(0,'eight');require(near('직접 Y p-p',40)&&read('필터 Y 중앙 벡터')<.006,'eight reduces to line');
+        await choose(0,'loop');await choose(3,8);require(Number(sliders[0].value)===35&&read('서로 다른 직접 점 자리')===2&&!selects[1].disabled,'loop half-order');
+        await choose(0,'flower');require(read('서로 다른 직접 점 자리')===1,'flower repeats once per turn');
+        await choose(0,'flat');require(near('직접 X p-p',32)&&near('필터 X 중앙 벡터',17.15243,.006),'flat analytic filtering');
+        await choose(0,'sub');require(read('서로 다른 직접 점 자리')===2&&lab.querySelectorAll('svg[role="img"]')[0].querySelectorAll('.orbit-mark').length===8,'half-order eight pulses two positions');
+        await choose(1,String(1/3));require(read('서로 다른 직접 점 자리')===3,'third-order three positions');
+        await choose(1,.43);const b=point();require(read('서로 다른 직접 점 자리')===8,'0.43 eight distinct');await set(2,1);require(point()!==b&&read('시작 키페이저 k')===1,'0.43 sliding marks');
+        toggles[1].click();await wait(950);require(read('시작 키페이저 k')>1,'play advances window');toggles[1].click();await wait();const k=read('시작 키페이저 k');await wait(950);require(read('시작 키페이저 k')===k,'pause holds window');
+        await choose(1,2);require(read('서로 다른 직접 점 자리')===1&&read('필터 X 중앙 벡터')<.006,'2X one position, no meaningful 1X');
+        await choose(1,1);require(read('서로 다른 직접 점 자리')===1&&near('필터 X 중앙 벡터',20),'1X one position');
+        await set(2,30);require(read('시작 키페이저 k')===30&&Number.isFinite(read('필터 X 중앙 벡터')),'last valid window');
+        await reset();require(selects[0].value==='0'&&Number(sliders[2].value)===0&&selects[3].value==='0'&&!toggles[1].checked&&toggles[0].checked,'reset');
+        return {ok:true,checks};
+      }catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke) errors.push('Orbit 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok) console.log('     Orbit 조작 '+smoke.checks+'항목 OK (형태·필터·점·방향·재생·초기화)');
   }
   const shots = [];
   if (!noShots) {

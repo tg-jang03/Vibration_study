@@ -88,7 +88,7 @@
 |---|---|---|
 | P6-1 | 파형 판독 순서(주기 → 대칭 → 회전당 사건 수 → 충격), 절단(truncation)과 클리핑 구별, 위아래 비대칭의 단서와 한계(성분 합성·DC 이동도 구별, 러브·풀림은 이름만, P7-3), 키페이저 마커를 겹쳐 사건 수 세기, 패턴 맞히기 | RMS·CF·Pk-Pk(P2-1), 하모닉·위상과 모양(P2-2), 맥놀이·AM(P2-8), 클리핑(P2-3·P3-4), 필터가 파형을 바꿈(P5-1) |
 | P6-2 | 스펙트럼 판독 순서, 1X 아래·비동기·고주파 대역 읽기, 휠(따라감) vs 휩(잠김) 판정, Full spectrum cascade(정/역 성분의 회전수 의존) | 요소 주파수(P1-8), STFT·스펙트로그램·워터폴/캐스케이드·줄 모양(P5-2), Full spectrum 계산(P5-3), 정/역 선회(P4-2) |
-| P6-3 | 직접 오빗 vs 1X 필터 오빗, 키페이저 dot(blank-bright)로 선회 방향, 형태 패턴(원·타원·바나나/8자·내부 루프·꽃잎·평평한 면, 원인 확정은 Part 7), dot 개수(I-012) | 오빗·정/역 선회(P4-2), X-Y 배치·위상(P3-2·P3-3), 트래킹 필터(P5-5) |
+| P6-3 | 같은 시각 X/Y·AC/DC·동일 축척 → 직접 취득 대역 vs 실제 1X 필터 → blank→dot→시간 증가·센서/관찰 방향 → 형태와 성분/원인 후보 → 펄스 수 vs 서로 다른 자리(1/nX·p/nX·0.43X·정수 조합, I-012 해결) → 절단/포화 감별 | 오빗·정/역 선회(P4-2), X-Y 배치·위상(P3-2·P3-3), 트래킹 필터(P5-5) |
 | P6-4 | 스칼라(overall) 트렌드의 한계, 벡터 트렌드, Acceptance region, APHT(진폭·위상 vs 시간), 변화량으로 판단(수치는 P10-1) | 1X 벡터·Polar(P3-3·P4-1), 대역 RMS(P2-7), 보호 vs 상태감시(P3-5) |
 
 **Part 7 개념 척추** (D-042 — 트랙 A. 결함마다 메커니즘 → 증거 5요소 → 감별 → 확인. 신호처리(Part 5)·플롯 판독(Part 6)은 되짚기만, 판정 수치는 Part 10. 나머지 절은 그 세부를 시작할 때 채운다)
@@ -214,6 +214,7 @@
 - 안정성 (P4-4): `m\ddot z + c\dot z + (k - j k_{xy}) z = 0` → `m\lambda^2 + c\lambda + k - j k_{xy} = 0`, `\delta = -2\pi\sigma/\omega_d`. 한계: `k_{xy} = c\,\omega_n = 2\zeta k`. 모델 `k_{xy} = c\Omega/2`이면 한계 `\Omega = 2\omega_n`
 - Cascade 판독 (P6-2): `f_r=N/60`, `o=f/f_r`. 별도 정속 기록별 FFT(2 s·Hann·Δf=0.5 Hz); 쌓은 그림의 세로축은 시각/회전수 기준선에 진폭 표시 높이를 더한 좌표.
 - 학습용 추종·잠김 (P4-4·P6-2): `f_{\rm sub}=\min(q f_r,f_n)`, 모델 교차 `N=60f_n/q`. 실제 불안정 발생 한계·진폭 예측 식이 아니다. Full spectrum은 원 반지름, +f=반시계·−f=시계(정/역 이름은 축 회전 방향과 함께).
+- 오빗 점 (P6-3): `z=x+jy`, `t_k=k/f_r`, 단독 qX의 바퀴당 위상 `Δψ=±2πq`. 안정·비퇴화 단독 `q=p/n`(기약분수)은 n바퀴 뒤 점 반복. 표시 창의 펄스 수·서로 다른 자리 수·차수를 구별.
 - 트래킹 필터 (lock-in): `\vec V_{nX}(t) = 2\,\mathrm{LPF}\{x(t)\,e^{-jn\theta(t)}\}`
 - FRF 추정, 코히어런스: `H_1 = \dfrac{G_{xy}}{G_{xx}},\; H_2 = \dfrac{G_{yy}}{G_{yx}},\; \gamma^2 = \dfrac{|G_{xy}|^2}{G_{xx}G_{yy}}`
 - 영향계수 밸런싱: `H = \dfrac{\vec V_1 - \vec V_0}{\vec W_t},\quad \vec W_c = -\dfrac{\vec V_0}{H}`
@@ -275,7 +276,7 @@
 | P5-7 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 검토 (그림 7, LAB-CEP-01·LAB-FEAT-01 각 1곳, 2026-10-07) |
 | P6-1 | 시간파형 | LAB-TWF-01 | M6.1 | 검토 |
 | P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 검토 |
-| P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 계획 |
+| P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 검토 |
 | P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 검토 |
 | P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-MAP-01, LAB-FAULT-01, LAB-RPM-01 | M7.1 | 검토 (그림 6, 랩 3종 각 1곳, 2026-10-07) |
 | P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
@@ -363,6 +364,7 @@
 | LAB-TWF-01 | 시간파형 패턴 갤러리·퀴즈·회전당 사건 수 | P6-1 | `TimeWaveformLab` (/lab/twf-01/) · lib/plots/waveform.ts |
 | LAB-TRND-01 | 스칼라·APHT·벡터 변화·학습용 허용 영역 | P6-4 | `TrendLab` (/lab/trnd-01/) · lib/plots/trend.ts |
 | LAB-WF-01 | 스펙트럼 판독·추종/잠김·정속 유지·정/역 cascade | P6-2 | `WaterfallLab` (/lab/wf-01/) · lib/plots/cascade.ts |
+| LAB-ORB-01 | 직접/실제1X 오빗·blank/dot 시간 순서·고정/이동 점 | P6-3 | `OrbitLab` (/lab/orb-01/) · lib/plots/orbit.ts |
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
@@ -377,7 +379,7 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
+
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
@@ -547,6 +549,20 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 처음부터 고정40 Hz·기록2(2400 rpm) | 비교 줄과1X가 겹쳐 X40 Hz=32 µm Peak, +40 Hz 원 반지름27 µm |
 | 기본 120 Hz bin·Hann | 120.5 Hz 옆 칸10 µm Peak, 메인로브이며 별도 성분 아님 |
 
+### P6-3 오빗 판독 (M6.3)
+
+| 조건 | 기대값 | 비고 |
+|---|---|---|
+| 3000 rpm · 1X 원20 µm Peak | f_r50 Hz · T_r20 ms · X/Y40 µm p-p | Y 반전이면 같은 크기·역 선회 |
+| 1X 타원 | X/Y40/20 µm p-p | 진폭20/10 µm Peak |
+| 바나나 기본 | X1X20, Y1X12 + Y2X12 µm Peak | 실제 필터 중앙 X/Y≈20/12 |
+| 8자 기본 | X/Y40/40 µm p-p · Y1X0 | 실제 필터 Y는 유한 감쇠 잔여만 |
+| 단독1/2X·1/3X,8축 바퀴 | 펄스8번, 자리2·3 | 끝 중복 제외, 안정·비퇴화 |
+| 단독0.43X,8축 바퀴 | 자리8 · 154.8°/바퀴 | 정확한43/100은100바퀴 반복 |
+| 정수1X+2X 또는 단독2X | 서로 다른 자리1 | 2X 선회 횟수와 자리 수 구별 |
+| X 원 상단12 µm 절단·AC화 | X32 µm p-p · 1X17.15243 µm Peak | 평균 (12acos0.6−16)/π µm 제거 |
+| 실제 트래킹 필터 | 띠 폭4 Hz·4차 LPF·준비4초 | 해석1X와 차이 <0.006 µm |
+| 내부 루프·꽃잎 | 1X20+1/2X35 · 1X20+3X8 µm | 합성 예제, 고장 역학 해 아님 |
 ### P6-4 트렌드·APHT (M6.6)
 
 | 조건 | 기준값 |
