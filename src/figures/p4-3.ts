@@ -37,16 +37,18 @@ export const oilWedge: FigureSpec = {
     { title: '양압 반원의 압력이 하중을 지지합니다', height: 170, x: { range: [0, 360], label: 'θ [°]', ticks: [0, 90, 180, 270, 360] }, y: { range: [0, 3], label: '길이 중앙 압력 [MPa]' }, series: [{ x: theta.map(deg), y: theta.map(t => shortBearingPressure(B, normal.eccentricityRatio, E.omega, E.viscosity, t, 0) / 1e6), color: 'c3', kind: 'area' }] },
   ],
 };
-const xgeom: [number, number] = [-10, 10]; const g = { x: normal.x / B.radialClearance * .5, y: normal.y / B.radialClearance * .5 };
+const xgeom: [number, number] = [-10, 10]; const g = { x: normal.x / B.radialClearance, y: normal.y / B.radialClearance };
 export const clearance: FigureSpec = {
   id: 'fig-p4-3-2',
   caption: '그림 2. 베어링 중심 O와 저널 중심 C 사이가 편심 거리 e이다. Cr는 두 반지름의 차, 지름 간극은 2Cr이다. 아래 하중선에서 OC까지 잰 자세각 φ를 쓴다. Cr = 100 µm일 때 ε = 0.6758이면 e = 67.58 µm, 최소 유막은 32.42 µm이다. 형상 간극은 이해를 위해 크게 그렸다.',
-  panels: [{ frame: false, height: 300, x: { range: xgeom }, y: { range: squareYRange(xgeom, 300, -4) }, series: [{ ...circle({ x: 0, y: 0 }, 2.5), color: 'muted' }, { ...circle(g, 2), color: 'c1' }], annotations: [
+  panels: [{ frame: false, height: 300, x: { range: xgeom }, y: { range: squareYRange(xgeom, 300, -4) }, series: [{ ...circle({ x: 0, y: 0 }, 3), color: 'muted' }, { ...circle(g, 2), color: 'c1' }, { x: grid(-Math.PI/2, -Math.PI/2+normal.attitude,31).map(t=>.8*Math.cos(t)), y: grid(-Math.PI/2, -Math.PI/2+normal.attitude,31).map(t=>.8*Math.sin(t)), color: 'c2' }], annotations: [
     { type: 'point', x: 0, y: 0, label: 'O', dx: -18, dy: -12, color: 'muted' }, { type: 'point', ...g, label: 'C', dx: 12, dy: 10, color: 'c1' },
     { type: 'arrow', double: false, x1: 0, y1: 0, x2: g.x, y2: g.y, color: 'c2' },
     { type: 'line', x1: 0, y1: 0, x2: 0, y2: -3.1, color: 'muted', dash: true },
     { type: 'arrow', double: false, x1: g.x, y1: g.y - .5, x2: g.x, y2: g.y - 1.8, label: 'W ↓', color: 'c3' },
-    { type: 'arrow', x1: -2.5, y1: 0, x2: -2, y2: 0, double: true, label: 'Cr', labelDy: -18, color: 'c2' },
+    { type: 'arrow', x1: 0, y1: 2, x2: 0, y2: 3, double: true, label: 'Cr', labelDx: -25, color: 'c2' },
+    {type:'arrow',double:true,x1:g.x+2*g.x/normal.eccentricityRatio,y1:g.y+2*g.y/normal.eccentricityRatio,x2:3*g.x/normal.eccentricityRatio,y2:3*g.y/normal.eccentricityRatio,label:'hmin',labelDx:30,labelDy:12,color:'c3'},
+    {type:'text',x:.3,y:-1.2,text:'φ',color:'c2'},
     { type: 'text', x: 3.1, y: 1.8, text: 'ε = e/Cr', color: 'c2' }, { type: 'text', x: 3.1, y: .7, text: 'φ = 40.59° (하중선 ↔ OC)', color: 'c1' }, { type: 'text', x: 3.1, y: -.6, text: 'hmin = Cr − e', color: 'c3' },
   ] }],
 };
@@ -82,7 +84,7 @@ export const coefficients: FigureSpec = {
   panels: [{ frame: false, height: 200, x: { range: [0, 10] }, y: { range: squareYRange([0, 10], 200) }, series: [], annotations: [
     { type: 'point', x: 2, y: 1, label: '평형점', color: 'muted', dx: -40, dy: 18 },
     { type: 'arrow', double: false, x1: 2, y1: 1, x2: 3.5, y2: 1, label: 'δx 또는 δẋ', color: 'c1', labelDy: 22 },
-    { type: 'arrow', double: false, x1: 3.5, y1: 1, x2: 5, y2: 1, label: 'δFx: kxx, cxx', color: 'c2', labelDy: 22 },
+    { type: 'arrow', double: false, x1: 5, y1: 1, x2: 3.5, y2: 1, label: 'δFx: −kxxδx−cxxδẋ', color: 'c2', labelDy: 22 },
     { type: 'arrow', double: false, x1: 3.5, y1: 1, x2: 3.5, y2: 2.5, label: 'δFy: kyx, cyx', color: 'c3', labelDx: 75 },
     { type: 'text', x: 6, y: 2.2, text: 'δy → kxy, kyy', color: 'c2' }, { type: 'text', x: 6, y: 1.1, text: 'δẏ → cxy, cyy', color: 'c3' },
   ] }],

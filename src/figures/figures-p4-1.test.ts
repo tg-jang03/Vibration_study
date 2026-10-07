@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { halfPowerAF, simulateRunUp, P41_EXAMPLE } from '../lib/rotor/runup';
 import {
   dampingCompare,
   dataErrors,
@@ -57,3 +58,5 @@ describe('P4-1 본문 그림 회귀 테스트', () => {
     expect(dataErrors.panels.length).toBe(3);
   });
 });
+
+it("성긴 rpm 예제는 피크를 유지하고 보간 폭을 늘린다",()=>{for(const [zeta,rpmStep,amp,width,af]of [[.01,200,500,137.629864,21.797595],[.005,100,1000,68.790050,43.610958]]){const v=halfPowerAF(simulateRunUp({...P41_EXAMPLE.rotor,zeta},{rpmEnd:6000,rpmStep}))!;expect(v.peakRpm).toBe(3000);expect(v.peakAmp*2e6).toBeCloseTo(amp,6);expect(v.n2-v.n1).toBeCloseTo(width,5);expect(v.af).toBeCloseTo(af,5);}});

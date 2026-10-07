@@ -228,7 +228,7 @@ scripts/bench/           플롯 성능 측정 (I-020)
 | M10 규격·절차 (Part 10) | M10.1 판정 규격 (P10-1, LAB-ISO-01) · M10.2 API 요점·진단 절차 (P10-2, P10-3) |
 | M11 종합 (Part 11, REF) | M11.1 케이스 엔진 (P11-1, LAB-CASE-01) · M11.2 데이터셋 뷰어 (P11-2) · M11.3 복기 가이드·레퍼런스 정리 (P11-3, REF-1~3) |
 
-### 6-8. 세부 마일스톤 — M6 현장 플롯 읽기 (Part 6) · 트랙 B (2026-10-07 구체화 · Claude, D-041 제안)
+### 6-8. 세부 마일스톤 — M6 현장 플롯 읽기 (Part 6) · 트랙 B (2026-10-07 구체화 · Claude, D-041 확정)
 
 공통 완료 기준: 교육 내용은 `Curriculum.md` Part 6의 그 절, 경계는 `Contents.md` §1-2 Part 6 척추(앞 Part에서 배운 플롯의 원리·계산은 되짚기만), 랩은 `Contents.md` §5 사양(시작할 때 상세화), 작성은 `PageGuide.md`. 판독 그림은 "무엇을 그리나 / 무엇이 보이나 / 무엇을 숨기나 / 판독 패턴" 순서. 결함 원인은 이름과 모양까지만 말하고 확정 감별은 Part 7로 넘긴다. 체크리스트 + check·test·build + `verify:page` → Contents §4 `검토`·`curriculum.ts`·`Glossary.md`·랩 모음 → push.
 

@@ -245,7 +245,7 @@ export default function RunUpBodeLab({
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
             <ParamToggle
-              label="런아웃 (4 µm ∠60°)"
+              label="런아웃 (8 µm pp ∠60°)"
               checked={hasRunout}
               onChange={(v) => {
                 setHasRunout(v);
@@ -317,7 +317,7 @@ export default function RunUpBodeLab({
         {
           question: '기본값(ζ = 0.05, 25 rpm 간격)에서 추정 AF와 1/(2ζ)는 얼마나 일치하나요?',
           answer:
-            'N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3172 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 불평형 원심력의 r² 비례 항 때문에 완벽한 10이 아니며 정상적인 물리적 특성입니다.',
+            'N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3171 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 불평형 원심력의 r² 비례 항 때문에 완벽한 10이 아니며 정상적인 물리적 특성입니다.',
         },
         {
           question: '감쇠비 ζ를 0.01로 줄였을 때, rpm 간격을 25 → 200 rpm으로 바꾸면 AF는 어떻게 되나요?',
@@ -332,13 +332,13 @@ export default function RunUpBodeLab({
         {
           question: '운전 회전수 N_op를 3600 rpm에서 3200 rpm으로 낮추면 분리여유 SM은 어떻게 변하나요?',
           answer:
-            'SM이 약 16.7%에서 약 6.3%로 크게 줄어듭니다. 공진 봉우리 대역(Half-power 대역 N₂ ≈ 3172 rpm)에 근접하여 기계 운전 시 공진 위험이 높아집니다.',
+            'SM이 약 16.7%에서 약 6.3%로 크게 줄어듭니다. 공진 봉우리 대역(Half-power 대역 N₂ ≈ 3171 rpm)에 근접하여 기계 운전 시 공진 위험이 높아집니다.',
         },
       ]}
       footer={
         <p>
           1자유도 불평형 회전체 모델의 런업 데이터 시뮬레이션입니다. API 684 등 실제 회전기계 진동 규격의
-          구체적인 한계 수치는 관련 규격을 참조하세요 (D-012, I-009).
+          구체적인 한계 수치는 관련 규격을 참조하세요.
         </p>
       }
     >

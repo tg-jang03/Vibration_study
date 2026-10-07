@@ -79,3 +79,5 @@ describe('별도 개념 주파수선', () => {
     const fw=1/Math.sqrt(1-.2),bw=1/Math.sqrt(1+.2);expect(campbellIllustration(fw).forwardRatio).toBeCloseTo(fw,12);expect(campbellIllustration(bw).backwardRatio).toBeCloseTo(bw,12);
   });
 });
+
+it("속도 연동의 한계 위 주파수는 근처에 머물지만 정확한 잠김은 아니다",()=>{ const b=stabilityExample(); const n=stabilityModes(b).omegaN; const f=(r:number)=>stabilityModes(speedCoupledSystem(b,r*n)).forward.im/n; expect(f(2)).toBeCloseTo(1,12); expect(f(2.5)).toBeCloseTo(1.000700,6); expect(f(3)).toBeCloseTo(1.001553,6); expect(f(100)).toBeGreaterThan(1.7); });

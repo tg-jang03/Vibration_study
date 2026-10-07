@@ -45,7 +45,7 @@ export default function StabilityLab() {
     <ParamSlider label="회전수 비 r = Ω/ωn" value={ratio} min={0} max={3} step={.05} disabled={mode!=='speed'} onChange={setRatio}/>
     <ParamSlider label="초기 변위 A" value={amplitude} min={5} max={50} step={5} unit="µm" onChange={setAmplitude}/>
     <ParamToggle label="정지에서 놓기 (초기 속도 0)" checked={released} onChange={setReleased}/>
-    <ParamToggle label="가상 Whirl → Whip 워터폴 미리보기" checked={preview} onChange={setPreview}/>
+    <ParamToggle label="가상 Whirl → Whip 캐스케이드 미리보기" checked={preview} onChange={setPreview}/>
     <button type="button" onClick={reset}>초기화</button>
   </>} tasks={[
     {question:'ζ=0.05에서 q/k를 0.05 → 0.10 → 0.15로 바꾸면?',answer:'δ는 +0.1571 → 0 → −0.1561입니다. 순서대로 수렴·경계·발산입니다. 고유치의 실수부가 가장 큰 정방향 모드를 봅니다.'},
@@ -79,6 +79,7 @@ export default function StabilityLab() {
       {label:'직접 강성 k',value:system.stiffness,unit:'N/m'},{label:'직접 감쇠 c',value:system.damping,unit:'N·s/m'},{label:'교차 강성 q',value:system.crossStiffness,unit:'N/m'},
       {label:'정방향 성장률 σf',value:modes.forward.re,unit:'1/s'},{label:'정방향 주파수 ωf',value:modes.forward.im,unit:'rad/s'},
       {label:'역방향 성장률 σb',value:modes.backward.re,unit:'1/s'},{label:'역방향 주파수 크기',value:Math.abs(modes.backward.im),unit:'rad/s'},
+      ...(mode==='speed' && ratio>0 ? [{label:'모드 선회 차수 ωf/Ω',value:modes.forward.im/(ratio*modes.omegaN),unit:'X'}] : []),
       {label:'Log decrement δ',value:modes.logDecrement},{label:'모드 한 주기 진폭비',value:Math.exp(-modes.logDecrement)},
       {label:'한계 q/k',value:modes.criticalCrossStiffness/system.stiffness},{label:'속도 연동 모델 한계 r',value:2},
       {label:'표시 시간',value:last.time*1000,unit:'ms'},{label:'초기 X 속도',value:initial.velocity.re,unit:'m/s'},{label:'초기 Y 속도',value:initial.velocity.im,unit:'m/s'},
@@ -86,7 +87,7 @@ export default function StabilityLab() {
     <p>δ는 모드 한 주기 진폭비의 로그 ln[A(t)/A(t+T)]입니다. 두 모드가 섞인 초기 응답의 연속 피크에서 그대로 측정하는 값은 아닙니다. q=0의 정지에서 놓기는 P1-3의 감쇠 자유진동과 같습니다.</p>
     {preview && <>
       <h4>별도 가상 그림: Whirl → Whip</h4>
-      <Plot series={previewLines} x={{label:'주파수 [Hz]',range:[0,2.1*naturalRpm/60]}} y={{label:'회전수 / Nn + 정규화 높이',range:[1.4,3.3]}} height={300} ariaLabel="가상 0.45X 추종에서 고정 모드 주파수로 바뀌는 워터폴"/>
+      <Plot series={previewLines} x={{label:'주파수 [Hz]',range:[0,2.1*naturalRpm/60]}} y={{label:'회전수 / Nn + 정규화 높이',range:[1.4,3.3]}} height={300} ariaLabel="가상 0.45X 추종에서 고정 모드 주파수로 바뀌는 캐스케이드"/>
       <p>봉우리를 min(0.45×회전 주파수, Nn/60)에 놓았습니다. Nn={naturalRpm} rpm이면 고정선은 {formatNumber(naturalRpm/60,4)} Hz, 가상 전환점은 {formatNumber(naturalRpm/.45,5)} rpm입니다. 높이는 모두 정규화했습니다. 실제 FFT·유막 해·진폭이나 발생 한계 예측이 아니며 위 고유치 계산과 분리되어 있습니다.</p>
     </>}
   </LabFrame>;

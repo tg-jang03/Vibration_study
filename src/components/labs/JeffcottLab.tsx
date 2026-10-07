@@ -102,10 +102,10 @@ export default function JeffcottLab({ initialRpm = 3000, initialRatio = 1, initi
       { label: 'Nᵧ (무감쇠 임계속도)', value: response.omegaY * 30 / Math.PI, unit: 'rpm' },
       { label: 'X 진폭', value: um(response.amplitudeX), unit: 'µm Peak' },
       { label: 'Y 진폭', value: um(response.amplitudeY), unit: 'µm Peak' },
-      ...(rpm > 0 ? [{ label: 'X 힘에 대한 지연', value: deg(response.lagX), unit: '°' }, { label: 'Y 힘에 대한 지연', value: deg(response.lagY), unit: '°' }] : []),
+      ...(rpm > 0 ? [{ label: 'X 키페이저 기준 지연', value: deg(response.lagX), unit: '°' }, { label: 'Y 키페이저 기준 지연', value: deg(response.lagY) + 90, unit: '°' }] : []),
       { label: '|Af| 정방향', value: um(response.amplitudeForward), unit: 'µm' },
       { label: '|Ab| 역방향', value: um(response.amplitudeBackward), unit: 'µm', ...(ratio === 1 ? { theory: 0 } : {}) },
     ]} />
-    <p>{rpm === 0 ? '정지 상태에서는 위상이 정의되지 않습니다.' : 'Y 위상은 sin 가진력에 대한 지연입니다. cos 기준 Y phasor의 앞섬각은 −90°−이 지연각입니다.'}</p>
+    <p>{rpm === 0 ? '정지 상태에서는 위상이 정의되지 않습니다.' : '키페이저 순간을 cos 기준 0°로 놓았습니다. X 지연은 lagX, Y 지연은 lagY+90°입니다. 등방이면 Y가 X보다 90° 늦어 반시계 원이 됩니다.'}</p>
   </LabFrame>;
 }

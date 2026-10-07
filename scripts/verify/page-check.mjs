@@ -172,7 +172,7 @@ for (const p of paths) {
         await set(2,.15);require(Math.abs(read('Log decrement δ')+.1561)<.0001 && read('정방향 성장률 σf')>0,'발산');
         await set(1,.1);require(read('정방향 성장률 σf')<0 && Math.abs(read('한계 q/k')-.2)<.0001,'c2배 직접 한계');
         await reset();await choose(1);require(sliders[2].disabled && !sliders[3].disabled,'속도 모드 조작 전환');
-        await set(3,2);require(read('정방향 성장률 σf')===0 && read('Log decrement δ')===0,'속도 모드 경계');
+        await set(3,2);require(read('정방향 성장률 σf')===0 && read('Log decrement δ')===0 && read('모드 선회 차수 ωf/Ω')===.5,'속도 모드 경계');
         await set(1,.1);require(read('정방향 성장률 σf')===0 && read('속도 연동 모델 한계 r')===2,'c2배 속도 한계 유지');
         await set(0,4000);require(lab.textContent.includes('8000 rpm') && read('Log decrement δ')===0,'강성/고유 회전수 변경');
         await reset();await set(2,0);toggles[0].click();await wait();const d=lab.querySelectorAll('svg[role="img"] path')[1].getAttribute('d');const ys=[...d.matchAll(/[ML]([^,]+),([^ML ]+)/g)].map(m=>Number(m[2]));require(read('초기 Y 속도')===0 && ys.length>100 && ys.every(y=>y===210),'정지 초기조건 q0 직선');
@@ -183,7 +183,7 @@ for (const p of paths) {
       }catch(e){return {ok:false,error:e.message};}
     })()`);
     if(smoke?.ok===false||!smoke) errors.push('안정성 조작 검사: '+(smoke?.error??'평가 실패'));
-    if(smoke?.ok) console.log('     안정성 조작 12항목 OK (모드·경계·초기조건·워터폴·초기화)');
+    if(smoke?.ok) console.log('     안정성 조작 12항목 OK (모드·경계·초기조건·캐스케이드·초기화)');
   }
   const shots = [];
   if (!noShots) {
