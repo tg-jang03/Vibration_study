@@ -75,6 +75,7 @@ export const LABS: LabEntry[] = [
   { slug: 'full-01', id: 'LAB-FULL-01', component: 'FullSpectrumLab', part: 5, title: 'Full spectrum: 오빗과 정방향·역방향', summary: 'X·Y 진폭·위상차와 센서 오차를 바꿔 오빗 방향과 ±1X 막대를 본다.' },
   // Part 6
   { slug: 'twf-01', id: 'LAB-TWF-01', component: 'TimeWaveformLab', part: 6, title: '시간파형: 패턴을 읽고 맞히기', summary: '정현·맥놀이·AM·충격·절단·클리핑·비대칭을 비교하고, 키페이저로 사건 수를 센 뒤 패턴 퀴즈를 푼다.' },
+  { slug: 'trnd-01', id: 'LAB-TRND-01', component: 'TrendLab', part: 6, title: '같은 크기, 다른 벡터: 트렌드·APHT', summary: '위상 이동·진폭 증가·잔여 성분 증가를 Overall·APHT·Polar로 비교하고 기준과 학습용 허용 영역을 조절한다.' },
   // Part 7
   { slug: 'map-01', id: 'LAB-MAP-01', component: 'FaultMapLab', part: 7, title: '진단 주파수 지도: 주파수 → 원인 후보', summary: '기계 정보와 측정한 줄의 주파수로 원인 후보를 찾고, 후보마다 증거 5요소(주파수·진폭·위상·방향·운전조건)를 본다.' },
   { slug: 'fault-01', id: 'LAB-FAULT-01', component: 'FaultSynthLab', part: 7, title: '결함 신호 합성기: 원인마다의 지문', summary: '기계와 결함 두 개까지 골라 세 방향 속도 스펙트럼·파형·엔벨로프와 위상·첨도를 보고 원인마다의 지문을 비교한다.' },

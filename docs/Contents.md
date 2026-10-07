@@ -198,6 +198,8 @@
 - Log decrement: `\delta = -\dfrac{2\pi\sigma}{\omega_d} \approx 2\pi\zeta`
 - 지지 강성 직렬 예제(P1-6): `\dfrac{1}{k_{eq}} = \dfrac{1}{k_{sh}} + \dfrac{1}{k_{br}} + \dfrac{1}{k_{sup}}`, `f_n = \dfrac{1}{2\pi}\sqrt{\dfrac{k_{eq}}{m}}` (연결부 질량 무시, 같은 힘, 각 변형 합의 가정)
 - 1X 벡터와 Slow roll 보상: `\vec V = A\,e^{-j\phi}`, `\vec V_c = \vec V - \vec V_{sr}`
+- 벡터 트렌드 (P6-4): `\Delta\vec V = \vec V(t)-\vec V_{\rm ref}`, 동일 진폭이면 `\lvert\Delta\vec V\rvert = 2A\lvert\sin(\Delta\varphi/2)\rvert`. 진폭차와 구별하며 단위·Peak/Pk-Pk·기준을 명시한다.
+- 학습용 허용 영역 (P6-4): `\lvert A/A_{\rm ref}-1\rvert\le\epsilon_A`, `\lvert\operatorname{wrap}_{[-\pi,\pi]}(\varphi-\varphi_{\rm ref})\rvert\le\epsilon_\varphi`. 두 조건·경계 포함, 작은 진폭이면 위상·판정 보류. 임의 학습값이며 보호 설정이 아니다.
 - **위상 관례 (P3-3·P4-1·P8-1 공통, D-034)**: 위상 φ는 **지연각**(0° ≤ φ < 360°) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각. 1X 벡터 = A∠φ (A의 단위·Peak/Pk-Pk를 함께 적는다), 복소수로는 `A\,e^{-j\phi}`. Polar 플롯은 0°를 위쪽(센서 방향)에 두고 지연이 커지는 쪽을 **회전 반대 방향**으로 그린다(기본 회전은 반시계 → 지연은 시계 방향). 시간에서 각도로: `arphi = 360^circ 	imes Delta t / T`. 장비마다 다른 관례(P3-3 §3): 앞섬각(cos 기준, FFT 위상) `psi = -arphi`, 영점 기준 `arphi - 90^circ`. Polar 플롯 랩은 `components/ui/PolarPlot`(D-035)
 - 비접촉 변위 센서: `d = -V_{gap} / S` (S: 감도 크기, 양수. I-029), AC `d_{pp} = \Delta V_{pp} / S` (출력은 음전압, gap이 클수록 더 음)
 - Jeffcott (P4-2): `m\ddot z + c\dot z + k z = m e \Omega^2 e^{j\Omega t}` (등방). 비등방이면 x·y를 따로 풀고 `A_f = (\tilde X + j\tilde Y)/2`, `A_b = (\tilde X^* + j\tilde Y^*)/2` (x = Re(X̃ e^{jΩt}), y = Re(Ỹ e^{jΩt}))
@@ -265,7 +267,7 @@
 | P6-1 | 시간파형 | LAB-TWF-01 | M6.1 | 검토 |
 | P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 계획 |
 | P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 계획 |
-| P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 계획 |
+| P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 검토 |
 | P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-MAP-01, LAB-FAULT-01, LAB-RPM-01 | M7.1 | 검토 (그림 6, 랩 3종 각 1곳, 2026-10-07) |
 | P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
@@ -350,6 +352,7 @@
 | LAB-CEP-01 | 켑스트럼: 줄 무리의 간격 → quefrency 봉우리, 리프터링 | P5-7 | `CepstrumLab` (/lab/cep-01/) · lib/dsp/cepstrum.ts, lib/cepstrumDemo.ts |
 | LAB-FEAT-01 | 시간영역 특징량: 결함이 진행하는 동안의 추세 | P5-7 | `FeatureLab` (/lab/feat-01/) · lib/dsp/stats.ts, lib/cepstrumDemo.ts |
 | LAB-TWF-01 | 시간파형 패턴 갤러리·퀴즈·회전당 사건 수 | P6-1 | `TimeWaveformLab` (/lab/twf-01/) · lib/plots/waveform.ts |
+| LAB-TRND-01 | 스칼라·APHT·벡터 변화·학습용 허용 영역 | P6-4 | `TrendLab` (/lab/trnd-01/) · lib/plots/trend.ts |
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
@@ -365,7 +368,6 @@
 | LAB-WF-01 | Waterfall & Full spectrum cascade | 회전수 스윕 → Oil whirl(추종) vs Whip(고정) | P6-2 | M6.2 |
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
-| LAB-TRND-01 | 벡터 트렌드 | 1X 벡터 회전 시나리오 → 스칼라 vs 벡터 트렌드, APHT, Acceptance region | P6-4 | M6.6 |
 | LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/faults/`(`lib/machine/frequencies.ts`는 가져다 쓰기만, D-042), 신호는 LAB-FAULT-01 합성기 | P7-5 | M7.4 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
@@ -521,6 +523,16 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 한 바퀴 세 사건, 3000 / 6000 rpm | 사건 간격 6.66667 / 3.33333 ms |
 | 한쪽 −0.25A 절단 / 양쪽 ±0.65A 클리핑 | Pk-Pk=25 / 26 µm |
 | 1X 20·2X 7 µm Peak, 2X 앞섬각 0° / 90° | 두 RMS=14.9833 µm, 모양은 다름; 0° 상하 Peak=27 / 약 14.14 µm |
+
+### P6-4 트렌드·APHT (M6.6)
+
+| 조건 | 기준값 |
+|---|---|
+| 1X 20·2X 2 µm Peak, 1X 위상 350°→470° | Overall 14.2126704 µm RMS 일정, 1X 진폭차 0, 최종 표시 110° |
+| 기준 0분·선택 60분, 위상차 120° / 기준 30분·선택 60분, 60° | 벡터 변화량 34.6410162 / 20 µm Peak |
+| 기준 20 µm Peak·350°, 허용폭 ±20%·±30° | 진폭 16~24 µm·지연 320°~20° 경계 포함, 기본 첫 이탈 표본 16분 |
+| 1X 그대로·2X 2→8 µm Peak | Overall 14.2126704→15.2315462 µm RMS (+7.168785%), Not-1X 1.4142136→5.6568542 µm RMS (4배) |
+| 접힌 기본 위상 / 1X 진폭 ≤1 µm Peak | 4분 358°→5분 0°에서 선 끊기 / 위상·영역 판정 보류(임의 학습 바닥값) |
 
 ### P7-1 진단 주파수 지도 · 회전수 추정 (M7.1)
 

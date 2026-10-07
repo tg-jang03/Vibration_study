@@ -44,6 +44,7 @@ import KurtogramLab from '../../components/labs/KurtogramLab';
 import CepstrumLab from '../../components/labs/CepstrumLab';
 import FeatureLab from '../../components/labs/FeatureLab';
 import TimeWaveformLab from '../../components/labs/TimeWaveformLab';
+import TrendLab from '../../components/labs/TrendLab';
 import FaultMapLab from '../../components/labs/FaultMapLab';
 import FaultSynthLab from '../../components/labs/FaultSynthLab';
 import RpmLab from '../../components/labs/RpmLab';
@@ -161,6 +162,7 @@ const c = lab.component;
       {c === 'CepstrumLab' && <CepstrumLab client:load />}
       {c === 'FeatureLab' && <FeatureLab client:load />}
       {c === 'TimeWaveformLab' && <TimeWaveformLab client:load />}
+      {c === 'TrendLab' && <TrendLab client:load />}
       {c === 'FaultMapLab' && <FaultMapLab client:load />}
       {c === 'FaultSynthLab' && <FaultSynthLab client:load />}
       {c === 'RpmLab' && <RpmLab client:load />}

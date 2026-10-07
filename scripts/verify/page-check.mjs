@@ -28,6 +28,7 @@ const jeffcottSmoke = flag('jeffcott-smoke');
 const centerlineSmoke = flag('centerline-smoke');
 const stabilitySmoke = flag('stability-smoke');
 const waveformSmoke = flag('waveform-smoke');
+const trendSmoke = flag('trend-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -219,6 +220,36 @@ for (const p of paths) {
     })()`);
     if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
+  }
+  if (trendSmoke) {
+    const smoke = await ev(`(async () => {
+      const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-TRND-01');
+      if (!lab) return { skipped: true };
+      const wait = () => new Promise(r => setTimeout(r, 260)), sliders = lab.querySelectorAll('input[type="range"]'), toggle = lab.querySelector('input[type="checkbox"]');
+      const set = async (i,v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v)); sliders[i].dispatchEvent(new Event('input',{bubbles:true})); sliders[i].dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
+      const choose = async v => { const s=lab.querySelector('select'); s.value=String(v); s.dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
+      const read = label => { const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label); return row?parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN; };
+      const status = () => lab.querySelector('[role="status"]').textContent;
+      let checks=0; const require=(v,m)=>{if(!v)throw Error(m);checks++;};
+      try {
+        require(lab.querySelectorAll('.js-plotly-plot').length===3 && lab.querySelector('svg[role="img"]'),'3 추세·Polar');
+        require(Math.abs(read('Overall RMS')-14.21)<.01 && read('기준 대비 진폭 차이')===0 && Math.abs(read('벡터 변화량 |ΔV|')-34.64)<.01,'초기 해석값');
+        require(status().includes('영역 밖') && read('기준 이후 첫 이탈 표본')===16,'기본 영역 이탈');
+        await set(2,15); require(status().includes('영역 안'),'15분 경계 포함'); await set(2,16); require(status().includes('영역 밖'),'16분 이탈');
+        await set(2,60); await set(5,120); require(status().includes('영역 안'),'120도 경계'); await set(5,30);
+        await set(3,30); require(Math.abs(read('벡터 변화량 |ΔV|')-20)<.001 && Math.abs(read('기준 대비 최단 위상 차이')-60)<.001,'기준 변경'); await set(3,0);
+        toggle.click(); await wait(); const phase=lab.querySelectorAll('.js-plotly-plot')[2].data[0].y; require(phase.some(v=>v===null||Number.isNaN(v)) && Math.max(...phase.filter(Number.isFinite))<=360,'접힌 위상 경계'); toggle.click(); await wait();
+        await choose(2); require(sliders[0].disabled && sliders[1].disabled && Math.abs(read('Overall RMS')-15.23)<.01 && Math.abs(read('Not-1X RMS (정확 제거 모델)')-5.657)<.001 && read('벡터 변화량 |ΔV|')===0,'잔여 증가');
+        await choose(1); require(sliders[0].disabled && !sliders[1].disabled && read('1X 진폭')===30 && read('기준 대비 최단 위상 차이')===0,'진폭 증가');
+        await set(1,100); require(read('1X 진폭')===40 && Math.abs(read('벡터 변화량 |ΔV|')-20)<.001,'진폭 증가 조작'); await set(1,50);
+        await set(4,50); require(status().includes('영역 안'),'진폭50% 경계'); await set(4,20);
+        await choose(0); await set(0,360); require(read('벡터 변화량 |ΔV|')===0 && read('기준 이후 첫 이탈 표본')===6 && status().includes('영역 안'),'끝점 복귀·중간 이탈');
+        await set(0,120); require(!sliders[0].disabled && sliders[1].disabled && Math.abs(read('벡터 변화량 |ΔV|')-34.64)<.01,'초기 시나리오 복귀');
+        return {ok:true,checks};
+      } catch(e) {return {ok:false,checks,error:e.message};}
+    })()`);
+    if (smoke?.ok === false || !smoke) errors.push('트렌드 조작 검사: '+(smoke?.error ?? '평가 실패'));
+    if (smoke?.ok) console.log('     트렌드 조작 '+smoke.checks+'항목 OK (기준·영역·접힘·3시나리오)');
   }
   const shots = [];
   if (!noShots) {
