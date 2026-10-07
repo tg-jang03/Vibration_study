@@ -29,6 +29,7 @@ const centerlineSmoke = flag('centerline-smoke');
 const stabilitySmoke = flag('stability-smoke');
 const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
+const cascadeSmoke = flag('cascade-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -250,6 +251,41 @@ for (const p of paths) {
     })()`);
     if (smoke?.ok === false || !smoke) errors.push('트렌드 조작 검사: '+(smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     트렌드 조작 '+smoke.checks+'항목 OK (기준·영역·접힘·3시나리오)');
+  }
+  if (cascadeSmoke) {
+    const smoke = await ev(`(async () => {
+      const lab=[...document.querySelectorAll('.lab-frame')].find(f=>f.querySelector('.lab-id')?.textContent==='LAB-WF-01');
+      if(!lab) return {skipped:true};
+      const wait=()=>new Promise(r=>setTimeout(r,300)), sliders=lab.querySelectorAll('input[type="range"]'), selects=lab.querySelectorAll('select');
+      const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const choose=async(i,v)=>{selects[i].value=String(v);selects[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+      const near=(label,v,t=.001)=>Math.abs(read(label)-v)<t;
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;};
+      try {
+        require(lab.querySelectorAll('.js-plotly-plot').length===3,'3 plots');
+        require(near('1X 주파수',120)&&near('비교 성분 지정 주파수',40)&&near('비교 성분 차수',.3333,.0001),'초기 Hz·차수');
+        require(near('X의 1X 칸 진폭',20)&&near('+1X 반지름 (반시계·정)',15)&&near('−1X 반지름 (시계·역)',5)&&near('FFT 분해능',.5),'초기 진폭·분해능');
+        await set(0,6);require(near('회전수',4800)&&near('비교 성분 지정 주파수',36)&&near('비교 성분 차수',.45),'4800rpm 추종');
+        await set(0,10);await choose(0,1);require(near('비교 성분 지정 주파수',54)&&sliders[1].disabled,'추종만54Hz');
+        await choose(0,0);await set(1,50);require(near('비교 성분 지정 주파수',50)&&near('잠김 모델 교차 회전수',6667,1),'모드50');await set(1,40);
+        await choose(0,2);await set(0,2);require(near('1X 주파수',40)&&near('X의 1X 칸 진폭',32)&&near('+1X 반지름 (반시계·정)',27)&&sliders[2].disabled,'동일 주파수 합성');
+        await set(0,0);require(near('비교 성분 지정 주파수',40)&&near('1X 주파수',20),'처음부터 고정');
+        await choose(0,0);await choose(1,1);await set(0,12);const plots=lab.querySelectorAll('.js-plotly-plot');require(near('기록 시각',120)&&near('회전수',7200)&&near('X의 1X 칸 진폭',30)&&plots[0].layout.yaxis.range[1]===133,'Waterfall 유지');
+        await choose(1,0);require(plots[0].layout.yaxis.range[1]===8000,'Cascade 유지 겹침');
+        await set(0,10);await choose(1,2);require(plots[0].layout.xaxis.range[0]===-260,'Full cascade 양쪽');
+        await set(3,0);require(near('+1X 반지름 (반시계·정)',20)&&read('−1X 반지름 (시계·역)')===0,'역성분0');
+        await set(3,50);require(near('X의 1X 칸 진폭',20)&&near('+1X 반지름 (반시계·정)',10)&&near('−1X 반지름 (시계·역)',10),'같은 X·다른 방향 분해');
+        await set(3,75);require(near('+1X 반지름 (반시계·정)',5)&&near('−1X 반지름 (시계·역)',15),'역 우세');await set(3,25);
+        await choose(2,1);require(plots[0].layout.xaxis.range[0]===-3&&plots[0].layout.xaxis.range[1]===3,'차수축 변환');
+        await set(2,.5);require(near('잠김 모델 교차 회전수',4800,1),'비율 조작');await set(2,.45);
+        const toggle=lab.querySelector('input[type="checkbox"]');toggle.click();await wait();require(Number.isFinite(read('X의 1X 칸 진폭'))&&plots[1].data[0].y.some((v,i)=>plots[1].data[0].x[i]>1.2&&plots[1].data[0].x[i]<1.5&&v>0),'잡음 바닥');toggle.click();await wait();
+        await choose(2,0);await choose(1,0);require(near('X의 1X 칸 진폭',20)&&near('비교 성분 지정 주파수',40),'초기 복귀');
+        return {ok:true,checks};
+      } catch(e) {return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke) errors.push('Cascade 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok) console.log('     Cascade 조작 '+smoke.checks+'항목 OK (추종·잠김·유지·정/역·축)');
   }
   const shots = [];
   if (!noShots) {

@@ -212,6 +212,8 @@
 - Jeffcott (P4-2): `m\ddot z + c\dot z + k z = m e \Omega^2 e^{j\Omega t}` (등방). 비등방이면 x·y를 따로 풀고 `A_f = (\tilde X + j\tilde Y)/2`, `A_b = (\tilde X^* + j\tilde Y^*)/2` (x = Re(X̃ e^{jΩt}), y = Re(Ỹ e^{jΩt}))
 - 분리여유 (P4-1): SM = |N_op − N_c|/N_op × 100 %, 이 페이지의 운전 속도 기준 정의이며 규격 합격식이 아니다.
 - 안정성 (P4-4): `m\ddot z + c\dot z + (k - j k_{xy}) z = 0` → `m\lambda^2 + c\lambda + k - j k_{xy} = 0`, `\delta = -2\pi\sigma/\omega_d`. 한계: `k_{xy} = c\,\omega_n = 2\zeta k`. 모델 `k_{xy} = c\Omega/2`이면 한계 `\Omega = 2\omega_n`
+- Cascade 판독 (P6-2): `f_r=N/60`, `o=f/f_r`. 별도 정속 기록별 FFT(2 s·Hann·Δf=0.5 Hz); 쌓은 그림의 세로축은 시각/회전수 기준선에 진폭 표시 높이를 더한 좌표.
+- 학습용 추종·잠김 (P4-4·P6-2): `f_{\rm sub}=\min(q f_r,f_n)`, 모델 교차 `N=60f_n/q`. 실제 불안정 발생 한계·진폭 예측 식이 아니다. Full spectrum은 원 반지름, +f=반시계·−f=시계(정/역 이름은 축 회전 방향과 함께).
 - 트래킹 필터 (lock-in): `\vec V_{nX}(t) = 2\,\mathrm{LPF}\{x(t)\,e^{-jn\theta(t)}\}`
 - FRF 추정, 코히어런스: `H_1 = \dfrac{G_{xy}}{G_{xx}},\; H_2 = \dfrac{G_{yy}}{G_{yx}},\; \gamma^2 = \dfrac{|G_{xy}|^2}{G_{xx}G_{yy}}`
 - 영향계수 밸런싱: `H = \dfrac{\vec V_1 - \vec V_0}{\vec W_t},\quad \vec W_c = -\dfrac{\vec V_0}{H}`
@@ -272,7 +274,7 @@
 | P5-6 | 엔벨로프 · Spectral Kurtosis | LAB-ENV-01, LAB-SK-01 | M4.7 | 검토 (그림 8, LAB-ENV-01·LAB-SK-01 각 1곳, 2026-10-07) |
 | P5-7 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 검토 (그림 7, LAB-CEP-01·LAB-FEAT-01 각 1곳, 2026-10-07) |
 | P6-1 | 시간파형 | LAB-TWF-01 | M6.1 | 검토 |
-| P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 계획 |
+| P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 검토 |
 | P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 계획 |
 | P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 검토 |
 | P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-MAP-01, LAB-FAULT-01, LAB-RPM-01 | M7.1 | 검토 (그림 6, 랩 3종 각 1곳, 2026-10-07) |
@@ -360,6 +362,7 @@
 | LAB-FEAT-01 | 시간영역 특징량: 결함이 진행하는 동안의 추세 | P5-7 | `FeatureLab` (/lab/feat-01/) · lib/dsp/stats.ts, lib/cepstrumDemo.ts |
 | LAB-TWF-01 | 시간파형 패턴 갤러리·퀴즈·회전당 사건 수 | P6-1 | `TimeWaveformLab` (/lab/twf-01/) · lib/plots/waveform.ts |
 | LAB-TRND-01 | 스칼라·APHT·벡터 변화·학습용 허용 영역 | P6-4 | `TrendLab` (/lab/trnd-01/) · lib/plots/trend.ts |
+| LAB-WF-01 | 스펙트럼 판독·추종/잠김·정속 유지·정/역 cascade | P6-2 | `WaterfallLab` (/lab/wf-01/) · lib/plots/cascade.ts |
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
@@ -374,7 +377,6 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-WF-01 | Waterfall & Full spectrum cascade | 회전수 스윕 → Oil whirl(추종) vs Whip(고정) | P6-2 | M6.2 |
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
@@ -531,6 +533,19 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 한 바퀴 세 사건, 3000 / 6000 rpm | 사건 간격 6.66667 / 3.33333 ms |
 | 한쪽 −0.25A 절단 / 양쪽 ±0.65A 클리핑 | Pk-Pk=25 / 26 µm |
 | 1X 20·2X 7 µm Peak, 2X 앞섬각 0° / 90° | 두 RMS=14.9833 µm, 모양은 다름; 0° 상하 Peak=27 / 약 14.14 µm |
+
+### P6-2 스펙트럼·Waterfall·Cascade (M6.2)
+
+| 조건 | 기준값 |
+|---|---|
+| 1024 Hz·2048점·Hann, 각 기록 정속 | T=2 s, Δf=0.5 Hz; 시각 0~120 s, 회전 20→120 Hz(1200→7200 rpm), 끝 3기록은120 Hz 유지 |
+| 모드40 Hz·비율0.45·4800/7200 rpm | 비교 성분36/40 Hz, 차수0.45/0.333333X; 추종만이면 마지막54 Hz |
+| 모델 모드40 / 50 Hz·비율0.45 | 교차5333.333333 / 6666.666667 rpm, 실제 발생 한계 아님 |
+| 기본 기록10·7200 rpm·잡음 없음 | X1X120 Hz=20·2X240 Hz=5·40 Hz=12·73 Hz=3·320 Hz=2 µm Peak; X RMS=√((20²+5²+12²+3²+2²)/2) µm |
+| 1X 역방향 몫0 / 25 / 50 / 75% | X1X20 µm Peak 유지, +/− 원 반지름20/0 ·15/5 ·10/10 ·5/15 µm (두 원의 위상 기준을 맞춘 조건) |
+| 기록10~12: 시각100/110/120 s·모두7200 rpm | X1X20/25/30 µm Peak, Cascade 기준선 겹침 |
+| 처음부터 고정40 Hz·기록2(2400 rpm) | 비교 줄과1X가 겹쳐 X40 Hz=32 µm Peak, +40 Hz 원 반지름27 µm |
+| 기본 120 Hz bin·Hann | 120.5 Hz 옆 칸10 µm Peak, 메인로브이며 별도 성분 아님 |
 
 ### P6-4 트렌드·APHT (M6.6)
 
