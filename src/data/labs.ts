@@ -80,6 +80,8 @@ export const LABS: LabEntry[] = [
   { slug: 'map-01', id: 'LAB-MAP-01', component: 'FaultMapLab', part: 7, title: '진단 주파수 지도: 주파수 → 원인 후보', summary: '기계 정보와 측정한 줄의 주파수로 원인 후보를 찾고, 후보마다 증거 5요소(주파수·진폭·위상·방향·운전조건)를 본다.' },
   { slug: 'fault-01', id: 'LAB-FAULT-01', component: 'FaultSynthLab', part: 7, title: '결함 신호 합성기: 원인마다의 지문', summary: '기계와 결함 두 개까지 골라 세 방향 속도 스펙트럼·파형·엔벨로프와 위상·첨도를 보고 원인마다의 지문을 비교한다.' },
   { slug: 'rpm-01', id: 'LAB-RPM-01', component: 'RpmLab', part: 7, title: '회전수 추정: 회전수를 모를 때 1X 찾기', summary: '하모닉 무리·켑스트럼·자기상관으로 1X를 찾고, 방법마다 틀리는 경우(절반을 고르기, 큰 성분에 덮이기)를 본다.' },
+  { slug: 'brg-01', id: 'LAB-BRG-01', component: 'BearingCalcLab', part: 7, title: '베어링 결함 주파수 계산기', summary: '볼 수·볼 지름·피치 지름·접촉각·회전수·미끄럼으로 FTF·BSF(1배·2배)·BPFO·BPFI를 계산하고 어림값과 비교한다.' },
+  { slug: 'brg-02', id: 'LAB-BRG-02', component: 'BearingStageLab', part: 7, title: '결함 위치와 고장 단계: 어디에 먼저 보이나', summary: '외륜·내륜·볼·케이지 결함과 고장 4단계를 골라 가속도(dB)·속도·엔벨로프 스펙트럼에서 결함이 어디에 먼저 보이는지 본다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

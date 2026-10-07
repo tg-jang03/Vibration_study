@@ -91,6 +91,13 @@
 | P6-3 | 직접 오빗 vs 1X 필터 오빗, 키페이저 dot(blank-bright)로 선회 방향, 형태 패턴(원·타원·바나나/8자·내부 루프·꽃잎·평평한 면, 원인 확정은 Part 7), dot 개수(I-012) | 오빗·정/역 선회(P4-2), X-Y 배치·위상(P3-2·P3-3), 트래킹 필터(P5-5) |
 | P6-4 | 스칼라(overall) 트렌드의 한계, 벡터 트렌드, Acceptance region, APHT(진폭·위상 vs 시간), 변화량으로 판단(수치는 P10-1) | 1X 벡터·Polar(P3-3·P4-1), 대역 RMS(P2-7), 보호 vs 상태감시(P3-5) |
 
+**Part 7 개념 척추** (D-042 — 트랙 A. 결함마다 메커니즘 → 증거 5요소 → 감별 → 확인. 신호처리(Part 5)·플롯 판독(Part 6)은 되짚기만, 판정 수치는 Part 10. 나머지 절은 그 세부를 시작할 때 채운다)
+
+| 페이지 | 새로 도입하는 개념 | 되짚기만 하는 것 (위치) |
+|---|---|---|
+| P7-1 | 주파수 → 원인 지도(차수로 후보 좁히기), 같은 자리의 후보를 위상·방향·운전조건으로 가르기, 결함 합성기(지문), 회전수 추정(하모닉 무리·켑스트럼·자기상관, 2배·절반으로 틀림), 명판·슬립·동기속도·기어비·날개 수로 역산 | 요소 주파수 지도(P1-8), 증거 5요소(P1-9), Δf = 1/T(P2-4), 측대역(P2-8), 스펙트로그램 줄 모양(P5-2), 엔벨로프(P5-6), 켑스트럼·자기상관(P5-7) |
+| P7-5 | 접촉각 α를 넣은 결함 주파수 식·앵귤러 볼베어링, 어림값의 한계, 미끄럼(케이지 늦음 → BPFO ↓·BPFI ↑), BSF 1배/2배 관례·볼 결함 2×BSF ± FTF, 위치마다의 변조(외륜 없음·내륜 1X·볼 FTF·케이지 FTF), 고장 4단계와 단계별 방법, 초음파 대역, 증거 5요소·감별·확인 | FTF·BPFO·BPFI·BSF(P1-8), 측대역·변조(P2-8), 가리비 손실·ENBW(P2-5), 설치 공진(P3-1), 엔벨로프·하중 영역·첨도·SK(P5-6), 특징량 추세(P5-7), 진단 지도·합성기(P7-1) |
+
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
 ### 1-4. 페이지 구성 → `PageGuide.md` §3 · §4
@@ -147,7 +154,7 @@
 | f_r, 1X | 회전 주파수 | Hz | f_r = rpm / 60 |
 | z | 기어 잇수 | — | 맞물림 f_GM = z f_r (P1-8) |
 | N_b | 날개 수 | — | 날개 통과 f_BP = N_b f_r |
-| N_r, d, D | 구름베어링 볼(구름요소) 수 / 볼 지름 / 피치 지름 | —, m, m | 접촉각은 P7-5에서 (지수 평균 α와 기호 구분 필요) |
+| N_r, d, D | 구름베어링 볼(구름요소) 수 / 볼 지름 / 피치 지름 | —, m, m | 접촉각 α는 P7-5 (지수 평균 계수 α(P2-6)와 같은 글자 — 본문에서 "접촉각 α"로 밝혀 쓴다) |
 | f_L | 전원 주파수 | Hz | 60 Hz. 전자기력 2 f_L |
 | θ | 축 회전 각도 | rad | 키페이저 기준 |
 | N_c, N_n | 임계속도(피크 회전수) / 고유 회전수 | rpm | |
@@ -272,7 +279,7 @@
 | P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-4 | 유체막 · 유체력 불안정 | (LAB-WF-01, LAB-STB-01 프리셋) | M7.3 | 계획 |
-| P7-5 | 구름베어링 | LAB-BRG-01 | M7.4 | 계획 |
+| P7-5 | 구름베어링 | LAB-BRG-01, LAB-BRG-02 | M7.4 | 검토 (그림 7, LAB-BRG-01 1곳·LAB-BRG-02 2곳, 2026-10-07) |
 | P7-6 | 기어 | LAB-GEAR-01 | M7.5 | 계획 |
 | P7-7 | 전기적 원인 | (LAB-MOD-01 프리셋) | M7.6 | 계획 |
 | P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
@@ -356,6 +363,8 @@
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
+| LAB-BRG-01 | 베어링 결함 주파수 계산기 (접촉각·미끄럼·BSF 1배/2배) | P7-5 | `BearingCalcLab` (/lab/brg-01/) · lib/machine/frequencies.ts, lib/faults/bearing.ts |
+| LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 | P7-5 | `BearingStageLab` (/lab/brg-02/) · lib/faults/bearing.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -368,7 +377,6 @@
 | LAB-WF-01 | Waterfall & Full spectrum cascade | 회전수 스윕 → Oil whirl(추종) vs Whip(고정) | P6-2 | M6.2 |
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
-| LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/faults/`(`lib/machine/frequencies.ts`는 가져다 쓰기만, D-042), 신호는 LAB-FAULT-01 합성기 | P7-5 | M7.4 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
 | LAB-HPB-01 | Half-power & 임팩트 시험 | FRF 피크 → ζ, 지수 윈도우 영향, 해머 팁 → 가진 대역 | P9-1 | M9.1 |
@@ -549,6 +557,19 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 역산 | 맞물림 571.2 Hz ÷ 23 = 1490 rpm, 417.1 Hz ÷ 7 = 3575 rpm, 23 → 61이빨 출력 561.8 rpm |
 | 후보 찾기 (펌프 120 Hz / 59.6 Hz, 압축기 43 Hz) | 전기 2×LF + 2X 후보 4(정렬 불량·풀림·크랙·러브), "고정"이면 전기만 / 1X 후보 7 / 오일 휠·휩·Rotating stall |
 
+### P7-5 구름베어링 (M7.4)
+
+결함 크기는 설명용 모델 값이다. `figures-p7-5.test.ts`·`bearing.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 6205 · 3575 rpm (α 0, d/D 0.2034) | FTF 23.73 Hz(0.3983X), BSF 140.4 · 2×BSF 280.8, BPFO 213.6(3.585X), BPFI 322.7 Hz(5.415X). 어림값 214.5(+0.4 %) · 321.8 Hz(−0.3 %). BPFO + BPFI = 9X = 536.3 Hz |
+| 같은 치수, α 40° | BPFO 226.4 Hz(3.799X) · BPFI 309.9 Hz(5.201X), 어림값은 5 % 넘게 낮음 / 앵귤러 프리셋(N_r 12, d 9.5, D 46, α 40°) BPFO 5.051X vs 4.8X |
+| 미끄럼 1 % / 2 % | BPFO 211.5 · BPFI 324.8 · 2×BSF 278.0 · FTF 23.5 Hz / BPFO 209.3(−2 %) · BPFI 326.9 Hz(+1.3 %) |
+| 위치 (3단계, 엔벨로프 2.8 ~ 3.8 kHz) | 외륜 BPFO 0.24 · 2× 0.13 g / 내륜 BPFI 0.17 · −1X 0.085 · 1X 0.14 g / 볼 2×BSF 0.13 · −FTF 0.053 · FTF 0.094 g / 케이지 FTF 0.017 g (다른 위치보다 7 ~ 14배 작음) |
+| 4단계 (외륜, 건전 · 1 · 2 · 3 · 4) | 엔벨로프 BPFO ÷ 바닥 초음파 2 · 78 · 83 · 86 · 3.4, 공진 1 · 2.3 · 117 · 168 · 4.6 / 속도 BPFO 0 · 0.004 · 0.036 · 0.72 · 0.23 mm/s / 1X 1.0 · 1.0 · 1.0 · 1.3 · 2.9 / 첨도 2.4 · 2.5 · 4.2 · 5.6 · 3.2 / overall 1.0 → 3.5 mm/s |
+| 성분 크기 읽기 (Hann) | ±3칸 제곱합 ÷ ENBW 1.5칸의 제곱근 → 칸 사이 성분도 1 % 안 (바로 읽으면 가리비 손실) |
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -571,6 +592,7 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P1-6) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
 | R-16 | S. W. Smith, [*The Scientist and Engineer's Guide to Digital Signal Processing*](https://www.dspguide.com/) | 필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR (P5-1) | 공개 |
 | R-17 | [SciPy signal](https://docs.scipy.org/doc/scipy/reference/signal.html) (butter·cheby1·bessel·sosfiltfilt·decimate) | 필터 설계·두 번 거르기·데시메이션의 대조 기준 (P5-1) | 공식 문서, 2026-10-07 확인 |
+| R-18 | R. B. Randall, J. Antoni, "Rolling element bearing diagnostics — A tutorial", *Mechanical Systems and Signal Processing* 25 (2011) | 베어링 결함 주파수 식·미끄럼·위치마다의 변조 (P7-5) | |
 | R-18 | J. S. Bendat, A. G. Piersol, *Random Data: Analysis and Measurement Procedures* | 교차 스펙트럼, H1·H2, 코히어런스와 쏠림 (P5-3) | |
 | R-19 | K. R. Fyfe, E. D. S. Munck, "Analysis of computed order tracking", *Mechanical Systems and Signal Processing* 11(2), 1997 | 계산형 차수추적, 키페이저 시각의 2차 보간 (P5-4) | |
 

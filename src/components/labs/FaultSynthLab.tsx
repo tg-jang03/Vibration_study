@@ -28,7 +28,7 @@ function available(m: MachineSpec): SynthFault[] {
   return SYNTH_FAULTS.filter((f) => {
     if (f === 'gear') return m.teeth > 0;
     if (f === 'oilWhirl') return m.balls === 0;
-    if (f === 'bearingOuter' || f === 'bearingInner') return m.balls > 0;
+    if (f === 'bearingOuter' || f === 'bearingInner' || f === 'bearingBall' || f === 'bearingCage') return m.balls > 0;
     if (f === 'bladePass' || f === 'cavitation') return m.blades > 0;
     if (f === 'electrical2LF') return m.poles > 0;
     return true;

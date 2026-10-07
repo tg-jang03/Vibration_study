@@ -38,8 +38,8 @@ export interface MachineSpec {
 }
 
 /** 합성기가 만들 수 있는 결함 */
-export type SynthFault = Extract<FaultId, 'unbalance' | 'misalignment' | 'looseness' | 'rub' | 'oilWhirl' | 'bearingOuter' | 'bearingInner' | 'gear' | 'electrical2LF' | 'bladePass' | 'cavitation'>;
-export const SYNTH_FAULTS: SynthFault[] = ['unbalance', 'misalignment', 'looseness', 'rub', 'oilWhirl', 'bearingOuter', 'bearingInner', 'gear', 'electrical2LF', 'bladePass', 'cavitation'];
+export type SynthFault = Extract<FaultId, 'unbalance' | 'misalignment' | 'looseness' | 'rub' | 'oilWhirl' | 'bearingOuter' | 'bearingInner' | 'bearingBall' | 'bearingCage' | 'gear' | 'electrical2LF' | 'bladePass' | 'cavitation'>;
+export const SYNTH_FAULTS: SynthFault[] = ['unbalance', 'misalignment', 'looseness', 'rub', 'oilWhirl', 'bearingOuter', 'bearingInner', 'bearingBall', 'bearingCage', 'gear', 'electrical2LF', 'bladePass', 'cavitation'];
 
 /** 결함마다 정도 0 ~ 1 */
 export type Severity = Partial<Record<SynthFault, number>>;
@@ -115,6 +115,11 @@ export function faultTones(m: MachineSpec, sev: Severity): Tone[] {
     if (ko > 0) [1, 2, 3].forEach((h, i) => out.push(directional(h * b.bpfo, 0.25 * ko * [1, 0.7, 0.4][i], 0.6 * ko * [1, 0.7, 0.4][i], 0.1 * ko, 0.2 * h)));
     const ki = s('bearingInner');
     if (ki > 0) out.push(directional(b.bpfi, 0.2 * ki, 0.45 * ki, 0.1 * ki, 0.5), directional(b.bpfi - fr, 0.1 * ki, 0.25 * ki, 0.05 * ki, 1.5), directional(b.bpfi + fr, 0.1 * ki, 0.2 * ki, 0.05 * ki, 2.5));
+    // 볼: 2×BSF ± FTF (볼이 케이지와 함께 하중 영역을 드나듦, P7-5) / 케이지: FTF (1X 아래)
+    const kb = s('bearingBall');
+    if (kb > 0) out.push(directional(b.bsf2, 0.15 * kb, 0.35 * kb, 0.05 * kb, 0.8), directional(b.bsf2 - b.ftf, 0.08 * kb, 0.18 * kb, 0.03 * kb, 1.8), directional(b.bsf2 + b.ftf, 0.07 * kb, 0.15 * kb, 0.03 * kb, 2.8));
+    const kc = s('bearingCage');
+    if (kc > 0) out.push(directional(b.ftf, 0.3 * kc, 0.5 * kc, 0.1 * kc, 0.6), directional(2 * b.ftf, 0.1 * kc, 0.2 * kc, 0.05 * kc, 1.6));
   }
   if (m.teeth > 0 && s('gear') > 0) {
     const k = s('gear');
@@ -182,6 +187,10 @@ export function synthesize(m: MachineSpec, sev: Severity = {}): Synth {
     const ki = Math.max(0, Math.min(1, sev.bearingInner ?? 0));
     if (ko > 0) impacts(b.bpfo, 3 * G * ko, () => 1);
     if (ki > 0) impacts(b.bpfi, 2.5 * G * ki, (ti) => 0.55 + 0.45 * Math.cos(2 * Math.PI * fr * ti));
+    const kb = Math.max(0, Math.min(1, sev.bearingBall ?? 0));
+    const kc = Math.max(0, Math.min(1, sev.bearingCage ?? 0));
+    if (kb > 0) impacts(b.bsf2, 2 * G * kb, (ti) => 0.55 + 0.45 * Math.cos(2 * Math.PI * b.ftf * ti));
+    if (kc > 0) impacts(b.ftf, 1.2 * G * kc, () => 1);
   }
   // 캐비테이션: 2 ~ 6 kHz 대역 잡음
   const kc = Math.max(0, Math.min(1, sev.cavitation ?? 0));

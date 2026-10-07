@@ -48,6 +48,8 @@ import TrendLab from '../../components/labs/TrendLab';
 import FaultMapLab from '../../components/labs/FaultMapLab';
 import FaultSynthLab from '../../components/labs/FaultSynthLab';
 import RpmLab from '../../components/labs/RpmLab';
+import BearingCalcLab from '../../components/labs/BearingCalcLab';
+import BearingStageLab from '../../components/labs/BearingStageLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -166,6 +168,8 @@ const c = lab.component;
       {c === 'FaultMapLab' && <FaultMapLab client:load />}
       {c === 'FaultSynthLab' && <FaultSynthLab client:load />}
       {c === 'RpmLab' && <RpmLab client:load />}
+      {c === 'BearingCalcLab' && <BearingCalcLab client:load />}
+      {c === 'BearingStageLab' && <BearingStageLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">
