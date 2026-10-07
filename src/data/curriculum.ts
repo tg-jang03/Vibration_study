@@ -93,7 +93,7 @@ export const PARTS: Part[] = [
       { id: 'P5-1', title: '디지털 필터와 적분', status: 'review', href: '/p5-1/' },
       { id: 'P5-2', title: '시간-주파수 분석: STFT · 스펙트로그램 · 워터폴', status: 'review', href: '/p5-2/' },
       { id: 'P5-3', title: '2채널 분석: FRF · 코히어런스 · Full spectrum', status: 'review', href: '/p5-3/' },
-      { id: 'P5-4', title: '차수추적 (Order Tracking)', status: 'planned' },
+      { id: 'P5-4', title: '차수추적 (Order Tracking)', status: 'review', href: '/p5-4/' },
       { id: 'P5-5', title: '트래킹 · 노치 필터와 1X 벡터 추출', status: 'planned' },
       { id: 'P5-6', title: '엔벨로프 분석 · Spectral Kurtosis · Kurtogram', status: 'planned' },
       { id: 'P5-7', title: '켑스트럼 · 자기상관 · 시간영역 특징량', status: 'planned' },

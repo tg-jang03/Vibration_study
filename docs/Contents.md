@@ -77,6 +77,7 @@
 | P5-1 | 크기 응답 ∣H(f)∣, 통과·차단·전이 대역, 차단 주파수(−3 dB), 저역·고역 통과, 옥타브·디케이드(차수당 6 dB/옥타브), Butterworth·Chebyshev(리플)·Bessel(Elliptic 이름만), IIR·FIR·탭, 위상 응답·군지연 τ_g·선형 위상, 넘침(overshoot), 필터 지연과 1X 위상, 두 번 거르기(영위상, ∣H∣², 저장된 데이터만), 적분 = 1/(j2πf) 필터, 하한 컷오프(2차면 1X의 1/3 이하), 누적합 적분·드리프트·적분 상수, 데시메이션(저역 통과 → 솎기) | P2-3(AAF·dB·차수), P2-2(위상과 파형 모양·사각파·복소 표현), P1-4(위상 지연), P1-2(속도·가속도 위상), P2-7(v = a/2πf), P3-4(ski-slope), P3-3(1X 위상), P2-4(Zoom FFT) |
 | P5-2 | STFT(프레임·윈도우·FFT·hop, 프레임 시각), 스펙트로그램(시각 × 주파수 × 색), 프레임 길이 트레이드오프(Δf = 1/T vs 시각 T, 번짐 ≈ max(1/T, aT), T_best = 1/√a), 워터폴(세로 = 시간) vs 캐스케이드(세로 = 회전수), 줄 읽기(비스듬 = 회전·기울기 = 차수, 세로 = 고정, 꺾임 = 잠김, 교차 = 공진), 오일 휠 → 휩(모양만), 웨이블릿(개념) | P5-1, P2-4(스미어링·Δf), P2-5(윈도우), P2-6(오버랩), P3-5(Cascade·Δrpm), P1-8(기름막 0.38 ~ 0.48X), P1-4(공진) |
 | P5-3 | 반공진, 교차 스펙트럼 G_xy = ⟨X*Y⟩(힘을 위상 기준으로 쓰는 벡터 평균)·자기 스펙트럼, H1·H2와 잡음 쪽에 따른 쏠림(평균으로 안 줄어듦), 코히어런스 γ² = ∣H1∣/∣H2∣(M = 1이면 항상 1), 채널 사이 위상, Full spectrum(z = x + jy의 FFT, ±f = 반시계·시계 반지름, 두 배 하지 않음), 센서 전제(90°·감도 → 가짜 역방향) | P1-4(FRF), P2-6(벡터 평균·화살표), P2-7(파워 스펙트럼), P2-2(반쪽 스펙트럼·복소), P4-2(A_f·A_b·오빗), P3-2·P3-3(X-Y 배치·위상), P5-2(오일 휠) |
+| P5-4 | 계산형 차수추적(키페이저 시각 → 각도-시간 곡선(세 펄스의 2차식, 가속 반영) → 등각도의 시각 → 신호 보간 → 정수 바퀴 FFT), 등각도 재샘플링, 두 눈금(시간 FFT: 고정 주파수 또렷·회전 성분 번짐 / 차수 스펙트럼: 반대), Uniform 윈도우(정수 바퀴), 차수 분해능 Δo = 1/N_rev, 최대 차수 N_spr/2.56, 차수 영역 에일리어싱(넉넉히 찍고 걸러 솎기), 보간 오차(선형 vs 3차), tacholess(스펙트로그램 능선 → 적분 → 가상 펄스, 높은 차수 번짐·위상 없음) | P2-4(스미어링·Δf), P3-5(동기 샘플링·차수 스펙트럼), P3-3(키페이저·1X 위상), P2-3(에일리어싱·2.56), P2-5(윈도우·누설), P5-1(데시메이션·저역 통과), P5-2(스펙트로그램·캐스케이드) |
 
 **Part 6 개념 척추** (D-041 확정 — 트랙 B가 M6에서 쓴다. 앞 Part에서 원리를 배운 플롯은 판독만)
 
@@ -252,7 +253,7 @@
 | P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 검토 (그림 10, LAB-FLT-01·LAB-INT-01 각 1곳, 2026-10-07) |
 | P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 검토 (그림 6, LAB-STFT-01 1곳, 2026-10-07) |
 | P5-3 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 검토 (그림 6, LAB-XCH-01·LAB-FULL-01 각 1곳, 2026-10-07) |
-| P5-4 | 차수추적 | LAB-ORD-01 | M4.5 | 계획 |
+| P5-4 | 차수추적 | LAB-ORD-01 | M4.5 | 검토 (그림 5, LAB-ORD-01 3곳, 2026-10-07) |
 | P5-5 | 트래킹 · 노치 필터 | LAB-FLT-02 | M4.6 | 계획 |
 | P5-6 | 엔벨로프 · Spectral Kurtosis | LAB-ENV-01, LAB-SK-01 | M4.7 | 계획 |
 | P5-7 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 계획 |
@@ -337,6 +338,7 @@
 | LAB-STFT-01 | 스펙트로그램 · 워터폴 · 캐스케이드 | P5-2 | `StftLab` (/lab/stft-01/) · lib/dsp/stft.ts, lib/stftDemo.ts |
 | LAB-XCH-01 | FRF 추정과 코히어런스 | P5-3 | `FrfLab` (/lab/xch-01/) · lib/dsp/twoChannel.ts, lib/xchDemo.ts |
 | LAB-FULL-01 | Full spectrum: 오빗과 정방향·역방향 | P5-3 | `FullSpectrumLab` (/lab/full-01/) · lib/dsp/twoChannel.ts (fullSpectrum), lib/xchDemo.ts |
+| LAB-ORD-01 | 차수추적: 시간 FFT vs 차수 스펙트럼 | P5-4 | `OrderTrackingLab` (/lab/ord-01/) · lib/dsp/order.ts, lib/orderDemo.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -346,7 +348,6 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-ORD-01 | 차수추적 | 등각도 재샘플링 on/off, 키페이저 유/무 → smearing 제거 | P5-4 | M4.5 |
 | LAB-FLT-02 | 트래킹 & 노치 | 대역폭 → 1X 진폭·위상 추정 지연, 1X 제거 | P5-5 | M4.6 |
 | LAB-ENV-01 | 엔벨로프 분석 | BPF 대역 → 엔벨로프 스펙트럼의 BPFO/BPFI | P5-6 | M4.7 |
 | LAB-SK-01 | Spectral Kurtosis / Kurtogram | 임펄스 대역 자동 탐색 → ENV-01 대역 추천 | P5-6 | M4.7 |
@@ -484,6 +485,10 @@
 | 날개 통과 | 3600 rpm, 날개 7 | 420 Hz |
 | 구름베어링 6205 | N_r 9, d 7.94 mm, D 39.04 mm, α 0 (CWRU 시험 베어링 치수, R-10) | FTF 0.3983X, BPFO 3.585X, BPFI 5.415X, BSF 2.357X (2× 4.713X, CWRU 표는 2×). BPFO + BPFI = 9X |
 | 전자기력 | 전원 60 Hz | 2 f_L = 120 Hz (3600 rpm 2극이면 2X와 같음) |
+| 차수 분해능·최대 차수 (M4.5) | N_rev 64, N_spr 64 | Δo = 1/64 = 0.0156, o_max = 25 |
+| 차수추적 예시 (P5-4) | 1500 rpm에서 150 rpm/s, 64바퀴 | 2.3 s 동안 → 1844 rpm, 시간 FFT 1X 13.7 µm vs 차수 1X 25 µm(참값 25), 고정 95 Hz → 3.09 ~ 3.8차 |
+| 차수 영역 에일리어싱 | N_spr 32, 23X 3 µm, 방지 없음 / 256점 → 걸러 솎음 | 9X에 2.96 µm / 0.006 µm |
+| 보간 오차 | 23X(575 ~ 707 Hz), f_s 4096 Hz | 선형 8.1 % 손실, 3차 1.6 % |
 
 P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 1 MN/m → k_eq = 0.4 MN/m, f_n = 10.06584242 Hz. 같은 강성 3개면 k_eq = k/3, 지지 강성을 키우면 f_n 단조 증가, m 두 배면 f_n/√2. §5 LAB-SUP-01과 테스트가 함께 확인한다.
 
@@ -510,6 +515,7 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-16 | S. W. Smith, [*The Scientist and Engineer's Guide to Digital Signal Processing*](https://www.dspguide.com/) | 필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR (P5-1) | 공개 |
 | R-17 | [SciPy signal](https://docs.scipy.org/doc/scipy/reference/signal.html) (butter·cheby1·bessel·sosfiltfilt·decimate) | 필터 설계·두 번 거르기·데시메이션의 대조 기준 (P5-1) | 공식 문서, 2026-10-07 확인 |
 | R-18 | J. S. Bendat, A. G. Piersol, *Random Data: Analysis and Measurement Procedures* | 교차 스펙트럼, H1·H2, 코히어런스와 쏠림 (P5-3) | |
+| R-19 | K. R. Fyfe, E. D. S. Munck, "Analysis of computed order tracking", *Mechanical Systems and Signal Processing* 11(2), 1997 | 계산형 차수추적, 키페이저 시각의 2차 보간 (P5-4) | |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

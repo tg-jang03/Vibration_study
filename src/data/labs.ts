@@ -66,6 +66,7 @@ export const LABS: LabEntry[] = [
   { slug: 'int-01', id: 'LAB-INT-01', component: 'IntegrationLab', part: 5, title: '적분 & ski-slope', summary: '가속도를 속도·변위로 적분하며 하한 컷오프, ski-slope, 직류 오프셋의 드리프트를 본다.' },
   { slug: 'stft-01', id: 'LAB-STFT-01', component: 'StftLab', part: 5, title: '스펙트로그램 · 워터폴 · 캐스케이드', summary: '기동 신호를 프레임 길이·겹침을 바꿔 STFT하고, 스펙트로그램·워터폴·캐스케이드로 줄을 읽는다.' },
   { slug: 'xch-01', id: 'LAB-XCH-01', component: 'FrfLab', part: 5, title: 'FRF 추정과 코히어런스', summary: '평균 수와 힘·응답 쪽 잡음을 바꿔 H1·H2가 어디서 쏠리는지, 코히어런스가 어디서 떨어지는지 본다.' },
+  { slug: 'ord-01', id: 'LAB-ORD-01', component: 'OrderTrackingLab', part: 5, title: '차수추적: 시간 FFT vs 차수 스펙트럼', summary: '가속 중인 신호를 키페이저(또는 스펙트로그램 능선) 각도에 맞춰 다시 찍고, 분해능·최대 차수·에일리어싱·보간 오차를 본다.' },
   { slug: 'full-01', id: 'LAB-FULL-01', component: 'FullSpectrumLab', part: 5, title: 'Full spectrum: 오빗과 정방향·역방향', summary: 'X·Y 진폭·위상차와 센서 오차를 바꿔 오빗 방향과 ±1X 막대를 본다.' },
 ];
 
