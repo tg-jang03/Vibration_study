@@ -35,7 +35,8 @@ export default function TrendLab() {
   const trace = phaseTrace(samples, continuous);
   const marker = (high: number) => ({ x: [cursor, cursor], y: [0, high], name: '선택 시각', color: 'var(--text-muted)', dash: 'dash' as const, hideInLegend: true });
   const status = result.inside === null ? '판정 보류' : result.inside ? '허용 영역 안' : '허용 영역 밖';
-  const rMax = Math.max(40, ...boundary.map(v => v.amp * 1e6)) * 1.15;
+  // 데이터·경계 중 큰 쪽에 맞춰 Polar를 채운다 (기본 약 28 µm, 진폭 증가 시나리오에서 커짐)
+  const rMax = Math.max(5, ...samples.map(s => s.oneX.amp * 1e6), ...boundary.map(v => v.amp * 1e6)) * 1.15;
   return <LabFrame id="LAB-TRND-01" title="같은 크기, 다른 벡터: 트렌드·APHT"
     controls={<>
       <ParamSelect label="시나리오" value={scenario} options={(Object.keys(TREND_LABELS) as TrendScenario[]).map(value => ({ value, label: TREND_LABELS[value] }))} onChange={setScenario} />

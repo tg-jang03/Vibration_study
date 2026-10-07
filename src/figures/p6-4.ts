@@ -18,7 +18,7 @@ const trendPanel = (title: string, series: FigSeries[], range: [number, number],
 });
 export const scalar: FigureSpec = {
   id: 'fig-p6-4-1',
-  caption: `그림 1. 1X 진폭 20 µm Peak·2X 2 µm Peak를 유지하고 1X 지연각만 350°→470°로 바꿨습니다. Overall은 ${fmt(P64_VALUES.overall, 4)} µm RMS로 평평합니다. 큰 변화가 없다는 뜻으로 바로 읽으면 위상 이동을 놓칩니다.`,
+  caption: `그림 1. 1X 진폭 20 µm Peak·2X 2 µm Peak를 유지하고 1X 지연각만 350°→470°로 바꿨습니다. Overall은 ${fmt(P64_VALUES.overall, 4)} µm RMS로 평평합니다(점선 1X RMS 14.14 µm와 거의 겹칩니다). 큰 변화가 없다는 뜻으로 바로 읽으면 위상 이동을 놓칩니다.`,
   panels: [trendPanel('크기는 그대로', [{ x: time, y: s.map(p => p.overall * 1e6), color: 'c1', label: 'Overall RMS' }, { x: time, y: s.map(p => p.oneXRms * 1e6), color: 'c2', dash: true, label: '1X RMS' }], [0, 20], '변위 [µm RMS]')],
 };
 export const apht: FigureSpec = {
@@ -32,9 +32,14 @@ const xy = (v: AmpLag) => [cx + scale * v.amp * 1e6 * Math.sin(v.lag), cy + scal
 const path = (vectors: AmpLag[], color: 'c1' | 'c3', label?: string): FigSeries => ({ x: vectors.map(v => xy(v)[0]), y: vectors.map(v => xy(v)[1]), color, label });
 const at = (i: number) => xy(s[i].oneX);
 const arrow = (from: readonly [number, number], to: readonly [number, number], color: 'c1' | 'c2' | 'c4' | 'muted'): FigAnnotation => ({ type: 'arrow', x1: from[0], y1: from[1], x2: to[0], y2: to[1], color, double: false });
-const polarPanel = (): FigPanel => ({
+// 링 글자는 데이터가 없는 225° 쪽 원 위에 둔다. 24 µm 원(허용 영역 +20 %)은 그림 4에만.
+const ringLabel = (a: number, text: string): FigAnnotation => {
+  const p = xy({ amp: a * 1e-6, lag: toRad(225) });
+  return { type: 'text', x: p[0] - 0.15, y: p[1], text, anchor: 'end', color: 'muted' };
+};
+const polarPanel = (withOuter = false): FigPanel => ({
   frame: false, height: 330, x: { range: [0, 30] }, y: { range: squareYRange([0, 30], 330) },
-  series: [10, 20, 24].map(a => path(Array.from({ length: 121 }, (_, i) => ({ amp: a * 1e-6, lag: 2 * Math.PI * i / 120 })), 'c3')),
+  series: (withOuter ? [10, 20, 24] : [10, 20]).map(a => path(Array.from({ length: 121 }, (_, i) => ({ amp: a * 1e-6, lag: 2 * Math.PI * i / 120 })), 'c3')),
   annotations: [
     { type: 'line', x1: cx - 5.76, y1: cy, x2: cx + 5.76, y2: cy, color: 'muted', dash: true },
     { type: 'line', x1: cx, y1: cy - 5.76, x2: cx, y2: cy + 5.76, color: 'muted', dash: true },
@@ -42,20 +47,22 @@ const polarPanel = (): FigPanel => ({
     { type: 'text', x: 21.6, y: cy, text: '90°', color: 'muted' },
     { type: 'text', x: cx, y: 0.8, text: '180°', anchor: 'middle', color: 'muted' },
     { type: 'text', x: 8.5, y: cy, text: '270°', anchor: 'end', color: 'muted' },
-    { type: 'text', x: 14.8, y: 9.3, text: '10', anchor: 'end', color: 'muted' },
-    { type: 'text', x: 8.2, y: 11.1, text: '20 µm Peak', anchor: 'end', color: 'muted' },
+    ringLabel(10, '10'),
+    ringLabel(20, '20 µm Peak'),
+    ...(withOuter ? [ringLabel(24, '24 (+20 %)')] : []),
+    { type: 'text', x: 22.5, y: 13.65, text: '회전 ↺ · 지연 ↻', anchor: 'start', color: 'muted' },
   ],
 });
 export const vector: FigureSpec = {
   id: 'fig-p6-4-3',
   caption: `그림 3. 파랑은 그림 2의 같은 1X 벡터 끝 경로입니다. 기준 벡터(0분, 350°)와 60분 벡터(110°, 연속 470°)의 길이는 둘 다 20 µm Peak입니다. 보라 화살표는 두 끝 사이 변화량 ${fmt(P64_VALUES.delta, 4)} µm Peak이며 진폭차 0과 다릅니다.`,
-  panels: [{ ...polarPanel(), series: [...polarPanel().series.map(p => ({ ...p, color: 'muted' as const })), path(s.map(p => p.oneX), 'c1')], annotations: [...polarPanel().annotations!, arrow([cx, cy], at(0), 'muted'), arrow([cx, cy], at(60), 'c2'), arrow(at(0), at(60), 'c4'), { type: 'text', x: 12.2, y: 13.65, text: '0분·350°', anchor: 'end', color: 'c1' }, { type: 'text', x: at(60)[0] + 0.4, y: at(60)[1] - 0.4, text: '60분·110°', color: 'c2' }, { type: 'text', x: 19, y: 10, text: '|ΔV| 34.64 µm', color: 'c4' }] }],
+  panels: [{ ...polarPanel(), series: [...polarPanel().series.map(p => ({ ...p, color: 'muted' as const })), path(s.map(p => p.oneX), 'c1')], annotations: [...polarPanel().annotations!, arrow([cx, cy], at(0), 'muted'), arrow([cx, cy], at(60), 'c2'), arrow(at(0), at(60), 'c4'), { type: 'text', x: 12.2, y: 13.65, text: '0분·350°', anchor: 'end', color: 'muted' }, { type: 'text', x: 20.9, y: 4.6, text: '60분·110°', color: 'c2' }, { type: 'text', x: 21.0, y: 10.2, text: `|ΔV| ${fmt(P64_VALUES.delta, 4)} µm Peak`, color: 'c4' }] }],
 };
 const outline = acceptanceOutline(s[0].oneX, region);
 export const accepted: FigureSpec = {
   id: 'fig-p6-4-4',
   caption: `그림 4. 초록 윤곽은 기준 20 µm Peak·350°의 진폭 ±20%·지연 ±30° 허용 영역입니다. 진폭 16~24 µm Peak와 지연 320°~20°(0°를 넘어 이어짐)를 함께 봅니다. 15분 경계는 포함되고 첫 이탈 표본은 ${P64_VALUES.firstOutside}분입니다. 임의 학습값이며 규격 한계가 아닙니다.`,
-  panels: [{ ...polarPanel(), series: [...polarPanel().series.map(p => ({ ...p, color: 'muted' as const })), path(outline, 'c3', '허용 영역 경계'), path(s.map(p => p.oneX), 'c1', '1X 경로')], annotations: [...polarPanel().annotations!, { type: 'point', x: at(15)[0], y: at(15)[1], label: '15분 경계', color: 'c3', dx: 15, dy: -15 }, { type: 'point', x: at(60)[0], y: at(60)[1], label: '60분 영역 밖', color: 'c2', dx: 15, dy: 15 }] }],
+  panels: [{ ...polarPanel(true), series: [...polarPanel(true).series.map(p => ({ ...p, color: 'muted' as const })), path(outline, 'c3', '허용 영역 경계'), path(s.map(p => p.oneX), 'c1', '1X 경로')], annotations: [...polarPanel(true).annotations!, { type: 'point', x: at(15)[0], y: at(15)[1], label: '15분 경계', color: 'c3', dx: 15, dy: -15 }, { type: 'point', x: at(60)[0], y: at(60)[1], label: '60분 영역 밖', color: 'c2', dx: 34, dy: 4 }] }],
 };
 export const residualTrend: FigureSpec = {
   id: 'fig-p6-4-5',
