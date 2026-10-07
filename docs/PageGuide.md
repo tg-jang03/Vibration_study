@@ -322,6 +322,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 | 아래첨자 깨짐 | KaTeX 버전 둘 | `npm ls katex` (I-021) |
 | 랩 첫 화면이 깜빡이거나 React 오류 #418 | 서버·브라우저 첫 렌더 불일치 | §6-4 |
 | 랩 SVG 안 글자(값)가 안 보임 | SVG `<text>` 안에 HTML `<strong>` | `<tspan fontWeight="bold">` (P1-7, 2026-10-06) |
+| 사이트 안 링크가 `%7BwithBase…`로 깨짐 | 마크다운 링크 `[글]({withBase(…)})` 안의 JS 식은 실행되지 않는다 | `<a href={withBase('/p4-4/')}>글</a>` (2026-10-07, `mdxLinks.test.ts`가 잡는다) |
 | 도식의 원이 점으로 보이거나 안 보임 | `circle`의 `r`는 **px** 단위 (x 단위가 아님) | `r: 반지름 × (820 / x 범위 폭)` (§5-4, P1-7) |
 
 ---
