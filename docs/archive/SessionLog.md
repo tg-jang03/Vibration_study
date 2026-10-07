@@ -12,6 +12,15 @@
 - 확인: check, test 412, build 76페이지, 내부 링크 1,422개·앵커 모두 연결, verify:page 8쪽 OK
 - 다음: M4 세부 목록 사용자 확인 (M4 = Part 5)
 
+### 2026-10-06 · Codex · M5.1 1자유도 불평형 응답과 Bode/Polar 랩 — P4-1, LAB-AF-01
+- 요청: 사용자 — "M5.1 너가해봐" → "하던거 해서 마무리해봐바"
+- 본문: 1자유도 불평형 런업 해석해(r, ζ), Bode vs Polar, heavy/high spot 위상 지연(0°→90°→180°), Half-power AF 및 분리여유 SM, Slow roll 보상과 데이터 오차 3요소. 그림 7·확인 문제 6, PageGuide 준수
+- 코어: `lib/rotor/runup.ts` — 시드 고정 런업 스위프, 1X 복소 응답, Slow roll 벡터 차감, AF(ΔN_HP, ζ), SM 계산 순수 함수(+테스트 18)
+- 랩: LAB-AF-01 `RunUpBodeLab` — Bode/Polar/Both 3개 뷰 모드, ω_n·ζ·m e·런아웃 슬라이더/토글, Slow roll 보상, Formula 수식 연동, 모바일 390px 최적화 ReadoutTable
+- 검증: `npm run check` 0 errors, `npm test` 391개, `npm run build` 39페이지. Edge CDP 브라우저 QA(그림 7종·캡션, 링크 200, 랩 수치, 뷰 전환, 390px 넘침 0, 갤러리, hydration 0)
+- 문서: 목차 `curriculum.ts` P4-1 review·링크 연결, Contents §4·§5·§6, Glossary 2행, Progress 갱신. M5 착수 전 로그 archive 이동, 트랙 A 내용 보존
+- 다음: 사용자 검토 후 **M5.2** Jeffcott 로터 (P4-2, LAB-JEF-01)
+
 ### 2026-10-06 · Claude · M0.6 UI 개편·랩 모음 + M0.7 문서 다이어트 (D-037·D-038)
 - 요청: 사용자 — "UI 개선(지도·같은 Part 이동·Part 2만 다른 표시), Signal Lab에 랩만 골라 보기 + 원문 링크, 문서 정리·토큰 절약"
 - UI: 홈 4단계 학습 지도·히어로, 절 페이지 Part 사이드바, Part 페이지에 절별 랩. Part 2의 ★·색은 원본 커리큘럼의 "핵심" 표시(`featured`)였다 → 삭제

@@ -25,6 +25,7 @@ const width = Number(opt('width', '1100'));
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
 const jeffcottSmoke = flag('jeffcott-smoke');
+const centerlineSmoke = flag('centerline-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -105,7 +106,7 @@ for (const p of paths) {
       const wait = () => new Promise(r => setTimeout(r, 220));
       const sliders = lab.querySelectorAll('input[type="range"]'), toggle = lab.querySelector('input[type="checkbox"]');
       const set = async (i,v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i], String(v)); sliders[i].dispatchEvent(new Event('input',{bubbles:true})); sliders[i].dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
-      const read = label => { const row = [...lab.querySelectorAll('.readout-table tbody tr')].find(r => r.cells[0].textContent.startsWith(label)); return parseFloat(row.cells[1].textContent.replace(/,/g,'')); };
+      const read = label => { const row = [...lab.querySelectorAll('.readout-table tbody tr')].find(r => r.cells[0].textContent.startsWith(label)); return parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')); };
       const require = (v,message) => { if (!v) throw Error(message); };
       const point = () => [...lab.querySelector('svg[role="img"]').querySelectorAll('circle')].at(-1).getAttribute('cx');
       try {
@@ -125,6 +126,35 @@ for (const p of paths) {
     })()`);
     if (smoke?.ok === false || !smoke) errors.push('Jeffcott 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     Jeffcott 조작 9항목 OK (재생·정지·읽음값·감쇠·정지상태·초기화)');
+  }
+  if (centerlineSmoke) {
+    const smoke = await ev(`(async () => {
+      const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-SCL-01');
+      if (!lab) return { skipped:true };
+      const wait = () => new Promise(r => setTimeout(r,220));
+      const sliders = lab.querySelectorAll('input[type="range"]'), selects = lab.querySelectorAll('select'), toggles = lab.querySelectorAll('input[type="checkbox"]');
+      const set = async(i,v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v)); sliders[i].dispatchEvent(new Event('input',{bubbles:true})); sliders[i].dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
+      const choose = async(i,v) => { selects[i].value=String(v); selects[i].dispatchEvent(new Event('change',{bubbles:true})); await wait(); };
+      const read = label => { const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row ? parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')) : null; };
+      const require = (v,message) => { if(!v) throw Error(message); };
+      const reset = async() => { [...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait(); };
+      try {
+        require(Math.abs(read('편심률 ε')-.6758)<.0001 && Math.abs(read('최소 유막 hmin')-32.42)<.02 && read('복원 위치 오차')===0, '기본 유막·DC 값');
+        await set(1,500);require(Math.abs(read('편심률 ε')-.5597)<.0001 && Math.abs(read('최소 유막 hmin')-44.03)<.02,'경하중');
+        await reset();await set(0,6000);require(Math.abs(read('편심률 ε')-.5597)<.0001,'회전수 2배');
+        await reset();await set(2,40);require(Math.abs(read('편심률 ε')-.5597)<.0001,'점성계수 2배');
+        await reset();await choose(0,1);require(read('모델 X')<0 && read('복원 위치 오차')===0,'역자전 좌표');
+        await reset();toggles[0].click();await wait();require(Math.abs(read('복원 위치 오차')-100)<.01,'냉간 위치 누락');
+        await reset();await set(3,.5);require(Math.abs(read('복원 위치 오차')-63.5)<.01,'전압 drift');
+        await reset();await choose(1,1);require(lab.textContent.includes('Not OK') && read('복원 위치 오차')===null && !lab.querySelector('[data-center="measured"]'),'범위 이탈 시 좌표 중단');
+        await reset();const va=read('평균 전압 VA');toggles[1].click();await wait();require(read('평균 전압 VA')===va && read('복원 위치 오차')===0,'평균0 runout');
+        await set(0,0);require(read('편심률 ε')===1 && read('최소 유막 hmin')===0 && lab.textContent.includes('접촉 기준') && read('자세각 φ')===null,'0rpm 기준');
+        await reset();require(Number(sliders[0].value)===3000 && Number(sliders[1].value)===1000 && Number(sliders[2].value)===20 && Number(sliders[3].value)===0 && selects[0].value==='0' && selects[1].value==='0' && toggles[0].checked && !toggles[1].checked,'초기화');
+        return { ok:true,checks:11 };
+      } catch(e) { return { ok:false,error:e.message }; }
+    })()`);
+    if (smoke?.ok === false || !smoke) errors.push('Shaft centerline 조작 검사: ' + (smoke?.error ?? '평가 실패'));
+    if (smoke?.ok) console.log('     Shaft centerline 조작 11항목 OK (유막·전압 복원·범위 이탈·초기화)');
   }
   const shots = [];
   if (!noShots) {

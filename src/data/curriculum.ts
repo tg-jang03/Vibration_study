@@ -81,7 +81,7 @@ export const PARTS: Part[] = [
     sections: [
       { id: 'P4-1', title: '1자유도 불평형 응답을 Bode/Polar로', status: 'review', href: '/p4-1/' },
       { id: 'P4-2', title: 'Jeffcott 로터: 회전체 응답의 기본', status: 'review', href: '/p4-2/' },
-      { id: 'P4-3', title: '유막 베어링과 Shaft centerline', status: 'planned' },
+      { id: 'P4-3', title: '유막 베어링과 Shaft centerline', status: 'review', href: '/p4-3/' },
       { id: 'P4-4', title: '안정성: 교차연성 · Whirl/Whip · Log decrement', status: 'planned' },
     ],
   },

@@ -291,6 +291,18 @@
 | 정방향 / 역방향 성분 | A_f·A_b [m] | x+jy를 +Ω·−Ω로 도는 두 복소 성분으로 분해. 절댓값은 각각 원 반지름 | P4-2 §6 → P5-3 Full spectrum |
 | 자기정렬 (Self-centering) | — | 등방 Jeffcott 고속에서 축 중심은 e에, 질량중심은 정적 평형점에 가까워지는 경향 | P1-7 (고속 경향) → P4-2 §7 (이름·계산) |
 | 강성 / 유연 로터 (Rigid / Flexible rotor) | — | 관심 운전 범위에서 축 굽힘을 무시 가능 / 굽힘 모드 영향 고려 필요. 모드 형상 분류와 별개 | P4-2 §7 |
+| 동압 / 정압 지지 (Hydrodynamic / Hydrostatic) | — | 상대 운동·수렴 간극으로 생성 / 외부에서 가압한 유체로 생성한 압력의 하중 지지 | P4-3 §1 |
+| 잭킹 오일 (Jacking oil) | — | 정지·저속에서 축을 들어 올리기 위한 외부 가압 오일 | P4-3 §1 |
+| 반경 / 지름 간극 (Radial / Diametral clearance) | Cr / 2Cr [m] | 베어링 내경과 저널의 반지름 차 / 지름 차 | P4-3 §2 |
+| 저널 편심률 (Eccentricity ratio) | ε = e/Cr | 베어링 중심과 저널 중심 사이 거리를 반경 간극으로 나눈 값 | P4-3 §2 |
+| 자세각 (Attitude angle) | φ [rad] | 하중 방향과 베어링 중심→저널 중심 연결선 사이 각도 | P4-3 §2 |
+| 최소 유막 두께 (Minimum film thickness) | h_min [m] | 원통 형상에서 Cr(1−ε) | P4-3 §2 |
+| 점성계수 (Dynamic viscosity) | μ [Pa·s] | 유체가 흐름을 저항하는 정도 | P4-3 §3 |
+| 짧은 베어링 (Short bearing) 근사 | L/D | 길이 방향 유출이 우세하다고 놓은 원통 유막 근사 | P4-3 §3 |
+| Shaft centerline | x·y [m] | 운전 상태별 평균 축 중심 위치의 경로 | P3-5 (그림 소개) → P4-3 §4 (계산) |
+| 경하중 (Light load) | W [N] | 베어링에 걸리는 하중이 작음. 편심률만으로 안정성 판정 불가 | P4-3 §4 |
+| 드리프트 (Drift) | [V] 등 | 기록 사이에 생기는 측정값의 느린 이동 | P4-3 §6 |
+| 직접 / 교차연성 계수 (Direct / Cross-coupled coefficients) | k_ij·c_ij | 같은 / 다른 방향의 변위·속도를 유막 힘에 연결. 첫 첨자=힘 방향 | P4-3 §7 |
 | 크기 응답 (Magnitude response) | ∣H(f)∣ [배, dB] | 주파수 f인 정현파가 필터를 지나 몇 배로 남는지를 주파수에 따라 그린 것 | P5-1 §1 |
 | 통과 대역 · 차단 대역 · 전이 대역 (Passband · Stopband · Transition band) | — | 거의 그대로 남는 쪽 · 충분히 깎이는 쪽 · 그 사이 | P5-1 §1 |
 | 차단 주파수 (Cutoff frequency) | f_c [Hz] | 크기가 1/√2(−3 dB)가 되는 주파수. Chebyshev는 리플의 끝 | P2-3 (AAF, 이름만) → P5-1 §1 |

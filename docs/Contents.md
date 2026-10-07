@@ -137,6 +137,9 @@
 | S | 비접촉 변위 센서 감도 | V/m (표시 V/mm) | 예 7.87 V/mm = 200 mV/mil (P3-2) |
 | z | 복소 변위 x + jy | m | Jeffcott·안정성 (P4-2, P4-4) |
 | A_f, A_b | 정방향 / 역방향 선회 성분 | m | z = A_f e^{jΩt} + A_b e^{−jΩt} (P4-2) |
+| C_r, ε, φ | 반경 간극 / 편심률 e/C_r / 하중 방향 기준 자세각 | m / — / rad | P4-3, 직경 간극은 2C_r |
+| μ, W, h_min | 점성계수 / 하중 / 최소 유막 두께 | Pa·s / N / m | P4-3 짧은 베어링 예제 |
+| k_ij, c_ij | 평형점 근처 유막 강성 / 감쇠 계수 | N/m / N·s/m | 첫 첨자=힘 방향, 둘째=변위/속도 방향(P4-3) |
 | k_xy | 교차연성 강성 | N/m | 유막·씰 (P4-4) |
 | λ = σ ± jω_d | 복소 고유치 | 1/s | σ > 0이면 불안정 (P4-4) |
 | ζ | 감쇠비 | — | |
@@ -232,7 +235,7 @@
 | P3-5 | 과도 데이터 수집과 보호 시스템 | LAB-ALM-01 | M3.5 | 검토 (그림 6, LAB-ALM-01 3곳) |
 | P4-1 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 검토 (본문 8절, 그림 7, LAB-AF-01) |
 | P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 검토 |
-| P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 계획 |
+| P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 검토 |
 | P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
 | P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 검토 (그림 10, LAB-FLT-01·LAB-INT-01 각 1곳, 2026-10-07) |
 | P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 계획 |
@@ -315,6 +318,7 @@
 | LAB-SUP-01 | 지지 강성과 고유진동수 (D-036) | P1-6 | `SupportStiffnessLab` (/lab/sup-01/) · lib/machine/supportModel.ts |
 | LAB-AF-01 | Run-up Bode & 증폭계수 | P4-1 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
 | LAB-JEF-01 | Jeffcott 로터: 선회와 오빗 | P4-2 | `JeffcottLab` (/lab/jef-01/) · lib/rotor/jeffcott.ts |
+| LAB-SCL-01 | 유막 지지와 Shaft centerline | P4-3 | `ShaftCenterlineLab` (/lab/scl-01/) · lib/rotor/journalBearing.ts |
 | LAB-FLT-01 | 필터 설계: 크기 · 군지연 · 시간파형 | P5-1 | `FilterLab` (/lab/flt-01/) · lib/dsp/filter.ts, lib/filterDemo.ts |
 | LAB-INT-01 | 적분 & ski-slope | P5-1 | `IntegrationLab` (/lab/int-01/) · lib/dsp/filter.ts (integrateSpectral·integrateCumulative), lib/filterDemo.ts |
 
@@ -348,7 +352,6 @@
 | LAB-TWF-01 | 시간파형 패턴 | 패턴 갤러리 + 맞히기 퀴즈 | P6-1 | M6.1 |
 | LAB-WF-01 | Waterfall & Full spectrum cascade | 회전수 스윕 → Oil whirl(추종) vs Whip(고정) | P6-2 | M6.2 |
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
-| LAB-SCL-01 | Shaft centerline | 하중·회전수 → 편심률·자세각, 축 중심 궤적 | P4-3 | M5.3 |
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
 | LAB-TRND-01 | 벡터 트렌드 | 1X 벡터 회전 시나리오 → 스칼라 vs 벡터 트렌드, APHT, Acceptance region | P6-4 | M6.6 |
 | LAB-FAULT-01 | 결함 신호 합성기 | 결함 종류·정도 → 스펙트럼·파형·오빗 패턴 (Part 11 엔진) | P7-1 | M7.1 |
@@ -453,7 +456,12 @@
 | Jeffcott 수치 (M5.2) | m = 10 kg, e = 10 µm, Nₓ = 3000 rpm, kᵧ/kₓ = 1.3, 공통 c(ζₓ = 0.05), N = 3200 rpm | Nᵧ = 3420.526 rpm, X = 65.2985·Y = 58.6033 µm Peak, ∣A_f∣ = 36.1101·∣A_b∣ = 50.4498 µm → 역방향 |
 | Jeffcott 감쇠 증가 | 위 조건에서 ζₓ = 0.2 | ∣A_f∣ = 23.7295·∣A_b∣ = 8.33899 µm → 정방향 (두 고유 회전수 사이여도 역방향 보장 없음) |
 | Jeffcott 고속 질량중심 | 등방, e = 10 µm, ζ = 0.05, r = 5 | C 반지름 10.4144 µm, G 반지름 0.465746 µm; r → ∞에서 C → e, G → 0 |
-| 안정성 (M5.3) | k_xy = 0, ζ = 0.05 | σ = −ζω_n, δ = 0.3146 (P1-3과 같다) |
+| 짧은 베어링 (M5.3) | ε = 0.5, Ocvirk half-Sommerfeld | WC_r²/(μΩRL³) = 0.750381081812, φ = 53.68020060°. 압력 적분과 하중 해석식 일치 |
+| 유막 정적 기본 | R = 50 mm, L = 25 mm, Cr = 100 µm, μ = 20 mPa·s, W = 1000 N, N = 3000 rpm | ε = 0.6757879254, φ = 40.58502207°, X = 43.965121·Y = −51.322133 µm, h_min = 32.421207 µm |
+| 하중/회전수 비 | 위 조건 W = 500 N 또는 N = 6000 rpm 또는 μ = 40 mPa·s | ε = 0.5596683869, φ = 49.30861855°, X = 42.435871·Y = −36.489503 µm, h_min = 44.033161 µm |
+| Shaft centerline DC | 위 기본값, A45°/B135°, cold gap 1.2 mm, S = 7.874015748 V/mm | cold −9.448819 V, A −8.933004·B −9.422579 V.동일 바이어스 차분 소거, 복원 오차 0 |
+| 기준/측정 오류 | cold 좌표 누락 / A +0.5 V drift / cold gap 0.30 mm | 위치 오차 100 / 63.5 µm / 선형 범위 밖 → 좌표 복원 중단. 선형·정수 회전 평균0 runout은 DC 변화0 |
+| 안정성 (M5.4) | k_xy = 0, ζ = 0.05 | σ = −ζω_n, δ = 0.3146 (P1-3과 같다) |
 | 안정 한계 | k_xy 독립 / k_xy = cΩ/2 | δ = 0 ↔ k_xy = cω_n = 2ζk / Ω = 2ω_n (c와 무관) |
 | 가속도계 평탄 대역 | 공진 25 kHz, ±10 %, 감쇠 무시 | ≈ 7.5 kHz |
 | 고유진동수 (D-027, M2.1) | m = 1 kg, k = 1000 N/m | f_n = 5.033 Hz, T = 0.1987 s |
