@@ -82,7 +82,8 @@ export default function RunUpBodeLab({
     const x = activePoints.map((p) => p.rpm);
     const y = activePoints.map((p) => pp(p.amp));
     const s: PlotSeries[] = [
-      { x, y, name: '1X 진폭', color: 'var(--plot-1)', width: 2 },
+      // 측정점마다 점을 찍어 rpm 간격이 보이게 한다
+      { x, y, name: '1X 진폭', color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
     ];
     if (hp) {
       s.push({
@@ -96,7 +97,7 @@ export default function RunUpBodeLab({
       s.push({
         x: [hp.peakRpm],
         y: [peakAmpPp],
-        name: `피크 N_c (${hp.peakRpm} rpm)`,
+        name: `피크 N_c ${hp.peakRpm}`,
         color: 'var(--plot-3)',
         mode: 'markers',
         markerSize: 9,
@@ -105,7 +106,7 @@ export default function RunUpBodeLab({
     s.push({
       x: [operatingRpm, operatingRpm],
       y: [0, Math.max(120, peakAmpPp * 1.15)],
-      name: `운전 속도 N_op (${operatingRpm} rpm)`,
+      name: `운전 N_op ${operatingRpm}`,
       color: 'var(--plot-4)',
       dash: 'dot',
       width: 1.5,
@@ -117,7 +118,7 @@ export default function RunUpBodeLab({
     const x = activePoints.map((p) => p.rpm);
     const y = activePoints.map((p) => deg(p.lag));
     const s: PlotSeries[] = [
-      { x, y, name: '1X 위상 지연', color: 'var(--plot-1)', width: 2 },
+      { x, y, name: '1X 위상 지연', color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
       {
         x: [0, 6000],
         y: [90, 90],
@@ -131,7 +132,7 @@ export default function RunUpBodeLab({
       s.push({
         x: [hp.peakRpm, hp.peakRpm],
         y: [0, 180],
-        name: `N_c (${hp.peakRpm} rpm)`,
+        name: `N_c ${hp.peakRpm}`,
         color: 'var(--plot-3)',
         dash: 'dot',
         width: 1.2,
@@ -317,7 +318,7 @@ export default function RunUpBodeLab({
         {
           question: '기본값(ζ = 0.05, 25 rpm 간격)에서 추정 AF와 1/(2ζ)는 얼마나 일치하나요?',
           answer:
-            'N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3171 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 불평형 원심력의 r² 비례 항 때문에 완벽한 10이 아니며 정상적인 물리적 특성입니다.',
+            'N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3171 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 세 가지가 각각 약 0.5%씩 낮춥니다: AF ≈ 1/(2ζ)가 근사식이라는 점, 불평형 힘이 회전수 제곱(r²)에 비례해 봉우리가 비대칭이라는 점, 25 rpm 격자에서 피크를 3000 rpm 점으로 잡고 교차점을 직선 보간한다는 점입니다.',
         },
         {
           question: '감쇠비 ζ를 0.01로 줄였을 때, rpm 간격을 25 → 200 rpm으로 바꾸면 AF는 어떻게 되나요?',
@@ -327,7 +328,7 @@ export default function RunUpBodeLab({
         {
           question: '런아웃을 켜면 저속과 피크 진폭에 어떤 변화가 생기고, Slow roll 보상을 켜면 어떻게 되나요?',
           answer:
-            '런아웃이 더해지면 정지·저속에서도 8 µm pp(변위 peak 4 µm)의 거짓 진동이 남고, 피크 진폭도 107 µm pp로 왜곡되며 AF 계산값도 틀어집니다. 300 rpm Slow roll 보상을 켜면 참 응답 100 µm pp와 AF ≈ 9.84로 복원됩니다.',
+            '런아웃이 더해지면 정지·저속에서도 8 µm pp(변위 peak 4 µm)의 거짓 진동이 남고, 피크 진폭도 107 µm pp로 바뀝니다. 이 예에서는 피크와 0.707 기준이 함께 움직여 AF는 9.84 → 9.90으로 조금만 바뀌지만, 런아웃의 크기·위상에 따라 AF 오차는 커질 수 있습니다. 300 rpm Slow roll 보상을 켜면 참 응답 100 µm pp와 AF ≈ 9.84로 돌아옵니다.',
         },
         {
           question: '운전 회전수 N_op를 3600 rpm에서 3200 rpm으로 낮추면 분리여유 SM은 어떻게 변하나요?',

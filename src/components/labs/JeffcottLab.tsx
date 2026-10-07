@@ -56,6 +56,11 @@ export default function JeffcottLab({ initialRpm = 3000, initialRatio = 1, initi
   const scale = 160 / bound;
   const sx = (v: number) => 210 + um(v) * scale;
   const sy = (v: number) => 210 - um(v) * scale;
+  // 키페이저 글자는 원점에서 바깥쪽으로 띄워 오빗과 겹치지 않게 한다
+  const keyOut = (() => {
+    const dx = sx(key.x) - 210, dy = sy(key.y) - 210, len = Math.hypot(dx, dy) || 1;
+    return { ux: dx / len, uy: dy / len };
+  })();
   const path = (x: 'x' | 'forwardX' | 'backwardX', y: 'y' | 'forwardY' | 'backwardY') => orbit.map((p, i) => `${i === 0 ? 'M' : 'L'}${sx(p[x])},${sy(p[y])}`).join(' ');
   const next = orbitPoint(response, angle + .12);
   const reset = () => { setRpm(initialRpm); setRatio(initialRatio); setZeta(initialZeta); setPlaying(false); setAngle(0); };
@@ -83,7 +88,7 @@ export default function JeffcottLab({ initialRpm = 3000, initialRatio = 1, initi
       <path d={path('x', 'y')} fill="none" stroke="var(--plot-3)" strokeWidth="2.5" />
       <line x1="210" y1="210" x2={sx(point.forwardX)} y2={sy(point.forwardY)} stroke="var(--plot-1)" />
       <line x1={sx(point.forwardX)} y1={sy(point.forwardY)} x2={sx(point.x)} y2={sy(point.y)} stroke="var(--plot-2)" />
-      <circle cx={sx(key.x)} cy={sy(key.y)} r="5" fill="var(--text)" /><text x={sx(key.x) + (key.x > 0 ? -8 : 8)} y={sy(key.y) - 8} textAnchor={key.x > 0 ? "end" : "start"} fontSize="12" fill="currentColor">키페이저 θ=0</text>
+      <circle cx={sx(key.x)} cy={sy(key.y)} r="5" fill="var(--text)" /><text x={sx(key.x) + 16 * keyOut.ux} y={sy(key.y) + 16 * keyOut.uy + 4} textAnchor={keyOut.ux > 0.3 ? 'start' : keyOut.ux < -0.3 ? 'end' : 'middle'} fontSize="12" fill="currentColor">키페이저 θ=0</text>
       {rpm > 0 && <line x1={sx(point.x)} y1={sy(point.y)} x2={sx(next.x)} y2={sy(next.y)} stroke="var(--plot-3)" strokeWidth="2" markerEnd={`url(#${arrowId})`} />}
       <circle cx={sx(point.x)} cy={sy(point.y)} r="4" fill="var(--plot-3)" />
     </svg>

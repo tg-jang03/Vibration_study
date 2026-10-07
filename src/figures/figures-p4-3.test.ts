@@ -1,6 +1,21 @@
 ﻿import { describe, it, expect } from 'vitest';
 import * as F from './p4-3';
 import type { FigureSpec } from '../lib/figure';
+import { P43_BEARING as B, P43_EXAMPLE as E, shortBearingPressure } from '../lib/rotor/journalBearing';
+describe('P4-3 본문 보충 숫자', () => {
+  it('좀머펠트 수 S = 0.625, 하중 식의 왼쪽 = 1/(4πS(L/D)²), 압력 최대 θ ≈ 155°, 지름 간극으로 나눈 ε = 0.3379', () => {
+    const N = E.omega / (2 * Math.PI), D = 2 * B.radius, P = E.load / (B.length * D);
+    const S = (E.viscosity * N / P) * (B.radius / B.radialClearance) ** 2;
+    expect(S).toBeCloseTo(0.625, 6);
+    const left = E.load * B.radialClearance ** 2 / (E.viscosity * E.omega * B.radius * B.length ** 3);
+    expect(left).toBeCloseTo(1 / (4 * Math.PI * S * (B.length / D) ** 2), 9);
+    const eps = F.P43_VALUES.normal.eccentricityRatio;
+    let best = 0, tBest = 0;
+    for (let d = 0; d <= 360; d += 0.1) { const p = shortBearingPressure(B, eps, E.omega, E.viscosity, d * Math.PI / 180, 0); if (p > best) { best = p; tBest = d; } }
+    expect(Math.round(tBest)).toBe(155);
+    expect((eps * B.radialClearance / 200e-6).toFixed(4)).toBe('0.3379');
+  });
+});
 describe('P4-3 본문·그림 수치', () => {
   it('그림 7개와 유한 좌표, 데이터가 축 범위에 들어간다', () => {
     const figures = Object.values(F).filter((v): v is FigureSpec => 'id' in v);

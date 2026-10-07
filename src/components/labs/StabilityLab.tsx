@@ -49,13 +49,13 @@ export default function StabilityLab() {
     <button type="button" onClick={reset}>초기화</button>
   </>} tasks={[
     {question:'ζ=0.05에서 q/k를 0.05 → 0.10 → 0.15로 바꾸면?',answer:'δ는 +0.1571 → 0 → −0.1561입니다. 순서대로 수렴·경계·발산입니다. 고유치의 실수부가 가장 큰 정방향 모드를 봅니다.'},
-    {question:'직접 모드 q/k=0.15에서 ζ를 0.10으로 올리면?',answer:'직접 c가 2배가 되어 한계 q/k가 0.10에서 0.20으로 옮겨집니다. q/k=0.15는 안정 쪽으로 바뀝니다.'},
-    {question:'속도 연동 모드에서 ζ를 바꿔도 한계 r=2가 그대로인 이유는?',answer:'q=cΩ/2에서는 c를 키울 때 교차 강성 q도 함께 커집니다. 실제 기계의 감쇠 대책이 무효라는 결론은 아닙니다.'},
+    {question:'q 직접 입력 방식, q/k=0.15에서 ζ를 0.10으로 올리면?',answer:'직접 c가 2배가 되어 한계 q/k가 0.10에서 0.20으로 옮겨집니다. q/k=0.15는 안정 쪽으로 바뀝니다.'},
+    {question:'속도 연동 방식에서 ζ를 바꿔도 한계 r=2가 그대로인 이유는?',answer:'q=cΩ/2에서는 c를 키울 때 교차 강성 q도 함께 커집니다. 실제 기계의 감쇠 대책이 무효라는 결론은 아닙니다.'},
     {question:'q/k=0에서 정지에서 놓기를 켜면?',answer:'Y=0인 직선 왕복이 됩니다. 기본 정방향 모드에는 초기 속도가 포함되어 있어 q=0에서도 줄어드는 원 선회입니다.'},
     {question:'발산을 표시 시간 끝에서 멈추면 실제 기계도 그 진폭에 머무르나요?',answer:'아닙니다. 그래프는 최대 8 고유 주기 동안 초기 모드 포락선의 20배를 넘기기 전에 표시를 끝냅니다. 접촉·포화·비선형 진폭은 계산하지 않습니다.'},
   ]}>
     <p>질량 10 kg, +X 오른쪽·+Y 위·자전 반시계. Fx_cross = −qy, Fy_cross = +qx. 등방 직접 k,c와 반대칭 교차 강성만 남긴 선형 모델입니다. 원점은 평균 평형 위치입니다.</p>
-    <p role="status"><strong>{statusText[modes.status]}</strong> · q/k = {formatNumber(system.crossStiffness/system.stiffness,4)}, 한계 q/k = {formatNumber(2*zeta,4)}. {mode==='speed' ? `현재 ${formatNumber(naturalRpm*ratio,5)} rpm, 이 모델의 한계 ${formatNumber(2*naturalRpm,5)} rpm.` : '직접 모드에서는 회전수가 독립 입력으로 들어가지 않습니다.'}</p>
+    <p role="status"><strong>{statusText[modes.status]}</strong> · q/k = {formatNumber(system.crossStiffness/system.stiffness,4)}, 한계 q/k = {formatNumber(2*zeta,4)}. {mode==='speed' ? `현재 ${formatNumber(naturalRpm*ratio,5)} rpm, 이 모델의 한계 ${formatNumber(2*naturalRpm,5)} rpm.` : 'q 직접 입력 방식에서는 회전수가 독립 입력으로 들어가지 않습니다.'}</p>
     <h4>자유응답 오빗 (X·Y 같은 축척)</h4>
     <svg viewBox="0 0 420 420" role="img" aria-label={`자유응답: ${statusText[modes.status]}`} style={{width:'100%',maxWidth:440,display:'block',margin:'auto',color:'var(--text)'}}>
       <path d="M35,210 H385 M210,35 V385" stroke="var(--text-muted)" opacity=".4"/>
@@ -76,13 +76,13 @@ export default function StabilityLab() {
     <Formula display tex={String.raw`m\lambda^2+c\lambda+k-jq=0,\quad \delta=-\frac{2\pi\sigma_f}{\omega_f}=${texNumber(modes.logDecrement,4)}`} />
     <Formula display tex={String.raw`q_{\rm crit}=c\omega_n=2\zeta k,\quad q=c\Omega/2\ \Rightarrow\ \Omega_{\rm crit}=2\omega_n`} />
     <ReadoutTable caption="모드와 안정 한계" rows={[
-      {label:'직접 강성 k',value:system.stiffness,unit:'N/m'},{label:'직접 감쇠 c',value:system.damping,unit:'N·s/m'},{label:'교차 강성 q',value:system.crossStiffness,unit:'N/m'},
+      {label:'직접 강성 k',value:system.stiffness,unit:'N/m',sig:6},{label:'직접 감쇠 c',value:system.damping,unit:'N·s/m'},{label:'교차 강성 q',value:system.crossStiffness,unit:'N/m'},
       {label:'정방향 성장률 σf',value:modes.forward.re,unit:'1/s'},{label:'정방향 주파수 ωf',value:modes.forward.im,unit:'rad/s'},
       {label:'역방향 성장률 σb',value:modes.backward.re,unit:'1/s'},{label:'역방향 주파수 크기',value:Math.abs(modes.backward.im),unit:'rad/s'},
       ...(mode==='speed' && ratio>0 ? [{label:'모드 선회 차수 ωf/Ω',value:modes.forward.im/(ratio*modes.omegaN),unit:'X'}] : []),
       {label:'Log decrement δ',value:modes.logDecrement},{label:'모드 한 주기 진폭비',value:Math.exp(-modes.logDecrement)},
       {label:'한계 q/k',value:modes.criticalCrossStiffness/system.stiffness},{label:'속도 연동 모델 한계 r',value:2},
-      {label:'표시 시간',value:last.time*1000,unit:'ms'},{label:'초기 X 속도',value:initial.velocity.re,unit:'m/s'},{label:'초기 Y 속도',value:initial.velocity.im,unit:'m/s'},
+      {label:'표시 시간',value:last.time*1000,unit:'ms'},{label:'초기 X 속도',value:initial.velocity.re*1000,unit:'mm/s'},{label:'초기 Y 속도',value:initial.velocity.im*1000,unit:'mm/s'},
     ]}/>
     <p>δ는 모드 한 주기 진폭비의 로그 ln[A(t)/A(t+T)]입니다. 두 모드가 섞인 초기 응답의 연속 피크에서 그대로 측정하는 값은 아닙니다. q=0의 정지에서 놓기는 P1-3의 감쇠 자유진동과 같습니다.</p>
     {preview && <>

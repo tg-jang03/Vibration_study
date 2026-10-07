@@ -59,4 +59,13 @@ describe('P4-1 본문 그림 회귀 테스트', () => {
   });
 });
 
+it("본문 해석 숫자: 런아웃 AF 9.90 → 보상 9.84, ζ 0.05 간격 100·200 rpm AF 9.64·10.06, ζ 0.01 간격 25·50 rpm AF 48.3·49.7",()=>{
+  const af=(zeta:number,rpmStep:number)=>halfPowerAF(simulateRunUp({...P41_EXAMPLE.rotor,zeta},{rpmEnd:6000,rpmStep}))!.af;
+  expect(P41_VALUES.runoutHp.af).toBeCloseTo(9.905,2);
+  expect(P41_VALUES.compHp.af).toBeCloseTo(9.835,2);
+  expect(af(.05,100)).toBeCloseTo(9.64,2);
+  expect(af(.05,200)).toBeCloseTo(10.06,2);
+  expect(af(.01,25)).toBeCloseTo(48.33,1);
+  expect(af(.01,50)).toBeCloseTo(49.70,1);
+});
 it("성긴 rpm 예제는 피크를 유지하고 보간 폭을 늘린다",()=>{for(const [zeta,rpmStep,amp,width,af]of [[.01,200,500,137.629864,21.797595],[.005,100,1000,68.790050,43.610958]]){const v=halfPowerAF(simulateRunUp({...P41_EXAMPLE.rotor,zeta},{rpmEnd:6000,rpmStep}))!;expect(v.peakRpm).toBe(3000);expect(v.peakAmp*2e6).toBeCloseTo(amp,6);expect(v.n2-v.n1).toBeCloseTo(width,5);expect(v.af).toBeCloseTo(af,5);}});

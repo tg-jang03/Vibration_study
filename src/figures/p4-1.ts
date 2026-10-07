@@ -113,7 +113,7 @@ export const dampingCompare: FigureSpec = {
       series: [ampSeries(V.truth, 'c1', `ζ = ${R.zeta}`), ampSeries(t2, 'c2', `ζ = ${V.z2.zeta}`)],
       annotations: [
         { type: 'vline', x: 3000, color: 'muted', dash: true },
-        { type: 'point', x: V.z2Peak, y: pp(unbalanceVector(V.z2, V.z2Peak).amp), color: 'c2', label: `피크 ${fmt(V.z2Peak, 4)} rpm`, dx: 10, dy: -10 },
+        { type: 'point', x: V.z2Peak, y: pp(unbalanceVector(V.z2, V.z2Peak).amp), color: 'c2', label: `피크 ${fmt(V.z2Peak, 4)} rpm`, dx: 10, dy: 18 },
       ],
       x: { range: [1500, 5000], ticks: 'none' },
       y: { range: [0, 110], ticks: [0, 25, 50, 75, 100], label: '[µm pp]' },
@@ -158,7 +158,7 @@ function polarGrid(c: Pt, scale: number, rings: number[], unit: string): { serie
 }
 
 // ── 그림 3 — heavy spot vs high spot (세 회전수의 축 단면) ──
-const Y3 = squareYRange([0, 30], 200);
+const Y3 = squareYRange([0, 30], 240);
 const SR = 2.6;
 const shaftPanel = (c: Pt, p: RunUpPoint, title: string): { series: FigSeries[]; annotations: FigAnnotation[] } => {
   const lag = deg(p.lag);
@@ -171,22 +171,23 @@ const shaftPanel = (c: Pt, p: RunUpPoint, title: string): { series: FigSeries[];
       { type: 'line', x1: c[0], y1: c[1] + SR + 0.35, x2: c[0], y2: c[1] + SR + 1.3, color: 'c1', width: 6 },
       { type: 'circle', x: heavy[0], y: heavy[1], r: 7, fill: true, color: 'c2' },
       { type: 'circle', x: high[0], y: high[1], r: 6, fill: true, color: 'c1' },
-      { type: 'text', x: c[0], y: c[1] - SR - 0.9, text: title, anchor: 'middle', bold: true },
-      { type: 'text', x: c[0], y: c[1] - SR - 1.9, text: `지연 ${fmt(lag, 3)}°`, anchor: 'middle', color: 'muted' },
+      { type: 'text', x: c[0], y: c[1] - SR - 1.2, text: title, anchor: 'middle', bold: true },
+      { type: 'text', x: c[0], y: c[1] - SR - 2.1, text: `지연 ${fmt(lag, 3)}°`, anchor: 'middle', color: 'muted' },
     ],
   };
 };
-const C3a: Pt = [5, 5.2];
-const C3b: Pt = [15, 5.2];
-const C3c: Pt = [25, 5.2];
+// 위로 센서 막대, 아래로 제목·지연·범례가 들어가도록 가운데를 6.0에 둔다 (높이 240)
+const C3a: Pt = [5, 6.0];
+const C3b: Pt = [15, 6.0];
+const C3c: Pt = [25, 6.0];
 const s3 = [shaftPanel(C3a, V.low, `저속 ${V.low.rpm} rpm`), shaftPanel(C3b, V.crit, `임계 ${V.crit.rpm} rpm`), shaftPanel(C3c, V.high, `고속 ${V.high.rpm} rpm`)];
 export const heavyHighSpot: FigureSpec = {
   id: 'fig-p4-1-3',
-  caption: `그림 3. 키페이저 펄스 순간의 축 단면(축 방향에서 본 모습, 회전은 반시계). 주황 점은 불평형이 있는 무거운 점(heavy spot)으로 세 그림 모두 센서(위) 쪽 0°에 두었다. 파란 점은 축이 센서 쪽으로 가장 많이 나온 곳(high spot) — Polar 화살표가 가리키는 방향이다. high spot은 무거운 점보다 회전 반대 방향으로 위상 지연만큼 뒤에 있다: 저속 ${fmt(deg(V.low.lag), 2)}°(거의 같은 곳), 임계속도 90°, 고속 ${fmt(deg(V.high.lag), 3)}°(거의 반대편).`,
+  caption: `그림 3. 키페이저 펄스 순간의 축 단면(축 방향에서 본 모습, 회전은 반시계). 주황 점은 불평형이 있는 무거운 점(heavy spot)으로 세 그림 모두 센서(위) 쪽 0°에 두었다. 파란 점은 축이 센서 쪽으로 가장 많이 나온 곳(high spot) — Polar 점의 위상 방향이다. high spot은 무거운 점보다 회전 반대 방향으로 위상 지연만큼 뒤에 있다: 저속 ${fmt(deg(V.low.lag), 2)}°(거의 같은 곳), 임계속도 90°, 고속 ${fmt(deg(V.high.lag), 3)}°(거의 반대편).`,
   panels: [
     {
       frame: false,
-      height: 200,
+      height: 240,
       x: { range: [0, 30] },
       y: { range: Y3 },
       series: s3.flatMap((s) => s.series),
@@ -210,10 +211,9 @@ const polarTrace = (pts: RunUpPoint[], c: Pt, scale: number, color: FigColor, wi
 const z1 = fine({ ...R, zeta: 0.1 });
 const marks4: [number, number, number][] = [
   [2700, -78, 4],
-  [3000, 10, 4],
-  [3300, 10, 16],
-  [OP, -10, 22],
-  [6000, -82, -6],
+  [3000, 12, -14],
+  [3300, 14, 4],
+  [OP, -70, 10],
 ];
 export const polarLoop: FigureSpec = {
   id: 'fig-p4-1-4',
@@ -252,7 +252,7 @@ export const halfPower: FigureSpec = {
         { type: 'hline', y: level, color: 'warn', dash: true, label: `0.707 × 피크 = ${fmt(level, 3)} µm pp`, labelAt: 'end' },
         { type: 'vline', x: hp.n1, color: 'muted', dash: true },
         { type: 'vline', x: hp.n2, color: 'muted', dash: true },
-        { type: 'point', x: hp.peakRpm, y: pp(hp.peakAmp), color: 'warn', label: `피크 N_c = ${hp.peakRpm} rpm`, dx: 10, dy: -4 },
+        { type: 'point', x: hp.peakRpm, y: pp(hp.peakAmp), color: 'warn', label: `피크 N_c = ${hp.peakRpm} rpm`, dx: -60, dy: -16 },
         { type: 'arrow', x1: hp.n1, y1: 20, x2: hp.n2, y2: 20, double: true, color: 'text', label: `N₂ − N₁ = ${fmt(hp.n2 - hp.n1, 3)} rpm` },
         { type: 'text', x: hp.n1 - 20, y: 8, text: `N₁ ${fmt(hp.n1, 4)}`, anchor: 'end', color: 'muted' },
         { type: 'text', x: hp.n2 + 20, y: 8, text: `N₂ ${fmt(hp.n2, 4)}`, anchor: 'start', color: 'muted' },
