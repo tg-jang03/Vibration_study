@@ -33,6 +33,7 @@ import ShaftCenterlineLab from '../../components/labs/ShaftCenterlineLab';
 import RunUpBodeLab from '../../components/labs/RunUpBodeLab';
 import FilterLab from '../../components/labs/FilterLab';
 import IntegrationLab from '../../components/labs/IntegrationLab';
+import StftLab from '../../components/labs/StftLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -136,6 +137,7 @@ const c = lab.component;
       {c === 'RunUpBodeLab' && <RunUpBodeLab client:load />}
       {c === 'FilterLab' && <FilterLab client:load />}
       {c === 'IntegrationLab' && <IntegrationLab client:load />}
+      {c === 'StftLab' && <StftLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">

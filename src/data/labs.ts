@@ -63,6 +63,7 @@ export const LABS: LabEntry[] = [
   // Part 5
   { slug: 'flt-01', id: 'LAB-FLT-01', component: 'FilterLab', part: 5, title: '필터 설계: 크기 · 군지연 · 시간파형', summary: '종류·차수·차단 주파수를 바꿔 깎이는 정도와 늦음, 파형 모양, 두 번 거르기를 본다.' },
   { slug: 'int-01', id: 'LAB-INT-01', component: 'IntegrationLab', part: 5, title: '적분 & ski-slope', summary: '가속도를 속도·변위로 적분하며 하한 컷오프, ski-slope, 직류 오프셋의 드리프트를 본다.' },
+  { slug: 'stft-01', id: 'LAB-STFT-01', component: 'StftLab', part: 5, title: '스펙트로그램 · 워터폴 · 캐스케이드', summary: '기동 신호를 프레임 길이·겹침을 바꿔 STFT하고, 스펙트로그램·워터폴·캐스케이드로 줄을 읽는다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

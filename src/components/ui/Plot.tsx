@@ -32,8 +32,21 @@ export interface PlotAxis {
   log?: boolean;
 }
 
+/** 색 지도 (스펙트로그램, P5-2). x·y는 칸 가운데, z[j][i]는 y j번째 · x i번째 값 */
+export interface PlotHeatmap {
+  x: ArrayLike<number>;
+  y: ArrayLike<number>;
+  z: ArrayLike<number>[];
+  zRange?: [number, number];
+  /** 색 막대 제목 (예: 'dB') */
+  colorLabel?: string;
+  name?: string;
+}
+
 interface PlotProps {
   series: PlotSeries[];
+  /** 계열 아래에 깔리는 색 지도 (선택) */
+  heatmap?: PlotHeatmap;
   x?: PlotAxis;
   y?: PlotAxis;
   height?: number;
@@ -94,7 +107,7 @@ const CONFIG: Partial<Config> = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
 };
 
-export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
+export default function Plot({ series, heatmap, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [themeVersion, setThemeVersion] = useState(0);
@@ -141,6 +154,23 @@ export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered
           marker: { color, size: s.markerSize ?? 6 },
         };
       });
+      if (heatmap) {
+        data.unshift({
+          type: 'heatmap',
+          x: Array.from(heatmap.x),
+          y: Array.from(heatmap.y),
+          z: heatmap.z.map((row) => Array.from(row)),
+          zmin: heatmap.zRange?.[0],
+          zmax: heatmap.zRange?.[1],
+          name: heatmap.name,
+          colorscale: [
+            [0, theme.surface],
+            [1, theme.palette[0]],
+          ],
+          colorbar: { title: { text: heatmap.colorLabel ?? '' }, thickness: 12, tickfont: { color: theme.muted } },
+          hovertemplate: '%{x:.4g}, %{y:.4g}: %{z:.3g}<extra></extra>',
+        } as Data);
+      }
       const layout: Partial<Layout> = {
         height,
         margin: { l: 56, r: 16, t: 16, b: 48 },
@@ -168,7 +198,7 @@ export default function Plot({ series, x, y, height = 320, ariaLabel, onRendered
       cancelled = true;
     };
     // x, y는 xKey, yKey(내용)로 비교한다
-  }, [series, xKey, yKey, height, themeVersion]);
+  }, [series, heatmap, xKey, yKey, height, themeVersion]);
 
   // 언마운트 시 Plotly 정리
   useEffect(() => {

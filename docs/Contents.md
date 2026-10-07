@@ -75,6 +75,7 @@
 | 페이지 | 새로 도입하는 개념 | 기대고 있는 개념 |
 |---|---|---|
 | P5-1 | 크기 응답 ∣H(f)∣, 통과·차단·전이 대역, 차단 주파수(−3 dB), 저역·고역 통과, 옥타브·디케이드(차수당 6 dB/옥타브), Butterworth·Chebyshev(리플)·Bessel(Elliptic 이름만), IIR·FIR·탭, 위상 응답·군지연 τ_g·선형 위상, 넘침(overshoot), 필터 지연과 1X 위상, 두 번 거르기(영위상, ∣H∣², 저장된 데이터만), 적분 = 1/(j2πf) 필터, 하한 컷오프(2차면 1X의 1/3 이하), 누적합 적분·드리프트·적분 상수, 데시메이션(저역 통과 → 솎기) | P2-3(AAF·dB·차수), P2-2(위상과 파형 모양·사각파·복소 표현), P1-4(위상 지연), P1-2(속도·가속도 위상), P2-7(v = a/2πf), P3-4(ski-slope), P3-3(1X 위상), P2-4(Zoom FFT) |
+| P5-2 | STFT(프레임·윈도우·FFT·hop, 프레임 시각), 스펙트로그램(시각 × 주파수 × 색), 프레임 길이 트레이드오프(Δf = 1/T vs 시각 T, 번짐 ≈ max(1/T, aT), T_best = 1/√a), 워터폴(세로 = 시간) vs 캐스케이드(세로 = 회전수), 줄 읽기(비스듬 = 회전·기울기 = 차수, 세로 = 고정, 꺾임 = 잠김, 교차 = 공진), 오일 휠 → 휩(모양만), 웨이블릿(개념) | P5-1, P2-4(스미어링·Δf), P2-5(윈도우), P2-6(오버랩), P3-5(Cascade·Δrpm), P1-8(기름막 0.38 ~ 0.48X), P1-4(공진) |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -238,7 +239,7 @@
 | P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 검토 |
 | P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
 | P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 검토 (그림 10, LAB-FLT-01·LAB-INT-01 각 1곳, 2026-10-07) |
-| P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 계획 |
+| P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 검토 (그림 6, LAB-STFT-01 1곳, 2026-10-07) |
 | P5-3 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 계획 |
 | P5-4 | 차수추적 | LAB-ORD-01 | M4.5 | 계획 |
 | P5-5 | 트래킹 · 노치 필터 | LAB-FLT-02 | M4.6 | 계획 |
@@ -321,6 +322,7 @@
 | LAB-SCL-01 | 유막 지지와 Shaft centerline | P4-3 | `ShaftCenterlineLab` (/lab/scl-01/) · lib/rotor/journalBearing.ts |
 | LAB-FLT-01 | 필터 설계: 크기 · 군지연 · 시간파형 | P5-1 | `FilterLab` (/lab/flt-01/) · lib/dsp/filter.ts, lib/filterDemo.ts |
 | LAB-INT-01 | 적분 & ski-slope | P5-1 | `IntegrationLab` (/lab/int-01/) · lib/dsp/filter.ts (integrateSpectral·integrateCumulative), lib/filterDemo.ts |
+| LAB-STFT-01 | 스펙트로그램 · 워터폴 · 캐스케이드 | P5-2 | `StftLab` (/lab/stft-01/) · lib/dsp/stft.ts, lib/stftDemo.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -340,7 +342,6 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-STFT-01 | 스펙트로그램 · 워터폴 | 프레임 길이·오버랩 → 시간-주파수 트레이드오프 | P5-2 | M4.3 |
 | LAB-XCH-01 | FRF · 코히어런스 | 입력/출력 잡음, 평균 수 → H1 vs H2, γ² | P5-3 | M4.4 |
 | LAB-FULL-01 | Full spectrum | X/Y 진폭·위상 → 오빗과 정/역 성분 | P5-3 | M4.4 |
 | LAB-ORD-01 | 차수추적 | 등각도 재샘플링 on/off, 키페이저 유/무 → smearing 제거 | P5-4 | M4.5 |

@@ -67,6 +67,23 @@ export interface FigPanel {
   legend?: boolean;
   /** false면 축·격자·눈금을 그리지 않는다 (도식 그림용). 기본 true */
   frame?: boolean;
+  /** 색 지도 (스펙트로그램 등, P5-2). 계열·음영보다 아래에 그린다 */
+  heatmap?: FigHeatmap;
+}
+
+/**
+ * 색 지도: x·y는 칸의 경계(길이 = 칸 수 + 1), z[j][i]는 x 칸 i · y 칸 j의 값.
+ * zRange를 levels 단계로 나눠 color 하나의 진하기로 칠한다 (가장 낮은 단계는 칠하지 않음).
+ */
+export interface FigHeatmap {
+  x: ArrayLike<number>;
+  y: ArrayLike<number>;
+  z: ArrayLike<number>[];
+  zRange: [number, number];
+  levels?: number;
+  color?: FigColor;
+  /** 제목 줄 오른쪽에 그릴 진하기 범례의 이름 (예: '진폭 [dB]') */
+  legend?: string;
 }
 
 export interface FigureSpec {
