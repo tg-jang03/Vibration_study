@@ -35,6 +35,8 @@ import RunUpBodeLab from '../../components/labs/RunUpBodeLab';
 import FilterLab from '../../components/labs/FilterLab';
 import IntegrationLab from '../../components/labs/IntegrationLab';
 import StftLab from '../../components/labs/StftLab';
+import FrfLab from '../../components/labs/FrfLab';
+import FullSpectrumLab from '../../components/labs/FullSpectrumLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -140,6 +142,8 @@ const c = lab.component;
       {c === 'FilterLab' && <FilterLab client:load />}
       {c === 'IntegrationLab' && <IntegrationLab client:load />}
       {c === 'StftLab' && <StftLab client:load />}
+      {c === 'FrfLab' && <FrfLab client:load />}
+      {c === 'FullSpectrumLab' && <FullSpectrumLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">
