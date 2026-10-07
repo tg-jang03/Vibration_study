@@ -76,7 +76,7 @@ export default function ProximityLab({ initialGap = 1.2, initialRpm = 3600, init
       controls={<>
         <ParamSlider label="평균 gap d₀" value={gapMm} min={0.1} max={2.8} step={0.01} unit="mm" format={(v) => v.toFixed(2)} onChange={setGapMm} />
         <ParamSlider label="회전수" value={rpm} min={100} max={4000} step={50} unit="rpm" onChange={setRpm} hint={`예시 로터: 임계속도 ${ROTOR.criticalRpm} rpm, 운전 ${ROTOR.operatingRpm} rpm`} />
-        <ParamSlider label="축 진동 (운전 3600 rpm에서)" value={vib} min={0} max={300} step={5} unit="µm pp" onChange={setVib} hint="다른 회전수의 진동은 불평형 응답으로 정해집니다 (P1-6)" />
+        <ParamSlider label="축 진동 (운전 3600 rpm에서)" value={vib} min={0} max={300} step={5} unit="µm pp" onChange={setVib} hint="다른 회전수의 진동은 불평형 응답으로 정해집니다 (P1-7)" />
         <ParamSelect label="런아웃" value={runout} options={RUNOUT_OPTIONS} onChange={setRunout} />
         <ParamSelect label="표적 재질" value={target} options={TARGET_OPTIONS} onChange={setTarget} hint="환산에는 늘 교정 감도 7.87 V/mm를 씁니다" />
       </>}

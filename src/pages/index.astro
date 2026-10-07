@@ -132,7 +132,7 @@ const fx = (f: number) => 26 + (f / 16) * 288;
 
   <script is:inline>
     try {
-      const last = JSON.parse(localStorage.getItem('vs-last-section-v2') || 'null');
+      const last = JSON.parse(localStorage.getItem('vs-last-section-v3') || 'null');
       const a = document.getElementById('resume');
       if (last && last.href && a) {
         a.href = last.href;

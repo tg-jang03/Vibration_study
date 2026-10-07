@@ -1,5 +1,5 @@
-// M5.0 P5-1 browser regression. Use an isolated QA Edge session only.
-// node scripts/verify/p5-1-browser.mjs <debug-port> <preview-url> [screenshot-directory]
+// M5.0 P1-6 browser regression. Use an isolated QA Edge session only.
+// node scripts/verify/p1-6-browser.mjs <debug-port> <preview-url> [screenshot-directory]
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -84,8 +84,8 @@ try {
   assert(Math.abs(await currentFrequency() - 10.0658424209) < 1e-8);
   const readouts = await evaluate("Array.from(document.querySelectorAll('.readout-table tbody tr')).map(r=>r.textContent)");
   assert(readouts.some(r => r.includes('0.4 MN/m')));
-  await capture('p5-1-full', true);
-  await capture('p5-1-lab');
+  await capture('p1-6-full', true);
+  await capture('p1-6-lab');
   await slider(0, 0.25);
   await until(lab + ".querySelector('.js-plotly-plot').data[2].x[0]===0.25");
   assert(Math.abs(await currentFrequency() - Math.sqrt(20000/11)/(2*Math.PI)) < 1e-8);
@@ -107,16 +107,16 @@ try {
   await send('Emulation.setDeviceMetricsOverride', {width: 390, height: 844, deviceScaleFactor: 1, mobile: false});
   await sleep(400);
   await evaluate(lab + ".scrollIntoView({block:'start'})");
-  await capture('p5-1-mobile');
+  await capture('p1-6-mobile');
   assert(await evaluate("document.documentElement.scrollWidth <= innerWidth"), 'mobile horizontal overflow');
   await send('Emulation.setDeviceMetricsOverride', {width: 1100, height: 1500, deviceScaleFactor: 1, mobile: false});
   const galleryUrl = new URL('../dev/figures/', url).href;
   await send('Page.navigate', {url: galleryUrl});
-  await until("document.getElementById('p5-1')");
-  await evaluate("document.getElementById('p5-1').scrollIntoView()");
+  await until("document.getElementById('p1-6')");
+  await evaluate("document.getElementById('p1-6').scrollIntoView()");
   await sleep(300);
-  assert.equal(await evaluate("document.querySelectorAll('figure[id^=fig-p5-1]').length"), 7);
-  await capture('p5-1-gallery');
+  assert.equal(await evaluate("document.querySelectorAll('figure[id^=fig-p1-6]').length"), 7);
+  await capture('p1-6-gallery');
   assert.deepEqual(errors, [], 'console/hydration errors');
   console.log('PASS: 7 figures, captions, all links/anchors, analytic lab values, sliders/reset/extremes, 390px width, gallery, hydration');
 } finally {

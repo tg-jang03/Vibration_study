@@ -32,15 +32,16 @@
 | P1-3 | 감쇠·감쇠 계수 c, 감쇠비 ζ, 부족·임계·과감쇠, 포락선 e^{−ζω_n t}, 감쇠 고유진동수 ω_d, 대수감쇠율 δ(맛보기) | P1-2 |
 | P1-4 | 가진력 F₀ cos ωt, 과도 응답 vs 정상상태 응답, 진동수비 r, 진폭비 X/X_st, 위상 지연 0° → 90° → 180°, 공진·Q ≈ 1/(2ζ), 주파수응답(FRF)·Bode 선도, 맥놀이(맛보기) | P1-2, P1-3 |
 | P1-5 | 자유도, 2자유도계·연성, 고유진동수 2개, 모드 형상(동상·역상), 중첩, 연속체의 많은 모드 | P1-2, P1-4 |
-| P1-6 | rpm·f = rpm/60·Ω, 불평형 m_u·e, 원심력 m_u e Ω², 회전하는 힘 = 주기 가진, 1X, 임계속도, 런업, 진폭·위상 vs rpm | P1-4, P1-5 |
-| P1-7 | 세는 규칙(한 바퀴에 k번 → k·f_r), 하모닉(2X·3X), 날개 통과 N_b·f_r, 기어 맞물림 z·f_r·회전수비, 구름베어링 FTF·BPFO·BPFI(근사, 정수배가 아님), 충격 → 구조 고유진동수 울림(kHz), 유막 0.38 ~ 0.48X, 벨트, 2 f_L, 회전 관련 vs 고정, 관심 주파수 구간 4개 (D-032) | P1-2 ~ P1-4, P1-6 |
-| P1-8 | 여러 원인의 합(1X·2X·날개 통과·구조 공진·잡음), 순문제 vs 역문제, 증거 5요소, "다시 나누려면?" (스펙트럼 동기) | P1-1 ~ P1-7 |
+| P1-6 | 구동기/피동기·모터/로터/고정자·축/커플링/축계, 베어링의 방식(구름/유막)과 하중 방향(반경/추력), 하우징/받침대/기초, 횡/축/비틀림 운동, 구성 → MCK 대응, 무질량 직렬 강성 예제 | P1-1~P1-5. 요소 주파수(P1-8)·측정(Part 3)·결함(Part 7)은 뒤에서, 여기서는 구성만 |
+| P1-7 | rpm·f = rpm/60·Ω, 불평형 m_u·e, 원심력 m_u e Ω², 회전하는 힘 = 주기 가진, 1X, 임계속도, 런업, 진폭·위상 vs rpm | P1-4, P1-5 |
+| P1-8 | 세는 규칙(한 바퀴에 k번 → k·f_r), 하모닉(2X·3X), 날개 통과 N_b·f_r, 기어 맞물림 z·f_r·회전수비, 구름베어링 FTF·BPFO·BPFI(근사, 정수배가 아님), 충격 → 구조 고유진동수 울림(kHz), 유막 0.38 ~ 0.48X, 벨트, 2 f_L, 회전 관련 vs 고정, 관심 주파수 구간 4개 (D-032) | P1-2 ~ P1-4, P1-7 |
+| P1-9 | 여러 원인의 합(1X·2X·날개 통과·구조 공진·잡음), 순문제 vs 역문제, 증거 5요소, "다시 나누려면?" (스펙트럼 동기) | P1-1 ~ P1-8 |
 
 **Part 2 개념 척추**
 
 | 페이지 | 새로 도입하는 개념 | 기대고 있는 개념 |
 |---|---|---|
-| P2-1 | 시간파형·측정량과 단위·측정 기준, 차수·서브싱크로너스, Peak·Pk-Pk·RMS·DC·CF, 스펙트럼 vs FRF, 샘플·f_s·Δt·N·T·Δf·f_N, 에일리어싱(맛보기). 정현파·d·v·a·1X의 물리는 P1-2·P1-6에서 가져와 짧게 되짚기만 한다 (M2.9) | Part 1 (P1-1 ~ P1-8) |
+| P2-1 | 시간파형·측정량과 단위·측정 기준, 차수·서브싱크로너스, Peak·Pk-Pk·RMS·DC·CF, 스펙트럼 vs FRF, 샘플·f_s·Δt·N·T·Δf·f_N, 에일리어싱(맛보기). 정현파·d·v·a·1X의 물리는 P1-2·P1-7에서 가져와 짧게 되짚기만 한다 (M2.9) | Part 1 (P1-1 ~ P1-9) |
 | P2-2 | 하모닉·푸리에 급수, 상관(내적), DFT·bin, 진폭/위상 스펙트럼, 단일측, 제로패딩, FFT | P2-1 |
 | P2-3 | 나이퀴스트 상세, 에일리어스 주파수, AAF, F_max·2.56·LOR, ADC·비트·양자화·클리핑 | P2-1, P2-2 |
 | P2-4 | Δf = 1/T 상세, 두 성분 분리, smearing, Zoom FFT (윈도우 없이 설명) | P2-2, P2-3 |
@@ -56,18 +57,18 @@
 |---|---|---|
 | P3-1 | 센서 세 종류(비접촉 변위·속도·가속도)와 재는 양(상대·절대), 감도(mV/g 등), 센서 = 기초가진 1자유도 계(질량·스프링이 든 통), 가속도계(r ≪ 1)·속도계(r ≫ 1)의 평탄 대역, 마운팅 공진, GT/ST에서 비접촉 변위 센서를 주로 쓰는 이유 | P1-4(공진·진폭비·위상 지연), P2-1(변위·속도·가속도), P2-3(대역·AAF), P2-7(단위) |
 | P3-2 | 프로브 시스템(프로브·케이블·드라이버), gap 전압·감도·선형 범위, DC = 평균 위치·AC = 진동, 런아웃(기계적·전기적), X-Y 배치 | P3-1 |
-| P3-3 | 키페이저(1회전 1펄스 → 회전수·각도 기준), 위상 = 지연각 φ = 360°·Δt/T(1X 성분으로, 동기 샘플링 DFT·트래킹 필터는 이름만), 관례(앞섬각 −φ·영점 기준 φ − 90°, 센서 종류·설치 각도), 1X 벡터 A∠φ = Ae^{−jφ}, Polar 플롯(0° = 센서, 지연 = 회전 반대, high spot은 이름만), 런업의 Bode vs Polar, Slow roll 보상(벡터 빼기, 구간 고르기), 위상차 진단(X-Y → 오빗 원·직선, 두 베어링 동상·역상 → 병진·원추, 정적·커플 불평형, 커플링 축방향 180° → 정렬 불량) | P3-2, P2-2(DFT 위상), P2-5(누설), P2-6(화살표·트리거), P1-2(속도·가속도 위상), P1-4(위상 지연), P1-5(동상·역상), P1-6(Bode) |
-| P3-4 | 측정 체인(마운팅 → 센서 → 케이블 → 전원 → 분석기 입력 → 계산)과 단계별 가짜 신호: 설치·센서 공진 봉우리(넓고, 회전수를 따라가지 않음), IEPE·바이어스 전압(정상·끊김·합선)·AC 결합·정착 시간, ski-slope(v = a/2πf로 낮은 주파수가 부풂, 원인: 정착·열 충격·충격 뒤 회복·케이블), 그라운드 루프(60 Hz와 홀수배, 접지 분리), 케이블·커넥터 잡음(마찰전기는 이름만), 입력 넘침(클리핑 → 정수배 막대), 확인 습관(바이어스·시간파형·넘침 표시·지난 측정·다른 센서) | P3-1(설치 공진), P3-2, P2-3(클리핑·양자화), P2-4·P2-9(분해능), P2-7(v = a/2πf, overall), P1-7(회전 관련 vs 고정, 2f_L) |
-| P3-5 | 정상상태 vs 과도 수집, Δt 트리거 vs Δrpm 트리거(임계 구간을 놓침), 동기 샘플링 → 차수 스펙트럼(스미어링 없음), 런업 그림(Bode·Polar·Cascade·Shaft centerline), 기계 보호 시스템(채널 구성: X·Y·축 방향 위치·키페이저·케이싱), Alert·Danger·트립·헛트립, 시간 지연, 보팅(1oo1·1oo2·2oo2), 기동 중 트립 배율, Danger bypass, 보호 vs 상태감시 | P3-2(gap·Not OK), P3-3(키페이저·1X 벡터·직선 오빗), P3-4(튐·센서 이상), P2-4(스미어링·차수 추적 소개), P2-6(차수 스펙트럼), P1-6(임계속도·런업) |
+| P3-3 | 키페이저(1회전 1펄스 → 회전수·각도 기준), 위상 = 지연각 φ = 360°·Δt/T(1X 성분으로, 동기 샘플링 DFT·트래킹 필터는 이름만), 관례(앞섬각 −φ·영점 기준 φ − 90°, 센서 종류·설치 각도), 1X 벡터 A∠φ = Ae^{−jφ}, Polar 플롯(0° = 센서, 지연 = 회전 반대, high spot은 이름만), 런업의 Bode vs Polar, Slow roll 보상(벡터 빼기, 구간 고르기), 위상차 진단(X-Y → 오빗 원·직선, 두 베어링 동상·역상 → 병진·원추, 정적·커플 불평형, 커플링 축방향 180° → 정렬 불량) | P3-2, P2-2(DFT 위상), P2-5(누설), P2-6(화살표·트리거), P1-2(속도·가속도 위상), P1-4(위상 지연), P1-5(동상·역상), P1-7(Bode) |
+| P3-4 | 측정 체인(마운팅 → 센서 → 케이블 → 전원 → 분석기 입력 → 계산)과 단계별 가짜 신호: 설치·센서 공진 봉우리(넓고, 회전수를 따라가지 않음), IEPE·바이어스 전압(정상·끊김·합선)·AC 결합·정착 시간, ski-slope(v = a/2πf로 낮은 주파수가 부풂, 원인: 정착·열 충격·충격 뒤 회복·케이블), 그라운드 루프(60 Hz와 홀수배, 접지 분리), 케이블·커넥터 잡음(마찰전기는 이름만), 입력 넘침(클리핑 → 정수배 막대), 확인 습관(바이어스·시간파형·넘침 표시·지난 측정·다른 센서) | P3-1(설치 공진), P3-2, P2-3(클리핑·양자화), P2-4·P2-9(분해능), P2-7(v = a/2πf, overall), P1-8(회전 관련 vs 고정, 2f_L) |
+| P3-5 | 정상상태 vs 과도 수집, Δt 트리거 vs Δrpm 트리거(임계 구간을 놓침), 동기 샘플링 → 차수 스펙트럼(스미어링 없음), 런업 그림(Bode·Polar·Cascade·Shaft centerline), 기계 보호 시스템(채널 구성: X·Y·축 방향 위치·키페이저·케이싱), Alert·Danger·트립·헛트립, 시간 지연, 보팅(1oo1·1oo2·2oo2), 기동 중 트립 배율, Danger bypass, 보호 vs 상태감시 | P3-2(gap·Not OK), P3-3(키페이저·1X 벡터·직선 오빗), P3-4(튐·센서 이상), P2-4(스미어링·차수 추적 소개), P2-6(차수 스펙트럼), P1-7(임계속도·런업) |
 
-**Part 5 개념 척추** (D-034·D-036, 2026-10-06 — 트랙 B가 M5에서 쓴다)
+**Part 4 개념 척추** (D-034·D-036·D-040 — 트랙 B가 M5에서 쓴다. Part 3 다음, Part 5 앞)
 
 | 페이지 | 새로 도입하는 개념 | 기대고 있는 개념 |
 |---|---|---|
-| P5-1 | 구동기/피동기·모터/로터/고정자·축/커플링/축계, 베어링의 방식(구름/유막)과 하중 방향(반경/추력), 하우징/받침대/기초, 횡/축/비틀림 운동, 구성 → MCK 대응, 무질량 직렬 강성 예제 | P1-1~P1-5. P1-7의 요소 주파수는 다시 계산하지 않고 Part 3의 측정·Part 7의 결함과 경계를 둔다 |
-| P5-2 | 불평형 응답의 Bode(1X 진폭·위상 vs rpm)와 Polar(1X 벡터 궤적), heavy spot vs high spot, 증폭계수 AF = N_c/(N₂ − N₁) ≈ 1/(2ζ)·Half-power, 분리여유 SM(개념, 규격 수치 없음), 런업 데이터의 오차(rpm 간격·잡음·런아웃) | P5-1, P1-4, P1-6, P3-3(1X 벡터·위상 관례, §3) |
-| P5-3 | 자전/선회·강체 병진/기울기와 축 굽힘 도입 → Jeffcott 로터(원판 + 탄성축), 복소 좌표 z = x + jy, 정방향 동기 선회·원형 오빗, 비등방 지지 → 타원 오빗·임계속도 2개·역방향 선회, 정/역 성분 A_f·A_b(페이지에서 직접 계산 — Full spectrum P4-4는 아직 없다), 강성/유연 로터 | P5-1, P1-5, P1-6, P5-2, P2-2(복소 표현) |
-| P5-4 | 유막의 압력 생성·하중 지지 → 저널 베어링(간극·편심률·자세각), 유막 계수(K_xx … C_yy)와 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P5-1, P1-3, P1-7(기름막 0.38 ~ 0.48X), P5-3 |
+| P4-1 | 불평형 응답의 Bode(1X 진폭·위상 vs rpm)와 Polar(1X 벡터 궤적), heavy spot vs high spot, 증폭계수 AF = N_c/(N₂ − N₁) ≈ 1/(2ζ)·Half-power, 분리여유 SM(개념, 규격 수치 없음), 런업 데이터의 오차(rpm 간격·잡음·런아웃) | P1-6, P1-4, P1-7, P3-3(1X 벡터·위상 관례, §3) |
+| P4-2 | 자전/선회·강체 병진/기울기와 축 굽힘 도입 → Jeffcott 로터(원판 + 탄성축), 복소 좌표 z = x + jy, 정방향 동기 선회·원형 오빗, 비등방 지지 → 타원 오빗·임계속도 2개·역방향 선회, 정/역 성분 A_f·A_b(페이지에서 식으로 직접 계산 — 데이터에서 꺼내는 Full spectrum은 P5-3), 강성/유연 로터 | P1-6, P1-5, P1-7, P4-1, P2-2(복소 표현) |
+| P4-3 | 유막의 압력 생성·하중 지지 → 저널 베어링(간극·편심률 ε·자세각), Shaft centerline(gap 전압 DC로 그린 축 중심 vs rpm, cold gap 기준, 떠오름·비정상 위치·장기 변화), 유막 계수(K_xx … C_yy)는 이름과 뜻만 | P1-6, P3-2(gap 전압), P3-5(런업 그림), P4-1 |
+| P4-4 | 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P1-3, P1-8(기름막 0.38 ~ 0.48X), P4-2, P4-3 |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -121,19 +122,19 @@
 | f_c, f_m | 반송파 / 변조 주파수 | Hz | |
 | m, β | AM 변조 지수 / FM 변조 지수 | — | |
 | f_r, 1X | 회전 주파수 | Hz | f_r = rpm / 60 |
-| z | 기어 잇수 | — | 맞물림 f_GM = z f_r (P1-7) |
+| z | 기어 잇수 | — | 맞물림 f_GM = z f_r (P1-8) |
 | N_b | 날개 수 | — | 날개 통과 f_BP = N_b f_r |
 | N_r, d, D | 구름베어링 볼(구름요소) 수 / 볼 지름 / 피치 지름 | —, m, m | 접촉각은 P7-5에서 (지수 평균 α와 기호 구분 필요) |
 | f_L | 전원 주파수 | Hz | 60 Hz. 전자기력 2 f_L |
 | θ | 축 회전 각도 | rad | 키페이저 기준 |
 | N_c, N_n | 임계속도(피크 회전수) / 고유 회전수 | rpm | |
 | S | 비접촉 변위 센서 감도 | V/m (표시 V/mm) | 예 7.87 V/mm = 200 mV/mil (P3-2) |
-| z | 복소 변위 x + jy | m | Jeffcott·안정성 (P5-3, P5-4) |
-| A_f, A_b | 정방향 / 역방향 선회 성분 | m | z = A_f e^{jΩt} + A_b e^{−jΩt} (P5-3) |
-| k_xy | 교차연성 강성 | N/m | 유막·씰 (P5-4) |
-| λ = σ ± jω_d | 복소 고유치 | 1/s | σ > 0이면 불안정 (P5-4) |
+| z | 복소 변위 x + jy | m | Jeffcott·안정성 (P4-2, P4-4) |
+| A_f, A_b | 정방향 / 역방향 선회 성분 | m | z = A_f e^{jΩt} + A_b e^{−jΩt} (P4-2) |
+| k_xy | 교차연성 강성 | N/m | 유막·씰 (P4-4) |
+| λ = σ ± jω_d | 복소 고유치 | 1/s | σ > 0이면 불안정 (P4-4) |
 | ζ | 감쇠비 | — | |
-| k_eq, k_sh, k_br, k_sup | 직렬 예제의 등가 / 축 / 베어링 / 지지 강성 | N/m | P5-1 한 방향·무질량 연결 예제. k_br은 한 경로의 등가 값, 실제 두 베어링 일반식이 아님 |
+| k_eq, k_sh, k_br, k_sup | 직렬 예제의 등가 / 축 / 베어링 / 지지 강성 | N/m | P1-6 한 방향·무질량 연결 예제. k_br은 한 경로의 등가 값, 실제 두 베어링 일반식이 아님 |
 | AF | 증폭계수 (Amplification Factor) | — | |
 | G_xy | 교차 스펙트럼 | | |
 | γ² | 코히어런스 | — | 0~1 |
@@ -169,17 +170,17 @@
 - 증폭계수 (Half-power): `AF = \dfrac{N_c}{N_2 - N_1} \approx \dfrac{1}{2\zeta}` (N₁, N₂: 피크 진폭의 0.707배 지점, I-004)
 - 1자유도 불평형 응답: `\dfrac{X}{m_u e / M} = \dfrac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}},\quad \phi = \operatorname{atan2}(2\zeta r,\ 1-r^2),\quad r = \dfrac{N}{N_n}`
 - Log decrement: `\delta = -\dfrac{2\pi\sigma}{\omega_d} \approx 2\pi\zeta`
-- 지지 강성 직렬 예제(P5-1): `\dfrac{1}{k_{eq}} = \dfrac{1}{k_{sh}} + \dfrac{1}{k_{br}} + \dfrac{1}{k_{sup}}`, `f_n = \dfrac{1}{2\pi}\sqrt{\dfrac{k_{eq}}{m}}` (연결부 질량 무시, 같은 힘, 각 변형 합의 가정)
+- 지지 강성 직렬 예제(P1-6): `\dfrac{1}{k_{eq}} = \dfrac{1}{k_{sh}} + \dfrac{1}{k_{br}} + \dfrac{1}{k_{sup}}`, `f_n = \dfrac{1}{2\pi}\sqrt{\dfrac{k_{eq}}{m}}` (연결부 질량 무시, 같은 힘, 각 변형 합의 가정)
 - 1X 벡터와 Slow roll 보상: `\vec V = A\,e^{-j\phi}`, `\vec V_c = \vec V - \vec V_{sr}`
-- **위상 관례 (P3-3·P5-2·P6-5 공통, D-034)**: 위상 φ는 **지연각**(0° ≤ φ < 360°) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각. 1X 벡터 = A∠φ (A의 단위·Peak/Pk-Pk를 함께 적는다), 복소수로는 `A\,e^{-j\phi}`. Polar 플롯은 0°를 위쪽(센서 방향)에 두고 지연이 커지는 쪽을 **회전 반대 방향**으로 그린다(기본 회전은 반시계 → 지연은 시계 방향). 시간에서 각도로: `arphi = 360^circ 	imes Delta t / T`. 장비마다 다른 관례(P3-3 §3): 앞섬각(cos 기준, FFT 위상) `psi = -arphi`, 영점 기준 `arphi - 90^circ`. Polar 플롯 랩은 `components/ui/PolarPlot`(D-035)
+- **위상 관례 (P3-3·P4-1·P8-1 공통, D-034)**: 위상 φ는 **지연각**(0° ≤ φ < 360°) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각. 1X 벡터 = A∠φ (A의 단위·Peak/Pk-Pk를 함께 적는다), 복소수로는 `A\,e^{-j\phi}`. Polar 플롯은 0°를 위쪽(센서 방향)에 두고 지연이 커지는 쪽을 **회전 반대 방향**으로 그린다(기본 회전은 반시계 → 지연은 시계 방향). 시간에서 각도로: `arphi = 360^circ 	imes Delta t / T`. 장비마다 다른 관례(P3-3 §3): 앞섬각(cos 기준, FFT 위상) `psi = -arphi`, 영점 기준 `arphi - 90^circ`. Polar 플롯 랩은 `components/ui/PolarPlot`(D-035)
 - 비접촉 변위 센서: `d = V_{gap} / S`, AC `d_{pp} = \Delta V_{pp} / S` (출력은 음전압, gap이 클수록 더 음)
-- Jeffcott (P5-3): `m\ddot z + c\dot z + k z = m e \Omega^2 e^{j\Omega t}` (등방). 비등방이면 x·y를 따로 풀고 `A_f = (\tilde X + j\tilde Y)/2`, `A_b = (\tilde X^* + j\tilde Y^*)/2` (x = Re(X̃ e^{jΩt}), y = Re(Ỹ e^{jΩt}))
-- 안정성 (P5-4): `m\ddot z + c\dot z + (k - j k_{xy}) z = 0` → `m\lambda^2 + c\lambda + k - j k_{xy} = 0`, `\delta = -2\pi\sigma/\omega_d`. 한계: `k_{xy} = c\,\omega_n = 2\zeta k`. 모델 `k_{xy} = c\Omega/2`이면 한계 `\Omega = 2\omega_n`
+- Jeffcott (P4-2): `m\ddot z + c\dot z + k z = m e \Omega^2 e^{j\Omega t}` (등방). 비등방이면 x·y를 따로 풀고 `A_f = (\tilde X + j\tilde Y)/2`, `A_b = (\tilde X^* + j\tilde Y^*)/2` (x = Re(X̃ e^{jΩt}), y = Re(Ỹ e^{jΩt}))
+- 안정성 (P4-4): `m\ddot z + c\dot z + (k - j k_{xy}) z = 0` → `m\lambda^2 + c\lambda + k - j k_{xy} = 0`, `\delta = -2\pi\sigma/\omega_d`. 한계: `k_{xy} = c\,\omega_n = 2\zeta k`. 모델 `k_{xy} = c\Omega/2`이면 한계 `\Omega = 2\omega_n`
 - 트래킹 필터 (lock-in): `\vec V_{nX}(t) = 2\,\mathrm{LPF}\{x(t)\,e^{-jn\theta(t)}\}`
 - FRF 추정, 코히어런스: `H_1 = \dfrac{G_{xy}}{G_{xx}},\; H_2 = \dfrac{G_{yy}}{G_{yx}},\; \gamma^2 = \dfrac{|G_{xy}|^2}{G_{xx}G_{yy}}`
 - 영향계수 밸런싱: `H = \dfrac{\vec V_1 - \vec V_0}{\vec W_t},\quad \vec W_c = -\dfrac{\vec V_0}{H}`
-- 요소 주파수 (P1-7, D-032): `f_{GM} = z\,f_r`, `f_{BP} = N_b\,f_r`, `f_{FTF} = \dfrac{f_r}{2}\left(1 - \dfrac{d}{D}\cos\alpha\right)`, `f_{BPFO} = N_r f_{FTF}`, `f_{BPFI} = N_r (f_r - f_{FTF})`, `f_{BSF} = \dfrac{D}{2d} f_r \left(1 - \left(\dfrac{d}{D}\cos\alpha\right)^2\right)`, `f_{belt} = \pi D_p f_r / L` (D_p 풀리 지름, L 벨트 길이). P1-7은 α = 0과 근사(FTF ≈ 0.4 f_r)만 쓴다
-- 응답 합성 (P1-8): `x(t) = \sum_i A_i\cos(2\pi f_i t + \phi_i) + n(t)` (정현파 + 잡음). φ_i는 시간 원점의 **시작 위상**, 키페이저 지연각과 구분한다. 감쇠 울림은 고정 A_i 정현파 하나가 아니라 별도 시간 응답으로 더한다.
+- 요소 주파수 (P1-8, D-032): `f_{GM} = z\,f_r`, `f_{BP} = N_b\,f_r`, `f_{FTF} = \dfrac{f_r}{2}\left(1 - \dfrac{d}{D}\cos\alpha\right)`, `f_{BPFO} = N_r f_{FTF}`, `f_{BPFI} = N_r (f_r - f_{FTF})`, `f_{BSF} = \dfrac{D}{2d} f_r \left(1 - \left(\dfrac{d}{D}\cos\alpha\right)^2\right)`, `f_{belt} = \pi D_p f_r / L` (D_p 풀리 지름, L 벨트 길이). P1-8은 α = 0과 근사(FTF ≈ 0.4 f_r)만 쓴다
+- 응답 합성 (P1-9): `x(t) = \sum_i A_i\cos(2\pi f_i t + \phi_i) + n(t)` (정현파 + 잡음). φ_i는 시간 원점의 **시작 위상**, 키페이저 지연각과 구분한다. 감쇠 울림은 고정 A_i 정현파 하나가 아니라 별도 시간 응답으로 더한다.
 - 베어링 결함 주파수: 원본 4-2 식 사용 (BSF 관례는 I-008). 위 요소 주파수 식과 같다
 
 ### 3-1. 공통 DSP 코어 구현 사양
@@ -205,9 +206,10 @@
 | P1-3 | 감쇠: 흔들림은 왜 잦아드나 | LAB-DAMP-01 | M2.3 | 검토 (본문·그림 6·감쇠 자유진동 랩) |
 | P1-4 | 강제진동과 공진 | LAB-FRC-01 | M2.4 | 검토 (본문·그림 7·강제진동 랩) |
 | P1-5 | 여러 질량과 모드 | LAB-2DOF-01 | M2.5 | 검토 (본문·그림 7·2자유도 모드 랩) |
-| P1-6 | 회전기계의 진동: 불평형과 1X | LAB-UNB-01 | M2.6 | 검토 (본문·그림 7·불평형 런업 랩) |
-| P1-7 | 기계 요소가 만드는 주파수: 한 바퀴에 몇 번? | LAB-FMAP-01 | M2.7 | 검토 (그림 10, LAB-FMAP-01 1곳, D-032·D-033) |
-| P1-8 | 응답에서 원인으로: 진단은 거꾸로 푸는 문제 | LAB-SRC-01 | M2.8 | 검토 (그림 7, LAB-SRC-01 1곳) |
+| P1-6 | 회전기계의 구성: 무엇이 돌고, 무엇이 받치나? | LAB-SUP-01 | M5.0 | 검토 (구성·지지계 본문, 그림 7, 지지 강성 랩) |
+| P1-7 | 회전기계의 진동: 불평형과 1X | LAB-UNB-01 | M2.6 | 검토 (본문·그림 7·불평형 런업 랩) |
+| P1-8 | 기계 요소가 만드는 주파수: 한 바퀴에 몇 번? | LAB-FMAP-01 | M2.7 | 검토 (그림 10, LAB-FMAP-01 1곳, D-032·D-033) |
+| P1-9 | 응답에서 원인으로: 진단은 거꾸로 푸는 문제 | LAB-SRC-01 | M2.8 | 검토 (그림 7, LAB-SRC-01 1곳) |
 | P2-1 | 신호와 스펙트럼의 기본 | LAB-BAS-02 (LAB-BAS-01은 P1-2) | M1.0, M1.T, M1.T2, M2.9 | 검토 (측정 관점으로 정리, 기존 그림 7 재사용·LAB-BAS-02 1곳·Part 1 되짚기 링크) |
 | P2-2 | 푸리에 기초 | LAB-FOU-01 | M1.4, M1.T, M1.T2 | 검토 (그림 9) |
 | P2-3 | 샘플링 · 에일리어싱 · AAF · ADC | LAB-SMP-01, 02, 03 | M1.5~M1.6, M1.T, M1.T2 | 검토 (그림 8) |
@@ -222,24 +224,21 @@
 | P3-3 | 키페이저 · 위상 · 1X 벡터 | LAB-PHS-01, LAB-SRO-01 | M3.3 | 검토 (그림 10, LAB-PHS-01 2곳, LAB-SRO-01 2곳) |
 | P3-4 | 측정 체인 함정 | LAB-CHAIN-01 (판정 퀴즈) | M3.4 | 검토 (그림 7, LAB-CHAIN-01 3곳: 살펴보기 2 + 퀴즈 1) |
 | P3-5 | 과도 데이터 수집과 보호 시스템 | LAB-ALM-01 | M3.5 | 검토 (그림 6, LAB-ALM-01 3곳) |
-| P4-1 | 디지털 필터 | LAB-FLT-01 | M4.1 | 계획 |
-| P4-2 | 적분과 미분 | LAB-INT-01 | M4.2 | 계획 |
-| P4-3 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 계획 |
-| P4-4 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 계획 |
-| P4-5 | 차수추적 | LAB-ORD-01 | M4.5 | 계획 |
-| P4-6 | 트래킹 · 노치 필터 | LAB-FLT-02 | M4.6 | 계획 |
-| P4-7 | 엔벨로프 · Spectral Kurtosis | LAB-ENV-01, LAB-SK-01 | M4.7 | 계획 |
-| P4-8 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 계획 |
-| P5-1 | 회전기계의 구성: 무엇이 돌고, 무엇이 받치나? | LAB-SUP-01 | M5.0 | 검토 (구성·지지계 본문, 그림 7, 지지 강성 랩) |
-| P5-2 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 검토 (본문 8절, 그림 7, LAB-AF-01) |
-| P5-3 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 계획 |
-| P5-4 | 유막 베어링과 안정성 입문 | LAB-STB-01 | M5.3 | 계획 |
+| P4-1 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 검토 (본문 8절, 그림 7, LAB-AF-01) |
+| P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 계획 |
+| P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 계획 |
+| P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
+| P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 계획 |
+| P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 계획 |
+| P5-3 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 계획 |
+| P5-4 | 차수추적 | LAB-ORD-01 | M4.5 | 계획 |
+| P5-5 | 트래킹 · 노치 필터 | LAB-FLT-02 | M4.6 | 계획 |
+| P5-6 | 엔벨로프 · Spectral Kurtosis | LAB-ENV-01, LAB-SK-01 | M4.7 | 계획 |
+| P5-7 | 켑스트럼 · 특징량 | LAB-CEP-01, LAB-FEAT-01 | M4.8 | 계획 |
 | P6-1 | 시간파형 | LAB-TWF-01 | M6.1 | 계획 |
 | P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 계획 |
 | P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 계획 |
-| P6-4 | Shaft Centerline | LAB-SCL-01 | M6.4 | 계획 |
-| P6-5 | Bode · Polar · APHT | LAB-BODE-01 | M6.5 | 계획 |
-| P6-6 | 트렌드 & 벡터 트렌드 | LAB-TRND-01 | M6.6 | 계획 |
+| P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 계획 |
 | P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-FAULT-01, LAB-RPM-01 | M7.1 | 계획 |
 | P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
@@ -249,7 +248,7 @@
 | P7-7 | 전기적 원인 | (LAB-MOD-01 프리셋) | M7.6 | 계획 |
 | P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
-| P8-1 | 기동·정지와 임계속도 통과 | (LAB-BODE-01 프리셋) | M8.1 | 계획 |
+| P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 계획 |
 | P8-2 | Thermal bow · Turning gear · Morton | (LAB-TRND-01 프리셋) | M8.1 | 계획 |
 | P8-3 | ST 특화 | (시나리오 프리셋) | M8.2 | 계획 |
 | P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
@@ -304,29 +303,29 @@
 | LAB-DAMP-01 | 감쇠 자유진동 | P1-3 | `DampingLab` (/lab/damp-01/) |
 | LAB-FRC-01 | 강제진동과 공진 | P1-4 | `ForcedVibrationLab` (/lab/frc-01/) |
 | LAB-2DOF-01 | 2자유도 모드 | P1-5 | `TwoDofModeLab` (/lab/2dof-01/) |
-| LAB-UNB-01 | 불평형 런업 입문 | P1-6 | `UnbalanceLab` (/lab/unb-01/) |
-| LAB-FMAP-01 | 주파수 지도: 기계 요소별 관심 구간 | P1-7 | `FrequencyMapLab` (/lab/fmap-01/) · lib/machine/frequencies.ts |
-| LAB-SRC-01 | 원인 합성: 파형 한 줄에 섞인 원인들 | P1-8 | `SourceSynthesisLab` (/lab/src-01/) |
-| LAB-SUP-01 | 지지 강성과 고유진동수 (D-036) | P5-1 | `SupportStiffnessLab` (/lab/sup-01/) · lib/machine/supportModel.ts |
-| LAB-AF-01 | Run-up Bode & 증폭계수 | P5-2 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
+| LAB-UNB-01 | 불평형 런업 입문 | P1-7 | `UnbalanceLab` (/lab/unb-01/) |
+| LAB-FMAP-01 | 주파수 지도: 기계 요소별 관심 구간 | P1-8 | `FrequencyMapLab` (/lab/fmap-01/) · lib/machine/frequencies.ts |
+| LAB-SRC-01 | 원인 합성: 파형 한 줄에 섞인 원인들 | P1-9 | `SourceSynthesisLab` (/lab/src-01/) |
+| LAB-SUP-01 | 지지 강성과 고유진동수 (D-036) | P1-6 | `SupportStiffnessLab` (/lab/sup-01/) · lib/machine/supportModel.ts |
+| LAB-AF-01 | Run-up Bode & 증폭계수 | P4-1 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
 새 랩은 여기에 사양을 먼저 쓰고 구현한다 (템플릿 §2). 구현이 끝나면 사양을 `archive/LabSpecs.md`로 옮기고 위 표에 한 줄을 더한다.
 
 #### LAB-JEF-01 Jeffcott 로터: 선회와 오빗
-- P5-3 · M5.2 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현)
+- P4-2 · M5.2 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현)
 - 목적: 회전체의 응답을 축 단면이 그리는 궤적(오빗)으로 보고, 등방 지지면 원형 정방향 선회, 비등방이면 타원·임계속도 2개·두 임계속도 사이의 역방향 선회가 생긴다는 것을 본다.
 - 모델 (`lib/rotor/jeffcott.ts`, 해석해): `m\ddot x + c\dot x + k_x x = m e \Omega^2\cos\Omega t`, `m\ddot y + c\dot y + k_y y = m e \Omega^2\sin\Omega t` (감쇠는 두 방향 같게). 정/역 성분 A_f·A_b는 §3 식
 - 조작: 회전수 (0 ~ 2.5 N_x), k_y/k_x (1 ~ 1.6, 기본 1), ζ (0.01 ~ 0.2, 기본 0.05), 재생/정지 (오빗 위 점이 도는 애니메이션 — 표시용으로 느리게, 재생할 때만)
 - 출력: 오빗(X-Y, 정방향 파랑·역방향 주황, 회전 방향 화살표, 키페이저 점), X·Y 시간파형, 진폭 X·Y vs rpm(두 피크) + 현재 점, ∣A_f∣·∣A_b∣ vs rpm. 읽음값 — 두 임계속도, X·Y 진폭·위상, ∣A_f∣, ∣A_b∣, 선회 방향
-- 수식: 운동방정식, 등방 해 = P5-2의 불평형 응답, z = A_f e^{jΩt} + A_b e^{−jΩt}
+- 수식: 운동방정식, 등방 해 = P4-1의 불평형 응답, z = A_f e^{jΩt} + A_b e^{−jΩt}
 - 실험 과제: k_y = k_x와 1.3 k_x의 오빗·역방향 성분 비교 / 두 임계속도 사이에서 선회 방향은? / ζ를 키우면 역방향 구간은?
 - 검증 (§6): 등방 → A_b = 0, 원형 오빗, 반지름 = 1자유도 불평형 응답 / ζ = 0이면 두 임계속도 사이에서 ∣A_b∣ > ∣A_f∣
-- 주의: Full spectrum(P4-4)·오빗 판독(P6-3)보다 앞이므로 정/역 성분은 페이지에서 직접 계산해 보여 주고 판독은 그쪽으로 넘긴다.
+- 주의: Full spectrum(P5-3)·오빗 판독(P6-3)보다 앞이므로 정/역 성분은 페이지에서 직접 계산해 보여 주고 판독은 그쪽으로 넘긴다.
 
 #### LAB-STB-01 안정성: 교차연성과 Log decrement
-- P5-4 · M5.3 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현)
+- P4-4 · M5.4 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현. D-040으로 유막 베어링·Shaft centerline은 P4-3으로 나뉨)
 - 목적: 교차연성 강성 k_xy가 선회 방향으로 미는 힘을 만들고, 감쇠가 그것을 이기지 못하면 자유진동이 줄지 않고 커진다(불안정)는 것을 고유치·오빗·Log dec로 본다.
 - 모델 (`lib/rotor/stability.ts`): 복소 계수 2차 방정식 `m\lambda^2 + c\lambda + k - j k_{xy} = 0`의 근(정방향 근의 σ로 판정), 자유응답 z(t). 모드 [k_xy 직접 / k_xy = cΩ/2 모델(기름막 평균 원주속도 ≈ 표면속도의 절반)]
 - 조작: 모드, k_xy (0 ~ 0.5 k) 또는 회전수 Ω (0 ~ 3 ω_n), ζ (0.01 ~ 0.2), 초기 변위
@@ -339,26 +338,26 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-FLT-01 | 필터 설계 | 종류·차수 → 크기·위상·군지연, filtfilt 비교 | P4-1 | M4.1 |
-| LAB-INT-01 | 적분 & Ski-slope | 시간/주파수 영역 적분, HP 컷오프 → 저주파 발산 | P4-2 | M4.2 |
-| LAB-STFT-01 | 스펙트로그램 · 워터폴 | 프레임 길이·오버랩 → 시간-주파수 트레이드오프 | P4-3 | M4.3 |
-| LAB-XCH-01 | FRF · 코히어런스 | 입력/출력 잡음, 평균 수 → H1 vs H2, γ² | P4-4 | M4.4 |
-| LAB-FULL-01 | Full spectrum | X/Y 진폭·위상 → 오빗과 정/역 성분 | P4-4 | M4.4 |
-| LAB-ORD-01 | 차수추적 | 등각도 재샘플링 on/off, 키페이저 유/무 → smearing 제거 | P4-5 | M4.5 |
-| LAB-FLT-02 | 트래킹 & 노치 | 대역폭 → 1X 진폭·위상 추정 지연, 1X 제거 | P4-6 | M4.6 |
-| LAB-ENV-01 | 엔벨로프 분석 | BPF 대역 → 엔벨로프 스펙트럼의 BPFO/BPFI | P4-7 | M4.7 |
-| LAB-SK-01 | Spectral Kurtosis / Kurtogram | 임펄스 대역 자동 탐색 → ENV-01 대역 추천 | P4-7 | M4.7 |
-| LAB-CEP-01 | 켑스트럼 | 하모닉/측대역 패밀리 → quefrency 피크, liftering | P4-8 | M4.8 |
-| LAB-FEAT-01 | 시간영역 특징량 | 결함 진행 시뮬레이션 → RMS·CF·Kurtosis 추세 | P4-8 | M4.8 |
+| LAB-FLT-01 | 필터 설계 | 종류·차수 → 크기·위상·군지연, filtfilt 비교 | P5-1 | M4.1 |
+| LAB-INT-01 | 적분 & Ski-slope | 시간/주파수 영역 적분, HP 컷오프 → 저주파 발산 | P5-1 | M4.1 |
+| LAB-STFT-01 | 스펙트로그램 · 워터폴 | 프레임 길이·오버랩 → 시간-주파수 트레이드오프 | P5-2 | M4.3 |
+| LAB-XCH-01 | FRF · 코히어런스 | 입력/출력 잡음, 평균 수 → H1 vs H2, γ² | P5-3 | M4.4 |
+| LAB-FULL-01 | Full spectrum | X/Y 진폭·위상 → 오빗과 정/역 성분 | P5-3 | M4.4 |
+| LAB-ORD-01 | 차수추적 | 등각도 재샘플링 on/off, 키페이저 유/무 → smearing 제거 | P5-4 | M4.5 |
+| LAB-FLT-02 | 트래킹 & 노치 | 대역폭 → 1X 진폭·위상 추정 지연, 1X 제거 | P5-5 | M4.6 |
+| LAB-ENV-01 | 엔벨로프 분석 | BPF 대역 → 엔벨로프 스펙트럼의 BPFO/BPFI | P5-6 | M4.7 |
+| LAB-SK-01 | Spectral Kurtosis / Kurtogram | 임펄스 대역 자동 탐색 → ENV-01 대역 추천 | P5-6 | M4.7 |
+| LAB-CEP-01 | 켑스트럼 | 하모닉/측대역 패밀리 → quefrency 피크, liftering | P5-7 | M4.8 |
+| LAB-FEAT-01 | 시간영역 특징량 | 결함 진행 시뮬레이션 → RMS·CF·Kurtosis 추세 | P5-7 | M4.8 |
 | LAB-TWF-01 | 시간파형 패턴 | 패턴 갤러리 + 맞히기 퀴즈 | P6-1 | M6.1 |
 | LAB-WF-01 | Waterfall & Full spectrum cascade | 회전수 스윕 → Oil whirl(추종) vs Whip(고정) | P6-2 | M6.2 |
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
-| LAB-SCL-01 | Shaft centerline | 하중·회전수 → 편심률·자세각 | P6-4 | M6.4 |
-| LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, Polar 루프 | P6-5 | M6.5 |
-| LAB-TRND-01 | 벡터 트렌드 | 1X 벡터 회전 시나리오 → 스칼라 vs 벡터 트렌드, Acceptance region | P6-6 | M6.6 |
+| LAB-SCL-01 | Shaft centerline | 하중·회전수 → 편심률·자세각, 축 중심 궤적 | P4-3 | M5.3 |
+| LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
+| LAB-TRND-01 | 벡터 트렌드 | 1X 벡터 회전 시나리오 → 스칼라 vs 벡터 트렌드, APHT, Acceptance region | P6-4 | M6.6 |
 | LAB-FAULT-01 | 결함 신호 합성기 | 결함 종류·정도 → 스펙트럼·파형·오빗 패턴 (Part 11 엔진) | P7-1 | M7.1 |
 | LAB-RPM-01 | 회전수 추정 | 하모닉 패밀리 / 켑스트럼 / STFT로 1X 후보 찾기 | P7-1 | M7.1 |
-| LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/machine/frequencies.ts`(P1-7) 확장 | P7-5 | M7.4 |
+| LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/machine/frequencies.ts`(P1-8) 확장 | P7-5 | M7.4 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
 | LAB-HPB-01 | Half-power & 임팩트 시험 | FRF 피크 → ζ, 지수 윈도우 영향, 해머 팁 → 가진 대역 | P9-1 | M9.1 |
@@ -453,7 +452,7 @@
 | 알람 논리 (LAB-ALM-01) | Alert 90·Danger 125 µm pp, 지연 1 s (예시) | 0.3 s 튐 무시, 케이블 튐 1oo2 16 s 헛트립·2oo2 없음, 기동 2oo2 144.75 s 트립·배율 ×2면 없음 |
 | 비접촉 변위 센서 감도 (M3.2) | 200 mV/mil (1 mil = 25.4 µm) | 7.874 V/mm |
 | gap 전압 → 거리 | −9.5 V, 7.87 V/mm | 1.207 mm |
-| Jeffcott 등방 (D-034, M5.2) | k_x = k_y | A_b = 0, 원형 오빗, 반지름 = 1자유도 불평형 응답 (P1-6·P5-2와 같다) |
+| Jeffcott 등방 (D-034, M5.2) | k_x = k_y | A_b = 0, 원형 오빗, 반지름 = 1자유도 불평형 응답 (P1-7·P4-1과 같다) |
 | Jeffcott 비등방 | ζ = 0, √(k_x/m) < Ω < √(k_y/m) | X·Y 부호 반대 → ∣A_b∣ > ∣A_f∣ (역방향 선회), 임계속도 2개 |
 | 안정성 (M5.3) | k_xy = 0, ζ = 0.05 | σ = −ζω_n, δ = 0.3146 (P1-3과 같다) |
 | 안정 한계 | k_xy 독립 / k_xy = cΩ/2 | δ = 0 ↔ k_xy = cω_n = 2ζk / Ω = 2ω_n (c와 무관) |
@@ -471,7 +470,7 @@
 | 구름베어링 6205 | N_r 9, d 7.94 mm, D 39.04 mm, α 0 (CWRU 시험 베어링 치수, R-10) | FTF 0.3983X, BPFO 3.585X, BPFI 5.415X, BSF 2.357X (2× 4.713X, CWRU 표는 2×). BPFO + BPFI = 9X |
 | 전자기력 | 전원 60 Hz | 2 f_L = 120 Hz (3600 rpm 2극이면 2X와 같음) |
 
-P5-1 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 1 MN/m → k_eq = 0.4 MN/m, f_n = 10.06584242 Hz. 같은 강성 3개면 k_eq = k/3, 지지 강성을 키우면 f_n 단조 증가, m 두 배면 f_n/√2. §5 LAB-SUP-01과 테스트가 함께 확인한다.
+P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 1 MN/m → k_eq = 0.4 MN/m, f_n = 10.06584242 Hz. 같은 강성 3개면 k_eq = k/3, 지지 강성을 키우면 f_n 단조 증가, m 두 배면 f_n/√2. §5 LAB-SUP-01과 테스트가 함께 확인한다.
 
 ## 7. 참고자료
 
@@ -480,25 +479,25 @@ P5-1 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-01 | R. B. Randall, *Vibration-based Condition Monitoring* | Envelope, Cepstrum, TSA | 원본 추천 |
 | R-02 | D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* | GT/ST, 오빗, 로터다이나믹스 | 원본 추천 |
 | R-03 | V. Wowk, *Machinery Vibration: Measurement and Analysis* | 진단 전반 | 원본 추천 |
-| R-04 | J. Vance, *Machinery Vibration and Rotordynamics* / A. Muszynska, *Rotordynamics* | 로터다이나믹스 이론 (Part 5) | 원본 추천 |
+| R-04 | J. Vance, *Machinery Vibration and Rotordynamics* / A. Muszynska, *Rotordynamics* | 로터다이나믹스 이론 (Part 4) | 원본 추천 |
 | R-05 | G. Heinzel, A. Rüdiger, R. Schilling, *Spectrum and spectral density estimation by the DFT…* (2002) | 스케일링·윈도우 검증 기준 | 공개 PDF |
 | R-06 | F. J. Harris, "On the use of windows for harmonic analysis with the DFT", Proc. IEEE (1978) | 윈도우 특성표 | |
 | R-07 | API 684 | 로터다이나믹스, AF, SM | 유료, 요약만 (I-009) |
 | R-08 | ISO 20816 시리즈 | 진동 판정 | 유료, 요약만 (I-009) |
 | R-09 | Bently Nevada ORBIT Magazine 아카이브 | GT/ST 사례 | 공개 |
 | R-10 | CWRU Bearing Data Center | 베어링 데이터셋 | 공개, M11.2 |
-| R-11 | J. Antoni, "Fast computation of the kurtogram…" (2007) | Kurtogram (P4-7) | |
+| R-11 | J. Antoni, "Fast computation of the kurtogram…" (2007) | Kurtogram (P5-6) | |
 | R-12 | [NumPy DFT 정의·정규화](https://numpy.org/doc/stable/reference/routines.fft.html), [fft 제로패딩](https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html) | M1.2 FFT의 부호·bin 순서·위상·정규화 검증 | 공식 문서, 2026-10-02 확인 |
 
 | R-13 | [NI Spectrum Averaging Mode](https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html) | RMS·피크홀드·벡터 평균과 트리거 조건 (P2-6) | 공식 문서, 2026-10-02 확인 |
 | R-14 | [SciPy Welch](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html) | 겹친 구간의 파워 평균·오버랩 조건 (P2-6) | 공식 문서, 2026-10-02 확인 |
-| R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P5-1) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
+| R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P1-6) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
 ## 8. 추가 콘텐츠 후보 (백로그)
 
-- 원본 말미의 심화 제안 ①~④는 Curriculum에 반영됨 (① → P2-9, ② → P7-4 감별표, ③ → P4-7, ④ → P6-3·P6-4)
+- 원본 말미의 심화 제안 ①~④는 Curriculum에 반영됨 (① → P2-9, ② → P7-4 감별표, ③ → P5-6, ④ → P6-3·P4-3)
 - 학습 진도 체크 (브라우저에 저장)
 - 페이지별 자가 점검 퀴즈
 - 사이트 랩과 같은 결과를 numpy로 재현하는 교차검증 스크립트 (`scripts/verify/`, 원본 실습 1)

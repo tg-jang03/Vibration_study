@@ -293,7 +293,7 @@ const polarTrace = (vs: AmpLag[], c: Pt, scale: number, color: FigColor, width =
 };
 export const runUpBodePolar: FigureSpec = {
   id: 'fig-p3-3-6',
-  caption: `그림 6. 런업(정지 → 운전 회전수) 동안 회전수마다 잰 1X 벡터 (P3-2의 예시 로터: 임계속도 ${SR_ROTOR.criticalRpm} rpm, 감쇠비 ${SR_ROTOR.zeta}, 운전 ${V.op} rpm에서 ${fmt(um(V.respAtOp), 2)} µm pp, 런아웃 없음). 위 두 그래프는 진폭과 위상을 회전수에 대해 따로 그린 Bode 선도(P1-6), 아래는 같은 벡터의 끝을 이어 그린 Polar 플롯이다. 저속에서는 원점 근처에서 출발해, 임계속도에서 가장 크고(${fmt(um(V.crit.amp), 3)} µm pp) 위상이 90°가 되며, 운전 회전수에서는 ${fv(V.opTruth)}에 이른다. Bode의 두 그래프가 Polar에서는 곡선 하나다.`,
+  caption: `그림 6. 런업(정지 → 운전 회전수) 동안 회전수마다 잰 1X 벡터 (P3-2의 예시 로터: 임계속도 ${SR_ROTOR.criticalRpm} rpm, 감쇠비 ${SR_ROTOR.zeta}, 운전 ${V.op} rpm에서 ${fmt(um(V.respAtOp), 2)} µm pp, 런아웃 없음). 위 두 그래프는 진폭과 위상을 회전수에 대해 따로 그린 Bode 선도(P1-7), 아래는 같은 벡터의 끝을 이어 그린 Polar 플롯이다. 저속에서는 원점 근처에서 출발해, 임계속도에서 가장 크고(${fmt(um(V.crit.amp), 3)} µm pp) 위상이 90°가 되며, 운전 회전수에서는 ${fv(V.opTruth)}에 이른다. Bode의 두 그래프가 Polar에서는 곡선 하나다.`,
   panels: [
     {
       title: '진폭',

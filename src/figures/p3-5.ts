@@ -43,7 +43,7 @@ const V = P25_VALUES;
 const tLine = grid(0, 330, 661);
 export const triggers: FigureSpec = {
   id: 'fig-p3-5-1',
-  caption: `그림 1. 예시 기동(300 → 3600 rpm, 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm 둘레의 1500 ~ 2500 rpm은 20 rpm/s로 빨리 지난다)에서 데이터를 저장하는 두 방식. 위: 10초마다 저장하면(주황 점) 기동 전체에서 ${V.byTime.length}점이고, 1900 ~ 2100 rpm(회색 띠) 안에는 ${V.inBandTime}점뿐이다. 10 rpm마다 저장하면 ${V.byRpm.length}점, 같은 구간에 ${V.inBandRpm}점이다. 아래: 두 방식으로 그린 1X 진폭 vs 회전수(Bode, P1-6). 10초마다 모은 주황 선은 봉우리를 건너뛰어 최대를 ${fmt(um(V.peakTime) * 1, 3)} µm pp로 읽는다 — 참 최대 ${fmt(um(V.peakTrue), 3)} µm pp의 ${fmt((V.peakTime / V.peakTrue) * 100, 2)} %. 10 rpm마다 모은 파랑 점은 곡선을 그대로 따라간다.`,
+  caption: `그림 1. 예시 기동(300 → 3600 rpm, 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm 둘레의 1500 ~ 2500 rpm은 20 rpm/s로 빨리 지난다)에서 데이터를 저장하는 두 방식. 위: 10초마다 저장하면(주황 점) 기동 전체에서 ${V.byTime.length}점이고, 1900 ~ 2100 rpm(회색 띠) 안에는 ${V.inBandTime}점뿐이다. 10 rpm마다 저장하면 ${V.byRpm.length}점, 같은 구간에 ${V.inBandRpm}점이다. 아래: 두 방식으로 그린 1X 진폭 vs 회전수(Bode, P1-7). 10초마다 모은 주황 선은 봉우리를 건너뛰어 최대를 ${fmt(um(V.peakTime) * 1, 3)} µm pp로 읽는다 — 참 최대 ${fmt(um(V.peakTrue), 3)} µm pp의 ${fmt((V.peakTime / V.peakTrue) * 100, 2)} %. 10 rpm마다 모은 파랑 점은 곡선을 그대로 따라간다.`,
   panels: [
     {
       title: '회전수와 저장 시점',
@@ -110,7 +110,7 @@ const SCALE = 3; // 1 µm pp → 3 rpm 높이
 const shape = (f: number, f0: number) => 1 / (1 + ((f - f0) / 0.9) ** 2);
 export const cascade: FigureSpec = {
   id: 'fig-p3-5-3',
-  caption: `그림 3. 기동하며 회전수마다 저장한 스펙트럼을 그 회전수 높이에 쌓은 그림(Cascade, 예시 로터). 회전에서 나온 1X·2X는 회전수를 따라 비스듬한 줄을 이루고, 1X 줄은 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm(33.3 Hz)에서 가장 높이 솟는다. 95 Hz 성분은 회전수와 상관없이 제자리에 서 있다 — 구조 공진처럼 고정된 주파수다 (P1-7, P3-4). 한 장으로 "무엇이 회전을 따라가고 무엇이 고정됐나"를 본다 (자세히는 P6-2).`,
+  caption: `그림 3. 기동하며 회전수마다 저장한 스펙트럼을 그 회전수 높이에 쌓은 그림(Cascade, 예시 로터). 회전에서 나온 1X·2X는 회전수를 따라 비스듬한 줄을 이루고, 1X 줄은 임계속도 ${RUNUP_ROTOR.criticalRpm} rpm(33.3 Hz)에서 가장 높이 솟는다. 95 Hz 성분은 회전수와 상관없이 제자리에 서 있다 — 구조 공진처럼 고정된 주파수다 (P1-8, P3-4). 한 장으로 "무엇이 회전을 따라가고 무엇이 고정됐나"를 본다 (자세히는 P6-2).`,
   panels: [
     {
       series: cascadeRpms.map((rpm): FigSeries => {

@@ -1,446 +1,361 @@
-/**
- * P1-7 "기계 요소가 만드는 주파수" 본문 그림 데이터 (빌드 시 계산, D-026·D-032).
- * 주파수는 랩(LAB-FMAP-01)과 같은 `src/lib/machine/`로, 울림 파형은 `lib/mck`의 감쇠 자유진동으로 계산한다.
- */
-import { grid, squareYRange, type FigAnnotation, type FigureSpec } from '../lib/figure';
+/** P1-7 "회전기계의 진동: 불평형과 1X" 본문 그림. 계산은 lib/mck 해석해에서 수행한다. */
+import { grid, squareYRange, type FigPanel, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
-import { freeResponseAt } from '../lib/mck';
-import { BEARING_6205, bearingFrequencies, beltFrequency, bladePass, electromagneticForce, gearPair } from '../lib/machine/frequencies';
-import { buildMap, EXAMPLE, LINE_FREQUENCY, MAP_RANGE, PRESETS } from '../lib/machine/frequencyMap';
+import { unbalanceForce, unbalancePeak, unbalanceResponseFactor, unbalanceSteadyState } from '../lib/mck';
 
-const PX_PER_UNIT = 820 / 30; // 도식 패널 x 범위 [0, 30]의 1단위 = 27.3 px
-const hz = (v: number) => formatNumber(v, 4);
-const logTicks = (lo: number, hi: number) =>
-  Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((v) => ({ value: v, label: v >= 3 ? `${10 ** (v - 3)}k` : String(10 ** v) }));
+const TOTAL_MASS = 100; // 100 kg
+const FN = 50; // 50 Hz (3000 rpm)
+const OMEGA_N = 2 * Math.PI * FN; // 314.159 rad/s
+const ME = 0.01; // mu * e = 0.01 kg*m
+const E_CG_MM = (ME / TOTAL_MASS) * 1000; // 0.1 mm (100 um)
+const ZETA = 0.05;
 
-/** 그림·본문이 인용하는 숫자 (회귀 테스트 `p1-7.test.ts`) */
-export const P07_VALUES = (() => {
-  const fr = 3000 / 60;
-  const gear = gearPair(15, 60, fr);
-  const brg = bearingFrequencies(BEARING_6205, fr);
-  const brgX = bearingFrequencies(BEARING_6205, 1);
-  const pumpFr = 3600 / 60;
-  const fanMotorFr = PRESETS.beltFan.rpm / 60;
-  return {
-    fr,
-    gearMesh: gear.mesh,
-    gearOut: gear.f2,
-    bladePass7: bladePass(7, pumpFr),
-    brg,
-    brgX,
-    belt: beltFrequency(EXAMPLE.motorPulley, EXAMPLE.beltLength, fanMotorFr),
-    fanMotorFr,
-    fanFr: (fanMotorFr * EXAMPLE.motorPulley) / EXAMPLE.fanPulley,
-    twoFL: electromagneticForce(LINE_FREQUENCY),
-    pumpRpm: PRESETS.motorPump.rpm,
-    /** 전동기-펌프 기동: 2X가 받침대 고유진동수를 지나는 회전수 */
-    cross2X: (EXAMPLE.structureNatural / 2) * 60,
-    /** 날개 통과(7X)가 받침대 고유진동수를 지나는 회전수 */
-    crossBp: (EXAMPLE.structureNatural / 7) * 60,
-  };
-})();
-const V = P07_VALUES;
+const low1500 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 25, OMEGA_N, ZETA);
+const res3000 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 50, OMEGA_N, ZETA);
+const high6000 = unbalanceSteadyState(TOTAL_MASS, ME, 2 * Math.PI * 100, OMEGA_N, ZETA);
+const peak = unbalancePeak(ZETA)!;
 
-// 그림 1 — 한 기계 안의 요소들 (도식)
-const X1: [number, number] = [0, 30];
-const Y1 = squareYRange(X1, 175);
-export const machineElements: FigureSpec = {
+const deg = (rad: number) => (rad * 180) / Math.PI;
+const f = (v: number, sig = 3) => formatNumber(v, sig);
+const mm = (m: number) => 1000 * m;
+
+export const P0_6_REFERENCE = {
+  fn: FN,
+  omegaN: OMEGA_N,
+  eCgMm: E_CG_MM,
+  low: {
+    rpm: 1500,
+    r: 0.5,
+    force: low1500.forceAmplitude,
+    factor: low1500.responseFactor,
+    amplitudeMm: mm(low1500.displacementAmplitude),
+    phaseDeg: deg(low1500.phaseLag),
+  },
+  resonance: {
+    rpm: 3000,
+    r: 1.0,
+    force: res3000.forceAmplitude,
+    factor: res3000.responseFactor,
+    amplitudeMm: mm(res3000.displacementAmplitude),
+    phaseDeg: deg(res3000.phaseLag),
+  },
+  high: {
+    rpm: 6000,
+    r: 2.0,
+    force: high6000.forceAmplitude,
+    factor: high6000.responseFactor,
+    amplitudeMm: mm(high6000.displacementAmplitude),
+    phaseDeg: deg(high6000.phaseLag),
+  },
+  peak: {
+    r: peak.frequencyRatio,
+    factor: peak.responseFactor,
+    rpm: peak.frequencyRatio * 3000,
+  },
+} as const;
+
+// ── 그림 1: 불평형 회전체 물리 모델 도식 ──────────────────────
+export const unbalanceModel: FigureSpec = {
   id: 'fig-p1-7-1',
   caption:
-    '그림 1. 전동기가 커플링을 거쳐 펌프를 돌리는 기계. 축(불평형·정렬), 구름베어링, 펌프 날개, 전동기의 자기력, 받침대가 저마다 다른 박자로 기계를 흔든다. 위 회색 글씨는 이 페이지에서 셀 주파수의 이름이다.',
+    '그림 1. 불평형이 있는 1자유도 회전체 모델. 회전체와 함께 흔들리는 기계 전체(회색 상자, 질량 M)가 스프링 k와 감쇠기 c로 지지되어 있다. 원판(파랑)의 회전 중심 O에서 거리 e만큼 떨어진 곳에 불평형 질량 m_u가 붙어 각속도 Ω로 회전한다. 함께 도는 원심력 F_u = m_u e Ω²의 수평 성분 F_x(t) = F_u cos(Ωt)가 기계를 좌우로 흔든다.',
   panels: [
     {
       frame: false,
-      height: 175,
-      x: { range: X1 },
-      y: { range: Y1 },
+      height: 200,
+      x: { range: [0, 14] },
+      y: { range: squareYRange([0, 14], 200) },
       series: [],
       annotations: [
-        { type: 'ground', x1: 0.8, y1: 1.0, x2: 29.2, y2: 1.0, side: 'right' },
-        { type: 'rect', x1: 1.5, x2: 8.5, y1: 1.05, y2: 5.2, color: 'muted', label: '전동기' },
-        { type: 'line', x1: 8.5, y1: 3.4, x2: 12.6, y2: 3.4, color: 'text', width: 4 },
-        { type: 'rect', x1: 12.6, x2: 14.2, y1: 2.6, y2: 4.2, color: 'c1' },
-        { type: 'line', x1: 14.2, y1: 3.4, x2: 22.0, y2: 3.4, color: 'text', width: 4 },
-        { type: 'rect', x1: 15.6, x2: 16.8, y1: 1.05, y2: 4.0, color: 'c1' },
-        { type: 'rect', x1: 19.0, x2: 20.2, y1: 1.05, y2: 4.0, color: 'c1' },
-        { type: 'rect', x1: 22.0, x2: 28.2, y1: 1.05, y2: 5.6, color: 'muted', label: '펌프' },
-        { type: 'text', x: 25.1, y: 2.0, text: '날개 7개', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 5.0, y: 7.0, text: '전동기', anchor: 'middle', bold: true },
-        { type: 'text', x: 5.0, y: 6.2, text: '자기력 2 f_L', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 12.0, y: 7.0, text: '축 · 커플링', anchor: 'middle', bold: true },
-        { type: 'text', x: 12.0, y: 6.2, text: '1X · 2X', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 17.9, y: 7.0, text: '구름베어링', anchor: 'middle', bold: true },
-        { type: 'text', x: 17.9, y: 6.2, text: 'BPFO · BPFI', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 25.1, y: 7.0, text: '펌프 날개', anchor: 'middle', bold: true },
-        { type: 'text', x: 25.1, y: 6.2, text: '날개 통과', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 15.0, y: 0.25, text: '받침대(구조): 정해진 고유진동수', anchor: 'middle', color: 'muted' },
+        // 기초 벽 및 베어링 지지대
+        { type: 'ground', x1: 1.2, y1: 0.5, x2: 1.2, y2: 3.5, side: 'left' },
+        { type: 'spring', x1: 1.2, y1: 2.5, x2: 4.5, y2: 2.5, coils: 6, label: '강성 k' },
+        { type: 'damper', x1: 1.2, y1: 1.5, x2: 4.5, y2: 1.5, label: '감쇠 c' },
+        // 회전체와 함께 흔들리는 기계 전체(질량 M). 글자는 원판과 겹치지 않게 왼쪽 위에 따로 쓴다
+        { type: 'rect', x1: 4.5, x2: 11.5, y1: 0.8, y2: 3.2, color: 'muted' },
+        { type: 'text', x: 4.75, y: 2.85, text: '진동하는 전체 질량 M', color: 'muted' },
+        // 회전 원판 (반지름 0.85 단위 → px: 820 px / 14 단위)
+        { type: 'circle', x: 8.0, y: 2.0, r: 0.85 * (820 / 14), fill: true, color: 'c1' },
+        { type: 'text', x: 7.05, y: 1.95, text: '회전 Ω', anchor: 'end', color: 'muted' },
+        // 회전 중심 O (글자는 원판 안 아래쪽)
+        { type: 'point', x: 8.0, y: 2.0, color: 'text' },
+        { type: 'text', x: 8.0, y: 2.0, text: '회전 중심 O', anchor: 'middle', color: 'text', dy: 22 },
+        { type: 'text', x: 8.12, y: 2.3, text: 'e', anchor: 'end', color: 'warn', dx: -4 },
+        // 편심 질량 mu (45도 위치)
+        {
+          type: 'line',
+          x1: 8.0,
+          y1: 2.0,
+          x2: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y2: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          color: 'warn',
+          width: 2,
+        },
+        {
+          type: 'point',
+          x: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          color: 'warn',
+        },
+        { type: 'text', x: 8.95, y: 2.2, text: '불평형 질량 m_u', anchor: 'start', color: 'warn' },
+        // 원심력 화살표
+        {
+          type: 'arrow',
+          x1: 8.0 + 0.6 * Math.cos(Math.PI / 4),
+          y1: 2.0 + 0.6 * Math.sin(Math.PI / 4),
+          x2: 8.0 + 1.2 * Math.cos(Math.PI / 4),
+          y2: 2.0 + 1.2 * Math.sin(Math.PI / 4),
+          label: '원심력 F_u',
+          color: 'warn',
+          double: false,
+          labelDx: 8,
+        },
+        // 수평 변위 화살표
+        { type: 'arrow', x1: 7.0, y1: 3.5, x2: 9.0, y2: 3.5, label: '수평 변위 x(t)', color: 'c1', double: false },
       ],
     },
   ],
 };
 
-// 그림 2 — 세는 규칙: 한 바퀴에 k번 → k × 1X
-const revMs = 1000 / V.fr; // 20 ms
-const events = (k: number) => Array.from({ length: 2 * k }, (_, i) => 3 + (i * revMs) / k);
-const revLines: FigAnnotation[] = [revMs, 2 * revMs].map((t) => ({ type: 'vline', x: t, color: 'muted', dash: true }));
-export const countingRule: FigureSpec = {
+// ── 그림 2: 회전수 제곱에 비례하는 원심력 ──────────────────────
+const rpmAxis = grid(0, 6000, 301);
+const forceCurve = rpmAxis.map((rpm) => {
+  const omega = (2 * Math.PI * rpm) / 60;
+  return unbalanceForce(ME, omega);
+});
+
+export const centrifugalForceCurve: FigureSpec = {
   id: 'fig-p1-7-2',
-  caption: `그림 2. 3000 rpm(한 바퀴 ${formatNumber(revMs, 3)} ms)으로 도는 축에서 일어나는 사건을 시각에 따라 막대로 세웠다. 회색 점선이 한 바퀴의 끝이다. 위: 한 바퀴에 1번(불평형이 한 번 미는 것처럼) → 1초에 ${V.fr}번 = 1X = ${V.fr} Hz. 가운데: 한 바퀴에 3번 → 1초에 ${3 * V.fr}번 = 3X. 아래: 두 사건의 주파수를 주파수 축 위에 줄로 세운 주파수 지도. 줄의 높이에는 뜻이 없고 위치만 본다. 회색 점선은 1X의 정수배(하모닉) 자리다.`,
+  caption: `그림 2. 회전수(rpm)에 따른 불평형 원심력 크기(F_u = m_u e Ω², m_u e = ${f(ME, 2)} kg·m). 1500 rpm에서 약 ${f(P0_6_REFERENCE.low.force, 3)} N이던 원심력이 회전수가 2배인 3000 rpm에서는 4배인 ${f(P0_6_REFERENCE.resonance.force, 3)} N, 4배인 6000 rpm에서는 16배인 ${f(P0_6_REFERENCE.high.force, 4)} N이 된다. 회전수가 올라갈수록 곡선이 가팔라지는 것이 제곱 비례의 모양이다.`,
   panels: [
     {
-      title: '한 바퀴에 1번',
-      series: [{ x: events(1), y: events(1).map(() => 1), kind: 'stem', color: 'c1', width: 2.4 }],
-      annotations: [...revLines, { type: 'text', x: revMs, y: 1.15, text: '한 바퀴', anchor: 'end', color: 'muted', dx: -4 }],
-      x: { range: [0, 2 * revMs + 1] },
-      y: { range: [0, 1.4], ticks: 'none' },
-      height: 80,
-    },
-    {
-      title: '한 바퀴에 3번',
-      series: [{ x: events(3), y: events(3).map(() => 1), kind: 'stem', color: 'c2', width: 2.4 }],
-      annotations: revLines,
-      x: { range: [0, 2 * revMs + 1], label: '시각 [ms]' },
-      y: { range: [0, 1.4], ticks: 'none' },
-      height: 80,
-    },
-    {
-      title: '주파수 지도',
-      series: [
-        { x: [V.fr], y: [1], kind: 'stem', color: 'c1', width: 3 },
-        { x: [3 * V.fr], y: [1], kind: 'stem', color: 'c2', width: 3 },
-      ],
+      series: [{ x: rpmAxis, y: forceCurve, label: '원심력 F_u [N]', color: 'warn', width: 2.4 }],
       annotations: [
-        ...[2, 4, 5, 6].map((k): FigAnnotation => ({ type: 'vline', x: k * V.fr, color: 'muted', dash: true })),
-        { type: 'text', x: V.fr, y: 1.12, text: `1X = ${V.fr} Hz`, anchor: 'middle', color: 'c1' },
-        { type: 'text', x: 3 * V.fr, y: 1.12, text: `3X = ${3 * V.fr} Hz`, anchor: 'middle', color: 'c2' },
+        // 아래로 볼록한 곡선이라 점의 왼쪽 위는 비어 있다 → 글자를 왼쪽 위에 둔다
+        { type: 'point', x: 1500, y: P0_6_REFERENCE.low.force, color: 'warn' },
+        { type: 'text', x: 1500, y: P0_6_REFERENCE.low.force, text: `1500 rpm: ${f(P0_6_REFERENCE.low.force, 3)} N`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 3000, y: P0_6_REFERENCE.resonance.force, color: 'warn' },
+        { type: 'text', x: 3000, y: P0_6_REFERENCE.resonance.force, text: `3000 rpm: ${f(P0_6_REFERENCE.resonance.force, 3)} N (4배)`, anchor: 'end', color: 'warn', dx: -8, dy: -8, bold: true },
+        { type: 'point', x: 6000, y: P0_6_REFERENCE.high.force, color: 'warn' },
+        { type: 'text', x: 6000, y: P0_6_REFERENCE.high.force, text: `6000 rpm: ${f(P0_6_REFERENCE.high.force, 4)} N (16배)`, anchor: 'end', color: 'warn', dx: -10, dy: -4, bold: true },
       ],
-      x: { range: [0, 330], ticks: [0, 50, 100, 150, 200, 250, 300], label: '주파수 [Hz]' },
-      y: { range: [0, 1.35], ticks: 'none' },
-      height: 105,
-    },
-  ],
-};
-
-// 그림 3 — 날개와 기어 (도식)
-const X3: [number, number] = [0, 30];
-const Y3 = squareYRange(X3, 220);
-const imp = { x: 6.5, y: 4.6, hub: 0.7, tip: 2.8, casing: 3.4, blades: 7 };
-const bladeLines: FigAnnotation[] = Array.from({ length: imp.blades }, (_, k) => {
-  const a = Math.PI / 2 + (2 * Math.PI * k) / imp.blades;
-  return { type: 'line', x1: imp.x + imp.hub * Math.cos(a), y1: imp.y + imp.hub * Math.sin(a), x2: imp.x + imp.tip * Math.cos(a), y2: imp.y + imp.tip * Math.sin(a), color: 'c1', width: 3 };
-});
-const tongueA = (20 * Math.PI) / 180;
-const gA = { x: 15.6, y: 4.6, r: 0.95, z: 15 };
-const gB = { x: gA.x + 5 * gA.r, y: 4.6, r: 4 * gA.r, z: 60 };
-const teeth = (g: { x: number; y: number; r: number; z: number }, color: 'c1' | 'c3'): FigAnnotation[] =>
-  Array.from({ length: g.z }, (_, k) => {
-    const a = (2 * Math.PI * k) / g.z;
-    return { type: 'line', x1: g.x + (g.r - 0.13) * Math.cos(a), y1: g.y + (g.r - 0.13) * Math.sin(a), x2: g.x + (g.r + 0.13) * Math.cos(a), y2: g.y + (g.r + 0.13) * Math.sin(a), color, width: 2 };
-  });
-export const bladesAndGears: FigureSpec = {
-  id: 'fig-p1-7-3',
-  caption: `그림 3. 한 바퀴에 여러 번 일어나는 일. 왼쪽: 날개 7개짜리 펌프 날개바퀴. 케이싱의 한 점(고정점)을 날개가 한 바퀴에 7번 지나가므로 날개 통과 주파수 = 7 × 1X다 (3600 rpm이면 ${hz(V.bladePass7)} Hz). 오른쪽: 이빨 15개 기어(파랑)가 이빨 60개 기어(초록)를 돌린다. 작은 기어가 3000 rpm(${V.fr} Hz)이면 1초에 15 × ${V.fr} = ${hz(V.gearMesh)}번 이빨이 맞물린다 = 맞물림 주파수. 큰 기어도 같은 1초 동안 같은 수의 이빨이 맞물리므로 60 × f₂ = ${hz(V.gearMesh)} → f₂ = ${hz(V.gearOut)} Hz.`,
-  panels: [
-    {
-      frame: false,
+      x: { range: [0, 6000], ticks: [0, 1500, 3000, 4500, 6000], label: '회전수 [rpm]' },
+      y: { range: [0, 4500], ticks: [0, 1000, 2000, 3000, 4000], label: '원심력 크기 F_u [N]' },
       height: 220,
-      x: { range: X3 },
-      y: { range: Y3 },
-      series: [],
-      annotations: [
-        { type: 'text', x: imp.x, y: Y3[1] - 0.5, text: '펌프 날개 7개', anchor: 'middle', bold: true },
-        { type: 'circle', x: imp.x, y: imp.y, r: imp.casing * PX_PER_UNIT, dash: true, color: 'muted' },
-        { type: 'circle', x: imp.x, y: imp.y, r: imp.hub * PX_PER_UNIT, fill: true, color: 'muted' },
-        ...bladeLines,
-        { type: 'point', x: imp.x + imp.casing * Math.cos(tongueA), y: imp.y + imp.casing * Math.sin(tongueA), color: 'warn', label: '고정점', dx: 8, dy: -6 },
-        { type: 'text', x: imp.x, y: 0.4, text: '한 바퀴에 7번 지나감 → 7 × 1X', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 20.0, y: Y3[1] - 0.5, text: '기어 한 쌍 (이빨 15 · 60)', anchor: 'middle', bold: true },
-        { type: 'circle', x: gA.x, y: gA.y, r: gA.r * PX_PER_UNIT, color: 'c1' },
-        ...teeth(gA, 'c1'),
-        { type: 'circle', x: gB.x, y: gB.y, r: gB.r * PX_PER_UNIT, color: 'c3' },
-        ...teeth(gB, 'c3'),
-        { type: 'text', x: gA.x, y: gA.y - gA.r - 0.75, text: `${V.fr} Hz`, anchor: 'middle', color: 'c1' },
-        { type: 'text', x: gB.x, y: gB.y - 0.15, text: `${hz(V.gearOut)} Hz`, anchor: 'middle', color: 'c3' },
-        { type: 'point', x: gA.x + gA.r, y: gA.y, color: 'warn' },
-        { type: 'line', x1: gA.x + gA.r, y1: gA.y + 0.15, x2: gA.x + gA.r - 0.5, y2: gA.y + 1.9, color: 'warn', width: 1.2 },
-        { type: 'text', x: gA.x + gA.r - 0.5, y: gA.y + 2.1, text: `맞물림 ${hz(V.gearMesh)} Hz`, anchor: 'end', color: 'warn' },
-      ],
     },
   ],
 };
 
-// 그림 4 — 구름베어링 단면 (도식)
-const X4: [number, number] = [0, 30];
-const Y4 = squareYRange(X4, 230);
-const B = { x: 8.5, y: 4.9, pitch: 2.7, ball: 0.55, n: 9 };
-const ang = (deg: number) => (deg * Math.PI) / 180;
-const ballCircles: FigAnnotation[] = Array.from({ length: B.n }, (_, k) => {
-  const a = Math.PI / 2 + (2 * Math.PI * k) / B.n;
-  return { type: 'circle', x: B.x + B.pitch * Math.cos(a), y: B.y + B.pitch * Math.sin(a), r: B.ball * PX_PER_UNIT, fill: true, color: 'c1' };
-});
-const at = (r: number, deg: number): [number, number] => [B.x + r * Math.cos(ang(deg)), B.y + r * Math.sin(ang(deg))];
-const tag = (y: number, text: string, target: [number, number], color: 'text' | 'c1' | 'c2' | 'muted' = 'text'): FigAnnotation[] => [
-  { type: 'text', x: 14.2, y: y - 0.12, text, anchor: 'start', color },
-  { type: 'line', x1: 14.0, y1: y, x2: target[0], y2: target[1], color: 'muted', width: 1.2 },
-];
-export const bearingSection: FigureSpec = {
-  id: 'fig-p1-7-4',
-  caption:
-    '그림 4. 구름베어링을 축 방향에서 본 단면 (볼 9개). 바깥 바퀴(외륜)는 하우징에 끼워져 멈춰 있고, 안쪽 바퀴(내륜)는 축에 끼워져 축과 함께 돈다. 볼은 두 바퀴 사이를 구르고, 케이지(회색 점선, 볼 중심을 잇는 원)가 볼 사이 간격을 잡아 준다. 볼 지름 d와 볼 중심이 그리는 원의 지름(피치 지름) D의 비는 실제 6205 베어링과 같게(d/D ≈ 0.2) 그렸다.',
-  panels: [
-    {
-      frame: false,
-      height: 230,
-      x: { range: X4 },
-      y: { range: Y4 },
-      series: [],
-      annotations: [
-        { type: 'text', x: B.x, y: Y4[1] - 0.5, text: '구름베어링 단면', anchor: 'middle', bold: true },
-        { type: 'circle', x: B.x, y: B.y, r: 4.0 * PX_PER_UNIT, color: 'text' },
-        { type: 'circle', x: B.x, y: B.y, r: (B.pitch + B.ball) * PX_PER_UNIT, color: 'text' },
-        { type: 'circle', x: B.x, y: B.y, r: (B.pitch - B.ball) * PX_PER_UNIT, color: 'c2' },
-        { type: 'circle', x: B.x, y: B.y, r: 1.35 * PX_PER_UNIT, fill: true, color: 'muted', label: '축' },
-        { type: 'circle', x: B.x, y: B.y, r: B.pitch * PX_PER_UNIT, dash: true, color: 'muted' },
-        ...ballCircles,
-        ...tag(8.4, '외륜: 하우징에 끼워져 멈춰 있다', at(3.6, 40)),
-        ...tag(6.6, '볼 9개: 두 바퀴 사이를 구른다', at(B.pitch + 0.4, 10), 'c1'),
-        ...tag(4.6, '케이지(점선): 볼 간격을 잡고 볼과 함께 돈다', at(B.pitch, 350), 'muted'),
-        ...tag(2.5, '내륜: 축과 함께 f_r로 돈다', at(1.75, 290), 'c2'),
-        { type: 'text', x: B.x, y: 0.3, text: '외륜 멈춤 · 내륜과 축 회전', anchor: 'middle', color: 'muted' },
-      ],
-    },
-  ],
-};
+// ── 그림 3: 1X 진동 시간파형과 위상 지연 ───────────────────────
+const t3 = grid(0, 0.06, 601); // 50 Hz(T = 0.02 s) 기준 3주기
+const fx3 = t3.map((t) => res3000.forceAmplitude * Math.cos(2 * Math.PI * FN * t));
+const x3 = t3.map((t) => mm(res3000.displacementAmplitude) * Math.cos(2 * Math.PI * FN * t - res3000.phaseLag));
 
-// 그림 5 — 사이에 낀 것은 절반 속도로 간다 (굴림대, 기름막)
-const X5: [number, number] = [0, 30];
-const Y5 = squareYRange(X5, 160);
-const profileY = [1.55, 2.15, 2.75, 3.35];
-const wallY = 1.2;
-const shaftY = 3.7;
-const uLen = 6;
-export const halfSpeed: FigureSpec = {
-  id: 'fig-p1-7-5',
-  caption:
-    '그림 5. 멈춘 판과 움직이는 판 사이에 낀 것은 위 판 속도의 절반쯤으로 간다. 왼쪽: 아래 판(외륜)이 멈춰 있고 위 판(내륜)이 v로 움직이면, 미끄러지지 않고 구르는 굴림대(볼)의 중심은 v/2로 간다. 그래서 케이지는 내륜보다 느리게 돈다. 오른쪽: 멈춘 베어링 면과 U로 도는 축 표면 사이의 기름은 축 쪽은 U, 베어링 쪽은 0으로 흘러 평균 속도가 U/2쯤이다.',
+export const timeWaveform1X: FigureSpec = {
+  id: 'fig-p1-7-3',
+  caption: `그림 3. 3000 rpm(50 Hz) 정상상태에서 세 바퀴(60 ms, 한 바퀴 T = 20 ms) 동안의 불평형 외력 수평 성분(위, 주황 점선)과 수평 변위 응답(아래, 파랑 실선). 회전수가 50 Hz이므로 수평 진동도 정확히 50 Hz 정현파로 나타난다(1X 진동). 공진(3000 rpm)에서는 변위가 힘보다 90°(1/4 주기, 5 ms) 늦게 정점을 찍는다.`,
   panels: [
     {
-      frame: false,
-      height: 160,
-      x: { range: X5 },
-      y: { range: Y5 },
-      series: [],
-      annotations: [
-        { type: 'text', x: 7.0, y: Y5[1] - 0.45, text: '굴림대: 중심은 v/2', anchor: 'middle', bold: true },
-        { type: 'ground', x1: 1.0, y1: wallY, x2: 13.0, y2: wallY, side: 'right' },
-        { type: 'circle', x: 6.0, y: wallY + 0.8, r: 0.8 * PX_PER_UNIT, fill: true, color: 'c1' },
-        { type: 'rect', x1: 2.5, x2: 12.5, y1: wallY + 1.6, y2: wallY + 2.1, color: 'c2' },
-        { type: 'arrow', x1: 8.6, y1: wallY + 2.75, x2: 11.6, y2: wallY + 2.75, color: 'c2', double: false, label: 'v (위 판 = 내륜)', labelDy: -8 },
-        { type: 'arrow', x1: 6.0, y1: wallY + 0.8, x2: 7.5, y2: wallY + 0.8, color: 'warn', double: false },
-        { type: 'text', x: 8.0, y: wallY + 0.6, text: 'v/2', anchor: 'start', color: 'warn', bold: true },
-        { type: 'text', x: 7.0, y: 0.25, text: '아래 판 멈춤 = 외륜', anchor: 'middle', color: 'muted' },
-        { type: 'text', x: 22.5, y: Y5[1] - 0.45, text: '기름막: 평균 ≈ U/2', anchor: 'middle', bold: true },
-        { type: 'ground', x1: 17.0, y1: wallY, x2: 28.5, y2: wallY, side: 'right' },
-        { type: 'rect', x1: 17.0, x2: 28.5, y1: shaftY, y2: shaftY + 0.4, color: 'muted' },
-        { type: 'arrow', x1: 23.0, y1: shaftY + 0.95, x2: 26.0, y2: shaftY + 0.95, color: 'c2', double: false, label: 'U (축 표면)', labelDy: -8 },
-        ...profileY.map((y): FigAnnotation => ({ type: 'arrow', x1: 18.5, y1: y, x2: 18.5 + (uLen * (y - wallY)) / (shaftY - wallY), y2: y, color: 'c1', double: false })),
-        { type: 'line', x1: 18.5, y1: wallY, x2: 18.5 + uLen, y2: shaftY, color: 'c1', dash: true, width: 1.2 },
-        { type: 'text', x: 22.5, y: 0.25, text: '베어링 면 멈춤 (속도 0)', anchor: 'middle', color: 'muted' },
-      ],
-    },
-  ],
-};
-
-// 그림 6 — 베어링 줄은 하모닉 사이에 선다 (6205, 3000 rpm)
-const bx = V.brgX;
-const brgStems = [
-  { x: bx.ftf, h: 0.62, color: 'c3' as const, name: 'FTF' },
-  { x: bx.bsf, h: 0.78, color: 'c4' as const, name: 'BSF' },
-  { x: bx.bpfo, h: 1.0, color: 'c1' as const, name: 'BPFO' },
-  { x: bx.bpfi, h: 0.9, color: 'c2' as const, name: 'BPFI' },
-];
-export const bearingLines: FigureSpec = {
-  id: 'fig-p1-7-6',
-  caption: `그림 6. 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 ${formatNumber(bx.ftf, 4)}X, 볼 자전 ${formatNumber(bx.bsf, 4)}X, 외륜 ${formatNumber(bx.bpfo, 4)}X, 내륜 ${formatNumber(bx.bpfi, 4)}X — 모두 점선 사이에 선다. 3000 rpm(1X = ${V.fr} Hz)이면 외륜 ${hz(V.brg.bpfo)} Hz, 내륜 ${hz(V.brg.bpfi)} Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.`,
-  panels: [
-    {
-      series: brgStems.map((s) => ({ x: [s.x], y: [s.h], kind: 'stem' as const, color: s.color, width: 3 })),
-      annotations: [
-        ...Array.from({ length: 9 }, (_, i): FigAnnotation => ({ type: 'vline', x: i + 1, color: 'muted', dash: true })),
-        ...brgStems.map((s): FigAnnotation => ({ type: 'text', x: s.x, y: s.h + 0.1, text: `${s.name} ${formatNumber(s.x, 3)}X`, anchor: 'middle', color: s.color })),
-      ],
-      x: {
-        range: [0, 9.6],
-        ticks: Array.from({ length: 10 }, (_, i) => i),
-        tickLabels: Array.from({ length: 10 }, (_, i) => ({ value: i, label: i === 0 ? '0' : `${i}X` })),
-        label: '주파수 (1X의 배수)',
-      },
-      y: { range: [0, 1.3], ticks: 'none' },
-      height: 150,
-    },
-  ],
-};
-
-// 그림 7 — 흠집의 충격은 높은 주파수를 울린다
-const RING = { fn: 3000, zeta: 0.04 };
-const ringSys = { mass: 1, stiffness: (2 * Math.PI * RING.fn) ** 2, damping: 2 * RING.zeta * 2 * Math.PI * RING.fn };
-const impactPeriod = 1 / V.brg.bpfo;
-const tMax7 = 0.025;
-const t7 = grid(0, tMax7, 5001);
-const impacts = Array.from({ length: Math.ceil(tMax7 / impactPeriod) }, (_, i) => 0.0008 + i * impactPeriod).filter((t) => t < tMax7);
-const ring7 = t7.map((t) => impacts.reduce((sum, ti) => (t >= ti ? sum + freeResponseAt(ringSys, { x0: 0, v0: 1 }, t - ti).x : sum), 0));
-const ringPeak = Math.max(...ring7.map(Math.abs));
-const ring7n = ring7.map((v) => v / ringPeak);
-const tZoom = grid(0, 0.0015, 1201);
-const ringZoom = tZoom.map((t) => freeResponseAt(ringSys, { x0: 0, v0: 1 }, t).x / ringPeak);
-export const impactRinging: FigureSpec = {
-  id: 'fig-p1-7-7',
-  caption: `그림 7. 외륜 흠집 위를 볼이 지날 때마다 짧은 충격이 생기고, 충격은 하우징을 고유진동수(예시 ${RING.fn / 1000} kHz, 감쇠비 ${RING.zeta})로 울린다 — P1-3의 감쇠 자유진동이 BPFO 박자(${hz(V.brg.bpfo)} Hz, ${formatNumber(impactPeriod * 1000, 3)} ms 간격)로 되풀이된다. 위: 25 ms 동안의 파형. 가운데: 충격 하나를 1.5 ms만 확대 — 한 번 울리는 데 ${formatNumber(1000 / RING.fn, 3)} ms. 아래: 주파수 지도. 흔들림의 대부분은 울림 주파수 근처(주황 띠)에 모이고, 되풀이 박자 ${hz(V.brg.bpfo)} Hz는 울림이 반복되는 간격으로만 드러난다.`,
-  panels: [
-    {
-      title: '25 ms 동안 (정규화)',
-      series: [{ x: t7.map((t) => t * 1000), y: ring7n, color: 'c1', width: 1.2 }],
-      annotations: [
-        { type: 'arrow', x1: impacts[1] * 1000, y1: 1.15, x2: impacts[2] * 1000, y2: 1.15, color: 'warn', label: `${formatNumber(impactPeriod * 1000, 3)} ms = 1 / BPFO`, labelDy: -6 },
-      ],
-      x: { range: [0, tMax7 * 1000], label: '시각 [ms]' },
-      y: { range: [-1.2, 1.5], ticks: 'none' },
-      height: 130,
-    },
-    {
-      title: '충격 하나 확대',
-      series: [{ x: tZoom.map((t) => t * 1000), y: ringZoom, color: 'c1', width: 1.6 }],
-      annotations: [
-        { type: 'arrow', x1: 0.25 / RING.fn * 1000 + (1000 / RING.fn) * 1, y1: 1.05, x2: 0.25 / RING.fn * 1000 + (1000 / RING.fn) * 2, y2: 1.05, color: 'warn', label: `${formatNumber(1000 / RING.fn, 3)} ms → ${RING.fn / 1000} kHz`, labelDy: -6 },
-      ],
-      x: { range: [0, 1.5], label: '시각 [ms]' },
-      y: { range: [-1.2, 1.4], ticks: 'none' },
-      height: 110,
-    },
-    {
-      title: '주파수 지도',
-      series: [{ x: [Math.log10(V.brg.bpfo)], y: [0.6], kind: 'stem', color: 'c1', width: 2.4 }],
-      annotations: [
-        { type: 'band', x1: Math.log10(RING.fn * 0.85), x2: Math.log10(RING.fn * 1.15), color: 'warn', label: '울림이 모이는 곳' },
-        { type: 'text', x: Math.log10(V.brg.bpfo), y: 0.75, text: `되풀이 박자 BPFO ${hz(V.brg.bpfo)} Hz`, anchor: 'middle', color: 'c1' },
-      ],
-      x: { range: [1, 4.3], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4), label: '주파수 [Hz] (로그 눈금)' },
-      y: { range: [0, 1.1], ticks: 'none' },
-      height: 95,
-    },
-  ],
-};
-
-// 그림 8 — 벨트와 1X보다 낮은 줄
-const X8: [number, number] = [0, 30];
-const Y8 = squareYRange(X8, 140);
-const pm = { x: 6.0, y: 2.9, r: 1.0 };
-const pf = { x: 21.5, y: 2.9, r: 2.0 };
-const fanBrg = bearingFrequencies(BEARING_6205, V.fanFr);
-const sub8 = [
-  { f: fanBrg.ftf, h: 0.55, color: 'c4' as const, name: '팬 베어링 FTF' },
-  { f: V.belt, h: 1.0, color: 'c2' as const, name: '벨트' },
-  { f: V.fanFr, h: 0.75, color: 'c3' as const, name: '팬 1X' },
-  { f: 2 * V.belt, h: 0.55, color: 'c2' as const, name: '벨트 × 2' },
-  { f: V.fanMotorFr, h: 1.0, color: 'c1' as const, name: '전동기 1X' },
-];
-export const beltDrive: FigureSpec = {
-  id: 'fig-p1-7-8',
-  caption: `그림 8. 벨트 구동 팬. 위: 지름 ${EXAMPLE.motorPulley} m 풀리가 ${PRESETS.beltFan.rpm} rpm(${hz(V.fanMotorFr)} Hz)으로 돌고, 지름 ${EXAMPLE.fanPulley} m 풀리는 절반 빠르기(${hz(V.fanFr)} Hz)로 돈다. 길이 ${EXAMPLE.beltLength} m 벨트는 1초에 π × ${EXAMPLE.motorPulley} × ${hz(V.fanMotorFr)} ÷ ${EXAMPLE.beltLength} = ${hz(V.belt)}바퀴 돈다. 아래: 전동기 1X(파랑) 아래에 벨트(주황), 팬 축 1X(초록), 팬 베어링 케이지(보라)가 선다 — 모두 1X보다 낮은 줄이다.`,
-  panels: [
-    {
-      frame: false,
-      height: 140,
-      x: { range: X8 },
-      y: { range: Y8 },
-      series: [],
-      annotations: [
-        { type: 'text', x: 13.75, y: Y8[1] - 0.4, text: '벨트 구동 팬', anchor: 'middle', bold: true },
-        { type: 'circle', x: pm.x, y: pm.y, r: pm.r * PX_PER_UNIT, color: 'c1' },
-        { type: 'circle', x: pf.x, y: pf.y, r: pf.r * PX_PER_UNIT, color: 'c3' },
-        { type: 'line', x1: pm.x, y1: pm.y + pm.r, x2: pf.x, y2: pf.y + pf.r, color: 'c2', width: 2.4 },
-        { type: 'line', x1: pm.x, y1: pm.y - pm.r, x2: pf.x, y2: pf.y - pf.r, color: 'c2', width: 2.4 },
-        { type: 'text', x: 13.75, y: 4.75, text: `벨트 길이 ${EXAMPLE.beltLength} m`, anchor: 'middle', color: 'c2' },
-        { type: 'text', x: pm.x, y: 0.3, text: `전동기 풀리 ${EXAMPLE.motorPulley} m`, anchor: 'middle', color: 'c1' },
-        { type: 'text', x: pf.x + 4.6, y: pf.y - 0.1, text: `팬 풀리 ${EXAMPLE.fanPulley} m`, anchor: 'start', color: 'c3' },
-      ],
-    },
-    {
-      title: '1X보다 낮은 줄',
-      series: sub8.map((s) => ({ x: [s.f], y: [s.h], kind: 'stem' as const, color: s.color, width: 3 })),
-      annotations: sub8.map((s): FigAnnotation => ({ type: 'text', x: s.f, y: s.h + 0.1, text: `${s.name} ${formatNumber(s.f, 3)}`, anchor: 'middle', color: s.color })),
-      x: { range: [0, 35], ticks: [0, 5, 10, 15, 20, 25, 30, 35], label: '주파수 [Hz]' },
-      y: { range: [0, 1.3], ticks: 'none' },
+      title: '수평 외력 성분 F_x(t)',
+      series: [{ x: t3, y: fx3.map((v) => v / 1000), label: '수평 외력 F_x [kN]', color: 'warn', width: 2, dash: true }],
+      annotations: [{ type: 'hline', y: 0, color: 'muted', dash: true }],
+      x: { range: [0, 0.06], label: '시간 t [s]', ticks: [0, 0.02, 0.04, 0.06] },
+      y: { range: [-1.2, 1.2], ticks: [-1, 0, 1], label: '외력 [kN]' },
       height: 120,
     },
-  ],
-};
-
-// 그림 9 — 기동하면서 움직이는 줄과 제자리 줄 (전동기-펌프)
-const rpmTop = PRESETS.motorPump.rpm;
-const rays = [
-  { k: 1, color: 'c1' as const, name: '1X' },
-  { k: 2, color: 'c3' as const, name: '2X' },
-  { k: 7, color: 'c4' as const, name: '날개 통과 7X' },
-];
-export const runUpMap: FigureSpec = {
-  id: 'fig-p1-7-9',
-  caption: `그림 9. 전동기-펌프(날개 7개)를 0에서 ${rpmTop} rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = ${V.twoFL} Hz(회색 점선)와 받침대 고유진동수 ${EXAMPLE.structureNatural} Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 ${formatNumber(V.crossBp, 3)} rpm, 2X ${formatNumber(V.cross2X, 4)} rpm)에서 그 고유진동수를 지나간다 — P1-6의 임계속도와 같은 일이다. 운전 회전수에서 2X(${hz((2 * rpmTop) / 60)} Hz)와 2 f_L(${V.twoFL} Hz)은 거의 겹친다.`,
-  panels: [
     {
-      series: rays.map((ray) => ({ x: [0, (ray.k * rpmTop) / 60], y: [0, rpmTop], color: ray.color, width: 2.4 })),
+      title: '수평 변위 응답 x(t) (위상 지연 φ = 90°)',
+      series: [{ x: t3, y: x3, label: '수평 변위 x [mm]', color: 'c1', width: 2.2 }],
       annotations: [
-        { type: 'vline', x: V.twoFL, color: 'muted', dash: true },
-        { type: 'vline', x: EXAMPLE.structureNatural, color: 'warn', dash: true },
-        { type: 'hline', y: rpmTop, color: 'muted', dash: true, label: `운전 ${rpmTop} rpm`, labelAt: 'start', labelBelow: true },
-        { type: 'point', x: EXAMPLE.structureNatural, y: V.crossBp, color: 'warn' },
-        { type: 'text', x: EXAMPLE.structureNatural, y: V.crossBp, text: `${formatNumber(V.crossBp, 3)} rpm`, anchor: 'end', color: 'warn', dx: -6, dy: -10 },
-        { type: 'point', x: EXAMPLE.structureNatural, y: V.cross2X, color: 'warn' },
-        { type: 'text', x: EXAMPLE.structureNatural, y: V.cross2X, text: `${formatNumber(V.cross2X, 4)} rpm`, anchor: 'end', color: 'warn', dx: -6, dy: -10 },
-        { type: 'text', x: EXAMPLE.structureNatural, y: rpmTop + 260, text: `받침대 ${EXAMPLE.structureNatural} Hz`, anchor: 'end', color: 'warn', dx: -4 },
-        { type: 'text', x: V.twoFL, y: rpmTop + 260, text: `2 f_L ${V.twoFL} Hz`, anchor: 'start', color: 'muted', dx: 4 },
-        { type: 'text', x: 50, y: 3000, text: '1X', anchor: 'end', color: 'c1', dx: -6 },
-        { type: 'text', x: 100, y: 3000, text: '2X', anchor: 'start', color: 'c3', dx: 6 },
-        { type: 'text', x: (7 * 2600) / 60, y: 2600, text: '날개 통과 7X', anchor: 'end', color: 'c4', dx: -4, dy: -10 },
+        { type: 'hline', y: 0, color: 'muted', dash: true },
+        { type: 'arrow', x1: 0, y1: 1.05, x2: 0.005, y2: 1.05, label: '위상 지연 90° (5 ms)', color: 'warn', double: true, labelDy: -8 },
       ],
-      x: { range: [0, 450], ticks: [0, 50, 100, 150, 200, 250, 300, 350, 400, 450], label: '주파수 [Hz]' },
-      y: { range: [0, rpmTop + 450], ticks: [0, 1000, 2000, 3000], label: '회전수 [rpm]' },
-      height: 210,
+      x: { range: [0, 0.06], label: '시간 t [s]', ticks: [0, 0.02, 0.04, 0.06] },
+      y: { range: [-1.3, 1.3], ticks: [-1, 0, 1], label: '변위 [mm]' },
+      height: 140,
     },
   ],
 };
 
-// 그림 10 — 관심 주파수 구간 지도 (전동기-펌프, LAB-FMAP-01 처음 상태)
-const pump = PRESETS.motorPump;
-const map10 = buildMap('motorPump', { rpm: pump.rpm, count: pump.count, balls: pump.balls ?? 9 });
-const L = Math.log10;
-const nRows = map10.rows.length;
-const rowY = (i: number) => nRows - i;
-const zoneLabels = map10.zones.map((z): FigAnnotation => ({ type: 'text', x: (L(z.f1) + L(z.f2)) / 2, y: nRows + 0.75, text: z.label, anchor: 'middle', color: 'muted', bold: true }));
-const SHORT: Record<string, string> = { '케이지 FTF': 'FTF', '외륜 BPFO': 'BPFO', '내륜 BPFI': 'BPFI', '볼 자전 BSF': 'BSF', };
-const laneAnnotations: FigAnnotation[] = map10.rows.flatMap((row, i) => [
-  { type: 'text', x: L(MAP_RANGE[0]) + 0.04, y: rowY(i) - 0.1, text: row.element, anchor: 'start', bold: true } as FigAnnotation,
-  ...row.bands.map((b): FigAnnotation => ({ type: 'rect', x1: L(b.f1), x2: L(b.f2), y1: rowY(i) - 0.25, y2: rowY(i) + 0.25, color: 'warn', label: b.label })),
-  ...row.lines.flatMap((line): FigAnnotation[] => [
-    { type: 'line', x1: L(line.f), y1: rowY(i) - 0.28, x2: L(line.f), y2: rowY(i) + 0.28, color: line.kind === 'rotating' ? 'c1' : 'warn', dash: line.kind === 'fixed', width: 2.6 },
-    { type: 'text', x: L(line.f), y: rowY(i) + 0.36, text: SHORT[line.label] ?? line.label, anchor: 'middle', color: line.kind === 'rotating' ? 'c1' : 'warn' },
-  ]),
-]);
-export const interestMap: FigureSpec = {
-  id: 'fig-p1-7-10',
-  caption: `그림 10. 전동기-펌프(${pump.rpm} rpm, 1X = ${hz(map10.fr)} Hz, 날개 ${pump.count}개, 볼 ${pump.balls}개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(${hz(map10.fr)} ~ ${hz(10 * map10.fr)} Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 ${hz(map10.highest)} Hz다.`,
+// ── 그림 4: 불평형 진폭비 및 위상 곡선 (Bode 선도) ─────────────
+const rAxis = grid(0, 3, 601);
+const curveZ005 = rAxis.map((r) => unbalanceResponseFactor(r, 0.05));
+const curveZ010 = rAxis.map((r) => unbalanceResponseFactor(r, 0.1));
+const curveZ020 = rAxis.map((r) => unbalanceResponseFactor(r, 0.2));
+
+export const unbalanceBode: FigureSpec = {
+  id: 'fig-p1-7-4',
+  caption: `그림 4. 불평형 응답의 무차원 진폭비(위)와 위상각(아래). 일반 강제진동(P1-4)과 달리 정지 시(r = 0) 진폭비가 0에서 출발한다. r = 1(임계속도) 근처에서 진폭이 1/(2ζ)로 크게 치솟고 위상은 90°를 지나며, r ≫ 1인 초임계 영역에서는 진폭비가 정확히 1로 수렴한다(변위 X → m_u e / M = ${f(P0_6_REFERENCE.eCgMm, 2)} mm). 위상은 180°로 수렴한다.`,
   panels: [
     {
-      series: [],
-      annotations: [
-        { type: 'band', x1: L(map10.zones[0].f1), x2: L(map10.zones[0].f2), color: 'muted' },
-        { type: 'band', x1: L(map10.zones[2].f1), x2: L(map10.zones[2].f2), color: 'muted' },
-        ...zoneLabels,
-        ...laneAnnotations,
+      title: '무차원 진폭비 X / (m_u e / M)',
+      series: [
+        { x: rAxis, y: curveZ005.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.05', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ010.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.10', color: 'c2', width: 2 },
+        { x: rAxis, y: curveZ020.map((c) => Math.min(c.factor, 12)), label: 'ζ = 0.20', color: 'c3', width: 1.8 },
       ],
-      x: { range: [L(MAP_RANGE[0]), L(MAP_RANGE[1])], ticks: [1, 2, 3, 4], tickLabels: logTicks(1, 4), label: '주파수 [Hz] (로그 눈금)' },
-      y: { range: [0.35, nRows + 1.05], ticks: 'none' },
-      height: 250,
+      annotations: [
+        { type: 'hline', y: 1, color: 'muted', dash: true },
+        { type: 'vline', x: 1, label: 'r = 1 (임계속도)', color: 'warn', dash: true },
+        // 세로선 글자(오른쪽 위)와 겹치지 않게 봉우리 왼쪽에 쓴다
+        { type: 'point', x: 1, y: 10, color: 'c1' },
+        { type: 'text', x: 1, y: 10, text: 'ζ = 0.05: 1/(2ζ) = 10', anchor: 'end', color: 'c1', dx: -10, dy: 4, bold: true },
+      ],
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 11], ticks: [0, 1, 2, 4, 6, 8, 10], label: '진폭비' },
+      height: 180,
+    },
+    {
+      title: '위상 지연 φ [°]',
+      series: [
+        { x: rAxis, y: curveZ005.map((c) => deg(c.phaseLag)), label: 'ζ = 0.05', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ010.map((c) => deg(c.phaseLag)), label: 'ζ = 0.10', color: 'c2', width: 2 },
+        { x: rAxis, y: curveZ020.map((c) => deg(c.phaseLag)), label: 'ζ = 0.20', color: 'c3', width: 1.8 },
+      ],
+      annotations: [
+        { type: 'hline', y: 90, color: 'muted', dash: true },
+        { type: 'hline', y: 180, color: 'muted', dash: true },
+        { type: 'point', x: 1, y: 90, label: '공진 시 90° 지연', color: 'warn', dx: 10, dy: -10 },
+      ],
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 190], ticks: [0, 45, 90, 135, 180], label: '위상 지연 [°]' },
+      height: 160,
     },
   ],
+};
+
+// ── 그림 5: 외력 일정 강제진동 vs 불평형 강제진동 ──────────────
+const staticFactor = rAxis.map((r) => {
+  const den = Math.hypot(1 - r ** 2, 2 * ZETA * r);
+  return den === 0 ? 12 : Math.min(1 / den, 12);
+});
+
+export const staticVsUnbalance: FigureSpec = {
+  id: 'fig-p1-7-5',
+  caption:
+    '그림 5. 일반 강제진동(파랑, P1-4)과 불평형 진동(주황, P1-7)의 증폭 특성 비교 (ζ = 0.05). 일반 강제진동은 힘의 크기가 일정하여 r = 0에서 정적 처짐 1을 가지며 고속에서는 0으로 줄어든다. 반면 불평형 진동은 힘이 속도 제곱에 비례하므로 r = 0에서 0이고, 고속(r ≫ 1)에서는 진폭비 1(편심 거리 m_u e / M)로 수렴한다.',
+  panels: [
+    {
+      series: [
+        { x: rAxis, y: staticFactor, label: '외력 일정 강제진동 (P1-4)', color: 'c1', width: 2.2 },
+        { x: rAxis, y: curveZ005.map((c) => Math.min(c.factor, 12)), label: '불평형 원심력 진동 (P1-7)', color: 'c2', width: 2.2 },
+      ],
+      annotations: [
+        { type: 'point', x: 0, y: 1, color: 'c1' },
+        { type: 'text', x: 0, y: 1, text: 'P1-4: 1에서 출발', color: 'c1', dx: 8, dy: -10, bold: true },
+        { type: 'point', x: 0, y: 0, color: 'c2' },
+        { type: 'text', x: 0, y: 0, text: 'P1-7: 0에서 출발', color: 'c2', dx: 8, dy: -4, bold: true },
+        { type: 'hline', y: 1, color: 'muted', dash: true },
+        { type: 'vline', x: 1, color: 'muted', dash: true },
+      ],
+      x: { range: [0, 3], label: '진동수비 r = Ω/ω_n', ticks: [0, 0.5, 1, 1.5, 2, 2.5, 3] },
+      y: { range: [0, 11], ticks: [0, 1, 2, 4, 6, 8, 10], label: '응답 진폭비' },
+      height: 220,
+    },
+  ],
+};
+
+// ── 그림 6: 런업 중 임계속도 통과 파형 ────────────────────────
+// 회전수를 1초에 1200 rpm(20 Hz)씩 0 → 6000 rpm(100 Hz)까지 올린다. t = 2.5 s에 50 Hz(임계속도) 통과.
+// 각 순간의 정상상태 진폭·위상으로 그린 개념도. 100 Hz에서도 한 주기에 12점 이상이 되도록 점을 촘촘히 둔다.
+const RUN_T = 5;
+const RUN_RATE_HZ = 20; // Hz/s
+const tRun = grid(0, RUN_T, 6001);
+const runUpEnvT = grid(0, RUN_T, 501);
+const runUpAmp = (t: number) => unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).factor * E_CG_MM;
+const runUpDisp = tRun.map((t) => {
+  const phi = unbalanceResponseFactor((RUN_RATE_HZ * t) / FN, ZETA).phaseLag;
+  // 회전 각도 θ(t) = 2π ∫ 20τ dτ = 2π · 10 t²
+  const theta = 2 * Math.PI * (RUN_RATE_HZ / 2) * t ** 2;
+  return runUpAmp(t) * Math.cos(theta - phi);
+});
+const runUpEnv = runUpEnvT.map(runUpAmp);
+const RUN_PEAK_MM = E_CG_MM * peak.responseFactor;
+
+export const runUpTransient: FigureSpec = {
+  id: 'fig-p1-7-6',
+  caption: `그림 6. 회전수를 1초에 1200 rpm씩 0에서 6000 rpm까지 올리는 런업(Run-up) 중의 수평 변위 파형(파랑)과 진폭(회색 점선). 각 순간의 정상상태 진폭으로 그린 개념도다. 저속에서는 진폭이 작다가, 고유진동수(50 Hz, 3000 rpm)를 지나는 2.5초 근처에서 ${f(RUN_PEAK_MM, 2)} mm(편심 거리 ${f(E_CG_MM, 2)} mm의 10배)까지 커진다. 지나고 나면 다시 줄어 6000 rpm(r = 2)에서 ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm가 되고, 회전수를 더 올리면 편심 거리 ${f(E_CG_MM, 2)} mm에 다가간다.`,
+  panels: [
+    {
+      series: [
+        { x: tRun, y: runUpDisp, label: '수평 변위 x(t)', color: 'c1', width: 1.2 },
+        { x: runUpEnvT, y: runUpEnv, label: '진폭 X', color: 'muted', width: 1.4, dash: true },
+        { x: runUpEnvT, y: runUpEnv.map((v) => -v), color: 'muted', width: 1.4, dash: true },
+      ],
+      annotations: [
+        { type: 'hline', y: 0, color: 'muted', dash: true },
+        { type: 'vline', x: 2.5, color: 'warn', dash: true },
+        { type: 'point', x: 2.5, y: RUN_PEAK_MM, color: 'warn' },
+        { type: 'text', x: 2.5, y: RUN_PEAK_MM, text: `공진 피크 ${f(RUN_PEAK_MM, 2)} mm (3000 rpm, t = 2.5 s)`, color: 'warn', dx: 10, dy: 4, bold: true },
+        { type: 'text', x: RUN_T, y: P0_6_REFERENCE.high.amplitudeMm, text: `6000 rpm(r = 2): ${f(P0_6_REFERENCE.high.amplitudeMm, 3)} mm`, anchor: 'end', color: 'text', dx: -4, dy: -14, bold: true },
+      ],
+      x: { range: [0, RUN_T], label: '가속 시간 t [s] (회전수 = 1200 × t rpm)', ticks: [0, 1, 2, 2.5, 3, 4, 5] },
+      y: { range: [-1.3, 1.3], ticks: [-1, -0.5, 0, 0.5, 1], label: '변위 [mm]' },
+      height: 200,
+    },
+  ],
+};
+
+// ── 그림 7: 초임계 영역의 질량 중심 회전 (Self-centering) ──────
+// 로터를 축 방향에서 본 모습: 베어링 중심 B, 축 중심 O가 그리는 궤도(점선), 축 단면(파랑 원), O에서 본 무거운 점 방향(화살표).
+const PX = 820 / 10; // 단위 → px (x 범위 10)
+const B_X = 2.6;
+const C_Y = 1.4;
+const ORBIT_R = 0.8;
+const O_X = B_X + ORBIT_R;
+const SHAFT_R = 0.3;
+const HEAVY_LEN = 0.5;
+
+function selfCenteringPanel(supercritical: boolean): FigPanel {
+  const tipX = supercritical ? O_X - HEAVY_LEN : O_X + HEAVY_LEN;
+  const lines = supercritical
+    ? ['변위가 힘의 반대쪽 (위상 ≈ 180°)', '축 중심 O가 무거운 점 반대쪽으로 밀린다', '무거운 점은 궤도 안쪽, G는 베어링 중심에 머문다']
+    : ['변위가 힘과 같은 쪽 (위상 ≈ 0°)', '축 중심 O가 무거운 점 쪽으로 밀린다', '무거운 점은 궤도 바깥쪽을 향한다'];
+  return {
+    title: supercritical
+      ? '초임계 (r ≫ 1, 고속): 위상 지연 ≈ 180° — 질량 중심 회전'
+      : '아임계 (r ≪ 1, 저속): 위상 지연 ≈ 0°',
+    frame: false,
+    height: 190,
+    x: { range: [0, 10] },
+    y: { range: squareYRange([0, 10], 190) },
+    series: [],
+    annotations: [
+      // 궤도와 베어링 중심
+      { type: 'circle', x: B_X, y: C_Y, r: ORBIT_R * PX, dash: true, color: 'muted' },
+      { type: 'text', x: B_X, y: C_Y + ORBIT_R, text: 'O의 궤도', anchor: 'middle', color: 'muted', dy: -6 },
+      { type: 'line', x1: B_X - 0.1, y1: C_Y, x2: B_X + 0.1, y2: C_Y, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.1, x2: B_X, y2: C_Y + 0.1, color: 'text', width: 1.5 },
+      { type: 'line', x1: B_X, y1: C_Y - 0.12, x2: B_X, y2: 0.42, color: 'muted', dash: true, width: 1 },
+      {
+        type: 'text',
+        x: B_X,
+        y: 0.2,
+        text: supercritical ? '베어링 중심 = 질량 중심 G' : '베어링 중심',
+        anchor: 'middle',
+        color: supercritical ? 'c3' : 'text',
+        bold: true,
+      },
+      // 축 단면과 축 중심 O
+      { type: 'circle', x: O_X, y: C_Y, r: SHAFT_R * PX, fill: true, color: 'c1' },
+      { type: 'point', x: O_X, y: C_Y, color: 'c1' },
+      { type: 'text', x: O_X, y: C_Y, text: 'O', anchor: 'middle', color: 'c1', dy: -9, bold: true },
+      // O에서 본 무거운 점의 방향
+      { type: 'arrow', x1: O_X, y1: C_Y, x2: tipX, y2: C_Y, color: 'warn', double: false },
+      supercritical
+        ? { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'end', color: 'warn', dy: -10, bold: true }
+        : { type: 'text', x: tipX, y: C_Y, text: 'm_u 방향', anchor: 'start', color: 'warn', dx: 6, dy: 4, bold: true },
+      // 설명
+      { type: 'text', x: 5.2, y: C_Y + 0.4, text: lines[0], color: 'text', bold: true },
+      { type: 'text', x: 5.2, y: C_Y, text: lines[1], color: 'text' },
+      { type: 'text', x: 5.2, y: C_Y - 0.4, text: lines[2], color: 'warn' },
+    ],
+  };
+}
+
+export const selfCenteringDiagram: FigureSpec = {
+  id: 'fig-p1-7-7',
+  caption:
+    '그림 7. 로터를 축 방향에서 본 모습. 점선 원은 축 중심 O가 그리는 궤도, 파란 원은 축 단면, 주황 화살표는 O에서 본 무거운 점(m_u)의 방향이다 (크기는 보기 쉽게 과장했다). 위(아임계): 변위가 힘과 같은 쪽으로 나서 O가 무거운 점 쪽으로 밀리고, 무거운 점은 궤도 바깥쪽을 향한다. 아래(초임계): 변위가 힘의 반대쪽으로 나서 O가 무거운 점의 반대쪽으로 밀리고, 무거운 점은 궤도 안쪽을 향한다. 이때 전체 질량 중심 G가 베어링 중심에 머물고, O는 그 둘레를 반지름 e_cg로 돈다(질량 중심 회전).',
+  panels: [selfCenteringPanel(false), selfCenteringPanel(true)],
 };

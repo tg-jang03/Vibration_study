@@ -1,5 +1,5 @@
 /**
- * P5-2 "1자유도 불평형 응답을 Bode/Polar로" 본문 그림 데이터 (빌드 시 계산, D-026).
+ * P4-1 "1자유도 불평형 응답을 Bode/Polar로" 본문 그림 데이터 (빌드 시 계산, D-026).
  * 모든 숫자는 LAB-AF-01과 같은 `src/lib/rotor/runup.ts`의 예시 로터(P41_EXAMPLE)로 계산한다.
  * Polar 그림은 Contents §3 관례: 0°는 위(센서 방향), 지연각은 회전(반시계) 반대인 시계 방향으로 커진다.
  */
@@ -31,7 +31,7 @@ const fine = (rotor: UnbalanceRotor, end = 6000) => simulateRunUp(rotor, { rpmEn
 const ampSeries = (pts: RunUpPoint[], color: FigColor, label?: string, extra: Partial<FigSeries> = {}): FigSeries => ({ x: pts.map((p) => p.rpm), y: pts.map((p) => pp(p.amp)), color, label, width: 2.2, ...extra });
 const lagSeries = (pts: RunUpPoint[], color: FigColor, label?: string, extra: Partial<FigSeries> = {}): FigSeries => ({ x: pts.map((p) => p.rpm), y: pts.map((p) => deg(p.lag)), color, label, width: 2.2, ...extra });
 
-/** 본문·캡션이 인용하는 숫자 (회귀 테스트 `figures-p5-2.test.ts`) */
+/** 본문·캡션이 인용하는 숫자 (회귀 테스트 `figures-p4-1.test.ts`) */
 export const P41_VALUES = (() => {
   const truth = fine(R);
   const data = simulateRunUp(R, { rpmEnd: P41_EXAMPLE.rpmEnd, rpmStep: P41_EXAMPLE.rpmStep });
@@ -80,7 +80,7 @@ const fv = (p: RunUpPoint, sig = 3) => `${fmt(pp(p.amp), sig)} µm pp∠${fmt(de
 // ── 그림 1 — 런업 기록 = 회전수마다 1X 벡터 하나 ──
 const pts100 = V.data.filter((p) => p.rpm % 100 === 0);
 export const runUpRecord: FigureSpec = {
-  id: 'fig-p5-2-1',
+  id: 'fig-p4-1-1',
   caption: `그림 1. 예시 로터(고유 회전수 ${R.naturalRpm} rpm, 감쇠비 ${R.zeta}, 편심 거리 ${fmt(R.eccentricity * 1e6, 2)} µm)를 0에서 6000 rpm까지 올리며 100 rpm마다 잰 1X 벡터를 진폭(위)과 위상 지연(아래)으로 나눠 찍었다(파란 점). 회색 선은 같은 모델의 해석해다. 런업 기록은 연속 곡선이 아니라 회전수마다 하나씩 얻은 점의 모음이다. 운전 회전수 ${OP} rpm(점선)에서는 ${fv(V.op)}이다.`,
   panels: [
     {
@@ -105,7 +105,7 @@ export const runUpRecord: FigureSpec = {
 // ── 그림 2 — 감쇠가 크면: 낮고 넓은 봉우리, 피크와 90°가 어긋남 ──
 const t2 = fine(V.z2);
 export const dampingCompare: FigureSpec = {
-  id: 'fig-p5-2-2',
+  id: 'fig-p4-1-2',
   caption: `그림 2. 같은 로터에서 감쇠비만 ${R.zeta}(파랑)와 ${V.z2.zeta}(주황)로 바꾼 Bode 선도. 감쇠가 크면 봉우리가 낮고(${fmt(pp(V.crit.amp), 3)} → ${fmt(pp(V.z2Crit.amp), 3)} µm pp, 3000 rpm 기준) 넓으며, 위상도 천천히 돈다. 두 경우 모두 위상 90°는 정확히 ${fmt(V.phase90, 4)} rpm을 지나지만, 진폭이 가장 큰 회전수는 감쇠비 ${V.z2.zeta}에서 ${fmt(V.z2Peak, 4)} rpm(주황 점)으로 4 % 높다. 감쇠비 ${R.zeta}에서는 ${fmt(V.peakRpmTheory, 4)} rpm으로 거의 같다.`,
   panels: [
     {
@@ -181,7 +181,7 @@ const C3b: Pt = [15, 5.2];
 const C3c: Pt = [25, 5.2];
 const s3 = [shaftPanel(C3a, V.low, `저속 ${V.low.rpm} rpm`), shaftPanel(C3b, V.crit, `임계 ${V.crit.rpm} rpm`), shaftPanel(C3c, V.high, `고속 ${V.high.rpm} rpm`)];
 export const heavyHighSpot: FigureSpec = {
-  id: 'fig-p5-2-3',
+  id: 'fig-p4-1-3',
   caption: `그림 3. 키페이저 펄스 순간의 축 단면(축 방향에서 본 모습, 회전은 반시계). 주황 점은 불평형이 있는 무거운 점(heavy spot)으로 세 그림 모두 센서(위) 쪽 0°에 두었다. 파란 점은 축이 센서 쪽으로 가장 많이 나온 곳(high spot) — Polar 화살표가 가리키는 방향이다. high spot은 무거운 점보다 회전 반대 방향으로 위상 지연만큼 뒤에 있다: 저속 ${fmt(deg(V.low.lag), 2)}°(거의 같은 곳), 임계속도 90°, 고속 ${fmt(deg(V.high.lag), 3)}°(거의 반대편).`,
   panels: [
     {
@@ -216,7 +216,7 @@ const marks4: [number, number, number][] = [
   [6000, -82, -6],
 ];
 export const polarLoop: FigureSpec = {
-  id: 'fig-p5-2-4',
+  id: 'fig-p4-1-4',
   caption: `그림 4. 그림 1과 같은 런업을 Polar 플롯으로 그렸다(파랑, 감쇠비 ${R.zeta}). 저속에서 원점 근처 0° 방향으로 출발해, 임계속도를 지나는 동안 원에 가까운 고리를 그리며 시계 방향(지연이 커지는 쪽)으로 돌고, 고속에서는 180° 쪽 ${fmt(pp(R.eccentricity), 2)} µm pp에 다가간다. 고리에서 원점으로부터 가장 먼 점이 3000 rpm(90°)이다. 회색 점선은 감쇠비 0.1로, 고리의 지름이 절반쯤으로 작다.`,
   panels: [
     {
@@ -243,7 +243,7 @@ const zoom = V.data.filter((p) => p.rpm >= 2400 && p.rpm <= 3800);
 const hp = V.hp;
 const level = pp(hp.peakAmp) / Math.SQRT2;
 export const halfPower: FigureSpec = {
-  id: 'fig-p5-2-5',
+  id: 'fig-p4-1-5',
   caption: `그림 5. 그림 1의 런업을 ${P41_EXAMPLE.rpmStep} rpm 간격으로 잰 진폭(파란 점)에서 Half-power법으로 증폭계수를 읽는다. 피크 ${fmt(pp(hp.peakAmp), 3)} µm pp(N_c = ${hp.peakRpm} rpm)의 0.707배인 ${fmt(level, 3)} µm pp 선(주황 점선)과 만나는 두 회전수가 N₁ = ${fmt(hp.n1, 4)}, N₂ = ${fmt(hp.n2, 4)} rpm(이웃한 두 점을 직선으로 이어 읽음)이다. AF = ${hp.peakRpm} ÷ (${fmt(hp.n2, 4)} − ${fmt(hp.n1, 4)}) = ${fmt(hp.af, 3)}로, 1/(2ζ) = 10에 가깝다.`,
   panels: [
     {
@@ -266,7 +266,7 @@ export const halfPower: FigureSpec = {
 
 // ── 그림 6 — 분리여유 ──
 export const separation: FigureSpec = {
-  id: 'fig-p5-2-6',
+  id: 'fig-p4-1-6',
   caption: `그림 6. 분리여유(Separation Margin)는 운전 회전수 N_op가 임계속도 N_c에서 얼마나 떨어져 있는지를 N_op에 대한 비율로 적은 값이다. 예시 로터는 N_c = ${hp.peakRpm} rpm, N_op = ${OP} rpm이라 SM = ${fmt(V.sm, 3)} %이다. 주황 띠는 Half-power 폭(N₁ ~ N₂)으로, 진폭이 피크의 0.707배 이상인 구간이다. 운전 회전수가 이 띠 가까이에 있으면 작은 변화에도 진폭이 크게 바뀐다.`,
   panels: [
     {
@@ -290,7 +290,7 @@ const fine01 = fine(V.z01).filter((p) => p.rpm >= 2500 && p.rpm <= 3500);
 const c01 = V.coarse01.filter((p) => p.rpm >= 2500 && p.rpm <= 3500);
 const win = (pts: RunUpPoint[]) => pts.filter((p) => p.rpm <= 6000);
 export const dataErrors: FigureSpec = {
-  id: 'fig-p5-2-7',
+  id: 'fig-p4-1-7',
   caption: `그림 7. 같은 계산이 실제 데이터에서 틀어지는 세 가지 경우(회색 선 = 참 응답). 위: 감쇠비 0.01이면 Half-power 폭이 약 60 rpm인데 200 rpm마다 재면(주황 점) 봉우리 근처에 점이 한두 개뿐이라 AF가 ${fmt(V.coarseAf, 3)}로 나온다(25 rpm 간격이면 ${fmt(V.fineAf, 3)}, 참값 약 50). 가운데: 벡터 성분마다 표준편차 ${fmt(pp(4e-6) / 2, 2)} µm의 잡음이 섞이면 점이 흔들려 AF가 ${fmt(V.noisyHp.af, 3)}가 된다. 아래: 런아웃 ${fmt(pp(V.runout.amp), 2)} µm pp∠60°가 더해지면 저속에서도 ${fmt(pp(V.withRunout[0].amp), 2)} µm pp가 보이고 피크도 ${fmt(pp(V.runoutHp.peakAmp), 3)} µm pp로 바뀐다. ${P41_EXAMPLE.slowRollRpm} rpm 벡터를 빼면(파랑) 참 응답으로 돌아온다.`,
   panels: [
     {

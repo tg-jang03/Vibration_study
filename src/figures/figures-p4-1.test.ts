@@ -8,9 +8,9 @@ import {
   polarLoop,
   runUpRecord,
   separation,
-} from './p5-2';
+} from './p4-1';
 
-describe('P5-2 본문 그림 회귀 테스트', () => {
+describe('P4-1 본문 그림 회귀 테스트', () => {
   it('P41_VALUES 수치 정합성', () => {
     // 3000 rpm 고유 회전수, ζ = 0.05, 편심거리 5 µm (10 µm pp)
     expect(P41_VALUES.crit.amp * 2e6).toBeCloseTo(100, 1);
@@ -35,25 +35,25 @@ describe('P5-2 본문 그림 회귀 테스트', () => {
   });
 
   it('7개 그림 Spec id 및 패널 구성', () => {
-    expect(runUpRecord.id).toBe('fig-p5-2-1');
+    expect(runUpRecord.id).toBe('fig-p4-1-1');
     expect(runUpRecord.panels.length).toBe(2);
 
-    expect(dampingCompare.id).toBe('fig-p5-2-2');
+    expect(dampingCompare.id).toBe('fig-p4-1-2');
     expect(dampingCompare.panels.length).toBe(2);
 
-    expect(heavyHighSpot.id).toBe('fig-p5-2-3');
+    expect(heavyHighSpot.id).toBe('fig-p4-1-3');
     expect(heavyHighSpot.panels.length).toBe(1);
 
-    expect(polarLoop.id).toBe('fig-p5-2-4');
+    expect(polarLoop.id).toBe('fig-p4-1-4');
     expect(polarLoop.panels.length).toBe(1);
 
-    expect(halfPower.id).toBe('fig-p5-2-5');
+    expect(halfPower.id).toBe('fig-p4-1-5');
     expect(halfPower.panels.length).toBe(1);
 
-    expect(separation.id).toBe('fig-p5-2-6');
+    expect(separation.id).toBe('fig-p4-1-6');
     expect(separation.panels.length).toBe(1);
 
-    expect(dataErrors.id).toBe('fig-p5-2-7');
+    expect(dataErrors.id).toBe('fig-p4-1-7');
     expect(dataErrors.panels.length).toBe(3);
   });
 });

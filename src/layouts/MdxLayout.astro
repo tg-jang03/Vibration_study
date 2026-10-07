@@ -124,7 +124,7 @@ const last = current ? JSON.stringify({ id: current.id, title: current.title, hr
     current && (
       <script is:inline define:vars={{ last }}>
         try {
-          localStorage.setItem('vs-last-section-v2', last);
+          localStorage.setItem('vs-last-section-v3', last);
         } catch (e) {}
       </script>
     )

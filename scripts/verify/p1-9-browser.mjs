@@ -1,6 +1,6 @@
 // LAB-SRC-01 브라우저 회귀 검사. scripts/bench/plot-bench.mjs와 같은 Edge CDP 방식.
 // 빌드·preview 후 검사 전용 헤드리스 Edge를 --remote-debugging-port=<port>로 실행:
-// node scripts/verify/p1-8-browser.mjs <port> <preview-url> [screenshot-directory]
+// node scripts/verify/p1-9-browser.mjs <port> <preview-url> [screenshot-directory]
 // 연결한 브라우저를 닫으므로 실사용 브라우저에는 연결하지 않는다.
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -72,7 +72,7 @@ try {
   await until(`${lab}.querySelectorAll('.js-plotly-plot').length === 2`);
   const bars = await evaluate(`(()=>{const d=${lab}.querySelectorAll('.js-plotly-plot')[1].data[0];return [50,100,600].map(f=>d.y[d.x.indexOf(f)])})()`);
   [40, 20, 10].forEach((a, i) => assert(Math.abs(bars[i] - a) < 1e-6));
-  await screenshot('p1-8-hidden-spectrum');
+  await screenshot('p1-9-hidden-spectrum');
   await toggle('원인 가리기');
   await until(`${lab}.querySelectorAll('input[type=range]').length === 7`);
   await evaluate(`(()=>{const e=${lab}.querySelector('input[type=range]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'3600');e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));})()`);
@@ -92,7 +92,7 @@ try {
   await toggle('원인 가리기');
   await click('나눠 보기');
   await until(`${lab}.querySelectorAll('.js-plotly-plot').length === 2`);
-  await screenshot('p1-8-mobile');
+  await screenshot('p1-9-mobile');
   assert.deepEqual(errors, [], 'browser errors / hydration errors');
   console.log('PASS: hiding, spectrum amplitudes, rpm, source toggles, reset, mobile width, console/hydration');
 } finally {

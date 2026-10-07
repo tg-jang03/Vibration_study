@@ -24,6 +24,7 @@ export const LABS: LabEntry[] = [
   { slug: 'damp-01', id: 'LAB-DAMP-01', component: 'DampingLab', part: 1, title: '감쇠: 흔들림은 몇 주기 동안 남나', summary: '감쇠비를 바꿔 진동이 잦아드는 모양과 대수감쇠율을 본다.' },
   { slug: 'frc-01', id: 'LAB-FRC-01', component: 'ForcedVibrationLab', part: 1, title: '강제진동과 공진', summary: '가진 주파수를 고유진동수 둘레로 옮기며 진폭과 위상 지연이 바뀌는 것을 본다.' },
   { slug: '2dof-01', id: 'LAB-2DOF-01', component: 'TwoDofModeLab', part: 1, title: '2자유도 모드와 에너지 교환', summary: '두 질량의 동상·역상 모드와 약한 결합의 맥놀이를 본다.' },
+  { slug: 'sup-01', id: 'LAB-SUP-01', component: 'SupportStiffnessLab', part: 1, title: '받침대를 단단하게 하면 어디까지 바뀔까', summary: '지지 강성과 질량을 바꿔 직렬 등가 강성과 고유진동수가 어디까지 바뀌는지 본다.' },
   { slug: 'unb-01', id: 'LAB-UNB-01', component: 'UnbalanceLab', part: 1, title: '불평형 런업과 1X', summary: '회전수를 올리며 원심력·1X 진폭·위상이 임계속도를 지나 바뀌는 것을 본다.' },
   { slug: 'fmap-01', id: 'LAB-FMAP-01', component: 'FrequencyMapLab', part: 1, title: '주파수 지도: 요소마다 어디에 줄이 서나', summary: '기계 요소(날개·기어·베어링·벨트)마다 관심 주파수가 어디에 오는지 지도로 본다.' },
   { slug: 'src-01', id: 'LAB-SRC-01', component: 'SourceSynthesisLab', part: 1, title: '원인 합성: 파형 한 줄에 섞인 응답들', summary: '원인을 켜고 끄며 합쳐진 파형과 막대 스펙트럼에서 다시 가려낼 수 있는지 본다.' },
@@ -55,9 +56,8 @@ export const LABS: LabEntry[] = [
   { slug: 'sro-01', id: 'LAB-SRO-01', component: 'SlowRollLab', part: 3, title: 'Slow roll 보상: 런아웃을 벡터로 빼기', summary: '런아웃·Slow roll 회전수·보상 방법을 바꿔 런업 Bode·Polar가 어떻게 바뀌는지 본다.' },
   { slug: 'chain-01', id: 'LAB-CHAIN-01', component: 'ChainQuizLab', part: 3, title: '센서 문제인가, 기계 문제인가 (판정 퀴즈)', summary: '측정 체인 함정 7가지 사례에 확인 동작을 해 보며 무엇이 사라지는지 보고 판정한다.' },
   { slug: 'alm-01', id: 'LAB-ALM-01', component: 'AlarmLab', part: 3, title: '보호 시스템 알람 논리', summary: '레벨·시간 지연·보팅·트립 배율을 바꿔 알람과 트립이 언제 서는지 본다.' },
-  // Part 5
-  { slug: 'sup-01', id: 'LAB-SUP-01', component: 'SupportStiffnessLab', part: 5, title: '받침대를 단단하게 하면 어디까지 바뀔까', summary: '지지 강성과 질량을 바꿔 직렬 등가 강성과 고유진동수가 어디까지 바뀌는지 본다.' },
-  { slug: 'af-01', id: 'LAB-AF-01', component: 'RunUpBodeLab', part: 5, title: 'Run-up Bode와 증폭계수 (AF)', summary: '고유 회전수·감쇠·측정 간격을 바꿔 런업 Bode·Polar에서 Half-power로 증폭계수를 읽는다.' },
+  // Part 4
+  { slug: 'af-01', id: 'LAB-AF-01', component: 'RunUpBodeLab', part: 4, title: 'Run-up Bode와 증폭계수 (AF)', summary: '고유 회전수·감쇠·측정 간격을 바꿔 런업 Bode·Polar에서 Half-power로 증폭계수를 읽는다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

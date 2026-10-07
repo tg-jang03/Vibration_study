@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import * as figures from './p5-1';
+import * as figures from './p1-6';
 
-describe('P5-1 machine composition figures', () => {
+describe('P1-6 machine composition figures', () => {
   it('contains seven uniquely numbered static figures', () => {
     const values = Object.values(figures);
     expect(values).toHaveLength(7);

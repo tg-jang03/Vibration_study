@@ -1,23 +1,23 @@
 ---
 layout: ../layouts/MdxLayout.astro
-title: 'P5-2 1자유도 불평형 응답을 Bode/Polar로'
+title: 'P4-1 1자유도 불평형 응답을 Bode/Polar로'
 description: '불평형 원심력 가진에 의한 1X 응답을 Bode 선도와 Polar 플롯으로 해석하고, Half-power법으로 증폭계수(AF)와 분리여유(SM)를 추출합니다.'
-sectionId: P5-2
+sectionId: P4-1
 ---
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
 import RunUpBodeLab from '../components/labs/RunUpBodeLab';
-import * as F from '../figures/p5-2';
+import * as F from '../figures/p4-1';
 import { withBase } from '../lib/site';
 
-# 5-2 1자유도 불평형 응답을 Bode/Polar로
+# 4-1 1자유도 불평형 응답을 Bode/Polar로
 
 기계의 전원을 켜고 정지 상태에서 목표 회전수까지 가속하는 동안, 모니터에는 진동 진폭과 위상이 회전수에 따라 춤추듯 변하는 곡선이 그려집니다.
 
 특정 회전수에서 진폭이 불쑥 솟구쳤다가 가라앉고, 위상 지연각은 0° 근처에서 180° 근처로 가파르게 돌아갑니다.
 
-P1-6에서 우리는 불평형 질량이 만드는 원심력과 임계속도의 물리적 기초를 배웠고, P3-3에서는 1회전 1펄스를 재는 키페이저와 1X 벡터를 다루었습니다.
+P1-7에서 우리는 불평형 질량이 만드는 원심력과 임계속도의 물리적 기초를 배웠고, P3-3에서는 1회전 1펄스를 재는 키페이저와 1X 벡터를 다루었습니다.
 
 이제 <strong>실제 런업(Run-up) 데이터에서 공진 피크와 위상을 어떻게 정량적으로 읽고, 데이터로부터 감쇠와 안전 여유를 뽑아내는지</strong> 살펴보겠습니다.
 
@@ -53,7 +53,7 @@ P1-6에서 우리는 불평형 질량이 만드는 원심력과 임계속도의 
 
 </Callout>
 
-1자유도 불평형 정상상태 응답 공식(P1-6)을 다시 적어보면 다음과 같습니다:
+1자유도 불평형 정상상태 응답 공식(P1-7)을 다시 적어보면 다음과 같습니다:
 
 $$
 \frac{X}{e_{\text{cg}}} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}, \qquad \varphi = \operatorname{atan2}(2\zeta r, \, 1-r^2)
@@ -321,7 +321,7 @@ $\zeta = 0.005$이면 이론 AF는 100이고 Half-power 대역폭은 $N_c / 100 
 
 ---
 
-다음 페이지는 <strong>P5-3: Jeffcott 로터: 회전체 응답의 기본</strong>입니다. 1자유도 축 모델을 넘어, 2차원 평면에서 축 중심이 그리는 궤적(선회, Whirl과 오빗)과 등방/비등방 지지계의 거동을 다룹니다.
+다음 페이지는 <strong>P4-2: Jeffcott 로터: 회전체 응답의 기본</strong>입니다. 1자유도 축 모델을 넘어, 2차원 평면에서 축 중심이 그리는 궤적(선회, Whirl과 오빗)과 등방/비등방 지지계의 거동을 다룹니다.
 
 ## 참고자료
 

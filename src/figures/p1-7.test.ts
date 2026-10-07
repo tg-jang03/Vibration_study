@@ -1,53 +1,70 @@
 import { describe, expect, it } from 'vitest';
-import { formatNumber } from '../lib/format';
-import { buildMap, PRESETS } from '../lib/machine/frequencyMap';
 import * as F from './p1-7';
+import { P0_6_REFERENCE as R } from './p1-7';
 
-const V = F.P07_VALUES;
+describe('P1-7 figures', () => {
+  it('matches theoretical unbalance values quoted in the text', () => {
+    // 1500 rpm (r = 0.5)
+    expect(R.low.force).toBeCloseTo(246.74, 1);
+    expect(R.low.factor).toBeCloseTo(0.3326, 3);
+    expect(R.low.amplitudeMm).toBeCloseTo(0.0333, 4);
+    expect(R.low.phaseDeg).toBeCloseTo(3.81, 2);
 
-describe('P1-7 본문·그림 숫자 (PageGuide §5-5)', () => {
-  it('기어 15·60, 3000 rpm → 맞물림 750 Hz, 큰 기어 12.5 Hz / 날개 7장 3600 rpm → 420 Hz', () => {
-    expect(V.gearMesh).toBe(750);
-    expect(V.gearOut).toBeCloseTo(12.5, 12);
-    expect(V.bladePass7).toBeCloseTo(420, 12);
+    // 3000 rpm (r = 1.0, resonance)
+    expect(R.resonance.force).toBeCloseTo(986.96, 1);
+    expect(R.resonance.factor).toBeCloseTo(10.0, 4);
+    expect(R.resonance.amplitudeMm).toBeCloseTo(1.0, 4);
+    expect(R.resonance.phaseDeg).toBeCloseTo(90.0, 4);
+
+    // 6000 rpm (r = 2.0)
+    expect(R.high.force).toBeCloseTo(3947.84, 1);
+    expect(R.high.factor).toBeCloseTo(1.3304, 3);
+    expect(R.high.amplitudeMm).toBeCloseTo(0.1330, 3);
+    expect(R.high.phaseDeg).toBeCloseTo(176.19, 2);
+
+    // Peak location: r_peak = 1 / sqrt(1 - 2*0.05^2) ≈ 1.00251
+    expect(R.peak.r).toBeCloseTo(1.00251, 4);
+    expect(R.peak.factor).toBeCloseTo(10.0125, 3);
+    expect(R.peak.rpm).toBeCloseTo(3007.5, 1);
   });
 
-  it('6205 3000 rpm: FTF 19.9 Hz, BPFO 179.2 Hz, BPFI 270.8 Hz (예시 상자)', () => {
-    expect(formatNumber(V.brg.ftf, 3)).toBe('19.9');
-    expect(formatNumber(V.brg.bpfo, 4)).toBe('179.2');
-    expect(formatNumber(V.brg.bpfi, 4)).toBe('270.8');
-    expect(V.brg.bpfo + V.brg.bpfi).toBeCloseTo(450, 9);
-    expect(formatNumber(V.brgX.bpfo, 4)).toBe('3.585');
-    expect(formatNumber(V.brgX.bpfi, 4)).toBe('5.415');
+  it('demonstrates force quadrupling when speed doubles', () => {
+    expect(R.resonance.force / R.low.force).toBeCloseTo(4.0, 4);
+    expect(R.high.force / R.resonance.force).toBeCloseTo(4.0, 4);
   });
 
-  it('벨트 구동 팬: 전동기 29.67 Hz, 벨트 11.65 Hz, 팬 14.83 Hz', () => {
-    expect(formatNumber(V.fanMotorFr, 4)).toBe('29.67');
-    expect(formatNumber(V.belt, 4)).toBe('11.65');
-    expect(formatNumber(V.fanFr, 4)).toBe('14.83');
+  it('verifies high-speed displacement convergence to eccentricity', () => {
+    // As r >> 1, X -> e_cg = 0.1 mm
+    const factorHigh = R.high.factor; // at r=2 it is 1.33, approaching 1
+    expect(factorHigh).toBeGreaterThan(1.0);
+    expect(R.high.amplitudeMm).toBeCloseTo(0.133, 2);
   });
 
-  it('기동 지도: 날개 통과는 729 rpm, 2X는 2550 rpm에서 받침대 85 Hz를 지난다. 운전 3570 rpm의 2X = 119 Hz', () => {
-    expect(formatNumber(V.crossBp, 3)).toBe('729');
-    expect(V.cross2X).toBe(2550);
-    expect((2 * V.pumpRpm) / 60).toBeCloseTo(119, 12);
+  it('run-up figure peaks near 1.0 mm at 3000 rpm and ends at 0.133 mm at 6000 rpm (r = 2)', () => {
+    const [, envelope] = F.runUpTransient.panels[0].series;
+    const env = Array.from(envelope.y);
+    const t = Array.from(envelope.x);
+    const iMax = env.indexOf(Math.max(...env));
+    expect(env[iMax]).toBeCloseTo(1.0, 1);
+    expect(t[iMax]).toBeCloseTo(2.5, 1);
+    expect(env[env.length - 1]).toBeCloseTo(R.high.amplitudeMm, 6);
+    expect(env[env.length - 1]).toBeCloseTo(0.133, 3);
   });
 
-  it('랩 처음 상태(전동기-펌프 3570 rpm): 본문 해석의 BSF 140, BPFO 213, BPFI 322, 날개 417 Hz, 가장 높은 주파수 5000 Hz', () => {
-    const p = PRESETS.motorPump;
-    const map = buildMap('motorPump', { rpm: p.rpm, count: p.count, balls: p.balls ?? 9 });
-    const brg = map.rows.find((r) => r.element === '구름베어링')!.lines;
-    const f = (label: string) => brg.find((l) => l.label === label)!.f;
-    expect(formatNumber(f('볼 자전 BSF'), 3)).toBe('140');
-    expect(formatNumber(f('외륜 BPFO'), 3)).toBe('213');
-    expect(formatNumber(f('내륜 BPFI'), 3)).toBe('322');
-    expect(formatNumber(map.rows.find((r) => r.element === '펌프 날개')!.lines[0].f, 3)).toBe('417');
-    expect(map.highest).toBe(5000);
-  });
-
-  it('그림 id가 겹치지 않는다', () => {
-    const ids = Object.values(F).flatMap((v) => ('panels' in v ? [v.id] : []));
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(ids.length).toBe(10);
+  it('has 7 unique figures with ordered ids', () => {
+    const figures = [
+      F.unbalanceModel,
+      F.centrifugalForceCurve,
+      F.timeWaveform1X,
+      F.unbalanceBode,
+      F.staticVsUnbalance,
+      F.runUpTransient,
+      F.selfCenteringDiagram,
+    ];
+    const ids = figures.map((f) => f.id);
+    expect(ids.length).toBe(7);
+    expect(new Set(ids).size).toBe(7);
+    expect(F.unbalanceModel.id).toBe('fig-p1-7-1');
+    expect(F.selfCenteringDiagram.id).toBe('fig-p1-7-7');
   });
 });

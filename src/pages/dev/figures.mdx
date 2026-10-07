@@ -11,9 +11,9 @@ import * as P02 from '../../figures/p1-2';
 import * as P03 from '../../figures/p1-3';
 import * as P04 from '../../figures/p1-4';
 import * as P05 from '../../figures/p1-5';
-import * as P06 from '../../figures/p1-6';
-import * as P07 from '../../figures/p1-7';
-import * as P08 from '../../figures/p1-8';
+import * as P06 from '../../figures/p1-7';
+import * as P07 from '../../figures/p1-8';
+import * as P08 from '../../figures/p1-9';
 import * as F0 from '../../figures/p2-1';
 import * as F1 from '../../figures/p2-2';
 import * as F2 from '../../figures/p2-3';
@@ -28,8 +28,8 @@ import * as F22 from '../../figures/p3-2';
 import * as F23 from '../../figures/p3-3';
 import * as F24 from '../../figures/p3-4';
 import * as F25 from '../../figures/p3-5';
-import * as F40 from '../../figures/p5-1';
-import * as F41 from '../../figures/p5-2';
+import * as F40 from '../../figures/p1-6';
+import * as F41 from '../../figures/p4-1';
 import * as FD from '../../figures/dev-schematic';
 
 export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
@@ -70,13 +70,17 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 
 ## P1-6
 
-{byId(P06).map((f) => <Figure {...f} />)}
+{byId(F40).map((f) => <Figure {...f} />)}
 
 ## P1-7
 
-{byId(P07).map((f) => <Figure {...f} />)}
+{byId(P06).map((f) => <Figure {...f} />)}
 
 ## P1-8
+
+{byId(P07).map((f) => <Figure {...f} />)}
+
+## P1-9
 
 {byId(P08).map((f) => <Figure {...f} />)}
 
@@ -136,11 +140,7 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 
 {byId(F25).map((f) => <Figure {...f} />)}
 
-## P5-1
-
-{byId(F40).map((f) => <Figure {...f} />)}
-
-## P5-2
+## P4-1
 
 {byId(F41).map((f) => <Figure {...f} />)}
 

@@ -16,7 +16,7 @@ describe('P2-1 측정 기초 (M2.9)', () => {
     expect(source.match(/<AmplitudeMeasuresLab /g)).toHaveLength(1);
     expect(source).not.toMatch(/F\.(sineAnatomy|phaseShift|ordersFigure)/);
     expect(source).toContain("withBase('/p1-2/#21-정현파의-세-숫자를-직접-바꾸기')");
-    for (const page of ['p1-6', 'p1-7', 'p1-8', 'p2-2', 'p2-3', 'p2-4', 'p2-7']) {
+    for (const page of ['p1-7', 'p1-8', 'p1-9', 'p2-2', 'p2-3', 'p2-4', 'p2-7']) {
       expect(source).toContain("withBase('/" + page + "/')");
     }
     expect(source.match(/<summary><strong>Q\d\./g)).toHaveLength(7);

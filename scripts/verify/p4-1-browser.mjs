@@ -1,5 +1,5 @@
-// M5.1 P5-2 browser regression.
-// node scripts/verify/p5-2-browser.mjs <debug-port> <preview-url> [screenshot-directory]
+// M5.1 P4-1 browser regression.
+// node scripts/verify/p4-1-browser.mjs <debug-port> <preview-url> [screenshot-directory]
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -107,8 +107,8 @@ try {
   assert(readouts.some((r) => r.includes('9.84') || r.includes('9.8')), 'AF readout');
   assert(readouts.some((r) => r.includes('16.7%') || r.includes('16.7 %') || r.includes('16.67')), 'SM readout');
 
-  await capture('p5-2-full', true);
-  await capture('p5-2-lab');
+  await capture('p4-1-full', true);
+  await capture('p4-1-lab');
 
   // 5. 표시 모드 전환 (Polar & Both)
   const selectView = async (idx) => {
@@ -124,7 +124,7 @@ try {
 
   await selectView('1');
   await until(lab + "?.querySelector('.polar-plot')");
-  await capture('p5-2-polar');
+  await capture('p4-1-polar');
 
   await selectView('2');
   await until(lab + "?.querySelector('.polar-plot')");
@@ -139,23 +139,23 @@ try {
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await sleep(400);
   await evaluate(lab + ".scrollIntoView({block:'start'})");
-  await capture('p5-2-mobile');
+  await capture('p4-1-mobile');
   assert(await evaluate('document.documentElement.scrollWidth <= innerWidth'), 'Mobile horizontal overflow detected');
 
-  // 8. 개발용 갤러리(/dev/figures/)에서 P5-2 그림 7개 확인
+  // 8. 개발용 갤러리(/dev/figures/)에서 P4-1 그림 7개 확인
   await send('Emulation.setDeviceMetricsOverride', { width: 1100, height: 1500, deviceScaleFactor: 1, mobile: false });
   const galleryUrl = new URL('../dev/figures/', url).href;
   await send('Page.navigate', { url: galleryUrl });
-  await until("document.getElementById('p5-2')");
-  await evaluate("document.getElementById('p5-2').scrollIntoView()");
+  await until("document.getElementById('p4-1')");
+  await evaluate("document.getElementById('p4-1').scrollIntoView()");
   await sleep(300);
-  assert.equal(await evaluate("document.querySelectorAll('figure[id^=fig-p5-2]').length"), 7, '7 figures in gallery');
-  await capture('p5-2-gallery');
+  assert.equal(await evaluate("document.querySelectorAll('figure[id^=fig-p4-1]').length"), 7, '7 figures in gallery');
+  await capture('p4-1-gallery');
 
   // 9. 콘솔 오류 없음 확인
   assert.deepEqual(errors, [], 'No console or hydration errors');
 
-  console.log('PASS: P5-2 7 figures, captions, internal links, initial lab readouts, view modes, mobile 390px, gallery, 0 errors');
+  console.log('PASS: P4-1 7 figures, captions, internal links, initial lab readouts, view modes, mobile 390px, gallery, 0 errors');
 } finally {
   await send('Browser.close').catch(() => {});
   ws.close();

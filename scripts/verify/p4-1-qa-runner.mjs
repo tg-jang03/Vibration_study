@@ -65,9 +65,9 @@ await sleep(2000);
 let exitCode = 0;
 try {
   const runner = spawn('node', [
-    'scripts/verify/p5-2-browser.mjs',
+    'scripts/verify/p4-1-browser.mjs',
     String(DEBUG_PORT),
-    `http://127.0.0.1:${PORT}${BASE}p5-2/`,
+    `http://127.0.0.1:${PORT}${BASE}p4-1/`,
     'dist/qa',
   ], { stdio: 'inherit' });
 

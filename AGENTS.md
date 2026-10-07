@@ -35,10 +35,10 @@
 
   | 트랙 | 범위 | 담당 | 작업 폴더 | 최신 받기 → push |
   |---|---|---|---|---|
-  | A | M1 Part 2·M3 Part 3 (세부 완료, 확인 대기) → **M4 Part 4** (D-034) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
-  | B | M2 Part 1 (완료) → **M5 Part 5 (M5.0 ~ M5.3, D-034·D-036)** | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
+  | A | M1 Part 2·M3 Part 3 (세부 완료, 확인 대기) → **M4 Part 5** (D-034) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | B | M2 Part 1 (완료) → **M5 Part 4 (M5.0 ~ M5.4, D-034·D-036·D-040)** | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
 
-- **파일 소유** (D-029·D-031·D-034): A = `p2-2 ~ p2-9`·`p3-*`·`p4-*`, 그 `figures/`, `lib/dsp` 등 Part 2·3·4 계산 모듈, 그 랩, `index.astro` / B = `p1-*`·`p5-*`·`p2-1`, 그 `figures/`, `lib/mck`·`lib/rotor`·`lib/machine`, 그 랩, `SineBasicsLab`. **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, 갤러리의 자기 절, **랩 모음 `src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩을 만들면 두 곳에 한 줄씩 — `labs.test.ts`가 빠진 줄을 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.
+- **파일 소유** (D-029·D-031·D-034·D-040): A = `p2-2 ~ p2-9`·`p3-*`·`p5-*`, 그 `figures/`, `lib/dsp` 등 Part 2·3·5 계산 모듈, 그 랩, `index.astro` / B = `p1-*`(P1-6 포함)·`p4-*`·`p2-1`, 그 `figures/`, `lib/mck`·`lib/rotor`·`lib/machine`, 그 랩, `SineBasicsLab`. **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, 갤러리의 자기 절, **랩 모음 `src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩을 만들면 두 곳에 한 줄씩 — `labs.test.ts`가 빠진 줄을 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.
 - 순서: 최신 받기 → 작업 → 커밋 → 다시 최신 받기 → 검사 → push (거절되면 자기 커밋만 rebase). rebase 충돌은 문서에서만 난다 → **양쪽 내용을 모두 살린다**, 다른 트랙의 행·절은 origin 쪽 그대로 (I-026). 새 D·I 번호는 push 직전 origin 확인, 겹치면 나중 쪽이 올린다.
 - 다른 트랙의 작업 폴더에서는 설치·빌드·git 명령을 실행하지 않는다 (I-024). 사용자가 요청하면 세 번째 작업은 별도 worktree (D-021).
 - 커밋: `[M{n}.{m}] {feat|fix|docs|test|refactor|chore}: {요약}`. 세부 하나에 커밋 하나가 기본. force push·이미 push한 커밋 재작성 금지 (되돌릴 때는 `git revert`).
