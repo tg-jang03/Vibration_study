@@ -68,7 +68,7 @@
 | P4-1 | 불평형 응답의 Bode(1X 진폭·위상 vs rpm)와 Polar(1X 벡터 궤적), heavy spot vs high spot, 증폭계수 AF = N_c/(N₂ − N₁) ≈ 1/(2ζ)·Half-power, 분리여유 SM(개념, 규격 수치 없음), 런업 데이터의 오차(rpm 간격·잡음·런아웃) | P1-6, P1-4, P1-7, P3-3(1X 벡터·위상 관례, §3) |
 | P4-2 | 자전/선회·강체 병진/기울기와 축 굽힘 도입 → Jeffcott 로터(원판 + 탄성축), 복소 좌표 z = x + jy, 정방향 동기 선회·원형 오빗, 비등방 지지 → 타원 오빗·임계속도 2개·역방향 선회, 정/역 성분 A_f·A_b(페이지에서 식으로 직접 계산 — 데이터에서 꺼내는 Full spectrum은 P5-3), 강성/유연 로터 | P1-6, P1-5, P1-7, P4-1, P2-2(복소 표현) |
 | P4-3 | 유막의 압력 생성·하중 지지 → 저널 베어링(간극·편심률 ε·자세각), Shaft centerline(gap 전압 DC로 그린 축 중심 vs rpm, cold gap 기준, 떠오름·비정상 위치·장기 변화), 유막 계수(K_xx … C_yy)는 이름과 뜻만 | P1-6, P3-2(gap 전압), P3-5(런업 그림), P4-1 |
-| P4-4 | 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P1-3, P1-8(기름막 0.38 ~ 0.48X), P4-2, P4-3 |
+| P4-4 | 교차연성 k_xy·접선력, Oil whirl(회전수 추종, 예시 0.45X)·whip(모드 주파수 근처에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P1-3, P1-8(기름막 0.38 ~ 0.48X), P4-2, P4-3 |
 
 **Part 5 개념 척추** (D-040 — 트랙 A가 M4에서 쓴다. Part 4 다음)
 
@@ -141,7 +141,7 @@
 | C_r, ε, φ | 반경 간극 / 편심률 e/C_r / 하중 방향 기준 자세각 | m / — / rad | P4-3, 직경 간극은 2C_r |
 | μ, W, h_min | 점성계수 / 하중 / 최소 유막 두께 | Pa·s / N / m | P4-3 짧은 베어링 예제 |
 | k_ij, c_ij | 평형점 근처 유막 강성 / 감쇠 계수 | N/m / N·s/m | 첫 첨자=힘 방향, 둘째=변위/속도 방향(P4-3) |
-| k_xy | 교차연성 강성 | N/m | 유막·씰 (P4-4) |
+| q = k_xy = −k_yx | 예제의 반대칭 교차연성 강성 크기 | N/m | q ≥ 0, Fx = −qy·Fy = +qx. 전체 베어링의 일반 관계가 아님(P4-4) |
 | λ = σ ± jω_d | 복소 고유치 | 1/s | σ > 0이면 불안정 (P4-4) |
 | ζ | 감쇠비 | — | |
 | k_eq, k_sh, k_br, k_sup | 직렬 예제의 등가 / 축 / 베어링 / 지지 강성 | N/m | P1-6 한 방향·무질량 연결 예제. k_br은 한 경로의 등가 값, 실제 두 베어링 일반식이 아님 |
@@ -237,7 +237,7 @@
 | P4-1 | 1자유도 불평형 응답을 Bode/Polar로 | LAB-AF-01 | M5.1 | 검토 (본문 8절, 그림 7, LAB-AF-01) |
 | P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 검토 |
 | P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 검토 |
-| P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
+| P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 검토 |
 | P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 검토 (그림 10, LAB-FLT-01·LAB-INT-01 각 1곳, 2026-10-07) |
 | P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 검토 (그림 6, LAB-STFT-01 1곳, 2026-10-07) |
 | P5-3 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 계획 |
@@ -320,6 +320,7 @@
 | LAB-AF-01 | Run-up Bode & 증폭계수 | P4-1 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
 | LAB-JEF-01 | Jeffcott 로터: 선회와 오빗 | P4-2 | `JeffcottLab` (/lab/jef-01/) · lib/rotor/jeffcott.ts |
 | LAB-SCL-01 | 유막 지지와 Shaft centerline | P4-3 | `ShaftCenterlineLab` (/lab/scl-01/) · lib/rotor/journalBearing.ts |
+| LAB-STB-01 | 교차연성과 Log decrement | P4-4 | `StabilityLab` (/lab/stb-01/) · lib/rotor/stability.ts |
 | LAB-FLT-01 | 필터 설계: 크기 · 군지연 · 시간파형 | P5-1 | `FilterLab` (/lab/flt-01/) · lib/dsp/filter.ts, lib/filterDemo.ts |
 | LAB-INT-01 | 적분 & ski-slope | P5-1 | `IntegrationLab` (/lab/int-01/) · lib/dsp/filter.ts (integrateSpectral·integrateCumulative), lib/filterDemo.ts |
 | LAB-STFT-01 | 스펙트로그램 · 워터폴 · 캐스케이드 | P5-2 | `StftLab` (/lab/stft-01/) · lib/dsp/stft.ts, lib/stftDemo.ts |
@@ -327,16 +328,6 @@
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
 새 랩은 여기에 사양을 먼저 쓰고 구현한다 (템플릿 §2). 구현이 끝나면 사양을 `archive/LabSpecs.md`로 옮기고 위 표에 한 줄을 더한다.
-
-#### LAB-STB-01 안정성: 교차연성과 Log decrement
-- P4-4 · M5.4 · 사양 (2026-10-06 Claude, D-034 — 트랙 B 구현. D-040으로 유막 베어링·Shaft centerline은 P4-3으로 나뉨)
-- 목적: 교차연성 강성 k_xy가 선회 방향으로 미는 힘을 만들고, 감쇠가 그것을 이기지 못하면 자유진동이 줄지 않고 커진다(불안정)는 것을 고유치·오빗·Log dec로 본다.
-- 모델 (`lib/rotor/stability.ts`): 복소 계수 2차 방정식 `m\lambda^2 + c\lambda + k - j k_{xy} = 0`의 근(정방향 근의 σ로 판정), 자유응답 z(t). 모드 [k_xy 직접 / k_xy = cΩ/2 모델(기름막 평균 원주속도 ≈ 표면속도의 절반)]
-- 조작: 모드, k_xy (0 ~ 0.5 k) 또는 회전수 Ω (0 ~ 3 ω_n), ζ (0.01 ~ 0.2), 초기 변위
-- 출력: 자유응답 오빗(수렴/발산), x(t)와 포락선, 고유치 평면(σ–ω) 위 근의 궤적과 현재 점, Log dec vs k_xy(또는 Ω)와 안정 한계 표시. 읽음값 — σ, ω_d, δ, 안정/불안정, 한계 k_xy 또는 한계 Ω/ω_n
-- 수식: 특성방정식, δ = −2πσ/ω_d, 한계 k_xy = 2ζk, 모델이면 한계 Ω = 2ω_n
-- 실험 과제: k_xy를 올리며 δ = 0이 되는 값 / c를 2배로 하면 한계는? (k_xy 직접이면 한계 k_xy도 2배, k_xy = cΩ/2 모델이면 한계 회전수는 그대로 2ω_n — 감쇠와 교차연성이 함께 커지는 모델이라서) / 선택: Whirl → Whip 워터폴 미리 보기(P6-2에서 자세히)
-- 검증 (§6): k_xy = 0 → σ = −ζω_n, δ = 0.3146 (ζ = 0.05) / δ = 0 ↔ k_xy = 2ζk / 모델에서 Ω = 2ω_n → σ = 0, Ω < 2ω_n → σ < 0
 
 ### 5-2. 그 밖의 랩 (개요 — 해당 마일스톤 시작 시 상세화)
 
@@ -464,6 +455,11 @@
 | 기준/측정 오류 | cold 좌표 누락 / A +0.5 V drift / cold gap 0.30 mm | 위치 오차 100 / 63.5 µm / 선형 범위 밖 → 좌표 복원 중단. 선형·정수 회전 평균0 runout은 DC 변화0 |
 | 안정성 (M5.4) | k_xy = 0, ζ = 0.05 | σ = −ζω_n, δ = 0.3146 (P1-3과 같다) |
 | 안정 한계 | k_xy 독립 / k_xy = cΩ/2 | δ = 0 ↔ k_xy = cω_n = 2ζk / Ω = 2ω_n (c와 무관) |
+| 안정성 수치 (M5.4) | m=10 kg, N_n=3000 rpm, ζ=0.05, q/k=0.05 / 0.10 / 0.15 | σ_f=−7.8466128 / 0 / +7.8174565 s⁻¹, δ=0.15707949 / 0 / −0.15610676; qcrit/k=0.1 |
+| 감쇠 대책 비교 | ζ를 0.05→0.10, 직접 q/k=0.15 유지 / q=cΩ/2 | 직접 모드 한계 q/k=0.1→0.2, 안정으로 전환 / 속도 모드 한계 r=2 유지 |
+| 모드 진폭비 | A=20 µm, 위 기본값 q/k=0.05 / 0.15, 순수 정방향 한 주기 | A exp(−δ)=17.09272235 / 23.37901991 µm |
+| Whirl/Whip 개념 | f_n=50 Hz, 가상 min(0.45 f_r, f_n), 4800 / 9000 rpm | 36 Hz(0.45X) / 50 Hz(0.3333X), 전환 6666.6667 rpm. 선형 안정 한계 6000 rpm과 별개 |
+| Campbell 개념 | f_FW/f_n=√(1+0.01r²)+0.1r, f_n=50 Hz | 가상 1X 교차 r=1/√0.8, 3354.101966 rpm. 고유치 안정 판정과 별개 |
 | 가속도계 평탄 대역 | 공진 25 kHz, ±10 %, 감쇠 무시 | ≈ 7.5 kHz |
 | 고유진동수 (D-027, M2.1) | m = 1 kg, k = 1000 N/m | f_n = 5.033 Hz, T = 0.1987 s |
 | 대수감쇠율 | ζ = 0.05 | δ = 0.3146, ω_d/ω_n = 0.99875, 반감 ≈ 2.2주기 |

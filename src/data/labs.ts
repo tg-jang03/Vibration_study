@@ -60,6 +60,7 @@ export const LABS: LabEntry[] = [
   { slug: 'af-01', id: 'LAB-AF-01', component: 'RunUpBodeLab', part: 4, title: 'Run-up Bode와 증폭계수 (AF)', summary: '고유 회전수·감쇠·측정 간격을 바꿔 런업 Bode·Polar에서 Half-power로 증폭계수를 읽는다.' },
   { slug: 'jef-01', id: 'LAB-JEF-01', component: 'JeffcottLab', part: 4, title: 'Jeffcott 로터: 선회와 오빗', summary: '회전수·강성비·감쇠를 바꿔 원형·타원 오빗과 정방향·역방향 선회를 비교한다.' },
   { slug: 'scl-01', id: 'LAB-SCL-01', component: 'ShaftCenterlineLab', part: 4, title: '유막 지지와 Shaft centerline', summary: '회전수·하중·점성계수로 평균 축 위치를 구하고, 냉간 기준점·두 프로브의 DC 전압·드리프트를 비교한다.' },
+  { slug: 'stb-01', id: 'LAB-STB-01', component: 'StabilityLab', part: 4, title: '교차연성과 안정성', summary: '교차 강성·감쇠·회전수를 바꾸며 자유응답, 복소 고유치, Log decrement와 안정 한계를 비교한다.' },
   // Part 5
   { slug: 'flt-01', id: 'LAB-FLT-01', component: 'FilterLab', part: 5, title: '필터 설계: 크기 · 군지연 · 시간파형', summary: '종류·차수·차단 주파수를 바꿔 깎이는 정도와 늦음, 파형 모양, 두 번 거르기를 본다.' },
   { slug: 'int-01', id: 'LAB-INT-01', component: 'IntegrationLab', part: 5, title: '적분 & ski-slope', summary: '가속도를 속도·변위로 적분하며 하한 컷오프, ski-slope, 직류 오프셋의 드리프트를 본다.' },

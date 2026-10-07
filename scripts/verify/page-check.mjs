@@ -26,6 +26,7 @@ const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Mi
 const noShots = flag('no-shots');
 const jeffcottSmoke = flag('jeffcott-smoke');
 const centerlineSmoke = flag('centerline-smoke');
+const stabilitySmoke = flag('stability-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -155,6 +156,34 @@ for (const p of paths) {
     })()`);
     if (smoke?.ok === false || !smoke) errors.push('Shaft centerline 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     Shaft centerline 조작 11항목 OK (유막·전압 복원·범위 이탈·초기화)');
+  }
+  if (stabilitySmoke) {
+    const smoke = await ev(`(async () => {
+      const lab=[...document.querySelectorAll('.lab-frame')].find(f=>f.querySelector('.lab-id')?.textContent==='LAB-STB-01');
+      if(!lab) return {skipped:true};
+      const wait=()=>new Promise(r=>setTimeout(r,240)), sliders=lab.querySelectorAll('input[type="range"]'), toggles=lab.querySelectorAll('input[type="checkbox"]'), select=lab.querySelector('select');
+      const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const choose=async(v)=>{select.value=String(v);select.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+      const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):null;};
+      const require=(v,m)=>{if(!v)throw Error(m);}, reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();};
+      try {
+        require(Math.abs(read('Log decrement δ')-.1571)<.0001 && read('정방향 성장률 σf')<0,'기본 수렴');
+        await set(2,.1);require(read('정방향 성장률 σf')===0 && read('Log decrement δ')===0 && lab.textContent.includes('경계 (감쇠 없음)'),'직접 경계0');
+        await set(2,.15);require(Math.abs(read('Log decrement δ')+.1561)<.0001 && read('정방향 성장률 σf')>0,'발산');
+        await set(1,.1);require(read('정방향 성장률 σf')<0 && Math.abs(read('한계 q/k')-.2)<.0001,'c2배 직접 한계');
+        await reset();await choose(1);require(sliders[2].disabled && !sliders[3].disabled,'속도 모드 조작 전환');
+        await set(3,2);require(read('정방향 성장률 σf')===0 && read('Log decrement δ')===0,'속도 모드 경계');
+        await set(1,.1);require(read('정방향 성장률 σf')===0 && read('속도 연동 모델 한계 r')===2,'c2배 속도 한계 유지');
+        await set(0,4000);require(lab.textContent.includes('8000 rpm') && read('Log decrement δ')===0,'강성/고유 회전수 변경');
+        await reset();await set(2,0);toggles[0].click();await wait();const d=lab.querySelectorAll('svg[role="img"] path')[1].getAttribute('d');const ys=[...d.matchAll(/[ML]([^,]+),([^ML ]+)/g)].map(m=>Number(m[2]));require(read('초기 Y 속도')===0 && ys.length>100 && ys.every(y=>y===210),'정지 초기조건 q0 직선');
+        await reset();await set(2,.5);await set(1,.01);require(read('표시 시간')<160 && read('정방향 성장률 σf')>0,'큰 발산 시간 제한');
+        await reset();toggles[1].click();await wait();require(lab.querySelectorAll('.js-plotly-plot').length===4 && lab.textContent.includes('위 고유치 계산과 분리'),'가상 워터폴');
+        await reset();require(select.value==='0' && Number(sliders[0].value)===3000 && Number(sliders[1].value)===.05 && Number(sliders[2].value)===.05 && !toggles[0].checked && !toggles[1].checked,'초기화');
+        return {ok:true,checks:12};
+      }catch(e){return {ok:false,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke) errors.push('안정성 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok) console.log('     안정성 조작 12항목 OK (모드·경계·초기조건·워터폴·초기화)');
   }
   const shots = [];
   if (!noShots) {
