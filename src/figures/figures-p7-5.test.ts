@@ -3,6 +3,7 @@ import { formatNumber as f } from '../lib/format';
 import { bearingFrequencies, BEARING_6205 } from '../lib/machine/frequencies';
 import { analyzeBearing, bearingSignal, DEMO_CALC, ruleOfThumb, type BearingFault } from '../lib/faults/bearing';
 import type { FigureSpec } from '../lib/figure';
+import { singleSidedSpectrum } from '../lib/dsp/spectrum';
 import * as F from './p7-5';
 
 const V = F.P75_VALUES;
@@ -83,5 +84,25 @@ describe('P7-5 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect([f(q1.bpfo / (1785 / 60), 5), f(q1.bpfi / (1785 / 60), 5)]).toEqual(['3.5848', '5.4152']);
     expect([f(q1.bpfo, 4), f(q1.bpfi, 4)]).toEqual(['106.6', '161.1']);
     expect(f(bearingFrequencies(BEARING_6205, 25).bpfi, 4)).toBe('135.4');
+  });
+
+  it('그림 5: 1단계는 23 ~ 25 kHz가 건전보다 약 25 dB 오르고 3.3 kHz 둘레는 1 dB 안 (울림 0.25 g vs 0.004 g)', () => {
+    const bandDb = (s: 0 | 1, f1: number, f2: number) => {
+      const sig = bearingSignal('outer', s);
+      const sp = singleSidedSpectrum({ fs: sig.fs, x: sig.acc }, { window: 'hann' });
+      let p = 0;
+      let m = 0;
+      sp.frequency.forEach((fr, k) => {
+        if (fr >= f1 && fr <= f2) {
+          p += sp.amplitude[k] ** 2;
+          m++;
+        }
+      });
+      return 10 * Math.log10(p / m);
+    };
+    const rise = bandDb(1, 23000, 25000) - bandDb(0, 23000, 25000);
+    expect(rise).toBeGreaterThan(22);
+    expect(rise).toBeLessThan(29);
+    expect(Math.abs(bandDb(1, 3000, 3600) - bandDb(0, 3000, 3600))).toBeLessThan(1);
   });
 });

@@ -94,17 +94,24 @@ const bearingSketch = (xc: number, alphaDeg: number, title: string, showDims: bo
     { type: 'rect', x1: xc - 1.5, x2: xc + 1.5, y1: yc - R_B - 0.9, y2: yc - R_B * 0.82, color: 'c2' },
     { type: 'text', x: xc - 1.7, y: yc + R_B + 0.3, text: '외륜', anchor: 'end', color: 'muted' },
     { type: 'text', x: xc - 1.7, y: yc - R_B - 0.6, text: '내륜', anchor: 'end', color: 'c2' },
+    // 앵귤러: 외륜은 오른쪽, 내륜은 왼쪽 어깨(턱)만 높아 볼이 비스듬히 눌린다
+    ...(alphaDeg > 0
+      ? ([
+          { type: 'rect', x1: xc + R_B * 0.98, x2: xc + 1.5, y1: yc + R_B * 0.2, y2: yc + R_B * 0.82, color: 'muted' },
+          { type: 'rect', x1: xc - 1.5, x2: xc - R_B * 0.98, y1: yc - R_B * 0.82, y2: yc - R_B * 0.2, color: 'c2' },
+        ] as FigAnnotation[])
+      : []),
     { type: 'circle', x: xc, y: yc, r: R_B * PX, fill: true, color: 'c1' },
     // 접촉선과 접촉점
-    { type: 'line', x1: xc - reach * s, y1: yc - reach * c, x2: xc + reach * s, y2: yc + reach * c, color: 'warn', width: 2 },
-    { type: 'point', x: xc + R_B * s, y: yc + R_B * c, color: 'warn' },
-    { type: 'point', x: xc - R_B * s, y: yc - R_B * c, color: 'warn' },
+    { type: 'line', x1: xc - reach * s, y1: yc - reach * c, x2: xc + reach * s, y2: yc + reach * c, color: 'c3', width: 2 },
+    { type: 'point', x: xc + R_B * s, y: yc + R_B * c, color: 'c3' },
+    { type: 'point', x: xc - R_B * s, y: yc - R_B * c, color: 'c3' },
     ...(alphaDeg > 0
       ? ([
           { type: 'line', x1: xc, y1: yc, x2: xc, y2: yc + reach + 0.2, color: 'text', dash: true, width: 1 },
-          { type: 'text', x: xc + 0.35, y: yc + reach + 0.45, text: `α = ${alphaDeg}°`, anchor: 'start', color: 'warn', bold: true },
+          { type: 'text', x: xc + 0.35, y: yc + reach + 0.45, text: `α = ${alphaDeg}°`, anchor: 'start', color: 'c3', bold: true },
         ] as FigAnnotation[])
-      : ([{ type: 'text', x: xc + 0.3, y: yc + reach + 0.45, text: 'α = 0', anchor: 'start', color: 'warn', bold: true }] as FigAnnotation[])),
+      : ([{ type: 'text', x: xc + 0.3, y: yc + reach + 0.45, text: 'α = 0', anchor: 'start', color: 'c3', bold: true }] as FigAnnotation[])),
     ...(showDims
       ? ([
           { type: 'arrow', x1: xc - 4.2, y1: AXIS_Y, x2: xc - 4.2, y2: yc, double: true, label: 'D/2', color: 'text', labelDx: -6 },
@@ -119,7 +126,7 @@ const bearingSketch = (xc: number, alphaDeg: number, title: string, showDims: bo
 export const contactAngle: FigureSpec = {
   id: 'fig-p7-5-1',
   caption:
-    '그림 1. 구름베어링을 축을 지나는 면으로 자른 단면 (위쪽 절반, 볼 하나). 볼 지름 d, 피치 지름 D(볼 중심이 그리는 원의 지름). 주황 선은 볼이 외륜·내륜에 닿는 두 점을 잇는 접촉선이다. 왼쪽: 깊은 홈 볼베어링은 반경 방향으로 닿는다(접촉각 α = 0). 오른쪽: 앵귤러 볼베어링은 비스듬히 닿아(α ≠ 0) 축방향 하중도 받는다. 볼이 궤도를 구르는 반지름이 α만큼 달라져 결함 주파수가 바뀐다.',
+    '그림 1. 구름베어링을 축을 지나는 면으로 자른 단면 (위쪽 절반, 볼 하나). 볼 지름 d, 피치 지름 D(볼 중심이 그리는 원의 지름). 초록 선은 볼이 외륜·내륜에 닿는 두 점을 잇는 접촉선이다. 왼쪽: 깊은 홈 볼베어링은 반경 방향으로 닿는다(접촉각 α = 0). 오른쪽: 앵귤러 볼베어링은 외륜의 오른쪽, 내륜의 왼쪽 어깨(턱)만 높아 볼이 비스듬히 닿고(α ≠ 0) 축방향 하중도 받는다. 볼이 궤도에서 구르는 반지름 D/2 ∓ (d/2)cos α가 α에 따라 달라져 결함 주파수가 바뀐다.',
   panels: [
     {
       frame: false,
@@ -137,7 +144,7 @@ const ALPHAS = Array.from({ length: 41 }, (_, i) => i);
 const curve = (key: 'bpfo' | 'bpfi' | 'bsf2' | 'ftf', mul = 1) => ALPHAS.map((a) => (atAlpha(a)[key] / FR) * mul);
 export const alphaEffect: FigureSpec = {
   id: 'fig-p7-5-2',
-  caption: `그림 2. 6205의 치수(볼 ${N}개, d/D = ${fmt(DD, 3)})를 그대로 두고 접촉각 α만 바꿨을 때의 결함 주파수 (1X의 배수). α가 커지면 cos α가 작아져 볼이 내륜·외륜에서 구르는 반지름 차이가 줄어든다 — BPFO는 ${fmt(CALC.bpfo / FR, 4)}X → ${fmt(V.alpha40.bpfo / FR, 4)}X로 오르고 BPFI는 ${fmt(CALC.bpfi / FR, 4)}X → ${fmt(V.alpha40.bpfi / FR, 4)}X로 내린다(α = 40°). 둘의 합은 언제나 볼 수 × 1X = ${N}X다. 회색 점선은 어림값 0.4·N_r = ${fmt(0.4 * N, 2)}X와 0.6·N_r = ${fmt(0.6 * N, 2)}X — α = 0, d/D ≈ 0.2일 때 잘 맞고 α가 크면 어긋난다.`,
+  caption: `그림 2. 6205의 치수(볼 ${N}개, d/D = ${fmt(DD, 3)})를 그대로 두고 접촉각 α만 바꿨을 때의 결함 주파수 (1X의 배수). α가 커지면 cos α가 작아져 볼이 내륜·외륜에서 구르는 반지름 차이가 줄어든다 — BPFO는 ${fmt(CALC.bpfo / FR, 4)}X → ${fmt(V.alpha40.bpfo / FR, 4)}X로 오르고 BPFI는 ${fmt(CALC.bpfi / FR, 4)}X → ${fmt(V.alpha40.bpfi / FR, 4)}X로 내린다(α = 40°). 둘의 합은 언제나 볼 수 × 1X = ${N}X다. 보라 곡선 2×BSF(볼 결함 박자)는 ${fmt(CALC.bsf2 / FR, 4)}X → ${fmt(V.alpha40.bsf2 / FR, 4)}X로 조금만 오른다. 회색 점선은 어림값 0.4·N_r = ${fmt(0.4 * N, 2)}X와 0.6·N_r = ${fmt(0.6 * N, 2)}X — α = 0, d/D ≈ 0.2일 때 잘 맞고 α가 크면 어긋난다.`,
   panels: [
     {
       series: [
@@ -147,7 +154,7 @@ export const alphaEffect: FigureSpec = {
       ],
       annotations: [
         { type: 'hline', y: 0.6 * N, label: '0.6·N_r', color: 'muted', dash: true, labelAt: 'end' },
-        { type: 'hline', y: 0.4 * N, label: '0.4·N_r', color: 'muted', dash: true, labelAt: 'end' },
+        { type: 'hline', y: 0.4 * N, label: '0.4·N_r', color: 'muted', dash: true, labelAt: 'start', labelBelow: true },
       ],
       x: { range: [0, 40], ticks: [0, 10, 20, 30, 40], label: '접촉각 α [°]' },
       y: { range: [3, 6], ticks: [3, 4, 5, 6], label: '[X]' },
@@ -169,7 +176,7 @@ const ballMoment = (xc: number, top: boolean, label: string): FigAnnotation[] =>
     { type: 'text', x: xc - 3.4, y: yc + r - 0.12, text: '외륜', anchor: 'end', color: 'muted' },
     { type: 'text', x: xc - 3.4, y: yc - r - 0.12, text: '내륜', anchor: 'end', color: 'c2' },
     { type: 'circle', x: xc, y: yc, r: r * PX, fill: true, color: 'c1' },
-    { type: 'circle', x: xc, y: spotY, r: 5, fill: true, color: 'warn' },
+    { type: 'circle', x: xc, y: spotY, r: 5, fill: true, color: 'c3' },
     { type: 'text', x: xc, y: Y3[0] + 0.1, text: label, anchor: 'middle', color: top ? 'c1' : 'c2', bold: true },
   ];
 };
@@ -187,7 +194,7 @@ const hits = (() => {
 })();
 export const ballTwice: FigureSpec = {
   id: 'fig-p7-5-3',
-  caption: `그림 3. 볼 결함은 볼이 한 바퀴 자전하는 동안 두 번 친다. 위: 흠(주황 점)이 외륜에 닿고, 반 바퀴 뒤에는 내륜에 닿는다. 아래: 충격 시각 (외륜 쪽 파랑, 내륜 쪽 주황, 높이는 설명용 세기). 충격 간격은 1/(2×BSF) = ${fmt(1000 / ACT.bsf2, 3)} ms이고 같은 쪽끼리는 1/BSF = ${fmt(1000 / ACT.bsf, 3)} ms다. 내륜 쪽 충격은 볼을 거쳐 하우징에 닿아 더 약하다. 볼은 케이지와 함께 돌아 하중 영역을 FTF 주기(${fmt(1000 / ACT.ftf, 3)} ms)마다 한 번 지나므로, 충격 크기가 FTF로 오르내린다.`,
+  caption: `그림 3. 볼 결함은 볼이 한 바퀴 자전하는 동안 두 번 친다. 위: 흠(초록 점)이 외륜에 닿고, 반 바퀴 뒤에는 내륜에 닿는다. 아래: 충격 시각 (외륜 쪽 파랑, 내륜 쪽 주황, 높이는 설명용 세기). 충격 간격은 1/(2×BSF) = ${fmt(1000 / ACT.bsf2, 3)} ms이고 같은 쪽끼리는 1/BSF = ${fmt(1000 / ACT.bsf, 3)} ms다. 내륜 쪽 충격은 볼을 거쳐 하우징에 닿아 더 약하다. 볼은 케이지와 함께 돌아 하중 영역을 FTF 주기(${fmt(1000 / ACT.ftf, 3)} ms)마다 한 번 지나므로, 충격 크기가 FTF로 오르내린다.`,
   panels: [
     {
       frame: false,
@@ -220,28 +227,33 @@ export const ballTwice: FigureSpec = {
 
 // ── 그림 4: 결함 위치마다의 엔벨로프 스펙트럼 (3단계, 공진 대역) ──
 const ENV_MAX = 500;
-const envPanel = (f: BearingFault, title: string, color: FigColor, marks: { x: number; label?: string }[], last = false): FigPanel => {
+/** 세로 눈금 끝: 짧은 숫자가 되도록 정해 둔 값 중 봉우리를 담는 가장 작은 것 */
+const NICE_TOPS = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.5];
+const envPanel = (f: BearingFault, title: string, color: FigColor, marks: { x: number; label?: string; color?: FigColor }[], extra: FigAnnotation[] = [], last = false): FigPanel => {
   const e = an(f, LOC_STAGE).env.res;
   const d = upTo(e.freq, e.amp, 0, ENV_MAX, 1 / G);
   const top = Math.max(...d.y.filter((_, i) => d.x[i] > 5));
-  const yMax = Math.ceil((top * 1.3) / 0.005) * 0.005;
+  const yMax = NICE_TOPS.find((v) => v >= top * 1.15) ?? 1;
   return {
     title,
     series: [{ x: d.x, y: d.y, color, width: 1.3 } as FigSeries],
-    annotations: marks.map((m): FigAnnotation => ({ type: 'vline', x: m.x, color: 'muted', dash: true, label: m.label })),
+    annotations: [...marks.map((m): FigAnnotation => ({ type: 'vline', x: m.x, color: m.color ?? 'muted', dash: true, label: m.label })), ...extra],
     x: { range: [0, ENV_MAX], ...(last ? { label: '주파수 [Hz]' } : {}) },
-    y: { range: [0, yMax], ticks: [0, yMax / 2, yMax], label: '[g]' },
+    y: { range: [0, yMax], ticks: [0, yMax], label: '[g]' },
     height: 90,
   };
 };
 export const locationPatterns: FigureSpec = {
   id: 'fig-p7-5-4',
-  caption: `그림 4. 결함 위치마다의 엔벨로프 스펙트럼 (펌프 ${BRG_DEMO.rpm} rpm, 6205, 3단계, 대역 2.8 ~ 3.8 kHz, 설명용). 점선은 실제 신호의 결함 주파수다(미끄럼 1 %로 계산값보다 조금 어긋난 자리). ① 외륜: BPFO(${fmt(ACT.bpfo, 4)} Hz)와 하모닉만, 측대역이 없다. ② 내륜: BPFI(${fmt(ACT.bpfi, 4)} Hz) 양옆에 1X 간격의 측대역과 1X 자체. ③ 볼: 2×BSF(${fmt(ACT.bsf2, 4)} Hz)가 가장 크고 양옆 ${fmt(ACT.ftf, 3)} Hz(FTF) 자리에 측대역, 낮은 쪽에 FTF·BSF. ④ 케이지: FTF(${fmt(ACT.ftf, 4)} Hz)와 그 하모닉 — 1X보다 낮다.`,
+  caption: `그림 4. 결함 위치마다의 엔벨로프 스펙트럼 (펌프 ${BRG_DEMO.rpm} rpm, 6205, 3단계, 대역 2.8 ~ 3.8 kHz, 설명용). 점선은 실제 신호의 결함 주파수다(미끄럼 1 %로 계산값보다 조금 어긋난 자리). ① 외륜: BPFO(${fmt(ACT.bpfo, 4)} Hz)와 하모닉만, 측대역이 없다. ② 내륜: BPFI(${fmt(ACT.bpfi, 4)} Hz) 양옆에 1X 간격의 측대역과 1X 자체. ③ 볼: 2×BSF(${fmt(ACT.bsf2, 4)} Hz)가 가장 크고 양옆 ${fmt(ACT.ftf, 3)} Hz(FTF) 자리에 측대역(−FTF·+FTF), 낮은 쪽에 FTF·BSF. ④ 케이지: FTF(${fmt(ACT.ftf, 4)} Hz)와 그 하모닉 — 기본 줄 FTF는 1X보다 낮고 하모닉은 1X 위로도 이어진다. 다른 위치보다 줄이 7 ~ 14배 작다.`,
   panels: [
     envPanel('outer', '① 외륜 결함', 'c1', [{ x: ACT.bpfo, label: 'BPFO' }, { x: 2 * ACT.bpfo, label: '2×' }]),
     envPanel('inner', '② 내륜 결함', 'c2', [{ x: FR, label: '1X' }, { x: ACT.bpfi - FR, label: '−1X' }, { x: ACT.bpfi, label: 'BPFI' }, { x: ACT.bpfi + FR, label: '+1X' }]),
-    envPanel('ball', '③ 볼 결함', 'c4', [{ x: ACT.ftf, label: 'FTF' }, { x: ACT.bsf, label: 'BSF' }, { x: ACT.bsf2, label: '2×BSF' }]),
-    envPanel('cage', '④ 케이지 결함', 'c3', [{ x: ACT.ftf, label: 'FTF' }, { x: 2 * ACT.ftf }, { x: 3 * ACT.ftf }], true),
+    envPanel('ball', '③ 볼 결함', 'c4', [{ x: ACT.ftf, label: 'FTF' }, { x: ACT.bsf, label: 'BSF' }, { x: ACT.bsf2, label: '2×BSF' }], [
+      { type: 'text', x: ACT.bsf2 - ACT.ftf, y: V.loc.ball.lo + 0.012, text: '−FTF', anchor: 'middle', color: 'muted' },
+      { type: 'text', x: ACT.bsf2 + ACT.ftf, y: V.loc.ball.hi + 0.012, text: '+FTF', anchor: 'middle', color: 'muted' },
+    ]),
+    envPanel('cage', '④ 케이지 결함', 'c3', [{ x: ACT.ftf, label: 'FTF' }, { x: FR, label: '1X', color: 'c1' }], [], true),
   ],
 };
 
@@ -262,7 +274,7 @@ const STAGE_NOTE: Record<number, string> = {
 const kHz = (v: number) => v / 1000;
 export const stagesAcc: FigureSpec = {
   id: 'fig-p7-5-5',
-  caption: `그림 5. 외륜 결함이 진행하는 네 단계의 가속도 스펙트럼 (dB re 1 g, 0 ~ 32 kHz, 회색 = 건전, 설명용 모델). 음영은 일반 가속도 측정 대역(0 ~ 10 kHz)이다. 12 kHz 아래의 높은 바닥은 기계의 다른 소리(유동·전자기 등)이고, 그 위는 조용하다. 1단계의 결함은 기계의 다른 소리가 없는 초음파 대역(24 kHz 둘레)에만 작게 보인다. 2단계에서 3.3 kHz 부품 공진이 울리기 시작하고, 3단계에서는 울림이 커진다. 4단계에서는 손상이 넓어져 넓은 대역의 바닥이 함께 올라간다.`,
+  caption: `그림 5. 외륜 결함이 진행하는 네 단계의 가속도 스펙트럼 (dB re 1 g, 0 ~ 32 kHz, 회색 = 건전, 설명용 모델). 음영은 일반 가속도 측정 대역(0 ~ 10 kHz)이다. 12 kHz 아래의 높은 바닥은 기계의 다른 소리(유동·전자기 등)이고, 그 위는 조용하다. 1단계의 작은 충격은 3.3 kHz 공진을 거의 울리지 못해 일반 측정 대역은 건전과 같고, 조용한 12 kHz 위 대역이 올라오며 24 kHz 둘레가 건전보다 약 25 dB 높아 가장 많이 올라온다. 2단계에서 3.3 kHz 부품 공진이 울리기 시작하고, 3단계에서는 울림이 커진다. 4단계에서는 손상이 넓어져 넓은 대역의 바닥이 함께 올라간다.`,
   panels: ([1, 2, 3, 4] as BearingStage[]).map((s, i): FigPanel => {
     const d = accDb(s);
     return {
@@ -286,7 +298,7 @@ const velPanel = (s: BearingStage, title: string, last = false): FigPanel => {
   const d = upTo(v.freq, v.amp, 0, 1000);
   return {
     title,
-    series: [{ x: d.x, y: d.y, color: s === 4 ? 'c2' : 'c1', width: 1.2 }],
+    series: [{ x: d.x, y: d.y, color: 'c1', width: 1.2 }],
     annotations: [
       { type: 'vline', x: FR, color: 'muted', dash: true, label: '1X' },
       ...[1, 2, 3].map((k): FigAnnotation => ({ type: 'vline', x: k * ACT.bpfo, color: 'warn', dash: true, label: k === 1 ? 'BPFO' : `${k}×` })),
@@ -312,7 +324,7 @@ export const stageNumbers: FigureSpec = {
   panels: [
     {
       title: '엔벨로프: BPFO 줄 ÷ 바닥',
-      series: [bar(-0.17, V.stages.map((r) => r.envRatio.ultra), 'c3', '초음파 대역'), bar(0.17, V.stages.map((r) => r.envRatio.res), 'c2', '공진 대역')],
+      series: [bar(-0.17, V.stages.map((r) => r.envRatio.ultra), 'c3', '초음파 대역'), bar(0.17, V.stages.map((r) => r.envRatio.res), 'c4', '공진 대역')],
       x: { range: [-0.5, 4.5], ticks: SX, tickLabels: stageTicks },
       y: { range: [0, 200], ticks: [0, 100, 200], label: '[배]' },
       height: 105,
@@ -326,7 +338,7 @@ export const stageNumbers: FigureSpec = {
     },
     {
       title: '가속도 첨도 (0 ~ 10 kHz)',
-      series: [{ x: SX, y: V.stages.map((r) => r.kurtosis), kind: 'bar', color: 'c4', barWidth: 0.4 }],
+      series: [{ x: SX, y: V.stages.map((r) => r.kurtosis), kind: 'bar', color: 'c1', barWidth: 0.4 }],
       annotations: [{ type: 'hline', y: 3, label: '정규 잡음 3', color: 'muted', dash: true, labelAt: 'end' }],
       x: { range: [-0.5, 4.5], ticks: SX, tickLabels: stageTicks },
       y: { range: [0, 7], ticks: [0, 3, 6], label: 'K' },
