@@ -69,6 +69,8 @@ export const LABS: LabEntry[] = [
   { slug: 'ord-01', id: 'LAB-ORD-01', component: 'OrderTrackingLab', part: 5, title: '차수추적: 시간 FFT vs 차수 스펙트럼', summary: '가속 중인 신호를 키페이저(또는 스펙트로그램 능선) 각도에 맞춰 다시 찍고, 분해능·최대 차수·에일리어싱·보간 오차를 본다.' },
   { slug: 'env-01', id: 'LAB-ENV-01', component: 'EnvelopeLab', part: 5, title: '엔벨로프 분석: 대역 고르기 → 포락선 → 엔벨로프 스펙트럼', summary: '베어링 충격이 울리는 대역을 골라 포락선의 스펙트럼에서 BPFO·BPFI를 꺼내고, 틀린 대역·폭이 결과를 어떻게 바꾸는지 본다.' },
   { slug: 'sk-01', id: 'LAB-SK-01', component: 'KurtogramLab', part: 5, title: 'Spectral Kurtosis · Kurtogram: 충격 대역 자동으로 찾기', summary: '주파수·대역폭마다 포락선의 첨도를 재어 충격이 있는 대역을 고르고, 그 대역의 엔벨로프 스펙트럼을 본다.' },
+  { slug: 'cep-01', id: 'LAB-CEP-01', component: 'CepstrumLab', part: 5, title: '켑스트럼: 줄 무리의 간격 → quefrency 봉우리, 리프터링', summary: '기어 상자의 두 측대역 무리를 켑스트럼에서 서로 다른 quefrency 봉우리로 나누고, 리프터링으로 한 무리만 지운다.' },
+  { slug: 'feat-01', id: 'LAB-FEAT-01', component: 'FeatureLab', part: 5, title: '시간영역 특징량: 결함이 진행하는 동안의 추세', summary: '베어링 결함이 진행하는 동안 RMS·Crest factor·첨도가 어떻게 오르고 내려오는지 추세로 본다.' },
   { slug: 'flt-02', id: 'LAB-FLT-02', component: 'TrackingLab', part: 5, title: '트래킹 필터와 노치: 런업에서 1X 벡터 뽑기', summary: '런업 신호에서 회전을 따라가는 필터로 1X 크기·위상(Bode)을 뽑고, 대역폭·가속률에 따른 지연과 잡음, 노치로 지운 Not-1X를 본다.' },
   { slug: 'full-01', id: 'LAB-FULL-01', component: 'FullSpectrumLab', part: 5, title: 'Full spectrum: 오빗과 정방향·역방향', summary: 'X·Y 진폭·위상차와 센서 오차를 바꿔 오빗 방향과 ±1X 막대를 본다.' },
 ];

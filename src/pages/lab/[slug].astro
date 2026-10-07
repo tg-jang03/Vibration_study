@@ -41,6 +41,8 @@ import OrderTrackingLab from '../../components/labs/OrderTrackingLab';
 import TrackingLab from '../../components/labs/TrackingLab';
 import EnvelopeLab from '../../components/labs/EnvelopeLab';
 import KurtogramLab from '../../components/labs/KurtogramLab';
+import CepstrumLab from '../../components/labs/CepstrumLab';
+import FeatureLab from '../../components/labs/FeatureLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -152,6 +154,8 @@ const c = lab.component;
       {c === 'TrackingLab' && <TrackingLab client:load />}
       {c === 'EnvelopeLab' && <EnvelopeLab client:load />}
       {c === 'KurtogramLab' && <KurtogramLab client:load />}
+      {c === 'CepstrumLab' && <CepstrumLab client:load />}
+      {c === 'FeatureLab' && <FeatureLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">

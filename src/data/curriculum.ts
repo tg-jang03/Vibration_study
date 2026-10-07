@@ -96,7 +96,7 @@ export const PARTS: Part[] = [
       { id: 'P5-4', title: '차수추적 (Order Tracking)', status: 'review', href: '/p5-4/' },
       { id: 'P5-5', title: '트래킹 · 노치 필터와 1X 벡터 추출', status: 'review', href: '/p5-5/' },
       { id: 'P5-6', title: '엔벨로프 분석 · Spectral Kurtosis · Kurtogram', status: 'review', href: '/p5-6/' },
-      { id: 'P5-7', title: '켑스트럼 · 자기상관 · 시간영역 특징량', status: 'planned' },
+      { id: 'P5-7', title: '켑스트럼 · 자기상관 · 시간영역 특징량', status: 'review', href: '/p5-7/' },
     ],
   },
   {
