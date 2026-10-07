@@ -41,6 +41,7 @@ import * as F55 from '../../figures/p5-5';
 import * as F56 from '../../figures/p5-6';
 import * as F57 from '../../figures/p5-7';
 import * as F61 from '../../figures/p6-1';
+import * as F71 from '../../figures/p7-1';
 import * as FD from '../../figures/dev-schematic';
 
 export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
@@ -198,6 +199,10 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P6-1
 
 {byId(F61).map((f) => <Figure {...f} />)}
+
+## P7-1
+
+{byId(F71).map((f) => <Figure {...f} />)}
 
 ## 도식 견본 (Part 1용)
 

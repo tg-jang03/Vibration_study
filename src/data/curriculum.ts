@@ -115,7 +115,7 @@ export const PARTS: Part[] = [
     title: '결함별 진단',
     question: '이 패턴은 어떤 결함 메커니즘을 가리키나?',
     sections: [
-      { id: 'P7-1', title: '진단 주파수 지도와 회전수 추정', status: 'planned' },
+      { id: 'P7-1', title: '진단 주파수 지도와 회전수 추정', status: 'review', href: '/p7-1/' },
       { id: 'P7-2', title: '1X 계열: 불평형 · 휨 · 크랙 · 편심 · 공진', status: 'planned' },
       { id: 'P7-3', title: '미스얼라인먼트 · 풀림 · 러브', status: 'planned' },
       { id: 'P7-4', title: '유체막 · 유체력 불안정', status: 'planned' },

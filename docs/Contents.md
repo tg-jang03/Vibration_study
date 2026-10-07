@@ -266,7 +266,7 @@
 | P6-2 | 스펙트럼 · Waterfall · Cascade | LAB-WF-01 | M6.2 | 계획 |
 | P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 계획 |
 | P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 계획 |
-| P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-FAULT-01, LAB-RPM-01 | M7.1 | 계획 |
+| P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-MAP-01, LAB-FAULT-01, LAB-RPM-01 | M7.1 | 검토 (그림 6, 랩 3종 각 1곳, 2026-10-07) |
 | P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-4 | 유체막 · 유체력 불안정 | (LAB-WF-01, LAB-STB-01 프리셋) | M7.3 | 계획 |
@@ -350,6 +350,9 @@
 | LAB-CEP-01 | 켑스트럼: 줄 무리의 간격 → quefrency 봉우리, 리프터링 | P5-7 | `CepstrumLab` (/lab/cep-01/) · lib/dsp/cepstrum.ts, lib/cepstrumDemo.ts |
 | LAB-FEAT-01 | 시간영역 특징량: 결함이 진행하는 동안의 추세 | P5-7 | `FeatureLab` (/lab/feat-01/) · lib/dsp/stats.ts, lib/cepstrumDemo.ts |
 | LAB-TWF-01 | 시간파형 패턴 갤러리·퀴즈·회전당 사건 수 | P6-1 | `TimeWaveformLab` (/lab/twf-01/) · lib/plots/waveform.ts |
+| LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
+| LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
+| LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -363,9 +366,7 @@
 | LAB-ORB-01 | 오빗 | 성분·위상·dot → 오빗 형태, 프리세션 방향 | P6-3 | M6.3 |
 | LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
 | LAB-TRND-01 | 벡터 트렌드 | 1X 벡터 회전 시나리오 → 스칼라 vs 벡터 트렌드, APHT, Acceptance region | P6-4 | M6.6 |
-| LAB-FAULT-01 | 결함 신호 합성기 | 결함 종류·정도 → 스펙트럼·파형·오빗 패턴 (Part 11 엔진) | P7-1 | M7.1 |
-| LAB-RPM-01 | 회전수 추정 | 하모닉 패밀리 / 켑스트럼 / STFT로 1X 후보 찾기 | P7-1 | M7.1 |
-| LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/machine/frequencies.ts`(P1-8) 확장 | P7-5 | M7.4 |
+| LAB-BRG-01 | 베어링 결함주파수 | n, d, D, α, rpm → BPFO/BPFI/BSF/FTF + 단계 시뮬레이터 (I-008). 계산은 `lib/faults/`(`lib/machine/frequencies.ts`는 가져다 쓰기만, D-042), 신호는 LAB-FAULT-01 합성기 | P7-5 | M7.4 |
 | LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
 | LAB-HPB-01 | Half-power & 임팩트 시험 | FRF 피크 → ζ, 지수 윈도우 영향, 해머 팁 → 가진 대역 | P9-1 | M9.1 |
@@ -520,6 +521,21 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 한 바퀴 세 사건, 3000 / 6000 rpm | 사건 간격 6.66667 / 3.33333 ms |
 | 한쪽 −0.25A 절단 / 양쪽 ±0.65A 클리핑 | Pk-Pk=25 / 26 µm |
 | 1X 20·2X 7 µm Peak, 2X 앞섬각 0° / 90° | 두 RMS=14.9833 µm, 모양은 다름; 0° 상하 Peak=27 / 약 14.14 µm |
+
+### P7-1 진단 주파수 지도 · 회전수 추정 (M7.1)
+
+결함 크기는 모두 설명용(정도 0 ~ 1, 판정 기준 아님). `figures-p7-1.test.ts`·`faults.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 펌프: 2극 3575 rpm, 60 Hz, 6205(볼 9), 베인 7 | 1X 59.58 Hz, BPFO 213.6 Hz(3.585X), 2×LF = 2.014X(2X와 0.83 Hz), 7X 417.1 Hz |
+| 불평형 / 정렬 불량 0.6 (펌프) | 불평형 H 4.91·V 3.53·A 0.49 mm/s, V가 90° 늦음 / 정렬 불량 A 1X 3.10·A 2X 2.57 mm/s, H-V 위상차 26° |
+| 2X vs 2×LF (정렬 불량 + 전기) | 2 s 기록: 0.96·1.27 mm/s 따로 / 0.5 s 기록: 2.25 mm/s 하나로 |
+| 풀림 / 외륜 0.6 (펌프 V) | ½X 0.98 mm/s, 가속도 첨도 약 10 / 엔벨로프(2800 ~ 3800 Hz) BPFO 0.41 g(바닥의 20배 넘게), 속도 스펙트럼 BPFO 약 0.5 mm/s |
+| 회전수 추정 (참 3575 / 1490 / 1180 rpm) | 하모닉 무리 3573·1492·590, 켑스트럼 1792·1490·590, 자기상관 3576·1558·1180 rpm |
+| 동기속도·슬립 | 60 Hz 2극 3600 rpm(명판 3560 → 1X 59.33 ~ 60 Hz), 50 Hz 4극 1500 rpm(명판 1460 → 24.33 ~ 25 Hz) |
+| 역산 | 맞물림 571.2 Hz ÷ 23 = 1490 rpm, 417.1 Hz ÷ 7 = 3575 rpm, 23 → 61이빨 출력 561.8 rpm |
+| 후보 찾기 (펌프 120 Hz / 59.6 Hz, 압축기 43 Hz) | 전기 2×LF + 2X 후보 4(정렬 불량·풀림·크랙·러브), "고정"이면 전기만 / 1X 후보 7 / 오일 휠·휩·Rotating stall |
 
 ## 7. 참고자료
 

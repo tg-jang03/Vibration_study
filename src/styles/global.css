@@ -348,6 +348,41 @@ main.container {
   color: var(--text-muted);
 }
 
+/* 랩 안의 짧은 설명 줄과 결과 카드 (P7-1 LAB-MAP-01 · LAB-FAULT-01, 2026-10-07 추가) */
+.lab-note {
+  margin: 0.2rem 0 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.fault-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fault-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.92rem;
+}
+
+.fault-card summary {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.fault-card ul {
+  margin: 0.4rem 0 0.1rem;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 /* 입력 부품 (ParamSlider / ParamSelect / ParamToggle) */
 .param {
   display: flex;
