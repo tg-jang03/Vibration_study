@@ -73,6 +73,8 @@ export const LABS: LabEntry[] = [
   { slug: 'feat-01', id: 'LAB-FEAT-01', component: 'FeatureLab', part: 5, title: '시간영역 특징량: 결함이 진행하는 동안의 추세', summary: '베어링 결함이 진행하는 동안 RMS·Crest factor·첨도가 어떻게 오르고 내려오는지 추세로 본다.' },
   { slug: 'flt-02', id: 'LAB-FLT-02', component: 'TrackingLab', part: 5, title: '트래킹 필터와 노치: 런업에서 1X 벡터 뽑기', summary: '런업 신호에서 회전을 따라가는 필터로 1X 크기·위상(Bode)을 뽑고, 대역폭·가속률에 따른 지연과 잡음, 노치로 지운 Not-1X를 본다.' },
   { slug: 'full-01', id: 'LAB-FULL-01', component: 'FullSpectrumLab', part: 5, title: 'Full spectrum: 오빗과 정방향·역방향', summary: 'X·Y 진폭·위상차와 센서 오차를 바꿔 오빗 방향과 ±1X 막대를 본다.' },
+  // Part 6
+  { slug: 'twf-01', id: 'LAB-TWF-01', component: 'TimeWaveformLab', part: 6, title: '시간파형: 패턴을 읽고 맞히기', summary: '정현·맥놀이·AM·충격·절단·클리핑·비대칭을 비교하고, 키페이저로 사건 수를 센 뒤 패턴 퀴즈를 푼다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

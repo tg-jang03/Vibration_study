@@ -104,7 +104,7 @@ export const PARTS: Part[] = [
     title: '현장 플롯 읽기',
     question: '각 플롯은 무엇을 보여주고 무엇을 숨기나?',
     sections: [
-      { id: 'P6-1', title: '시간파형', status: 'planned' },
+      { id: 'P6-1', title: '시간파형', status: 'review', href: '/p6-1/' },
       { id: 'P6-2', title: '스펙트럼 · Waterfall · Cascade', status: 'planned' },
       { id: 'P6-3', title: '오빗 (Orbit)', status: 'planned' },
       { id: 'P6-4', title: '트렌드 · 벡터 트렌드 · APHT', status: 'planned' },

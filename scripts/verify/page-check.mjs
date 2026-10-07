@@ -27,6 +27,7 @@ const noShots = flag('no-shots');
 const jeffcottSmoke = flag('jeffcott-smoke');
 const centerlineSmoke = flag('centerline-smoke');
 const stabilitySmoke = flag('stability-smoke');
+const waveformSmoke = flag('waveform-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -184,6 +185,40 @@ for (const p of paths) {
     })()`);
     if(smoke?.ok===false||!smoke) errors.push('안정성 조작 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok) console.log('     안정성 조작 12항목 OK (모드·경계·초기조건·캐스케이드·초기화)');
+  }
+  if (waveformSmoke) {
+    const smoke = await ev(`(async () => {
+      const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-TWF-01');
+      if (!lab) return { skipped: true };
+      const wait = () => new Promise(r => setTimeout(r, 250));
+      const sliders = lab.querySelectorAll('input[type="range"]'), toggles = lab.querySelectorAll('input[type="checkbox"]');
+      const set = async (i, v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(sliders[i], String(v)); sliders[i].dispatchEvent(new Event('input', { bubbles: true })); sliders[i].dispatchEvent(new Event('change', { bubbles: true })); await wait(); };
+      const choose = async (i, v) => { const s = lab.querySelectorAll('select')[i]; s.value = String(v); s.dispatchEvent(new Event('change', { bubbles: true })); await wait(); };
+      const read = label => { const row = [...lab.querySelectorAll('.readout-table tbody tr')].find(r => r.cells[0].textContent === label); return row ? parseFloat(row.cells[1].textContent.replace(/,/g, '').replaceAll('−', '-')) : null; };
+      const data = () => lab.querySelector('.js-plotly-plot').data;
+      let checks = 0;
+      const require = (v, m) => { if (!v) throw Error(m); checks++; };
+      try {
+        require(read('Pk-Pk') === 40 && Math.abs(read('RMS (DC 포함)') - 14.14) < .01 && read('평균') === 0, '정현 초기값');
+        for (let i = 0; i < 7; i++) { await choose(0, i); require(data()[0].y.every(Number.isFinite) && data()[0].y.length === 2560, '갤러리 ' + i); }
+        await choose(0, 3); await set(2, 3); require(data()[2].x.length === 9 && Math.abs(read('모델 사건 간격') - 6.667) < .001, '사건·3바퀴');
+        await set(0, 6000); require(read('한 바퀴') === 10 && Math.abs(read('모델 사건 간격') - 3.333) < .001, '회전수와 사건 간격');
+        toggles[1].click(); await wait(); require(data().length === 1, '마커 숨기기'); toggles[1].click(); await wait();
+        await set(0, 3000); await set(2, 10); await choose(0, 0); await set(1, 50); require(read('Pk-Pk') === 100, '진폭'); await set(1, 20);
+        await set(3, 2); const cf = read('Crest factor (DC 포함)'); require(cf > 1.414, '잡음'); await set(3, 0); await set(3, 2); require(read('Crest factor (DC 포함)') === cf, '시드 재현'); await set(3, 0);
+        toggles[0].click(); await wait(); require(!lab.querySelector('[role="status"]') && data()[0].name === '문제 파형' && !data().some(s => s.name === '모델의 사건 시작') && read('모델 사건 간격') === null, '퀴즈 정답 숨김');
+        const answers = [6, 3, 4, 2, 7, 1, 5];
+        for (let i = 0; i < 7; i++) {
+          await choose(0, i); require(!lab.querySelector('[role="status"]') && lab.querySelectorAll('select')[1].value === '0', '문제 전환 초기화 ' + i);
+          await choose(1, answers[i]); require(lab.querySelector('[role="status"]')?.textContent.includes('맞았습니다'), '정답 해설 ' + i);
+        }
+        await choose(0, 0); await choose(1, 1); require(lab.querySelector('[role="status"]')?.textContent.includes('다시 살펴보세요'), '오답 피드백');
+        await choose(0, 0); toggles[0].click(); await wait(); require(lab.querySelectorAll('select').length === 1 && data()[0].name === '정현파', '갤러리 복귀');
+        return { ok: true, checks };
+      } catch (e) { return { ok: false, checks, error: e.message }; }
+    })()`);
+    if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
+    if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
   }
   const shots = [];
   if (!noShots) {
