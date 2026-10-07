@@ -39,6 +39,8 @@ import FrfLab from '../../components/labs/FrfLab';
 import FullSpectrumLab from '../../components/labs/FullSpectrumLab';
 import OrderTrackingLab from '../../components/labs/OrderTrackingLab';
 import TrackingLab from '../../components/labs/TrackingLab';
+import EnvelopeLab from '../../components/labs/EnvelopeLab';
+import KurtogramLab from '../../components/labs/KurtogramLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -148,6 +150,8 @@ const c = lab.component;
       {c === 'FullSpectrumLab' && <FullSpectrumLab client:load />}
       {c === 'OrderTrackingLab' && <OrderTrackingLab client:load />}
       {c === 'TrackingLab' && <TrackingLab client:load />}
+      {c === 'EnvelopeLab' && <EnvelopeLab client:load />}
+      {c === 'KurtogramLab' && <KurtogramLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">
