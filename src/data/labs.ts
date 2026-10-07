@@ -59,6 +59,9 @@ export const LABS: LabEntry[] = [
   // Part 4
   { slug: 'af-01', id: 'LAB-AF-01', component: 'RunUpBodeLab', part: 4, title: 'Run-up Bode와 증폭계수 (AF)', summary: '고유 회전수·감쇠·측정 간격을 바꿔 런업 Bode·Polar에서 Half-power로 증폭계수를 읽는다.' },
   { slug: 'jef-01', id: 'LAB-JEF-01', component: 'JeffcottLab', part: 4, title: 'Jeffcott 로터: 선회와 오빗', summary: '회전수·강성비·감쇠를 바꿔 원형·타원 오빗과 정방향·역방향 선회를 비교한다.' },
+  // Part 5
+  { slug: 'flt-01', id: 'LAB-FLT-01', component: 'FilterLab', part: 5, title: '필터 설계: 크기 · 군지연 · 시간파형', summary: '종류·차수·차단 주파수를 바꿔 깎이는 정도와 늦음, 파형 모양, 두 번 거르기를 본다.' },
+  { slug: 'int-01', id: 'LAB-INT-01', component: 'IntegrationLab', part: 5, title: '적분 & ski-slope', summary: '가속도를 속도·변위로 적분하며 하한 컷오프, ski-slope, 직류 오프셋의 드리프트를 본다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

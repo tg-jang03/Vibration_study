@@ -70,6 +70,12 @@
 | P4-3 | 유막의 압력 생성·하중 지지 → 저널 베어링(간극·편심률 ε·자세각), Shaft centerline(gap 전압 DC로 그린 축 중심 vs rpm, cold gap 기준, 떠오름·비정상 위치·장기 변화), 유막 계수(K_xx … C_yy)는 이름과 뜻만 | P1-6, P3-2(gap 전압), P3-5(런업 그림), P4-1 |
 | P4-4 | 교차연성 k_xy·접선력, Oil whirl(≈ 0.42 ~ 0.48X)·whip(1차 임계에 잠김), 복소 고유치 λ = σ ± jω_d·불안정(σ > 0), Log decrement, 안정 한계(k_xy = 2ζk, k_xy = cΩ/2 모델 → Ω = 2ω_n), Campbell 선도(개념) | P1-3, P1-8(기름막 0.38 ~ 0.48X), P4-2, P4-3 |
 
+**Part 5 개념 척추** (D-040 — 트랙 A가 M4에서 쓴다. Part 4 다음)
+
+| 페이지 | 새로 도입하는 개념 | 기대고 있는 개념 |
+|---|---|---|
+| P5-1 | 크기 응답 ∣H(f)∣, 통과·차단·전이 대역, 차단 주파수(−3 dB), 저역·고역 통과, 옥타브·디케이드(차수당 6 dB/옥타브), Butterworth·Chebyshev(리플)·Bessel(Elliptic 이름만), IIR·FIR·탭, 위상 응답·군지연 τ_g·선형 위상, 넘침(overshoot), 필터 지연과 1X 위상, 두 번 거르기(영위상, ∣H∣², 저장된 데이터만), 적분 = 1/(j2πf) 필터, 하한 컷오프(2차면 1X의 1/3 이하), 누적합 적분·드리프트·적분 상수, 데시메이션(저역 통과 → 솎기) | P2-3(AAF·dB·차수), P2-2(위상과 파형 모양·사각파·복소 표현), P1-4(위상 지연), P1-2(속도·가속도 위상), P2-7(v = a/2πf), P3-4(ski-slope), P3-3(1X 위상), P2-4(Zoom FFT) |
+
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
 ### 1-4. 페이지 구성 → `PageGuide.md` §3 · §4
@@ -228,7 +234,7 @@
 | P4-2 | Jeffcott 로터 | LAB-JEF-01 | M5.2 | 검토 |
 | P4-3 | 유막 베어링과 Shaft centerline | LAB-SCL-01 | M5.3 | 계획 |
 | P4-4 | 안정성: 교차연성 · Whirl/Whip · Log decrement | LAB-STB-01 | M5.4 | 계획 |
-| P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 계획 |
+| P5-1 | 디지털 필터와 적분 | LAB-FLT-01, LAB-INT-01 | M4.1 | 검토 (그림 10, LAB-FLT-01·LAB-INT-01 각 1곳, 2026-10-07) |
 | P5-2 | 시간-주파수 분석 | LAB-STFT-01 | M4.3 | 계획 |
 | P5-3 | 2채널 분석 · Full spectrum | LAB-XCH-01, LAB-FULL-01 | M4.4 | 계획 |
 | P5-4 | 차수추적 | LAB-ORD-01 | M4.5 | 계획 |
@@ -309,6 +315,8 @@
 | LAB-SUP-01 | 지지 강성과 고유진동수 (D-036) | P1-6 | `SupportStiffnessLab` (/lab/sup-01/) · lib/machine/supportModel.ts |
 | LAB-AF-01 | Run-up Bode & 증폭계수 | P4-1 | `RunUpBodeLab` (/lab/af-01/) · lib/rotor/runup.ts |
 | LAB-JEF-01 | Jeffcott 로터: 선회와 오빗 | P4-2 | `JeffcottLab` (/lab/jef-01/) · lib/rotor/jeffcott.ts |
+| LAB-FLT-01 | 필터 설계: 크기 · 군지연 · 시간파형 | P5-1 | `FilterLab` (/lab/flt-01/) · lib/dsp/filter.ts, lib/filterDemo.ts |
+| LAB-INT-01 | 적분 & ski-slope | P5-1 | `IntegrationLab` (/lab/int-01/) · lib/dsp/filter.ts (integrateSpectral·integrateCumulative), lib/filterDemo.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -328,8 +336,6 @@
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
-| LAB-FLT-01 | 필터 설계 | 종류·차수 → 크기·위상·군지연, filtfilt 비교 | P5-1 | M4.1 |
-| LAB-INT-01 | 적분 & Ski-slope | 시간/주파수 영역 적분, HP 컷오프 → 저주파 발산 | P5-1 | M4.1 |
 | LAB-STFT-01 | 스펙트로그램 · 워터폴 | 프레임 길이·오버랩 → 시간-주파수 트레이드오프 | P5-2 | M4.3 |
 | LAB-XCH-01 | FRF · 코히어런스 | 입력/출력 잡음, 평균 수 → H1 vs H2, γ² | P5-3 | M4.4 |
 | LAB-FULL-01 | Full spectrum | X/Y 진폭·위상 → 오빗과 정/역 성분 | P5-3 | M4.4 |
@@ -485,6 +491,8 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-13 | [NI Spectrum Averaging Mode](https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html) | RMS·피크홀드·벡터 평균과 트리거 조건 (P2-6) | 공식 문서, 2026-10-02 확인 |
 | R-14 | [SciPy Welch](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html) | 겹친 구간의 파워 평균·오버랩 조건 (P2-6) | 공식 문서, 2026-10-02 확인 |
 | R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P1-6) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
+| R-16 | S. W. Smith, [*The Scientist and Engineer's Guide to Digital Signal Processing*](https://www.dspguide.com/) | 필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR (P5-1) | 공개 |
+| R-17 | [SciPy signal](https://docs.scipy.org/doc/scipy/reference/signal.html) (butter·cheby1·bessel·sosfiltfilt·decimate) | 필터 설계·두 번 거르기·데시메이션의 대조 기준 (P5-1) | 공식 문서, 2026-10-07 확인 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

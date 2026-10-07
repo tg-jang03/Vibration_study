@@ -90,7 +90,7 @@ export const PARTS: Part[] = [
     title: '신호처리 확장',
     question: '묻혀 있는 결함 신호를 어떻게 꺼내나?',
     sections: [
-      { id: 'P5-1', title: '디지털 필터와 적분', status: 'planned' },
+      { id: 'P5-1', title: '디지털 필터와 적분', status: 'review', href: '/p5-1/' },
       { id: 'P5-2', title: '시간-주파수 분석: STFT · 스펙트로그램 · 워터폴', status: 'planned' },
       { id: 'P5-3', title: '2채널 분석: FRF · 코히어런스 · Full spectrum', status: 'planned' },
       { id: 'P5-4', title: '차수추적 (Order Tracking)', status: 'planned' },

@@ -1,0 +1,62 @@
+import { describe, expect, it } from 'vitest';
+import * as F from './p5-1';
+
+const V = F.P51_VALUES;
+
+describe('P5-1 그림 숫자 (본문·캡션이 인용)', () => {
+  it('그림 1: 4차 Butterworth f_c = 150 Hz, 2차 고역 통과 5 Hz', () => {
+    expect(V.lp.db300).toBeCloseTo(-24.3, 1);
+    expect(V.lp.db500).toBeCloseTo(-42.5, 1);
+    expect(V.hp.db1).toBeCloseTo(-28.0, 1);
+    expect(V.hp.x1).toBeCloseTo(0.9992, 4);
+  });
+
+  it('그림 2 ~ 3: 종류별 크기·위상·군지연', () => {
+    expect(V.fam.chebyshev1.db25).toBeCloseTo(-0.64, 2);
+    expect(V.fam.bessel.db75).toBeCloseTo(-0.70, 2);
+    expect(V.fam.chebyshev1.db500).toBeCloseTo(-53.9, 1);
+    expect(V.fam.bessel.db500).toBeCloseTo(-29.1, 1);
+    expect(V.fam.butterworth.ph25).toBeCloseTo(-25.0, 1);
+    expect(V.fam.butterworth.ph75).toBeCloseTo(-77.8, 1);
+    expect(V.fam.butterworth.gd25).toBeCloseTo(2.80, 2);
+    expect(V.fam.butterworth.gd75).toBeCloseTo(3.16, 2);
+    expect(V.fam.butterworth.gdFc).toBeCloseTo(3.94, 2);
+    expect(V.fam.bessel.gd25).toBeCloseTo(2.24, 2);
+    expect(V.fam.bessel.gd75).toBeCloseTo(2.24, 2);
+    expect(V.fam.chebyshev1.gdFc).toBeCloseTo(8.5, 1);
+  });
+
+  it('그림 4: 사각파 모서리의 넘침과 FIR 지연', () => {
+    expect(V.overshoot.butterworth).toBeCloseTo(10.9, 1);
+    expect(V.overshoot.bessel).toBeCloseTo(0.89, 2);
+    expect(V.overshoot.chebyshev1).toBeCloseTo(21.9, 1);
+    expect(V.firDelay).toBeCloseTo(7.81, 2);
+  });
+
+  it('그림 8: ski-slope와 하한 컷오프', () => {
+    expect(V.v0.lowMax).toBeCloseTo(18.2, 1);
+    expect(V.v0.x1).toBeCloseTo(3.99, 2);
+    expect(V.v5.lowMax).toBeCloseTo(0.71, 2);
+    expect(V.v5.x1).toBeCloseTo(3.98, 2);
+    expect(V.v20.x1).toBeCloseTo(3.36, 2);
+  });
+
+  it('그림 9: 누적합 드리프트', () => {
+    expect(V.drift0.v2).toBeCloseTo(9.81, 2);
+    expect(V.vStart).toBeCloseTo(4.17, 2);
+    expect(V.drift0.dMax).toBeCloseTo(1.85, 2);
+    expect(V.drift5.dLate).toBeLessThan(30);
+  });
+
+  it('그림 10: 데시메이션의 접힘', () => {
+    expect(F.DEC_VALUES.alias).toBeCloseTo(0.5, 6);
+    expect(F.DEC_VALUES.filtered).toBeLessThan(1e-3);
+  });
+});
+
+describe('P5-1 랩 해석이 인용하는 FIR 숫자', () => {
+  it('FIR 101탭: 500 Hz −62.1 dB, 1X 위상 70.3° 늦음', () => {
+    expect(V.fam.fir.db500).toBeCloseTo(-62.1, 1);
+    expect(V.fam.fir.ph25).toBeCloseTo(-70.3, 1);
+  });
+});
