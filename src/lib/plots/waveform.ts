@@ -43,9 +43,9 @@ export function waveValue(pattern: WavePattern, theta: number, amplitude: number
     case 'beat': return amplitude * 0.5 * (c + Math.cos(1.1 * theta));
     case 'am': return amplitude * (1 + 0.5 * Math.cos(0.1 * theta)) * c;
     case 'impacts': {
-      // 한 바퀴 세 사건. 사건마다 네 번의 감쇠 진동; 경계에서 남는 울림은 e^(−1/0.12).
+      // 한 바퀴 세 사건. 사건마다 네 번의 감쇠 진동(ζ ≈ 0.13: 봉우리가 여러 번 보이게); 경계에서 남는 울림은 e^(−1/0.3) ≈ 0.036.
       const phase = ((theta / (2 * Math.PI) * 3) % 1 + 1) % 1;
-      return amplitude * Math.exp(-phase / 0.12) * Math.sin(2 * Math.PI * 4 * phase);
+      return amplitude * Math.exp(-phase / 0.3) * Math.sin(2 * Math.PI * 4 * phase);
     }
     case 'truncated': return amplitude * Math.max(-0.25, c);
     case 'clipped': return amplitude * Math.max(-0.65, Math.min(0.65, c));

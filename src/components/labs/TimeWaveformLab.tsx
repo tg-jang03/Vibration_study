@@ -40,7 +40,7 @@ export default function TimeWaveformLab() {
         <ParamSlider label="잡음 표준편차 σ" value={noise} min={0} max={5} step={0.5} unit="µm" onChange={setNoise} />
         <ParamToggle label="회전 기준 마커 표시" checked={markers} onChange={setMarkers} />
       </>}
-      formulas={<Formula display tex={`T_r=\\frac{60}{N_{\\rm rpm}}=\\frac{60}{${rpm}}=${texNumber(1000 / r.fr, 4)}\\,\\mathrm{ms},\\quad \\mathrm{CF}=\\frac{x_{\\rm Peak}}{x_{\\rm RMS}}=${texNumber(r.features.crestFactor, 3)},\\quad x_{\\rm pp}=${texNumber(r.features.peakToPeak * 1e6, 3)}\\,\\mathrm{\\mu m}`} />}
+      formulas={<Formula display tex={`T_r=\\frac{60}{N_{\\rm rpm}}=\\frac{60}{${rpm}}=${texNumber(1000 / r.fr, 4)}\\,\\mathrm{ms},\\quad \\mathrm{CF}=\\frac{x_{\\rm Peak}}{x_{\\rm RMS}}=${texNumber(r.features.crestFactor, 4)},\\quad x_{\\rm pp}=${texNumber(r.features.peakToPeak * 1e6, 3)}\\,\\mathrm{\\mu m}`} />}
       readouts={<ReadoutTable rows={[
         { label: '1X', value: r.fr, unit: 'Hz' }, { label: '한 바퀴', value: 1000 / r.fr, unit: 'ms' },
         { label: 'Pk-Pk', value: r.features.peakToPeak * 1e6, unit: 'µm' },
@@ -60,7 +60,7 @@ export default function TimeWaveformLab() {
       ]}
       footer={<p>변위로 그린 설명용 신호이며 실제 결함의 운동방정식은 아닙니다. 회전당 256점, 잡음 시드 6101. 마커는 한 바퀴 한 번이며 퀴즈에서는 모델 사건 표식을 숨깁니다. 비대칭 지표는 (위쪽 절댓값 Peak − 아래쪽 절댓값 Peak) / 두 Peak 합으로 DC 이동에도 변합니다. 왜도와 평균을 함께 보세요.</p>}
     >
-      <Plot series={series} x={{ label: '시각 [ms]', range: [0, 1000 * revs / r.fr] }} y={{ label: '변위 [µm]', range: [-top * 1.15, top * 1.15] }} height={300} ariaLabel="시간파형과 회전 기준 마커" />
+      <Plot series={series} x={{ label: '시각 [ms]', range: [-0.02 * 1000 * revs / r.fr, 1000 * revs / r.fr] }} y={{ label: '변위 [µm]', range: [-top * 1.15, top * 1.15] }} height={300} ariaLabel="시간파형과 회전 기준 마커" />
       {quiz ? answer === 'unset' ? <p>주기·대칭·평탄부·울림 시작을 살펴보고 모양을 고르세요. 진단 원인을 맞히는 문제는 아닙니다.</p> : <p role="status"><strong>{answer === kind ? '맞았습니다' : '다시 살펴보세요'}</strong> — {WAVE_LABELS[kind]}: {WAVE_CLUES[kind]}</p> : <p>{WAVE_CLUES[kind]}</p>}
     </LabFrame>
   );

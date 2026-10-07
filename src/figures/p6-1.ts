@@ -35,13 +35,13 @@ export const reading: FigureSpec = {
 };
 export const envelopes: FigureSpec = {
   id: 'fig-p6-1-2',
-  caption: `그림 2. 위는 1X·1.1X의 맥놀이, 아래는 0.1X 박자로 진폭을 바꾼 AM입니다. 10바퀴=200 ms에서 크기 변화 한 주기를 봅니다. 두 신호의 RMS는 각각 ${fmt(beat.features.rms * 1e6, 3)}·${fmt(am.features.rms * 1e6, 3)} µm이지만 모양만으로 발생 원인을 확정할 수 없습니다.`,
+  caption: `그림 2. 위는 1X·1.1X의 맥놀이, 아래는 0.1X 박자로 진폭을 바꾼 AM입니다. 10바퀴=200 ms에서 크기 변화 한 주기를 봅니다. 두 신호의 RMS는 각각 ${fmt(beat.features.rms * 1e6, 3)}·${fmt(am.features.rms * 1e6, 3)} µm입니다. 맥놀이는 봉우리가 키페이저 점선에서 조금씩 밀리고 포락선이 0까지 내려가지만, AM은 봉우리가 매 바퀴 점선에 고정됩니다. 모양만으로 발생 원인을 확정할 수는 없습니다.`,
   panels: [panel('beat'), panel('am')],
 };
 export const impacts: FigureSpec = {
   id: 'fig-p6-1-3',
-  caption: `그림 3. 한 바퀴(20 ms)에 울림이 세 번 시작합니다. 주황 점은 모델이 정한 시작 시각이며 간격은 ${fmt(imp.eventInterval! * 1000, 4)} ms입니다. 울림 안의 여러 봉우리를 각각 사건으로 세지 마세요.`,
-  panels: [{ ...panel('impacts', 3), series: [...panel('impacts', 3).series, { x: imp.events.map(t => t * 1000), y: imp.events.map(() => -25), kind: 'dots', color: 'c2', label: '모델 사건 시작' }] }],
+  caption: `그림 3. 한 바퀴(20 ms)에 울림이 세 번 시작합니다. 주황 점은 모델이 정한 시작 시각이며 간격은 ${fmt(imp.eventInterval! * 1000, 4)} ms입니다. 울림 안의 여러 봉우리를 각각 사건으로 세지 마세요. 모양 비교를 위해 변위로 그렸지만, 실제 충격 울림은 가속도 파형에서 잘 보입니다.`,
+  panels: [{ ...panel('impacts', 3), y: { range: [-20, 20], label: '변위 [µm]' }, series: [...panel('impacts', 3).series, { x: imp.events.map(t => t * 1000), y: imp.events.map(() => -17), kind: 'dots', color: 'c2', label: '모델 사건 시작' }] }],
 };
 export const limits: FigureSpec = {
   id: 'fig-p6-1-4',
@@ -50,7 +50,7 @@ export const limits: FigureSpec = {
 };
 export const symmetry: FigureSpec = {
   id: 'fig-p6-1-5',
-  caption: `그림 5. 1X에 같은 위상의 2X를 0.35A 더하면 위쪽 Peak는 ${fmt(asym.features.max * 1e6, 3)} µm, 아래쪽 크기는 ${fmt(Math.abs(asym.features.min) * 1e6, 4)} µm입니다. 평균은 0인데 위아래가 다릅니다. 비대칭은 DC 이동과 구별해야 하며, 그 자체가 비선형 결함의 증명은 아닙니다.`,
+  caption: `그림 5. 1X에 같은 위상의 2X를 0.35A 더하면 위쪽 Peak는 ${fmt(asym.features.max * 1e6, 3)} µm, 아래쪽 크기는 약 ${fmt(Math.abs(asym.features.min) * 1e6, 3)} µm(2X 때문에 생긴 두 골의 바닥)입니다. 평균은 0인데 위아래가 다릅니다. 비대칭은 DC 이동과 구별해야 하며, 그 자체가 비선형 결함의 증명은 아닙니다.`,
   panels: [{ ...panel('asymmetric', 3), annotations: [...panel('asymmetric', 3).annotations!, { type: 'hline', y: 0, color: 'muted', dash: true }] }],
 };
 export const noise: FigureSpec = {
