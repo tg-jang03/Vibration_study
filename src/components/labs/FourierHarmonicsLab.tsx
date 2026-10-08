@@ -4,6 +4,7 @@ import LabFrame from '../ui/LabFrame';
 import ParamSelect, { type ParamOption } from '../ui/ParamSelect';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
+import PhasorView, { type PhasorArrow } from '../ui/PhasorView';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
@@ -12,7 +13,10 @@ import { createRng } from '../../lib/dsp/random';
 import { acquire } from '../../lib/dsp/sampling';
 import { crestFactor, peak, rms } from '../../lib/dsp/stats';
 
-/** LAB-FOU-01 (a) 하모닉 쌓기 — 신호는 정현파의 합 (P2-2, Contents §5-1) */
+/**
+ * LAB-FOU-01 (a) 하모닉 쌓기 — 신호는 정현파의 합 (P2-2, Contents §5-1).
+ * 움직이는 그림 (D-044): n차 하모닉 = 1초에 n·f₀ 바퀴 도는 화살표. 꼬리-머리로 이은 사슬 끝의 높이가 합 x(t).
+ */
 
 const F0 = 10; // Hz
 const FS = 6000; // Hz, 화면용 (15차 150 Hz까지 충분)
@@ -20,6 +24,12 @@ const PERIODS = 2;
 const N_SAMPLES = (PERIODS / F0) * FS;
 const MAX_ORDERS = 15;
 const CUSTOM_ORDERS = 5;
+const ARROW_COLORS = ['var(--plot-1)', 'var(--plot-2)', 'var(--plot-3)', 'var(--plot-4)'];
+const SPEEDS = [
+  { label: '느리게 (실제의 1/40)', rate: 1 / 40 },
+  { label: '보통 (실제의 1/20)', rate: 1 / 20 },
+  { label: '빠르게 (실제의 1/10)', rate: 1 / 10 },
+];
 
 type Mode = WavePreset | 'custom';
 const MODE_OPTIONS: ParamOption<Mode>[] = [
@@ -108,6 +118,17 @@ export default function FourierHarmonicsLab() {
       cf: crestFactor(s.x),
     };
   }, [series, showParts]);
+
+  // 0이 아닌 하모닉만 화살표로 (1차부터 차례로 이음)
+  const arrows = useMemo<PhasorArrow[]>(() => {
+    const out: PhasorArrow[] = [];
+    series.amps.forEach((amp, i) => {
+      if (amp > 1e-9) out.push({ amp, freq: (i + 1) * F0, phase: series.phases[i], color: ARROW_COLORS[out.length % 4], label: `${i + 1}차` });
+    });
+    return out;
+  }, [series]);
+  // 사슬이 옆으로 가장 길게 펴질 때(사각파 15차는 진폭 합 2.57)도 왼쪽 칸에 들어가게
+  const rMax = Math.max(2, 0.78 * series.amps.reduce((s, a) => s + a, 0));
 
   const nh = series.amps.length;
   const rmsTheory = Math.sqrt(series.amps.reduce((acc, a) => acc + (a * a) / 2, 0));
@@ -239,6 +260,18 @@ export default function FourierHarmonicsLab() {
         },
       ]}
     >
+      <PhasorView
+        arrows={arrows}
+        span={PERIODS / F0}
+        rMax={rMax}
+        speeds={SPEEDS}
+        traceLabel="사슬 끝의 높이 = 합 x(t)"
+        ariaLabel={`하모닉 ${arrows.length}개를 화살표로 이은 사슬. n차 화살표는 1초에 ${F0}·n 바퀴 돌고, 사슬 끝의 높이가 오른쪽에 합성 파형을 그린다.`}
+      />
+      <p className="anim-caption">
+        n차 하모닉은 길이 Aₙ, 1초에 n × {F0}바퀴 도는 화살표입니다. 1차 끝에 2차를, 그 끝에 3차를… 차례로 이으면 사슬 끝의 높이가 모든 성분의 합 x(t)입니다.
+        빠른 고차 화살표가 끝을 잘게 흔들어 모서리를 만듭니다. 위상을 바꾸면 각 화살표의 출발 각도만 바뀌어 사슬이 다른 모양으로 펴집니다.
+      </p>
       <Plot
         series={view.time}
         x={{ label: '시간 t [s]', range: [0, PERIODS / F0] }}

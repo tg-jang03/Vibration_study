@@ -161,8 +161,8 @@ export default function PhasorView({
         <text x={X0 + 6} y={16} fontSize="13" fill="var(--text-muted)">{traceLabel}</text>
         {ticks.map((v) => (
           <g key={v}>
-            <line x1={X0 + ((X1 - X0) * v) / span} y1={CY + R + 6} x2={X0 + ((X1 - X0) * v) / span} y2={CY + R + 11} stroke="var(--text-muted)" />
-            <text x={X0 + ((X1 - X0) * v) / span} y={H - 6} fontSize="12" textAnchor={v === 0 ? 'start' : v === span ? 'end' : 'middle'} fill="var(--text-muted)">
+            <line x1={X0 + ((X1 - X0) * v) / span} y1={CY + R + 4} x2={X0 + ((X1 - X0) * v) / span} y2={CY + R + 8} stroke="var(--text-muted)" />
+            <text x={X0 + ((X1 - X0) * v) / span} y={H - 2} fontSize="12" textAnchor={v === 0 ? 'start' : v === span ? 'end' : 'middle'} fill="var(--text-muted)">
               {`${formatNumber(v * timeUnit.scale, 3)} ${timeUnit.label}`}
             </text>
           </g>
@@ -184,9 +184,18 @@ export default function PhasorView({
         {arrows.map((a, i) => (
           <SvgArrow key={`a${i}`} x1={chain[i][0]} y1={chain[i][1]} x2={chain[i + 1][0]} y2={chain[i + 1][1]} color={a.color ?? traceColor} width={i === 0 ? 3 : 2.2} />
         ))}
-        {arrows.map((a, i) => a.label && a.amp * k > 12 && (
-          <text key={`l${i}`} x={chain[i + 1][0] + 8} y={chain[i + 1][1] - 6} fontSize="13" fill={a.color ?? traceColor}>{a.label}</text>
-        ))}
+        {arrows.map((a, i) => {
+          // 이름은 화살표 가운데에서 진행 방향의 오른쪽으로 비켜 쓴다 (짧은 화살표는 생략)
+          const len = a.amp * k;
+          if (!a.label || len < 18) return null;
+          const [x1, y1] = chain[i];
+          const [x2, y2] = chain[i + 1];
+          const nx = -(y2 - y1) / len;
+          const ny = (x2 - x1) / len;
+          return (
+            <text key={`l${i}`} x={(x1 + x2) / 2 + nx * 13} y={(y1 + y2) / 2 + ny * 13 + 4} fontSize="13" fontWeight="600" textAnchor="middle" fill={a.color ?? traceColor}>{a.label}</text>
+          );
+        })}
 
         {/* 끝 → 오른쪽 그래프의 지금 점 */}
         <path d={connector} fill="none" stroke="var(--text-muted)" strokeWidth="1.2" strokeDasharray="3 4" />
