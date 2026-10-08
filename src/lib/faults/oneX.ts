@@ -183,6 +183,15 @@ function component(p: Parts, sensor: Sensor, rpm: number, order: 1 | 2): C {
   return z;
 }
 
+/**
+ * 원판 두 개의 불평형 (움직이는 그림용, D-044): 원판 1(B1 쪽) = 정적 + 커플, 원판 2(B2 쪽) = 정적 − 커플 [m, 지연각 °].
+ * 정적이면 두 원판의 각이 같고, 커플이면 180° 반대다.
+ */
+export function diskUnbalance(o: OneXOptions): [Vector1X, Vector1X] {
+  const p = parts(o);
+  return [toVector(add(p.staticU, p.coupleU)), toVector(add(p.staticU, scale(p.coupleU, -1)))];
+}
+
 /** 센서 하나, 회전수 rpm에서 n차 벡터 */
 export function vectorAt(o: OneXOptions, sensor: Sensor, rpm: number, order: 1 | 2 = 1): Vector1X {
   return toVector(component(parts(o), sensor, rpm, order));

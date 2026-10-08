@@ -6,6 +6,7 @@ import ParamToggle from '../ui/ParamToggle';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import PolarPlot from '../ui/PolarPlot';
 import ReadoutTable from '../ui/ReadoutTable';
+import OneXRotor from './OneXRotor';
 import { formatNumber } from '../../lib/format';
 import { CAUSE_LABEL, ONEX_CAUSES, oneXReadouts, orbit1X, QUIZ_CASES, ROTOR_1X, sweep, type OneXCause, type OneXOptions, type Sensor } from '../../lib/faults/oneX';
 
@@ -112,6 +113,8 @@ export default function OneXLab({ initial = {} }: { initial?: Partial<OneXState>
       footer={<p>설명용 모델입니다: 베어링 두 개로 받친 대칭 강성 로터(병진 모드 수평 {R.trans.H} · 수직 {R.trans.V} rpm, 원추 모드 {R.conic.H} · {R.conic.V} rpm)를 {R.opRpm} rpm에서 세우며(코스트다운) 1X·2X 벡터를 25 rpm마다 기록합니다. 크기는 판정 기준이 아닙니다. 실제 기계는 원인이 섞이므로 한 숫자로 정하지 않고 여러 증거를 함께 봅니다.</p>}
     >
       {quiz && p.answer && cause !== 'healthy' && <p className="lab-note"><strong>{CAUSE_LABEL[cause]}</strong> — {WHY[cause]}</p>}
+      <h4>로터를 옆에서 보면: {R.opRpm} rpm에서 축이 어떻게 흔들리나</h4>
+      <OneXRotor o={o} reveal={!quiz || p.answer} />
       <h4>코스트다운 Bode — 1X {p.compensate ? '(slow roll 보상 뒤)' : ''}</h4>
       <Plot series={ampSeries} x={{ label: '회전수 [rpm]', range: [0, R.opRpm] }} y={{ label: '1X [µm p-p]', range: [0, aMax] }} height={210} ariaLabel="1X 진폭 대 회전수" />
       <Plot series={lagSeries} x={{ label: '회전수 [rpm]', range: [0, R.opRpm] }} y={{ label: '위상 지연 [°]', range: [0, 360] }} height={170} ariaLabel="1X 위상 대 회전수" />

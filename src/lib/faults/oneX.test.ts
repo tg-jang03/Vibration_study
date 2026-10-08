@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { unbalanceVector } from '../rotor/runup';
-import { CAUSE_LABEL, crackTrend, lagDiff, ONEX_CAUSES, oneXReadouts, orbit1X, QUIZ_CASES, ROTOR_1X, SENSORS, sweep, vectorAt, type OneXOptions, type Sensor } from './oneX';
+import { CAUSE_LABEL, crackTrend, diskUnbalance, lagDiff, ONEX_CAUSES, oneXReadouts, orbit1X, QUIZ_CASES, ROTOR_1X, SENSORS, sweep, vectorAt, type OneXOptions, type Sensor } from './oneX';
 
 const R = ROTOR_1X;
 const healthy: OneXOptions = { cause: 'healthy', severity: 0 };
@@ -106,5 +106,21 @@ describe('lib/faults/oneX — 1X 계열 설명용 로터 (P7-2)', () => {
         expect(vectorAt({ cause, severity: 0 }, s, 3000).amp).toBeCloseTo(vectorAt(healthy, s, 3000).amp, 15);
       }
     expect(vectorAt({ cause: 'resonance', severity: 0 }, 'B1H', 3000).amp).toBeGreaterThan(3 * vectorAt(healthy, 'B1H', 3000).amp);
+  });
+});
+
+describe('diskUnbalance — 원판 두 개의 불평형 (LAB-1X-01 움직이는 그림)', () => {
+  it('정적: 두 원판이 같은 각, 커플: 180° 반대, 동적: 그 사이. 두 베어링 수직 1X의 위상차도 같은 경향', () => {
+    const [s1, s2] = diskUnbalance({ cause: 'static', severity: 1 });
+    const [c1, c2] = diskUnbalance({ cause: 'couple', severity: 1 });
+    const [d1, d2] = diskUnbalance({ cause: 'dynamic', severity: 1 });
+    expect(Math.abs(lagDiff(s1.lagDeg, s2.lagDeg))).toBeLessThan(5);
+    expect(Math.abs(lagDiff(c1.lagDeg, c2.lagDeg))).toBeGreaterThan(170);
+    const dd = Math.abs(lagDiff(d1.lagDeg, d2.lagDeg));
+    expect(dd).toBeGreaterThan(20);
+    expect(dd).toBeLessThan(160);
+    const ph = (cause: OneXOptions['cause']) => Math.abs(lagDiff(vectorAt({ cause, severity: 0.6 }, 'B1V', 3000).lagDeg, vectorAt({ cause, severity: 0.6 }, 'B2V', 3000).lagDeg));
+    expect(ph('static')).toBeLessThan(10);
+    expect(ph('couple')).toBeGreaterThan(150);
   });
 });

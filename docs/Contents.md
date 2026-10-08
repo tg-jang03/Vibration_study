@@ -388,7 +388,7 @@
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
-| LAB-1X-01 | 1X 감별: 1X가 크면 무엇일까 (원인 8종·숨은 케이스 7개, 코스트다운 Bode·2X·두 베어링 벡터·오빗) | P7-2 | `OneXLab` (/lab/1x-01/) · lib/faults/oneX.ts |
+| LAB-1X-01 | 1X 감별: 1X가 크면 무엇일까 (원인 8종·숨은 케이스 7개, 코스트다운 Bode·2X·두 베어링 벡터·오빗) + 옆에서 본 로터(원통형·원추형, D-044) | P7-2 | `OneXLab` (/lab/1x-01/) · `OneXRotor` · lib/faults/oneX.ts (diskUnbalance) |
 | LAB-NL-01 | 비선형의 지문: 미스얼라인 · 풀림 · 러브 (시간 적분 Jeffcott, 오빗·파형·Full spectrum) | P7-3 | `NonlinearLab` (/lab/nl-01/) · lib/faults/contact.ts |
 | LAB-SUB-01 | 1X 아래 성분 감별 (원인 6종·숨은 케이스 7개, 런업 캐스케이드·Full spectrum·키페이저 점·운전조건 시험) | P7-4 | `SubsyncLab` (/lab/sub-01/) · lib/faults/subsync.ts |
 | LAB-BRG-01 | 베어링 결함 주파수 계산기 (접촉각·미끄럼·BSF 1배/2배) | P7-5 | `BearingCalcLab` (/lab/brg-01/) · lib/machine/frequencies.ts, lib/faults/bearing.ts |
