@@ -4,10 +4,12 @@ import LabFrame from '../ui/LabFrame';
 import ParamSelect from '../ui/ParamSelect';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
+import PhasorView, { type PhasorArrow } from '../ui/PhasorView';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable, { type Readout } from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
 import { beatEnvelope, besselJ, modulationLines } from '../../lib/dsp/modulation';
+import { phasorChain } from '../../lib/dsp/phasor';
 import { evaluateRange, type SignalComponent } from '../../lib/dsp/signal';
 import { BEAT_EXAMPLE, GEAR_EXAMPLE, MOD_AMP, modSpectrum, peakNear, relDb } from '../../lib/modulationDemo';
 
@@ -15,7 +17,13 @@ import { BEAT_EXAMPLE, GEAR_EXAMPLE, MOD_AMP, modSpectrum, peakNear, relDb } fro
  * LAB-MOD-01 변조 · 측대역 · 맥놀이 (P2-8, Contents §5-1).
  * 반송파의 크기(AM)·주파수(FM)를 변조 주파수로 흔들거나, 가까운 두 주파수를 더해(맥놀이) 파형·포락선과 스펙트럼을 함께 본다.
  * 본문 그림과 같은 신호 정의(src/lib/modulationDemo.ts, signal.ts의 'modulated').
+ * 움직이는 그림 (D-044): 스펙트럼의 선 하나 = 도는 화살표 하나. 반송파와 같이 도는 틀에서 보면 반송파는 멈추고
+ * 측대역 화살표가 그 끝에서 ±f_m으로 돈다 — 합의 길이 = 포락선. 맥놀이는 f₂ 화살표가 f₁ 끝에서 (f₂ − f₁)로 돈다.
  */
+
+/** 재생 배율 이름: 1보다 작으면 "실제의 1/N" */
+const rateLabel = (rate: number) =>
+  Math.abs(rate - 1) < 1e-9 ? '실제 속도' : rate < 1 ? `실제의 1/${formatNumber(1 / rate, 3)}` : `실제의 ${formatNumber(rate, 3)}배`;
 
 type Mode = 'am' | 'fm' | 'amfm' | 'beat';
 const MODES: { value: Mode; label: string }[] = [
@@ -52,6 +60,7 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
   const [seconds, setSeconds] = useState(8);
   const [db, setDb] = useState(false);
   const [preset, setPreset] = useState<Preset>('none');
+  const [rotating, setRotating] = useState(true);
 
   const applyPreset = (p: Preset) => {
     setPreset(p);
@@ -99,6 +108,46 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
   }, [components, seconds, beat, gap, fm, ratio, f1, f2, mEff, psi, fc, useFm, betaEff]);
 
   const lines = useMemo(() => (beat ? [] : modulationLines(mEff, betaEff, psi, 8)), [beat, mEff, betaEff, psi]);
+
+  // 도는 화살표: 반송파(파랑) → +1, −1, +2, −2 … 측대역(위 = 주황, 아래 = 초록). 맥놀이는 f₁·f₂ 두 개
+  const arrows = useMemo<PhasorArrow[]>(() => {
+    if (beat) {
+      return [
+        { amp: 1, freq: f1, phase: 0, color: 'var(--plot-1)', label: 'f₁' },
+        { amp: ratio, freq: f2, phase: 0, color: 'var(--plot-2)', label: 'f₂' },
+      ];
+    }
+    return modulationLines(mEff, betaEff, psi, 12)
+      .filter((l) => l.ratio > 0.005)
+      .sort((a, b) => Math.abs(a.n) - Math.abs(b.n) || b.n - a.n)
+      .map((l) => ({
+        amp: l.ratio,
+        freq: fc + l.n * fm,
+        phase: Math.atan2(l.im, l.re),
+        color: l.n === 0 ? 'var(--plot-1)' : l.n > 0 ? 'var(--plot-2)' : 'var(--plot-3)',
+        label: l.n === 0 ? '반송파' : l.n > 0 ? `+${l.n}` : `−${-l.n}`,
+      }));
+  }, [beat, f1, f2, ratio, mEff, betaEff, psi, fc, fm]);
+  const fMod = beat ? gap : fm; // 포락선·측대역이 도는 빠르기
+  const fFast = beat ? f1 : fc;
+  const anim = useMemo(() => {
+    const span = rotating ? 2 / fMod : Math.min(1 / fMod, 60 / fFast);
+    const base = rotating ? 1 / fMod : 1 / fFast; // 같이 도는 틀: 측대역 1바퀴 / 제자리: 반송파 1바퀴 = 실제 1초
+    const speeds = (rotating ? [0.25, 0.5, 1] : [0.5, 1, 2]).map((k) => ({ rate: k * base, label: '' }));
+    speeds.forEach((s, i) => (s.label = `${['느리게', '보통', '빠르게'][i]} (${rateLabel(s.rate)})`));
+    return { span, speeds };
+  }, [rotating, fMod, fFast]);
+  const rMax = useMemo(() => {
+    if (!rotating) return Math.max(2.2, 0.75 * arrows.reduce((s, a) => s + a.amp, 0));
+    // 같이 도는 틀(원점이 아래): 한 변조 주기 동안 사슬이 닿는 범위를 재서 위 172 px · 옆 125 px · 아래 28 px에 맞춘다
+    let fit = 1.6;
+    for (let i = 0; i < 240; i++) {
+      for (const p of phasorChain(arrows, i / 240 / fMod, fFast)) {
+        fit = Math.max(fit, p.re, (Math.abs(p.im) * 172) / 125, (-p.re * 172) / 28);
+      }
+    }
+    return fit * 1.04;
+  }, [rotating, arrows, fMod, fFast]);
   const yOf = (v: number) => (db ? relDb(v, 1) : clean(v));
   const carrier = beat ? peakNear(data.spec, f1) : peakNear(data.spec, fc);
   const upper = beat ? peakNear(data.spec, f2) : peakNear(data.spec, fc + fm);
@@ -179,6 +228,36 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
       ]}
       footer={<p>f_s = 1024 Hz, 반송파(맥놀이는 f₁)의 크기 1 mm/s Peak. 스펙트럼은 Hann 윈도우 한 프레임입니다. 주파수가 Δf = 1/T의 배수가 아니면 막대가 가리비 손실(P2-5)만큼 낮게 읽힙니다.</p>}
     >
+      <h4>도는 화살표로 보기</h4>
+      <PhasorView
+        arrows={arrows}
+        span={anim.span}
+        rMax={rMax}
+        speeds={anim.speeds}
+        frameFreq={rotating ? fFast : 0}
+        trace={rotating ? 'length' : 'signal'}
+        envelope={!rotating}
+        layout={rotating ? 'upper' : 'center'}
+        traceLabel={rotating ? '화살표 합의 길이 = 포락선' : '사슬 끝의 높이 = 파형 (점선: 포락선)'}
+        ariaLabel={beat
+          ? `길이 1과 ${ratio}인 두 화살표가 1초에 ${f1}바퀴와 ${f2}바퀴 돈다. 합의 길이가 ${formatNumber(1 + ratio, 3)}와 ${formatNumber(Math.abs(1 - ratio), 3)} 사이를 오간다.`
+          : `반송파 화살표와 측대역 화살표 ${arrows.length - 1}개를 이은 사슬. 측대역은 반송파 끝에서 1초에 ${fm}바퀴의 정수배로 돈다.`}
+      >
+        <ParamToggle label={`${beat ? 'f₁' : '반송파'}와 같이 돌며 보기`} checked={rotating} onChange={setRotating} />
+      </PhasorView>
+      <p className="anim-caption">
+        {rotating
+          ? beat
+            ? `f₁ 화살표(파랑)가 멈춰 보이도록 f₁과 같은 빠르기로 돌며 봅니다. f₂ 화살표(주황)는 ${formatNumber(gap, 3)} Hz 느려서 f₁ 끝에서 1초에 ${formatNumber(gap, 3)}바퀴씩 거꾸로 돕니다. 같은 쪽을 가리키면 합이 가장 길고(1 + ${formatNumber(ratio, 2)}), 반대쪽이면 가장 짧습니다(∣1 − ${formatNumber(ratio, 2)}∣) — 이 길이가 포락선입니다.`
+            : `반송파 화살표(파랑)가 멈춰 보이도록 반송파와 같은 빠르기로 돌며 봅니다. 위 측대역(주황, +n)은 반시계로, 아래 측대역(초록, −n)은 시계로 반송파 끝에서 1초에 n × ${formatNumber(fm, 3)}바퀴 돕니다. ${
+              mode === 'am'
+                ? '두 측대역의 합은 늘 반송파와 같은 방향(위·아래)이라 길이만 1 − m ~ 1 + m로 바뀝니다 — 이것이 포락선입니다.'
+                : mode === 'fm'
+                  ? '측대역들의 합이 사슬 끝을 반지름 1인 원호를 따라 좌우로 밀어, 길이는 그대로 1이고 방향만 흔들립니다. 방향이 흔들린다 = 도는 빠르기(주파수)가 흔들린다는 뜻입니다.'
+                  : '이번에는 측대역 합이 반송파 방향과 비스듬해서 길이(크기)와 방향(주파수)이 함께 흔들립니다. 위상차를 바꾸면 위·아래 측대역의 길이가 달라집니다.'
+            }`
+          : `실제처럼 모든 화살표가 반시계로 돕니다. 사슬 끝의 높이가 파형이고, 점선은 화살표 합의 길이(포락선)입니다. 반송파가 빨라 화면은 아주 느리게 재생합니다.`}
+      </p>
       <h4>파형과 포락선</h4>
       <Plot series={waveSeries} x={{ label: '시간 [s]', range: [0, data.tShow] }} y={{ label: '[mm/s]' }} height={240} ariaLabel="파형과 포락선" />
       <h4>스펙트럼</h4>

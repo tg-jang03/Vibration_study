@@ -350,7 +350,7 @@
 | LAB-SPC-01 | 스펙트럼의 세로축: 진폭 · 파워 · PSD | P2-7 §3 | `SpectrumScalingLab` (/lab/spc-01/) · lib/dsp/scaling.ts, lib/scalingDemo.ts |
 | LAB-SPC-02 | 진폭 표기와 dB | P2-7 §5 | `AmplitudeScaleLab` (/lab/spc-02/) |
 | LAB-UNIT-01 | 진동 단위 환산기 | P2-7 §6 | `UnitConverterLab` (/lab/unit-01/) · lib/units.ts |
-| LAB-MOD-01 | 변조 · 측대역 · 맥놀이 | P2-8 §2 | `ModulationLab` (/lab/mod-01/) · lib/dsp/modulation.ts, lib/modulationDemo.ts |
+| LAB-MOD-01 | 변조 · 측대역 · 맥놀이 + 도는 화살표(반송파와 같이 도는 틀: 합의 길이 = 포락선, D-044) | P2-8 §2 | `ModulationLab` (/lab/mod-01/) · lib/dsp/modulation.ts (modulationLines 복소 계수), lib/modulationDemo.ts |
 | LAB-SBX-01 | Signal Lab 샌드박스 + 설정 도우미 | P2-9 §6 | `SandboxLab` (/lab/sbx-01/) · lib/sandbox.ts |
 | LAB-SNS-01 | 센서 = 질량-스프링 계 | P3-1 §3· | `SensorLab` (/lab/sns-01/) · lib/sensor.ts |
 | LAB-PROX-01 | 비접촉 변위 센서: gap 전압과 런아웃 | P3-2 §3· | `ProximityLab` (/lab/prox-01/) · lib/proximity.ts |

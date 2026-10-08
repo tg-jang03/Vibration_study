@@ -31,6 +31,8 @@ interface PhasorViewProps {
   frameFreq?: number;
   /** 오른쪽에 그릴 값: 끝의 높이 = 신호(기본) 또는 화살표 합의 길이 = 포락선 */
   trace?: 'signal' | 'length';
+  /** 화면 배치 (기본 center). upper는 원점을 아래에 두어 0 이상인 값(길이)을 크게 본다 */
+  layout?: keyof typeof LAYOUTS;
   /** 신호 그래프에 ± 길이(포락선) 점선을 함께 */
   envelope?: boolean;
   /** 각 화살표 끝이 지나는 원 (기본 켬) */
@@ -48,14 +50,16 @@ interface PhasorViewProps {
 const W = 720;
 const H = 250;
 const CX = 135;
-const CY = 125;
-const R = 100;
+/** 원점 자리와 rMax의 화면 길이: center = 위아래 대칭(신호), upper = 원점을 아래에 두고 위로 크게(길이·포락선처럼 0 이상인 값) */
+const LAYOUTS = { center: { cy: 125, r: 100 }, upper: { cy: 200, r: 172 } } as const;
+const TOP = 22;
+const AXIS_Y = 229;
 const X0 = 290;
 const X1 = W - 14;
 const MAX_POINTS = 4000;
 
 /** 복소 평면 (re = 신호 축) → 화면: re는 위, im은 왼쪽 (반시계 회전이 화면에서도 반시계) */
-const toScreen = (re: number, im: number, k: number): [number, number] => [CX - im * k, CY - re * k];
+const toScreen = (re: number, im: number, k: number, cy: number): [number, number] => [CX - im * k, cy - re * k];
 
 /** 화살표 한 개 (선 + 머리). 공용: 스트로브 원판·오빗 그림도 같은 모양을 쓴다 */
 export function SvgArrow({ x1, y1, x2, y2, color, width = 2.6, dash, opacity }: { x1: number; y1: number; x2: number; y2: number; color: string; width?: number; dash?: string; opacity?: number }) {
@@ -90,6 +94,7 @@ export default function PhasorView({
   frameFreq = 0,
   trace = 'signal',
   envelope = false,
+  layout = 'center',
   circles = true,
   traceColor = 'var(--plot-1)',
   traceLabel,
@@ -100,6 +105,7 @@ export default function PhasorView({
   const box = useRef<HTMLDivElement>(null);
   const [speed, setSpeed] = useState(Math.min(defaultSpeed, speeds.length - 1));
   const clock = usePlayClock(speeds[speed]?.rate ?? speeds[0].rate, span, box);
+  const { cy: CY, r: R } = LAYOUTS[layout];
   const k = R / rMax;
   const tm = clock.t % span;
 
@@ -122,11 +128,11 @@ export default function PhasorView({
     const path = (ys: number[], upto = ys.length) =>
       ys.slice(0, upto).map((y, i) => `${i === 0 ? 'M' : 'L'}${xs[i].toFixed(1)},${(CY - y * k).toFixed(1)}`).join('');
     return { n, main, path, full: path(main), env: envelope ? [path(env), path(env.map((v) => -v))] : null, gh };
-  }, [arrows, ghost, span, trace, envelope, k]);
+  }, [arrows, ghost, span, trace, envelope, k, CY]);
 
   const upto = Math.max(1, Math.floor((tm / span) * (curves.n - 1)) + 1);
-  const chain = phasorChain(arrows, tm, frameFreq).map((p) => toScreen(p.re, p.im, k));
-  const ghostChain = ghost ? phasorChain(ghost, tm, frameFreq).map((p) => toScreen(p.re, p.im, k)) : null;
+  const chain = phasorChain(arrows, tm, frameFreq).map((p) => toScreen(p.re, p.im, k, CY));
+  const ghostChain = ghost ? phasorChain(ghost, tm, frameFreq).map((p) => toScreen(p.re, p.im, k, CY)) : null;
   const [tx, ty] = chain[chain.length - 1];
   const value = trace === 'signal' ? phasorSignal(arrows, tm) : phasorLength(arrows, tm);
   const cursorX = X0 + (X1 - X0) * (tm / span);
@@ -153,15 +159,15 @@ export default function PhasorView({
       </PlayControls>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={ariaLabel} style={{ display: 'block' }}>
         {/* 축: 위 = 신호 축(0°), 가로 = 0 */}
-        <line x1={CX} y1={CY - R - 14} x2={CX} y2={CY + R + 14} stroke="var(--border)" strokeDasharray="4 4" />
-        <line x1={CX - R - 14} y1={CY} x2={X1} y2={CY} stroke="var(--border)" />
+        <line x1={CX} y1={TOP - 4} x2={CX} y2={AXIS_Y} stroke="var(--border)" strokeDasharray="4 4" />
+        <line x1={CX - 120} y1={CY} x2={X1} y2={CY} stroke="var(--border)" />
         <text x={CX + 6} y={14} fontSize="13" fill="var(--text-muted)">0°</text>
         <text x={6} y={16} fontSize="13" fill="var(--text-muted)">회전 ↺</text>
-        <line x1={X0} y1={CY - R - 10} x2={X0} y2={CY + R + 6} stroke="var(--border)" />
+        <line x1={X0} y1={TOP} x2={X0} y2={AXIS_Y + 2} stroke="var(--border)" />
         <text x={X0 + 6} y={16} fontSize="13" fill="var(--text-muted)">{traceLabel}</text>
         {ticks.map((v) => (
           <g key={v}>
-            <line x1={X0 + ((X1 - X0) * v) / span} y1={CY + R + 4} x2={X0 + ((X1 - X0) * v) / span} y2={CY + R + 8} stroke="var(--text-muted)" />
+            <line x1={X0 + ((X1 - X0) * v) / span} y1={AXIS_Y} x2={X0 + ((X1 - X0) * v) / span} y2={AXIS_Y + 4} stroke="var(--text-muted)" />
             <text x={X0 + ((X1 - X0) * v) / span} y={H - 2} fontSize="12" textAnchor={v === 0 ? 'start' : v === span ? 'end' : 'middle'} fill="var(--text-muted)">
               {`${formatNumber(v * timeUnit.scale, 3)} ${timeUnit.label}`}
             </text>
@@ -178,7 +184,7 @@ export default function PhasorView({
         {ghostChain && ghostChain.slice(1).map(([x, y], i) => (
           <SvgArrow key={`g${i}`} x1={ghostChain[i][0]} y1={ghostChain[i][1]} x2={x} y2={y} color="var(--text-muted)" width={1.6} dash="5 4" />
         ))}
-        {circles && arrows.map((a, i) => a.amp * k > 1.5 && (
+        {circles && arrows.map((a, i) => a.amp * k > 1.5 && Math.abs(a.freq - frameFreq) > 1e-9 && (
           <circle key={`c${i}`} cx={chain[i][0]} cy={chain[i][1]} r={a.amp * k} fill="none" stroke={a.color ?? traceColor} strokeWidth="1" opacity="0.35" />
         ))}
         {arrows.map((a, i) => (
@@ -199,7 +205,7 @@ export default function PhasorView({
 
         {/* 끝 → 오른쪽 그래프의 지금 점 */}
         <path d={connector} fill="none" stroke="var(--text-muted)" strokeWidth="1.2" strokeDasharray="3 4" />
-        <line x1={cursorX} y1={CY - R - 10} x2={cursorX} y2={CY + R + 6} stroke="var(--text-muted)" strokeWidth="1" opacity="0.5" />
+        <line x1={cursorX} y1={TOP} x2={cursorX} y2={AXIS_Y + 2} stroke="var(--text-muted)" strokeWidth="1" opacity="0.5" />
         <circle cx={tx} cy={ty} r={5} fill={traceColor} />
         <circle cx={cursorX} cy={valueY} r={5} fill={traceColor} />
       </svg>
