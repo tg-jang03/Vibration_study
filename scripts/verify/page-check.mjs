@@ -33,6 +33,7 @@ const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
 const steamSmoke = flag('steam-smoke');
 const forcedSmoke = flag('forced-smoke');
+const dampingSmoke = flag('damping-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
@@ -262,6 +263,50 @@ for (const p of paths) {
     if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
   }
+  if (dampingSmoke) {
+    const smoke = await ev(`(async()=>{
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-DAMP-01');
+      if(!labs.length)return {skipped:true};
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;},wait=(ms=250)=>new Promise(r=>setTimeout(r,ms));
+      try{for(const lab of labs){
+        const panel=()=>lab.querySelector('.anim-panel'),t=()=>Number(panel().dataset.dampTime),x=()=>Number(panel().dataset.dampX);
+        const sliders=()=>lab.querySelectorAll('input[type="range"]');
+        const set=async(i,v)=>{if(i===3){sliders()[i].dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));await wait(70);}const el=sliders()[i];Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const press=async label=>{const b=[...panel().querySelectorAll('button')].find(b=>b.textContent.trim()===label);if(!b||b.disabled)throw Error('조작 불가 '+label);b.click();await wait();};
+        const speed=async i=>{const s=panel().querySelector('select');s.value=String(i);s.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const read=label=>{const r=[...panel().querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return parseFloat(r.cells[1].textContent.replaceAll(',','').replaceAll('−','-'));};
+        const left=()=>Number(panel().querySelector('[data-damp-mass]').getAttribute('x'));
+        const sync=()=>{const p=panel().querySelector('[data-damp-point]'),q=panel().querySelector('[data-damp-trace]');const last=q.getAttribute('d').match(/L([^, ]+),([^ ]+)$/);require(Math.abs(left()-(308+x()*2.9))<1e-7&&Math.abs(Number(panel().querySelector('[data-damp-piston]').getAttribute('x1'))-(left()+42-187))<1e-7,'질량·피스톤 동일 변위');require(Math.abs(Number(p.getAttribute('cx'))-(58+t()*220))<1e-7&&Math.abs(Number(last[1])-Number(p.getAttribute('cx')))<1e-7&&Math.abs(Number(last[2])-Number(p.getAttribute('cy')))<1e-7&&Math.abs(read('현재 변위 x')-x())<.006,'파형 끝·현재 점·읽음 동기');};
+        panel().scrollIntoView({block:'center'});await wait();
+        require(t()===0&&x()===10&&read('현재 속도 v')===0&&read('감쇠력 −cv')===0,'초기 정지');sync();
+        await press('다음 양의 피크');require(Math.abs(t()-.20025046972870356)<1e-10&&Math.abs(x()-7.301153801794058)<1e-8&&read('현재 속도 v')===0,'한 왕복 뒤 해석적 피크');sync();
+        await press('다음 양의 피크');require(Math.abs(x()-5.330684764769752)<.00001,'두 왕복 감소');
+        await press('처음으로');require(t()===0&&x()===10,'처음으로 정지');
+        await set(3,.05);require(read('현재 속도 v')<0&&read('감쇠력 −cv')>0,'감쇠력은 속도 반대');sync();
+        const toggles=lab.querySelectorAll('input[type="checkbox"]');toggles[0].click();toggles[1].click();await wait();require(panel().querySelectorAll('[data-damp-peak]').length===0&&lab.querySelector('.js-plotly-plot').data.length===2,'포락선·피크 끄기');toggles[0].click();toggles[1].click();await wait();
+        await set(0,.2);require(t()===0&&x()===10,'감쇠 변경은 정지·초기화');await press('다음 양의 피크');require(Math.abs(t()-.20412414523193154)<1e-10&&Math.abs(x()-2.7732925563900745)<1e-8,'감쇠 증가 피크');
+        await set(0,0);await set(3,.05);require(x()===0&&read('감쇠력 −cv')===0,'무감쇠 영점');await set(3,.2);require(Math.abs(x()-10)<1e-8,'무감쇠 왕복 유지');
+        await set(2,20);require(t()===0&&left()===366,'변위 두 배는 고정 축척에서 두 배');await set(2,10);
+        await set(0,.05);await set(1,10);await press('다음 양의 피크');require(Math.abs(t()-.10012523486435178)<1e-10&&Math.abs(x()-7.301153801794058)<1e-8,'주파수 두 배·감소 비 동일');await set(1,5);
+        for(const z of [1,1.5]){await set(0,z);require([...panel().querySelectorAll('button')].find(b=>b.textContent==='다음 양의 피크').disabled&&[...lab.querySelectorAll('input[type="checkbox"]')].every(c=>c.disabled),'임계/과감쇠 반복 피크 없음');await set(3,.1);require(x()>0&&x()<10&&read('현재 속도 v')<0,'임계/과감쇠 같은 쪽 복귀');sync();}
+        await set(0,.05);await set(1,1);await set(0,.99);require([...panel().querySelectorAll('button')].find(b=>b.textContent==='다음 양의 피크').disabled,'2초 밖 다음 피크 비활성');await set(1,5);await set(0,.05);
+        panel().scrollIntoView({block:'center'});await wait();
+        const gd=lab.querySelector('.js-plotly-plot');let redraws=0;const onPlot=()=>redraws++;gd.on('plotly_afterplot',onPlot);
+        await press('재생');require(t()>0&&x()!==10,'재생 진행');await press('멈춤');const held=t();await wait(350);require(t()===held,'멈춤 유지');sync();
+        await press('재생');await speed(3);await wait(300);require(t()>held+.3,'재개·속도 변경');await press('멈춤');require(redraws===0,'전체 Plot은 재생 중 갱신 없음');gd.removeListener('plotly_afterplot',onPlot);
+        await set(3,1.98);await press('재생');require(t()===2&&panel().querySelector('.anim-button').getAttribute('aria-pressed')==='false','2초 끝 자동 정지');sync();
+        await press('재생');require(t()>0&&t()<1,'끝에서 재시작');await set(3,.25);require(t()===.25&&panel().querySelector('.anim-button').getAttribute('aria-pressed')==='false','탐색은 정지 t='+t()+' 재생='+panel().querySelector('.anim-button').getAttribute('aria-pressed'));
+        for(let i=0;i<8;i++){await press('재생');const target=.3+i*.05;await set(3,target);require(Math.abs(t()-target)<1e-10&&panel().querySelector('.anim-button').getAttribute('aria-pressed')==='false','재생 중 탐색 반복 '+i+' t='+t());}
+        await press('재생');await set(0,.2);require(t()===0&&panel().querySelector('.anim-button').getAttribute('aria-pressed')==='false','재생 중 조건 변경 초기화');
+        panel().scrollIntoView({block:'center'});await wait();await press('재생');window.scrollTo(0,document.documentElement.scrollHeight);await wait(400);require(panel().querySelector('.anim-button').getAttribute('aria-pressed')==='false','화면 밖 자동 멈춤');
+        await set(0,.05);await press('처음으로');await speed(1);require([...panel().querySelectorAll('svg path')].every(p=>!/(NaN|Infinity)/.test(p.getAttribute('d'))),'SVG 유한');
+      }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('감쇠 재생 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     감쇠 재생 '+smoke.checks+'항목 OK (동기화·피크·4감쇠·재생·탐색·Plot 유지)');
+  }
+
+
   if (forcedSmoke) {
     const smoke=await ev(`(async()=>{
       const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-FRC-01');

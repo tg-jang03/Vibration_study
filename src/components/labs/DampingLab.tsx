@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import Formula from '../ui/Formula';
+import DampingMotion from './DampingMotion';
 import LabFrame from '../ui/LabFrame';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
@@ -34,7 +35,8 @@ export default function DampingLab() {
   const underdamped = properties.omegaD !== null;
   const alpha = zeta * omegaN;
   const phaseAmplitude = underdamped ? x0 / Math.sqrt(1 - zeta ** 2) : Number.NaN;
-  const envelope = underdamped ? time.map((t) => 1000 * phaseAmplitude * Math.exp(-alpha * t)) : [];
+  const envelope = useMemo(() => underdamped ? time.map((t) => 1000 * phaseAmplitude * Math.exp(-alpha * t)) : [], [underdamped, time, phaseAmplitude, alpha]);
+  const displacement = useMemo(() => response.map(state => clean(1000 * state.x)), [response]);
 
   const peakData = useMemo(() => {
     const omegaD = properties.omegaD;
@@ -64,16 +66,16 @@ export default function DampingLab() {
         : '과감쇠: 진동 없이 천천히 복귀';
 
   const series = useMemo<PlotSeries[]>(() => [
-    { x: time, y: response.map((state) => clean(1000 * state.x)), name: '변위 x(t)', color: '#2563eb', width: 2.4 },
+    { x: time, y: displacement, name: '변위 x(t)', color: 'var(--plot-1)', width: 2.4 },
     { x: [0, DURATION], y: [0, 0], name: '평형 위치', color: '#94a3b8', dash: 'dash', width: 1.2 },
     ...(showEnvelope && underdamped ? [
-      { x: time, y: envelope, name: '위쪽 포락선', color: '#64748b', dash: 'dash' as const, width: 1.4 },
-      { x: time, y: envelope.map((value) => -value), name: '아래쪽 포락선', color: '#64748b', dash: 'dash' as const, width: 1.4, hideInLegend: true },
+      { x: time, y: envelope, name: '위쪽 포락선', color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4 },
+      { x: time, y: envelope.map((value) => -value), name: '아래쪽 포락선', color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4, hideInLegend: true },
     ] : []),
     ...(showPeaks && underdamped ? [
-      { x: peakData.t, y: peakData.x, name: '같은 방향의 피크', color: '#d97706', mode: 'markers' as const, markerSize: 8 },
+      { x: peakData.t, y: peakData.x, name: '같은 방향의 피크', color: 'var(--plot-2)', mode: 'markers' as const, markerSize: 8 },
     ] : []),
-  ], [envelope, peakData, response, showEnvelope, showPeaks, time, underdamped]);
+  ], [envelope, peakData, displacement, showEnvelope, showPeaks, time, underdamped]);
 
   const yLimit = underdamped && showEnvelope
     ? Math.max(x0Mm, phaseAmplitude * 1000) * 1.12
@@ -108,7 +110,7 @@ export default function DampingLab() {
       }
       readouts={
         <ReadoutTable
-          caption="감쇠가 바꾸는 박자와 줄어드는 속도"
+          caption="전체 2초 파형에서 읽은 박자와 줄어드는 속도"
           rows={[
             { label: '감쇠 주파수비 ωd/ωₙ', value: frequencyRatio, sig: 5 },
             { label: '다음/이전 양의 피크 (파형)', value: measuredPeakRatio, theory: underdamped ? Math.exp(-logDecrement) : undefined, sig: 4 },
@@ -138,6 +140,8 @@ export default function DampingLab() {
       ]}
       footer="m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. 피크 비·δ는 그려진 파형의 첫 두 양의 피크에서 재고, 이론은 δ = 2πζ/√(1−ζ²)입니다. ζ ≥ 1이거나 2초 안에 같은 방향 피크가 둘 없으면 읽음값을 —로 표시합니다."
     >
+      <DampingMotion key={`${zeta}:${frequencyHz}:${x0Mm}`} system={system} x0Mm={x0Mm} time={time} displacement={displacement} envelope={envelope} peaks={peakData} yLimit={yLimit} showEnvelope={showEnvelope && underdamped} showPeaks={showPeaks && underdamped} />
+      <p className="lab-note">아래는 전체 2초 파형입니다. 피크 비·대수감쇠율은 재생 시각과 관계없이 이 전체 구간의 첫 두 양의 피크에서 계산합니다.</p>
       <Plot
         series={series}
         x={{ label: '시간 t [s]', range: [0, DURATION] }}
