@@ -31,6 +31,7 @@ const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
 const steamSmoke = flag('steam-smoke');
+const forcedSmoke = flag('forced-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
@@ -259,6 +260,48 @@ for (const p of paths) {
     if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
   }
+  if (forcedSmoke) {
+    const smoke=await ev(`(async()=>{
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-FRC-01');
+      if(!labs.length)return {skipped:true};
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;};const wait=(ms=280)=>new Promise(r=>setTimeout(r,ms));
+      try{for(const lab of labs){
+        const sliders=lab.querySelectorAll('input[type="range"]'),selects=lab.querySelectorAll('select'),toggle=lab.querySelector('input[type="checkbox"]');
+        const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const choose=async(i,v)=>{selects[i].value=String(v);selects[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const press=async label=>{const b=[...lab.querySelectorAll('button')].find(b=>b.textContent===label);if(!b||b.disabled)throw Error('조작 불가 '+label);b.click();await wait();};
+        const preset=async f=>{lab.querySelector('[data-frc-preset="'+f+'"]').click();await wait();};
+        const read=label=>{const r=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return r?parseFloat(r.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+        const near=(label,v,t=.01)=>Math.abs(read(label)-v)<t;
+        const mass=()=>Number(lab.querySelector('[data-frc-mass]').getAttribute('x'));
+        const graph=()=>lab.querySelector('.js-plotly-plot');
+        const sync=()=>{const d=graph().data;require(Math.abs(d[3].x[0]-Number(sliders[2].value))<1e-8&&Math.abs(d[4].x[0]-d[3].x[0])<1e-8&&Math.abs(d[4].y[0]-read('현재 변위 x(t)'))<.01&&Math.abs(d[3].y[0]-read('현재 가진력 F(t)')*10/(Math.PI*Math.PI))<.01,'같은 시각 힘·변위');};
+        require(lab.querySelectorAll('.js-plotly-plot').length===3&&read('현재 시각')===0&&read('현재 변위 x(t)')===0,'초기 정지·3플롯');
+        await preset(2.5);require(mass()>308&&near('위상 지연 φ',3.814,.005)&&near('현재 변위 x(t)',13.27),'저주파 같은 방향');sync();
+        await preset(10);require(mass()<308&&near('위상 지연 φ',176.2,.05)&&near('현재 변위 x(t)',-3.319,.005),'고주파 반대 방향');sync();
+        await preset(5);require(mass()===308&&read('현재 변위 x(t)')===0&&read('위상 지연 φ')===90,'공진 초기·90도');
+        await press('T/4 앞으로');require(near('현재 시각',.05,.0001)&&read('현재 가진력 F(t)')===0&&read('현재 변위 x(t)')===100&&!lab.querySelector('[data-frc-force]'),'T/4 뒤 변위 피크');sync();
+        require(Math.abs(Number(lab.querySelector('[data-frc-piston]').getAttribute('x1'))-(mass()+42-187))<1e-8,'질량·피스톤 동기');
+        await press('T/4 앞으로');const arrow=lab.querySelector('[data-frc-force]');require(read('현재 변위 x(t)')===0&&read('현재 가진력 F(t)')<0&&Number(arrow.getAttribute('x2'))<Number(arrow.getAttribute('x1')),'음의 힘 화살표');
+        await set(2,.15);require(read('현재 변위 x(t)')===-100,'시각 탐색');sync();
+        toggle.click();await wait();require(graph().data[0].x.length===4001&&graph().layout.xaxis.range[1]===4,'전체 파형');toggle.click();await wait();
+        await set(0,0);require(read('현재 시각')===0&&[...lab.querySelectorAll('button')].find(b=>b.textContent==='T/4 앞으로').disabled,'0Hz·조건 변경 초기화');
+        await set(2,1);require(Number.isFinite(read('현재 변위 x(t)')),'0Hz 유한');
+        await preset(5);await set(1,.1);require(read('현재 시각')===0&&near('정상상태 진폭비 X/X_st (식)',5),'감쇠 변경');await set(1,.05);
+        await choose(0,0);require(read('현재 변위 x(t)')===0,'과도 초기조건');await choose(0,1);
+        await press('재생');require(read('현재 시각')>0&&mass()!==308,'재생 진행');await press('정지');const t=read('현재 시각'),x=mass();await wait(400);require(read('현재 시각')===t&&mass()===x,'정지 유지');
+        await press('재생');await choose(1,3);await wait(350);require(read('현재 시각')>t+.3,'재개·속도 변경');await press('정지');
+        await set(2,3.98);await press('재생');require(read('현재 시각')===4&&[...lab.querySelectorAll('button')].find(b=>b.textContent==='정지').disabled,'끝 자동 정지');
+        await press('처음부터 재생');require(read('현재 시각')<1&&read('현재 시각')>0,'재시작');await press('정지');
+        await press('처음 상태');require(read('현재 시각')===0,'시각 초기화');
+        require([...lab.querySelectorAll('svg[role="img"] path')].every(p=>!/(NaN|Infinity)/.test(p.getAttribute('d'))),'SVG 유한');
+        await choose(1,1);await choose(0,0);await set(0,2.5);
+      }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('강제진동 재생 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     강제진동 재생 '+smoke.checks+'항목 OK (위상·동기화·재생·정지·탐색·0Hz)');
+  }
+
   if (steamSmoke) {
     const smoke=await ev(`(async()=>{
       const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-ST-01');

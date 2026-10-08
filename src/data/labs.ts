@@ -22,7 +22,7 @@ export const LABS: LabEntry[] = [
   { slug: 'mck-01', id: 'LAB-MCK-01', component: 'MassSpringLab', part: 1, title: '질량-스프링 자유진동', summary: '질량·강성·처음 변위를 바꿔 평형 둘레의 왕복과 주기·고유진동수를 본다.' },
   { slug: 'bas-01', id: 'LAB-BAS-01', component: 'SineBasicsLab', part: 1, title: '정현파의 세 숫자: 진폭 · 주파수 · 위상', summary: '진폭·주파수·위상을 하나씩 바꾸며 파형이 어떻게 바뀌는지 본다.' },
   { slug: 'damp-01', id: 'LAB-DAMP-01', component: 'DampingLab', part: 1, title: '감쇠: 흔들림은 몇 주기 동안 남나', summary: '감쇠비를 바꿔 진동이 잦아드는 모양과 대수감쇠율을 본다.' },
-  { slug: 'frc-01', id: 'LAB-FRC-01', component: 'ForcedVibrationLab', part: 1, title: '강제진동과 공진', summary: '가진 주파수를 고유진동수 둘레로 옮기며 진폭과 위상 지연이 바뀌는 것을 본다.' },
+  { slug: 'frc-01', id: 'LAB-FRC-01', component: 'ForcedVibrationLab', part: 1, title: '강제진동과 공진', summary: '가진력 화살표·질량·파형을 함께 재생하며 공진 아래·근처·위의 위상 지연을 비교하고 T/4씩 멈춰 읽는다.' },
   { slug: '2dof-01', id: 'LAB-2DOF-01', component: 'TwoDofModeLab', part: 1, title: '2자유도 모드와 에너지 교환', summary: '두 질량의 동상·역상 모드와 약한 결합의 맥놀이를 본다.' },
   { slug: 'sup-01', id: 'LAB-SUP-01', component: 'SupportStiffnessLab', part: 1, title: '받침대를 단단하게 하면 어디까지 바뀔까', summary: '지지 강성과 질량을 바꿔 직렬 등가 강성과 고유진동수가 어디까지 바뀌는지 본다.' },
   { slug: 'unb-01', id: 'LAB-UNB-01', component: 'UnbalanceLab', part: 1, title: '불평형 런업과 1X', summary: '회전수를 올리며 원심력·1X 진폭·위상이 임계속도를 지나 바뀌는 것을 본다.' },
