@@ -83,6 +83,17 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
     return { kp, raw, one, path };
   }, [sig]);
 
+  const closest = useMemo(() => {
+    if (!(twoXpp > 0)) return lag;
+    let best = 0;
+    let bestV = -Infinity;
+    for (let i = 0; i < 3600; i++) {
+      const th = (TWO_PI * i) / 3600;
+      const v = shaftDisplacement(th, sig);
+      if (v > bestV) { bestV = v; best = th; }
+    }
+    return best;
+  }, [sig, twoXpp, lag]);
   const upto = Math.max(1, Math.floor((theta / (2 * TWO_PI)) * (N - 1)) + 1);
   const xAt = (th: number) => X0 + ((X1 - X0) * th) / (2 * TWO_PI);
   const cursor = xAt(theta);
@@ -98,8 +109,10 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
     y: B.y - (a1 * Math.cos(b1) + (hasTwoX ? a2 * Math.cos(b2) : 0)) * KD,
   };
   const high = rim(center, b1, R);
-  const pulse = keyphasorVoltage(theta) < keyphasorThreshold();
-  const nearPeak = Math.abs(wrapPi(theta - lag)) < toRad(7);
+  // 펄스 표시는 홈이 프로브 앞에 있는 동안(θ = 0 포함 — '처음으로'가 펄스 순간)
+  const pulse = theta % TWO_PI < KEY_NOTCH.width || keyphasorVoltage(theta) < keyphasorThreshold();
+  // '가장 가까움'은 실제로 그린 축(1X + 2X)이 센서에 가장 가까운 각도에서 켠다 (2X가 있으면 1X 봉우리와 다르다)
+  const nearPeak = Math.abs(wrapPi(theta - closest)) < toRad(7);
   const notch = [rim(A, theta - KEY_NOTCH.width, R), rim(A, theta - KEY_NOTCH.width, R - NOTCH_DEPTH), rim(A, theta, R - NOTCH_DEPTH), rim(A, theta, R)];
   // 축에 그린 φ: high spot에서 홈 방향까지 반시계로 φ
   const arcR = R - 14;
@@ -123,7 +136,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
         {/* 왼쪽: 홈이 있는 단면 */}
         <circle cx={A.x} cy={A.y} r={R} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="2" />
         <polygon points={notch.map(pt).join(' ')} fill="var(--surface-2)" stroke="var(--text-muted)" strokeWidth="1.5" />
-        <line x1={A.x} y1={A.y} x2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[0]} y2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[1]} stroke="var(--border)" strokeDasharray="3 3" />
+        <line x1={A.x} y1={A.y} x2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[0]} y2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[1]} stroke="var(--text-muted)" strokeDasharray="3 3" opacity="0.8" />
         <circle cx={A.x} cy={A.y} r={3} fill="var(--text-muted)" />
         <Probe x={A.x} tip={KP_TIP} lit={pulse} label="키페이저" />
         {pulse && <text x={A.x + 14} y={KP_TIP - 6} fontSize="12.5" fontWeight="700" fill="var(--status-wip)">펄스</text>}
@@ -132,7 +145,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
         <circle cx={B.x} cy={B.y} r={a1 * KD} fill="none" stroke="var(--border)" strokeDasharray="3 3" />
         <circle cx={center.x} cy={center.y} r={R} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="2" />
         <path d={`M${hx.toFixed(1)},${hy.toFixed(1)} A${arcR},${arcR} 0 ${lag > Math.PI ? 1 : 0} 0 ${nx.toFixed(1)},${ny.toFixed(1)}`} fill="none" stroke="var(--status-wip)" strokeWidth="1.6" />
-        <line x1={center.x} y1={center.y} x2={rim(center, theta, R)[0]} y2={rim(center, theta, R)[1]} stroke="var(--border)" strokeDasharray="3 3" />
+        <line x1={center.x} y1={center.y} x2={rim(center, theta, R)[0]} y2={rim(center, theta, R)[1]} stroke="var(--text-muted)" strokeDasharray="3 3" opacity="0.8" />
         <line x1={center.x} y1={center.y} x2={high[0]} y2={high[1]} stroke="var(--status-wip)" strokeWidth="1.2" />
         <text x={lx} y={ly + 4} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">φ</text>
         <circle cx={high[0]} cy={high[1]} r={6} fill="var(--status-wip)" />
@@ -159,7 +172,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
               <>
                 <circle cx={xAt(p)} cy={VIB_Y0 - a1 * VIB_K} r={5} fill="var(--status-wip)" />
                 <line x1={xAt(p)} y1={VIB_Y0 - 50} x2={xAt(p)} y2={VIB_Y0 - a1 * VIB_K} stroke="var(--status-wip)" strokeDasharray="2 3" />
-                {i === 0 && <text x={(xAt(0) + xAt(p)) / 2} y={VIB_Y0 - 55} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">Δt = {formatNumber(dtMs, 3)} ms</text>}
+                {i === 0 && <text x={(xAt(0) + xAt(p)) / 2} y={VIB_Y0 - 55} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">Δt (지연각) = {formatNumber(dtMs, 3)} ms</text>}
               </>
             )}
           </g>
@@ -173,7 +186,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
       <p className="anim-caption">
         같은 축의 두 단면입니다. 왼쪽 단면의 홈이 키페이저 프로브 앞을 지나는 순간 펄스가 뜨고(0°), 오른쪽 단면의 <strong>high spot</strong>(주황 점 — 축이 센서 쪽으로 가장 많이 나온 쪽,
         움직임은 확대)이 진동 센서 앞에 오면 신호가 봉우리입니다. 그 사이 축이 돈 각도가 위상 φ = {lagDeg}°이고, 축 위에 그린 주황 호(점선 = 홈 방향)와 같습니다.
-        "처음으로"(펄스 순간)에서 high spot은 위에서 시계 방향으로 φ인 자리에 있습니다 — 아래 Polar 화살표가 가리키는 쪽입니다.
+        "처음으로"(펄스 순간)에서 high spot은 위에서 시계 방향으로 φ인 자리에 있습니다 — 아래 Polar 화살표가 가리키는 쪽입니다. 이 그림의 Δt는 위상 관례와 상관없이 지연각(펄스 → 양의 봉우리)입니다.
       </p>
     </div>
   );
