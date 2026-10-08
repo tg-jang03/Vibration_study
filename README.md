@@ -1,100 +1,128 @@
-<div align="center">
+<p align="center">
+  <img src="docs/assets/readme/banner.svg" alt="Vibration Study · 진동공부" width="100%">
+</p>
 
-# 진동공부 · Vibration Study
+<p align="center">
+  <b>한국어</b> · <a href="README.en.md">English</a>
+</p>
 
-**질량-스프링 하나에서 출발해, 발전소 가스·증기터빈의 진동을 진단하는 데까지.**<br>
-수식은 직접 계산하고, 신호는 직접 만져 보는 회전기계 진동 학습 사이트
+<p align="center">
+  <a href="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml"><img src="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml/badge.svg" alt="Deploy"></a>
+  <img src="https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white" alt="Astro 7">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
+</p>
 
-**한국어** · [English](README.en.md)
+<h3 align="center">
+  <a href="https://tg-jang03.github.io/Vibration_study/">사이트 열기</a> &nbsp;·&nbsp;
+  <a href="https://tg-jang03.github.io/Vibration_study/lab/">Signal Lab</a> &nbsp;·&nbsp;
+  <a href="docs/Curriculum.md">커리큘럼</a>
+</h3>
 
-[![Deploy](https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml/badge.svg)](https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml)
-![Astro](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
-![Vitest](https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white)
+<br>
 
-### [→ 사이트 열기](https://tg-jang03.github.io/Vibration_study/) · [→ Signal Lab (랩 모음)](https://tg-jang03.github.io/Vibration_study/lab/)
+> 진동 진단 책은 식만 많아 현장 플롯과 안 이어지거나, 판정표만 있고 **"왜 그렇게 보이나"** 가 빠져 있습니다.
+> 이 사이트는 그 사이를 잇습니다 — 질문에서 출발해, 필요한 개념만 쌓고, 슬라이더로 직접 확인합니다.
 
-</div>
-
----
-
-## 왜 만드나
-
-진동 진단 책은 대개 둘 중 하나입니다. 식은 많은데 현장 플롯과 이어지지 않거나, 판정표는 있는데 "왜 그렇게 보이나"가 빠져 있거나.
-이 사이트는 그 사이를 잇습니다. **"이 줄은 왜 여기 서 있을까?"** 같은 질문에서 출발해, 필요한 개념만 쌓아 올리고, 그 개념을 슬라이더로 직접 바꿔 보며 확인합니다.
-
-- **물리에서 진단까지 한 줄로** — MCK·모드 → 신호처리 → 센서 → 로터다이내믹스 → 현장 플롯 → 결함별 진단 → GT/ST 특화 현상
-- **읽기만 하지 않는다** — 개념마다 랩이 있고, 랩 앞에는 따라 하기, 뒤에는 해석이 붙습니다
-- **숫자를 믿을 수 있게** — 모든 계산은 해석해·문헌값과 맞춰 보는 테스트로 고정합니다
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>📐 물리에서 진단까지</h3>
+      MCK·모드 → 신호처리 → 센서 → 로터다이내믹스 → 현장 플롯 → 결함 → GT/ST. 한 줄로 이어지는 11개 Part.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🎛️ 71개의 인터랙티브 랩</h3>
+      개념마다 랩이 있고, 앞에는 따라 하기, 뒤에는 해석. 회전 원판·베어링·기어가 실제로 돕니다.
+    </td>
+    <td width="33%" valign="top">
+      <h3>✅ 믿을 수 있는 숫자</h3>
+      모든 계산은 해석해·문헌값과 맞춰 보는 테스트로 고정. 그림 속 숫자까지 검사합니다.
+    </td>
+  </tr>
+</table>
 
 ## 학습 경로
 
-```mermaid
-flowchart LR
-  subgraph S1["① 기초: 흔들림 · 신호 · 센서"]
-    P1["Part 1<br>진동의 기초"] --> P2["Part 2<br>신호처리 기초"] --> P3["Part 3<br>센서와 측정 체인"]
-  end
-  subgraph S2["② 모델과 도구"]
-    P4["Part 4<br>회전체 동역학"] --> P5["Part 5<br>신호처리 확장"]
-  end
-  subgraph S3["③ 진단"]
-    P6["Part 6<br>현장 플롯 읽기"] --> P7["Part 7<br>결함별 진단"] --> P8["Part 8<br>GT/ST 특화 현상"]
-  end
-  subgraph S4["④ 조치와 종합"]
-    P9["Part 9<br>구조 시험·밸런싱·정렬"] --> P10["Part 10<br>규격·판정·절차"] --> P11["Part 11<br>종합 진단 연습"]
-  end
-  S1 --> S2 --> S3 --> S4
-```
+<p align="center">
+  <img src="docs/assets/readme/roadmap-ko.svg" alt="학습 경로: 4단계 11개 Part와 진행 현황" width="100%">
+</p>
 
-| Part | 주제 | 무엇을 배우나 | 상태 |
-|:-:|---|---|:-:|
-| 1 | 진동의 기초 | 평형·복원력·관성, 고유진동수, 감쇠, 공진, 모드, 불평형과 1X | ✅ 9 / 9 |
-| 2 | 신호처리 기초 | 푸리에, 샘플링·에일리어싱, 분해능, 윈도우, 평균화·TSA, 스케일링, 변조 | ✅ 9 / 9 |
-| 3 | 센서와 측정 체인 | 가속도계·속도계·프록시미티 프로브, 키페이저와 위상, 측정 함정, 보호 시스템 | ✅ 5 / 5 |
-| 4 | 회전체 동역학 | Bode·Polar, Jeffcott 로터, 유막 베어링과 Shaft centerline, 안정성 | ✅ 4 / 4 |
-| 5 | 신호처리 확장 | 필터·적분, STFT·워터폴, FRF·Full spectrum, 차수추적, 엔벨로프·Kurtogram, 켑스트럼 | ✅ 7 / 7 |
-| 6 | 현장 플롯 읽기 | 시간파형, Waterfall·Cascade, 오빗, 트렌드·APHT | ✅ 4 / 4 |
-| 7 | 결함별 진단 | 1X 계열, 미스얼라인·풀림·러브, 유체막 불안정, 베어링, 기어, 전기, 유체, 비틀림·블레이드 | 🚧 8 / 9 |
-| 8 | GT/ST 특화 현상 | 임계속도 통과, 열 휨·Morton effect, ST·GT 특화, 발전기와 축계 | 🚧 4 / 5 |
-| 9 – 11 | 조치와 종합 | 임팩트 시험·밸런싱·정렬, ISO 20816·API 요점, 가상 기계 케이스 | 📝 계획 |
+<p align="center"><sub>2026-10 기준 · 61절 중 50절 공개 · 자세한 목차는 <a href="docs/Curriculum.md">docs/Curriculum.md</a></sub></p>
 
-<sub>2026-10 기준 · 61절 중 50절 공개 · 상세 목차는 [docs/Curriculum.md](docs/Curriculum.md)</sub>
+## Signal Lab — 직접 움직여 보는 랩
 
-## Signal Lab
+가상 신호를 만들고, 설정을 바꾸고, 결과가 왜 그렇게 나오는지 식과 읽음값으로 확인합니다. 그림을 누르면 그 랩이 열립니다.
 
-**71개의 인터랙티브 랩**이 본문 곳곳에 들어 있고, [랩 모음](https://tg-jang03.github.io/Vibration_study/lab/)에서 하나씩 따로 열 수도 있습니다.
-가상 신호를 만들고, 설정을 바꾸고, 결과가 왜 그렇게 나오는지 식과 읽음값으로 확인합니다. 몇 가지는 직접 움직입니다.
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/frc-01/"><img src="docs/assets/readme/lab-frc.png" alt="LAB-FRC-01 강제진동과 공진"></a>
+      <b>LAB-FRC-01 · 강제진동과 공진</b><br>
+      <sub>점선 상자는 같은 힘을 천천히 걸었을 때의 자리. 공진에서 질량은 그보다 10배 멀리, 1/4 박자 늦게 갑니다.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/smp-01/"><img src="docs/assets/readme/lab-smp.png" alt="LAB-SMP-01 샘플링과 에일리어싱"></a>
+      <b>LAB-SMP-01 · 샘플링과 에일리어싱</b><br>
+      <sub>스트로브로 본 회전 원판. 940 Hz가 왜 60 Hz로, 그것도 거꾸로 도는 것처럼 보일까요?</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/phs-01/"><img src="docs/assets/readme/lab-phs.png" alt="LAB-PHS-01 위상 측정"></a>
+      <b>LAB-PHS-01 · 키페이저와 위상</b><br>
+      <sub>홈이 지나면 펄스, high spot이 오면 봉우리. 그 사이 Δt가 곧 위상입니다.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/brg-02/"><img src="docs/assets/readme/lab-brg.png" alt="LAB-BRG-02 구름베어링 결함"></a>
+      <b>LAB-BRG-02 · 구름베어링 결함</b><br>
+      <sub>볼이 결함을 칠 때마다 충격. 내륜 결함은 하중대를 들락날락해 1X로 오르내립니다.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/gear-01/"><img src="docs/assets/readme/lab-gear.png" alt="LAB-GEAR-01 기어 결함"></a>
+      <b>LAB-GEAR-01 · 기어 결함</b><br>
+      <sub>맞물려 도는 23·61이빨 기어. 깨진 이는 한 바퀴에 한 번 큰 충격을 냅니다.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/fou-01/"><img src="docs/assets/readme/lab-fou.png" alt="LAB-FOU-01 하모닉 쌓기"></a>
+      <b>LAB-FOU-01 · 하모닉 쌓기</b><br>
+      <sub>도는 화살표를 이어 붙이면, 사슬 끝의 높이가 사각파를 그립니다.</sub>
+    </td>
+  </tr>
+</table>
 
-| 랩 | 해 보는 것 |
-|---|---|
-| [**LAB-FRC-01** 강제진동과 공진](https://tg-jang03.github.io/Vibration_study/lab/frc-01/) | 가진 주파수를 고유진동수 둘레로 옮기면, 질량이 "같은 힘을 천천히 걸었을 때의 자리"보다 몇 배 멀리, 얼마나 늦게 따라가는지가 그림에서 보인다 |
-| [**LAB-SMP-01** 샘플링과 에일리어싱](https://tg-jang03.github.io/Vibration_study/lab/smp-01/) | 스트로브로 찍은 회전 원판 — 940 Hz가 왜 60 Hz로, 그것도 거꾸로 도는 것처럼 보이는가 |
-| [**LAB-PHS-01** 위상 측정](https://tg-jang03.github.io/Vibration_study/lab/phs-01/) | 키페이저 홈이 지나면 펄스, high spot이 오면 봉우리 — 그 사이 Δt가 곧 위상 |
-| [**LAB-BRG-02** 구름베어링 결함](https://tg-jang03.github.io/Vibration_study/lab/brg-02/) | 도는 베어링에서 볼이 결함을 칠 때마다 충격 — BPFO·BPFI·2×BSF·FTF가 왜 그 숫자인가 |
-| [**LAB-GEAR-01** 기어 결함](https://tg-jang03.github.io/Vibration_study/lab/gear-01/) | 맞물려 도는 23·61이빨 기어, 깨진 이는 한 바퀴에 한 번, 헌팅 투스는 2.456 s에 한 번 |
-| [**LAB-FULL-01** Full spectrum](https://tg-jang03.github.io/Vibration_study/lab/full-01/) | 반대로 도는 두 화살표의 합이 오빗을 그린다 — ±1X 막대 = 화살표 길이 |
-| [**LAB-ENV-01** 엔벨로프 분석](https://tg-jang03.github.io/Vibration_study/lab/env-01/) | 충격이 울리는 대역을 골라 포락선 스펙트럼에서 BPFO를 꺼내고, 틀린 대역이 무엇을 망치는지 본다 |
-| [**LAB-SBX-01** 샌드박스](https://tg-jang03.github.io/Vibration_study/lab/sbx-01/) | 기계 신호와 F_max·라인 수·윈도우·평균을 정하면, 성분마다 지금 설정으로 보이는지 판정해 준다 |
+<p align="center"><a href="https://tg-jang03.github.io/Vibration_study/lab/"><b>랩 71개 모두 보기 →</b></a></p>
 
 ## 만드는 원칙
 
-- **질문에서 출발한다** — 구어체로, 앞 페이지에서 배운 개념만 써서 설명합니다. "학교에선 이렇지만 현장에선…" 같은 말 대신 이유를 씁니다.
-- **개념마다 그림** — 그림은 AI 이미지가 아니라 계산값으로 직접 그린 SVG입니다. 그림 속 숫자도 테스트로 고정합니다.
-- **계산은 순수 함수 + 테스트** — `src/lib/`의 계산 모듈은 DOM·React와 무관한 순수 함수이고, 내부 단위는 SI, 난수는 시드 고정. 새 계산에는 해석해나 문헌값과 맞추는 테스트가 붙습니다.
-- **움직이는 그림의 약속** — 0°는 위, 회전은 반시계, 화살표 끝의 높이가 신호. 실제보다 느리게 돌릴 때는 배율을 늘 보여 줍니다.
-- **공개 저장소답게** — ISO·API 규격 본문과 표는 옮기지 않고 요약과 출처만 적습니다. 회사 현장 데이터는 쓰지 않습니다.
+- **질문에서 출발** — 구어체로, 앞 페이지에서 배운 개념만 써서 설명합니다.
+- **개념마다 그림** — AI 이미지가 아니라 계산값으로 직접 그린 SVG. 그림 속 숫자도 테스트로 고정합니다.
+- **계산은 순수 함수** — `src/lib/`는 DOM·React와 무관한 순수 함수, 내부 단위 SI, 난수는 시드 고정.
+- **움직이는 그림의 약속** — 0°는 위, 회전은 반시계, 화살표 끝의 높이가 신호. 느리게 돌릴 땐 배율을 늘 보여 줍니다.
+- **공개 저장소답게** — ISO·API 규격 본문은 옮기지 않고 요약과 출처만. 회사 현장 데이터는 쓰지 않습니다.
 
 ## 어떻게 만들어지나
 
-결정은 사람이, 구현은 AI 에이전트가 합니다.
+> **결정은 사람이, 구현은 AI 에이전트가.**
 
-- **결정권자** — 저장소 주인(회전기계 진동 진단 엔지니어)이 무엇을 배울지, 무엇이 맞는지를 정합니다
-- **작업자** — [Claude Code](https://claude.com/claude-code)와 Codex가 트랙을 나눠 같은 `main`에서 페이지·랩·그림을 만듭니다
-- **공유 기억** — 공통 규칙은 [AGENTS.md](AGENTS.md) 하나, 결정은 [Decisions](docs/Decisions.md)(`D-xxx`), 이슈는 [Issues](docs/Issues.md)(`I-xxx`), 진행과 인수인계는 [Progress](docs/Progress.md)에 남깁니다
-- **검사** — push마다 GitHub Actions가 타입 검사·테스트·빌드를 통과해야 배포합니다. 화면은 헤드리스 브라우저로 hydration·콘솔 오류·움직임까지 점검합니다
+저장소 주인(회전기계 진동 진단 엔지니어)이 무엇을 배울지, 무엇이 맞는지를 정하고, [Claude Code](https://claude.com/claude-code)와 Codex가 트랙을 나눠 같은 `main`에서 페이지·랩·그림을 만듭니다.
+규칙은 [AGENTS.md](AGENTS.md) 하나, 결정은 [Decisions](docs/Decisions.md)(`D-xxx`), 이슈는 [Issues](docs/Issues.md)(`I-xxx`), 인수인계는 [Progress](docs/Progress.md)에 남겨 서로의 기억으로 씁니다.
+push마다 GitHub Actions가 타입 검사·테스트·빌드를 통과해야 배포되고, 헤드리스 브라우저가 화면의 hydration·콘솔 오류·움직임까지 점검합니다.
 
-## 기술 스택
+## 직접 돌려 보기
+
+```bash
+npm install
+npm run dev        # http://localhost:4321/Vibration_study/
+```
+
+Node.js 22.12 이상이 필요합니다. 그 밖의 명령은 `npm run check`(타입) · `npm test`(Vitest) · `npm run build` · `npm run verify:page`(페이지 점검) · `npm run verify:links`(링크 점검).
+
+<details>
+<summary><b>기술 스택 · 폴더 구성</b></summary>
+<br>
 
 | | |
 |---|---|
@@ -104,43 +132,25 @@ flowchart LR
 | 계산 | TypeScript 순수 함수 — FFT·필터·로터 모델·결함 신호 합성 |
 | 검사 | Vitest, `astro check`, 헤드리스 Edge 페이지 점검, 링크 점검 |
 
-## 직접 돌려 보기
-
-Node.js 22.12 이상이 필요합니다.
-
-```bash
-npm install
-npm run dev            # http://localhost:4321/Vibration_study/
-```
-
-```bash
-npm run check          # 타입 검사
-npm test               # 단위 테스트 (Vitest)
-npm run build          # dist/ 정적 빌드
-npm run verify:page -- /p3-5/ /lab/   # 미리보기 서버(npx astro preview) 위에서 페이지 점검·캡처
-npm run verify:links   # 빌드 후 사이트 안 링크·앵커 점검
-```
-
-<details>
-<summary><b>폴더 구성</b></summary>
-
 | 경로 | 내용 |
 |---|---|
 | `src/pages/p{Part}-{절}.mdx` | 본문 페이지 |
 | `src/pages/lab/[slug].astro` | 랩 단독 페이지 (Signal Lab) |
-| `src/components/labs/` | 랩 컴포넌트 |
-| `src/components/ui/` | 랩 공용 부품 — `LabFrame`, `ParamSlider`, `Plot`, `PolarPlot`, `PhasorView`, `PlayControls` … |
+| `src/components/labs/` · `ui/` | 랩 컴포넌트 · 공용 부품 (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
 | `src/lib/` | 계산 모듈 (`dsp`, `mck`, `rotor`, `faults`, `machine` …)과 테스트 |
 | `src/figures/` | 본문 SVG 그림 데이터와 테스트 |
 | `docs/` | 커리큘럼 · 로드맵 · 결정 · 이슈 · 진행 · 페이지 작성 지침 |
-| `scripts/verify/` | 페이지 점검(헤드리스 Edge), 링크 점검 |
 
 </details>
 
-## 문서
+<details>
+<summary><b>문서</b></summary>
+<br>
 
 [커리큘럼](docs/Curriculum.md) · [로드맵](docs/Roadmap.md) · [진행 상황](docs/Progress.md) · [페이지 작성 지침](docs/PageGuide.md) · [용어집](docs/Glossary.md) · [작업 규칙](AGENTS.md) · 끝난 기록은 [docs/archive/](docs/archive/)
 
----
+</details>
 
-<div align="center"><sub>개인 학습용 공개 사이트입니다. 내용의 오류는 이슈로 알려 주시면 고맙겠습니다.</sub></div>
+<br>
+
+<p align="center"><sub>개인 학습용 공개 사이트입니다 · 내용의 오류는 이슈로 알려 주시면 고맙겠습니다</sub></p>
