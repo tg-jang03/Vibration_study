@@ -19,7 +19,8 @@ const D1 = 182;
 const D2 = 308;
 const RX = 11;
 const RY = 64;
-const AMP = 28; // 가장 큰 끝의 확대 진폭 [px]
+const AMP = 28; // 확대 진폭 [px]
+const REF = 25e-6; // AMP px로 그릴 진폭 [m, 0-pk] — 고정 축척이라 건전·정도 차이가 그림에도 보인다 (더 크면 그때만 줄임)
 const X0 = 488;
 const X1 = W - 14;
 const TY = 132; // 오른쪽 띠의 0
@@ -40,13 +41,14 @@ export default function OneXRotor({ o, reveal }: { o: OneXOptions; reveal: boole
     const v1 = vectorAt(o, 'B1V', ROTOR_1X.opRpm);
     const v2 = vectorAt(o, 'B2V', ROTOR_1X.opRpm);
     const big = Math.max(v1.amp, v2.amp, 1e-12);
-    const k = AMP / big;
+    const k = AMP / Math.max(REF, big);
+    const h = Math.max(vectorAt(o, 'B1H', ROTOR_1X.opRpm).amp, vectorAt(o, 'B2H', ROTOR_1X.opRpm).amp);
     const disks = diskUnbalance(o);
     const dMax = Math.max(disks[0].amp, disks[1].amp, 1e-12);
     // 오른쪽 띠: 두 바퀴
     const xs = Array.from({ length: N }, (_, i) => X0 + ((X1 - X0) * i) / (N - 1));
     const wave = (v: typeof v1) => Array.from({ length: N }, (_, i) => TY - (TK * v.amp * Math.cos((2 * TWO_PI * i) / (N - 1) - v.lagDeg * RAD)) / big);
-    return { v1, v2, k, disks, dMax, xs, w1: wave(v1), w2: wave(v2), dphi: lagDiff(v1.lagDeg, v2.lagDeg) };
+    return { v1, v2, k, hv: h / big, disks, dMax, xs, w1: wave(v1), w2: wave(v2), dphi: lagDiff(v1.lagDeg, v2.lagDeg) };
   }, [o]);
 
   // 축 위아래 위치: 베어링 두 곳의 값을 직선으로 (원판·끝도 같은 직선 위)
@@ -109,13 +111,14 @@ export default function OneXRotor({ o, reveal }: { o: OneXOptions; reveal: boole
         <path d={path(m.w1, upto)} fill="none" stroke="var(--plot-1)" strokeWidth="2.4" />
         <path d={path(m.w2, upto)} fill="none" stroke="var(--plot-3)" strokeWidth="2.4" strokeDasharray="7 4" />
         <line x1={cursor} y1={TY - TK - 8} x2={cursor} y2={TY + TK + 8} stroke="var(--text-muted)" opacity="0.6" />
-        <text x={X0} y={H - 30} fontSize="12.5" fill="var(--text-muted)">위상차 (센서 2 − 센서 1) = <tspan fontWeight="700" fill="var(--text)">{Math.round(m.dphi)}°</tspan></text>
+        <text x={X0} y={H - 30} fontSize="12.5" fill="var(--text-muted)">위상차 (수직, 센서 2 − 센서 1) = <tspan fontWeight="700" fill="var(--text)">{Math.round(m.dphi)}°</tspan></text>
         <text x={X0} y={H - 12} fontSize="12.5" fill="var(--text-muted)">{shape}</text>
       </svg>
       <p className="anim-caption">
-        축의 위아래 움직임은 두 수직 센서가 읽은 1X를 직선으로 이은 것입니다(강성 로터, 움직임은 크게 그림 — 센서 1 {formatNumber(2e6 * m.v1.amp, 3)} µm p-p, 센서 2 {formatNumber(2e6 * m.v2.amp, 3)} µm p-p).
+        축의 위아래 움직임은 두 수직 센서가 읽은 1X를 직선으로 이은 것입니다(강성 로터, 움직임은 크게 그리되 축척은 고정이라 진폭 차이도 그대로 보입니다 — 센서 1 {formatNumber(2e6 * m.v1.amp, 3)} µm p-p, 센서 2 {formatNumber(2e6 * m.v2.amp, 3)} µm p-p).
         {unbalance ? ' 주황 점은 원판의 불평형(무거운 쪽)입니다. 두 원판에서 같은 각이면 축 전체가 같이 들리고(정적), 반대 각이면 한쪽이 들릴 때 다른 쪽이 내려갑니다(커플).' : ''}
         {reveal && o.cause === 'runout' ? ' 런아웃은 축이 실제로 흔들리는 것이 아니라 축 표면의 굴곡을 센서가 읽은 가짜 1X라, 이 그림은 "센서가 읽은 대로" 그린 것입니다.' : ''}
+        {m.hv > 1.5 ? ` 이 경우 수평 진동이 수직의 ${formatNumber(m.hv, 2)}배로 더 큽니다 — 이 그림은 수직만 보므로, 원인을 가릴 때는 랩의 수평 위상도 함께 보세요.` : ''}
         {!reveal ? ' 맞히기 모드에서는 원판의 불평형 표시를 숨깁니다 — 두 끝이 함께 움직이는지 반대로 움직이는지부터 보세요.' : ''}
       </p>
     </div>
