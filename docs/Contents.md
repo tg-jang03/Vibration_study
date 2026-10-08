@@ -96,6 +96,7 @@
 | 페이지 | 새로 도입하는 개념 | 되짚기만 하는 것 (위치) |
 |---|---|---|
 | P7-1 | 주파수 → 원인 지도(차수로 후보 좁히기), 같은 자리의 후보를 위상·방향·운전조건으로 가르기, 결함 합성기(지문), 회전수 추정(하모닉 무리·켑스트럼·자기상관, 2배·절반으로 틀림), 명판·슬립·동기속도·기어비·날개 수로 역산 | 요소 주파수 지도(P1-8), 증거 5요소(P1-9), Δf = 1/T(P2-4), 측대역(P2-8), 스펙트로그램 줄 모양(P5-2), 엔벨로프(P5-6), 켑스트럼·자기상관(P5-7) |
+| P7-2 | 1X를 만드는 것(도는 것·방향이 정해진 힘·런아웃·공진), 정적·커플·동적 불평형과 두 베어링 위상(동상·역상), 불평형의 지문(회전수² → 2배에 약 4배, 저속 0, 수평·수직 약 90°, 지지 강성 차이로 타원), 휨(bow)의 응답 b/(1 − r² + j2ζr)·런아웃과의 구별, slow roll 보상이 지우는 것과 남기는 것, 휨을 평형추로 덮는 한계, 크랙(방향마다 다른 강성 → 2X, 숨 쉬는 크랙, 임계속도 절반의 2X 봉우리, 1X·2X·slow roll 벡터 추세), 방향이 정해진 1X 힘(편심 풀리: 선 오빗, 회전수와 무관, 평형추로 안 잡힘), 구조(받침대) 공진(한 베어링 한 방향, 좁은 범위의 봉우리·위상 급변, 임팩트 시험), 1X 감별 순서 | 1X 벡터·Polar·slow roll 보상·정적/커플(P3-3), 런아웃(P3-2), 코스트다운(P2-4), 동상·역상 모드(P1-5), 공진·위상(P1-4), Bode·동적 배율·heavy spot(P4-1), 강체 병진·기울기·강성 로터·정방향 타원 오빗(P4-2), 오빗 판독(P6-3), APHT(P6-4), 트래킹 필터 2X(P5-5), 받침대(P1-6), 1X 후보 지도(P7-1) |
 | P7-5 | 접촉각 α를 넣은 결함 주파수 식·앵귤러 볼베어링, 어림값의 한계, 미끄럼(케이지 늦음 → BPFO ↓·BPFI ↑), BSF 1배/2배 관례·볼 결함 2×BSF ± FTF, 위치마다의 변조(외륜 없음·내륜 1X·볼 FTF·케이지 FTF), 고장 4단계와 단계별 방법, 초음파 대역, 증거 5요소·감별·확인 | FTF·BPFO·BPFI·BSF(P1-8), 측대역·변조(P2-8), 가리비 손실·ENBW(P2-5), 설치 공진(P3-1), 엔벨로프·하중 영역·첨도·SK(P5-6), 특징량 추세(P5-7), 진단 지도·합성기(P7-1) |
 | P7-6 | 맞물림 주파수 GMF = z₁f₁ = z₂f₂(두 축에 공통인 줄 하나)·피니언, 전달 오차(건전해도 GMF, 부하에 따라 변함 → 같은 부하끼리 비교), 측대역 간격 = 결함 축의 회전수, 헌팅 투스 주파수 f_HT = GMF ÷ LCM(z₁, z₂)·GCD·헌팅 투스 설계, 결함마다의 모양(마모 = 2×·3×GMF·인벌류트, 편심 = 측대역 한 쌍, 깨진 이 = 작은 측대역 다수·한 바퀴 한 번 충격, 백래시 = 가벼운 부하에서 덜컥거림), 축마다의 TSA → Residual·Difference·FM4·이빨 번호, 켑스트럼 봉우리 추세, 증거 5요소·감별·확인 | 기어 맞물림(P1-8), Δf·Zoom FFT(P2-4), TSA·빗살 통과·Residual(P2-6), AM·FM 측대역(P2-8), 측정 설정(P2-9), 차수추적(P5-4), 포락선·첨도(P5-6), 켑스트럼·헌팅 투스(P5-7), 회전수 역산·합성기(P7-1), 구름베어링 감별(P7-5) |
 
@@ -291,7 +292,7 @@
 | P6-3 | 오빗 | LAB-ORB-01 | M6.3 | 검토 |
 | P6-4 | 트렌드 · 벡터 트렌드 · APHT | LAB-TRND-01 | M6.6 | 검토 |
 | P7-1 | 진단 주파수 지도 · 회전수 추정 | LAB-MAP-01, LAB-FAULT-01, LAB-RPM-01 | M7.1 | 검토 (그림 6, 랩 3종 각 1곳, 2026-10-07) |
-| P7-2 | 1X 계열 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
+| P7-2 | 1X 계열 | LAB-1X-01 | M7.2 | 검토 (그림 8, LAB-1X-01 1곳, 2026-10-08) |
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-4 | 유체막 · 유체력 불안정 | (LAB-WF-01, LAB-STB-01 프리셋) | M7.3 | 계획 |
 | P7-5 | 구름베어링 | LAB-BRG-01, LAB-BRG-02 | M7.4 | 검토 (그림 7, LAB-BRG-01 1곳·LAB-BRG-02 2곳, 2026-10-07) |
@@ -380,6 +381,7 @@
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
 | LAB-FAULT-01 | 결함 신호 합성기: 원인마다의 지문 (Part 11 케이스 엔진) | P7-1 | `FaultSynthLab` (/lab/fault-01/) · lib/faults/synth.ts, catalog.ts |
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
+| LAB-1X-01 | 1X 감별: 1X가 크면 무엇일까 (원인 8종·숨은 케이스 7개, 코스트다운 Bode·2X·두 베어링 벡터·오빗) | P7-2 | `OneXLab` (/lab/1x-01/) · lib/faults/oneX.ts |
 | LAB-BRG-01 | 베어링 결함 주파수 계산기 (접촉각·미끄럼·BSF 1배/2배) | P7-5 | `BearingCalcLab` (/lab/brg-01/) · lib/machine/frequencies.ts, lib/faults/bearing.ts |
 | LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 | P7-5 | `BearingStageLab` (/lab/brg-02/) · lib/faults/bearing.ts |
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · lib/faults/gear.ts |
@@ -601,6 +603,20 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 역산 | 맞물림 571.2 Hz ÷ 23 = 1490 rpm, 417.1 Hz ÷ 7 = 3575 rpm, 23 → 61이빨 출력 561.8 rpm |
 | 후보 찾기 (펌프 120 Hz / 59.6 Hz, 압축기 43 Hz) | 전기 2×LF + 2X 후보 4(정렬 불량·풀림·크랙·러브), "고정"이면 전기만 / 1X 후보 7 / 오일 휠·휩·Rotating stall |
 
+### P7-2 1X 계열 (M7.2)
+
+설명용 로터(베어링 2개, 운전 3000 rpm, 병진 모드 5000 / 5600 rpm ζ 0.06, 원추 6400 / 7200 rpm ζ 0.05, 정도 60 %). 진폭은 µm p-p, 베어링 1 수평. `figures-p7-2.test.ts`·`oneX.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 정적 불평형 | 300 rpm 2.2 µm(건전 2.0), 1500 → 3000 rpm 8.2 → 37 µm (4.5배), 수평·수직 89°, 수평 ÷ 수직 1.4, 두 베어링 −3°. 몫만 떼면 P4-1 `unbalanceVector`와 같음 |
+| 커플 · 동적 | 회전수 비 4.4 · 두 베어링 −164° / 동적 −52.5° |
+| 런아웃 · 휨 | 런아웃 slow roll 32 → 3000 rpm 34 µm(비 1.0), 보상 뒤 1.7 µm = 건전 / 휨 31 → 47 µm(비 1.4), 보상 뒤 17 µm, 두 베어링 동상. 휨 몫 = b/(1 − r² + j2ζr) |
+| 크랙 | 2X 봉우리 수평 2500 · 수직 2800 rpm(병진 모드의 절반), 20 µm = c₂/(2ζ) / slow roll 1X 11.5 µm / 1년: 2X 0 → 8.6, 1X 3.7 ∠46° → 31 ∠313°, slow roll 2.0 → 19 µm |
+| 방향이 정해진 힘 | 수평 ÷ 수직 3.3, 수평·수직 위상차 11°, slow roll 32 µm, 회전수 비 1.4 |
+| 구조 공진 (받침대 2850 rpm, ζ 0.035) | 베어링 1 수평만 2850 rpm 117 µm, 3000 rpm 72 µm, 회전수 비 17, 2600 → 3000 rpm 위상 약 130° / 다른 센서 10 µm 미만 |
+| 확인 문제 | Q2 22 ∠45° − 20 ∠40° = 2.7 µm ∠85°, Q6 (2700/2950)² = 0.84 |
+
 ### P7-5 구름베어링 (M7.4)
 
 결함 크기는 설명용 모델 값이다. `figures-p7-5.test.ts`·`bearing.test.ts`가 고정한다.
@@ -665,6 +681,7 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-21 | P. D. McFadden, "Examination of a technique for the early detection of failure in gears by signal processing of the time domain average of the meshing vibration", *Mechanical Systems and Signal Processing* 1(2), 1987 | 축마다의 TSA, 규칙 성분을 뺀 신호(Residual·Difference)로 이빨 결함 찾기 (P7-6) | |
 | R-22 | [COMSOL, Mode Superposition](https://www.comsol.com/multiphysics/mode-superposition) | 선형 모드 중첩·형상 정규화·모드 감쇠 가정 (P8-1) | 제조사 공개 이론, 2026-10-08 확인 |
 | R-23 | [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data) | 기동·정지의 열 상태·접촉 영향 비교 (P8-1) | 공개 사례, 수치/그림 전재 없음 |
+| R-24 | J. C. Nicholas, E. J. Gunter, P. E. Allaire, "Effect of residual shaft bow on unbalance response and balancing of a single mass flexible rotor", *Journal of Engineering for Power* 98(2), 1976 | 휨의 응답 b/(1 − r² + j2ζr), 휨과 평형추 (P7-2) | |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
