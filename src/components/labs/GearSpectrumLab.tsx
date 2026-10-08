@@ -5,6 +5,7 @@ import ParamSlider from '../ui/ParamSlider';
 import Formula from '../ui/Formula';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
+import GearMesh from './GearMesh';
 import { formatNumber, texNumber } from '../../lib/format';
 import { G } from '../../lib/faults/synth';
 import {
@@ -110,6 +111,8 @@ export default function GearSpectrumLab({ initial = {} }: { initial?: Partial<Ge
       ]}
       footer={<p>설명용 모델입니다: P7-1의 감속기(피니언 {GEAR_DEMO.z1}이빨 {GEAR_DEMO.rpm} rpm ↔ 기어 {GEAR_DEMO.z2}이빨), f_s {GEAR_DEMO.fs} Hz, 8 s, Hann. 맞물림 1·2·3배와 맞물림마다의 짧은 충격(맞물림 공진 {GEAR_DEMO.res.f} Hz를 울림), 두 축의 1X, 흰 잡음 {GEAR_DEMO.noise} g. 크기는 판정 기준이 아닙니다.</p>}
     >
+      <h4>기어가 도는 모습: 상한 이빨이 맞물릴 때 충격</h4>
+      <GearMesh fault={p.fault} side={p.side} />
       <h4>가속도 스펙트럼 0 ~ 3.5 kHz (dB re 1 g)</h4>
       <Plot series={[
         { x: a.accDb.x.map(kHz), y: a.accDb.y, name: '가속도', color: 'var(--plot-1)', width: 1 },
