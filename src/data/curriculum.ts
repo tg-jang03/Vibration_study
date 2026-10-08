@@ -135,7 +135,7 @@ export const PARTS: Part[] = [
       { id: 'P8-2', title: '열 휨 · 터닝 기어 · Morton effect', status: 'review', href: '/p8-2/' },
       { id: 'P8-3', title: 'ST 특화', status: 'review', href: '/p8-3/' },
       { id: 'P8-4', title: 'GT 특화', status: 'review', href: '/p8-4/' },
-      { id: 'P8-5', title: '발전기와 축계', status: 'planned' },
+      { id: 'P8-5', title: '발전기와 축계', status: 'review', href: '/p8-5/' },
     ],
   },
   {

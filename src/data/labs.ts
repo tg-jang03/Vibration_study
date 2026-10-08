@@ -92,6 +92,7 @@ export const LABS: LabEntry[] = [
   { slug: 'elec-01', id: 'LAB-ELEC-01', component: 'ElectricLab', part: 7, title: '전기냐 기계냐: 2×LF · 극통과 측대역 · 전원 차단 시험', summary: '유도전동기(2극·4극)와 2극 동기 발전기에 고정자·로터바·공극 편심·불평형·미스얼라인을 넣고, 부하(슬립)와 기록 길이를 바꿔 1X·2×LF 둘레의 PPF 측대역을 보며, 전원(계자) 차단 전후 스펙트로그램으로 전기와 기계를 가르고 숨은 원인 7개를 맞힌다.' },
   { slug: 'flow-01', id: 'LAB-FLOW-01', component: 'FlowLab', part: 7, title: '운전점을 바꿔 원인 가리기: 날개 통과 · 재순환 · 캐비테이션 · stall · 서지', summary: '원심 펌프의 유량·흡입 압력과 원심 압축기의 유량·서지 방지를 바꾸며 날개 통과, 저유량 재순환, 수력 불평형, 캐비테이션, Rotating stall, 서지가 스펙트럼·압력·축방향 위치에서 어떻게 반응하는지 보고 숨은 원인 7개를 맞힌다.' },
   // Part 8
+  { slug: 'gen-01', id: 'LAB-GEN-01', component: 'GeneratorFieldLab', part: 8, title: '발전기 계자 전류와 1X 벡터', summary: '계자 전류 변경·복귀와 열 지연, 벡터 방향·상쇄를 1X 추세·Polar로 비교한다.' },
   { slug: 'gt-01', id: 'LAB-GT-01', component: 'GasPressureLab', part: 8, title: 'GT 동압: 센서 위치와 공간 모드', summary: '실속·서지·연소의 지정 압력 파형을 비교하고 원주/종방향 위치에 따른 진폭·위상·절점을 읽는다.' },
   { slug: 'st-01', id: 'LAB-ST-01', component: 'SteamLoadLab', part: 8, title: 'ST 부하·부분 분사: 경계와 중심 위치', summary: '부하·감쇠·교차연성으로 가상 안정 경계를 비교하고, 분사 합력·점성계수에 따른 정적 중심 위치를 별도로 읽는다.' },
   { slug: 'bode-01', id: 'LAB-BODE-01', component: 'MultiModeBodeLab', part: 8, title: '여러 모드의 Bode / Polar', summary: '모드 간격·감쇠·센서·열 상태·slow roll 보상을 바꿔 1X 중첩과 마디, 베어링별 위상과 Polar를 비교한다.' },

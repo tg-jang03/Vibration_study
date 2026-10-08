@@ -32,6 +32,7 @@ const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
 const steamSmoke = flag('steam-smoke');
+const generatorSmoke = flag('generator-smoke'); // LAB-GEN-01 열/벡터 조작
 const gtSmoke = flag('gt-smoke'); // LAB-GT-01 해석 모드·입력·절점 조작
 const forcedSmoke = flag('forced-smoke');
 const dampingSmoke = flag('damping-smoke');
@@ -348,6 +349,35 @@ for (const p of paths) {
     })()`);
     if(smoke?.ok===false||!smoke)errors.push('강제진동 재생 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok)console.log('     강제진동 재생 '+smoke.checks+'항목 OK (위상·동기화·재생·정지·탐색·0Hz)');
+  }
+
+  if (generatorSmoke) {
+    const smoke=await ev(`(async()=>{
+  const labs=[...document.querySelectorAll('.lab-frame')].filter(l=>l.querySelector('.lab-id')?.textContent==='LAB-GEN-01');
+  if(!labs.length)return {skipped:true};
+  let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++},wait=()=>new Promise(r=>setTimeout(r,350));
+  try{for(const lab of labs){
+    const sliders=lab.querySelectorAll('input[type="range"]'),select=lab.querySelector('select'),initial=sliders[4].value;
+    const choose=async(v)=>{select.value=String(v);select.dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+    const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+    const read=label=>{const r=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return r?parseFloat(r.cells[1].textContent.replaceAll(',','').replaceAll('−','-')):NaN};
+    const near=(l,v)=>Math.abs(read(l)-v)<.015,reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait()};
+    require(lab.querySelectorAll('.js-plotly-plot').length===3,'추세3 plots');
+    const formula=lab.querySelector('.lab-formulas'),rendered=[...formula.querySelectorAll('.katex-html')].map(n=>n.textContent).join('');require(rendered.includes('τ')&&rendered.includes('β')&&!rendered.includes('quad')&&!formula.querySelector('.katex-error'),'수식 기호 렌더');
+    await set(4,90);require(near('합성 1X Peak',22.75893)&&near('합성 1X 지연각',28.50496)&&near('변경 전과의 차 벡터',7.11136),'τ 해석값');
+    await set(5,0);require(near('계자 전류 (상대값)',100)&&near('합성 1X Peak',20.34853),'전류즉시·열연속');
+    await choose(1);require(near('합성 1X Peak',25)&&sliders[2].disabled,'즉시 변화');
+    await choose(2);await set(5,5);require(near('합성 1X Peak',20.34853)&&near('변경 전과의 차 벡터',0),'변화 없음');
+    await choose(0);await set(5,10);require(near('계자 전류 (상대값)',50)&&read('열 상태 h')>.99,'복귀연속');
+    await set(5,20);require(read('열 상태 h')<.26,'복귀 회복');
+    await set(4,180);await set(5,2);require(near('합성 1X Peak',9.13864)&&near('합성 1X 지연각',0),'반대 벡터 감소');
+    await set(3,0);require(near('합성 1X Peak',20)&&near('변경 전과의 차 벡터',0),'G0');
+    await set(0,100);await set(3,20);require(read('합성 1X Peak')===0&&!Number.isFinite(read('합성 1X 지연각'))&&lab.querySelector('[role="status"]').textContent.includes('위상 보류'),'상쇄 위상');
+    await reset();require(sliders[4].value===initial&&sliders[0].value==='50'&&sliders[5].value==='2'&&select.value==='0','시작상태 초기화');
+  }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+})()`);
+    if(smoke?.ok===false||!smoke)errors.push('발전기 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     발전기 조작 '+smoke.checks+'항목 OK (열지연·복귀·벡터·상쇄·초기화)');
   }
 
   if (gtSmoke) {

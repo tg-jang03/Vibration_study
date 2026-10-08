@@ -33,6 +33,7 @@ import ShaftCenterlineLab from '../../components/labs/ShaftCenterlineLab';
 import StabilityLab from '../../components/labs/StabilityLab';
 import MultiModeBodeLab from '../../components/labs/MultiModeBodeLab';
 import GasPressureLab from '../../components/labs/GasPressureLab';
+import GeneratorFieldLab from '../../components/labs/GeneratorFieldLab';
 import SteamLoadLab from '../../components/labs/SteamLoadLab';
 import RunUpBodeLab from '../../components/labs/RunUpBodeLab';
 import FilterLab from '../../components/labs/FilterLab';
@@ -165,6 +166,7 @@ const c = lab.component;
       {c === 'StabilityLab' && <StabilityLab client:load />}
       {c === 'MultiModeBodeLab' && <MultiModeBodeLab client:load />}
       {c === 'GasPressureLab' && <GasPressureLab client:load />}
+      {c === 'GeneratorFieldLab' && <GeneratorFieldLab client:load />}
       {c === 'SteamLoadLab' && <SteamLoadLab client:load />}
       {c === 'RunUpBodeLab' && <RunUpBodeLab client:load />}
       {c === 'FilterLab' && <FilterLab client:load />}

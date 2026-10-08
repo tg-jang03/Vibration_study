@@ -112,7 +112,7 @@
 | P8-2 | 열 휨(thermal bow: 정지 중 상하 온도차 → 축이 휨 → 기동 시 큰 1X), 터닝 기어(정지 중 천천히 돌려 온도를 고르게)·eccentricity(slow roll 런아웃 p-p)로 기동 판단, bow 벡터 + 불평형 응답 벡터, Morton effect(저널 원주의 고르지 않은 가열·hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선, 부하·오일 온도 영향), Newkirk effect와의 구별(접촉 마찰열 vs 유막 전단열) | slow roll 보상(P3-3), heavy/high spot(P4-1), 오빗·hot spot 자리(P6-3), APHT·Acceptance region(P6-4), 여러 모드 통과(P8-1), bow(P7-2), 러브·Newkirk(P7-3) |
 | P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 조건 → 증기력 방향 → 베어링 하중 → Shaft centerline·편심률 변화; 안정성은 베어링 동계수·증기력·모드로 별도 평가), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
 | P8-4 | Alford 팁 간극/일 추출 차이→교차력, 실속 셀 통과 vs 서지 압축계, 연소 압력/열방출·종방향/원주 진행·정재 모드·절점/위상, 센서 위치/단위/대역, 가상 기어축별 TSA, FOD 응답 벡터 차·국부 블레이드/Campbell 후보 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
-| P8-5 | 발전기 고정자 코어의 2×LF 진동·엔드와인딩 공진(2×LF 근처 고유진동수), 계자 열 민감도(계자 전류에 따라 1X가 변함 → 계자 전류 변경 시험), 샤프트 전압·전류와 접지 브러시, 축계 비틀림·SSR과 발전기, 터빈-발전기 커플링 미스얼라인 | 벡터 트렌드·APHT(P6-4), 1X 계열(P7-2), 미스얼라인(P7-3), 2×LF·극통과(P7-7), 비틀림·SSR(P7-9) |
+| P8-5 | 극수에 따른1X/LF/2LF 구별 → 코어·단부 국부 공진과 센서 위치 → 계자 전류 단계/복귀·열 지연·1X 벡터 합성/상쇄 → 설계된 축 접지/절연·전압/전류 경로 → 두관성 비틀림과LF기준 SSR·전기/기계 측정 → 냉간/열간 커플링 정렬의 추가 증거 | 벡터 트렌드·APHT(P6-4), 1X 계열(P7-2), 미스얼라인(P7-3), 2×LF·극통과(P7-7), 비틀림·SSR(P7-9) |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -255,6 +255,9 @@
 - `lib/dsp/average.ts`: 입력·반환은 **파워**(제곱근은 UI에서). 벡터 평균은 이미 위상 정렬된 복소 스펙트럼을 받는다(정렬은 수집 쪽 책임). 오버랩은 `frameLayout`·`splitOverlappingFrames`로 실제 샘플을 겹쳐 자른다.
 - 모든 코어 함수는 입력을 바꾸지 않고, 잘못된 입력은 `RangeError`. 기준값은 §6.
 
+- 계자 열 응답 (P8-5): i=If/기준전류 [—], h [—], τ [s], G [m Peak], β [rad]; τ h′+h=i², V=U+Gh exp(−jβ). h는 실제 온도 아님, 표시 µm Peak/RMS·지연각°.
+- 자유2관성 비틀림 (P8-5): J1·J2 [kg·m²], Kt [N·m/rad], θ [rad]; ft=sqrt(Kt(1/J1+1/J2))/(2π). 강체0Hz·탄성모드, 전기/감쇠/SSR 경계 없음.
+
 ## 4. 페이지 목록
 
 페이지 ID = `Curriculum.md`의 절 번호 (`P{Part}-{절}`). M 열은 세부 마일스톤 (`Roadmap.md` §6). 상태를 바꾸면 사이트 목차 `src/data/curriculum.ts`도 함께 고친다.
@@ -316,7 +319,7 @@
 | P8-2 | 열 휨 · 터닝 기어 · Morton | LAB-TRND-01 프리셋 | M8.5 (D-043) | 검토 |
 | P8-3 | ST 특화 | LAB-ST-01 | M8.2 | 검토 (그림8·문제6·본문2랩, 2026-10-08) |
 | P8-4 | GT 특화 | LAB-GT-01·LAB-GEAR-02 프리셋 | M8.3 | 검토 |
-| P8-5 | 발전기와 축계 | (시나리오 프리셋) | M8.4 | 계획 |
+| P8-5 | 발전기와 축계 | LAB-GEN-01 (본문2곳) | M8.4 | 검토 (그림8·문제6, 2026-10-08) |
 | P9-1 | 구조 공진 판별과 임팩트 시험 | LAB-HPB-01 | M9.1 | 계획 |
 | P9-2 | 밸런싱 | LAB-BAL-01 | M9.2 | 계획 |
 | P9-3 | 정렬 | LAB-ALN-01 (선택) | M9.3 | 계획 |
@@ -405,6 +408,7 @@
 | LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |
 | LAB-GT-01 | GT 동압의 실속/서지·종방향·원주 진행/정재 공간 모드·절점 | P8-4 | GasPressureLab (/lab/gt-01/) · lib/machine/gt.ts |
 | LAB-ST-01 | ST 부하 경계·부분 분사 합력·정적 중심 위치 (독립 모델) | P8-3 | `SteamLoadLab` (/lab/st-01/) · lib/rotor/steam.ts, journalBearing.ts, stability.ts |
+| LAB-GEN-01 | 계자 전류 변경·복귀와 열 지연, 1X 벡터 합성·상쇄 | P8-5 §3·§4 | GeneratorFieldLab (/lab/gen-01/) · lib/machine/generator.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -757,6 +761,15 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 - 가상23:61·입력1490 rpm: GMF571.1666667 Hz·출력9.363387978 Hz. 전후20 µm Peak·0→90°의응답 차=28.28427125 µm Peak. 12차 가진×3000 rpm=600 Hz 교차는 지정 모드 예제.
 - 테스트: machine/gt.test.ts(파장·공간/시간 주기·위상·절점·RMS·선형성·경계), figures-p8-4.test.ts(본문 수치·그림7개 범위). 실기 발생/튜닝/손상/보호 경계 계산 아님.
 
+### P8-5 발전기·축계 (M8.4)
+
+- 동기 속도: 2극50 Hz→3000 rpm·1X50·2LF100 Hz=2X; 4극60 Hz→1800 rpm·1X30·2LF120 Hz=4X.
+- 단부 단일모드 fn120 Hz, ζ0.05→r1 응답비10·90°; ζ0.1→5·90°. mck/forced 재사용.
+- U20 µm Peak@0°, i0=.5→i1=1, G15 µm·β90°·τ120 s: 초기20.3485 µm·10.6197°, tτ22.7589 µm·28.5050°, hτ=.7240904, |ΔV|7.11136 µm.
+- t600 s 전류50% 복귀, h연속; 정상 고전류25 µm·36.8699°. β180°는초기16.25→정상5 µm. I²는4배, 실제 온도·총진폭4배를 뜻하지 않음.
+- 자유2관성 J1=100·J2=200 kg·m², Kt=10⁶ N·m/rad→강체0 Hz·탄성19.49242 Hz, 모드[2/3,−1/3]. 전기계·감쇠·SSR 경계 없음.
+- 테스트: generator.test.ts(ODE·연속·극한·벡터·상쇄·동기속도·강제응답·고유방정식·에너지), figures-p8-5.test.ts(기준값·8그림 범위). 내부SI, h는무차원; β·φ는rad, 표시는°.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -805,6 +818,11 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-41 | J. F. Gülich, *Centrifugal Pumps* (Springer) | 날개 통과 압력 맥동과 간극, 부분 유량 재순환, NPSH·캐비테이션 (P7-8) | |
 | R-42 | I. J. Day, "Stall, surge, and 75 years of research", *Journal of Turbomachinery* 138(1), 2016 | Rotating stall 셀 속도, 서지·서지 방지 (P7-8) | |
 | R-43 | E. M. Greitzer, "Surge and rotating stall in axial flow compressors, Part I · II", *Journal of Engineering for Power* 98(2), 1976 | 압축계 체적이 만드는 서지, stall과 서지 구분 (P7-8) | |
+| R-44 | [Hitachi Review, Turbine Generator](https://www.hitachi.com/ICSFiles/afieldfile/2007/11/05/r2007_04_102.pdf) | 코어2LF·단부 모드/구조 (P8-5) | 제조사 공개 자료, 2026-10-08 확인 |
+| R-45 | [Iris Power, Endwinding monitoring](https://irispower.com/monitoring/end-winding-vibration-monitoring/) | 국부 진동·지지·센서 (P8-5) | 실제 허용값 전재 없음 |
+| R-46 | [TG Advisers, Thermally Sensitive Generator Rotors](https://tgadvisers.com/thermally-sensitive-generator-rotors/) | 불균일 발열/팽창·계자 전류 시험 (P8-5) | 작성사 원문 개념 요약 |
+| R-47 | [GE Vernova, Rotor Shaft Grounding Braids](https://www.gevernova.com/content/dam/gepower-new/global/en_US/downloads/gas-new-site/services/generator-services/GEA33584-L1-Sensors-Rotor-Shaft-Grounding-Braids.pdf) | 축전압·설계된 접지 경로 (P8-5) | 제조사 공개 자료 |
+| R-48 | [SEL, Advanced Generator Protection and Monitoring](https://selinc.com/api/download/117046/) | 비틀림·SSR·전기/속도 측정 (P8-5) | 허용값·보호 설정 전재 없음 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
