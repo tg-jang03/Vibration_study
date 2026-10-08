@@ -134,16 +134,28 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
     speeds.forEach((s, i) => (s.label = `${['느리게', '보통', '빠르게'][i]} (${rateLabel(s.rate)})`));
     return { span, speeds };
   }, [rotating, fMod, fFast]);
-  const rMax = useMemo(() => {
-    if (!rotating) return Math.max(2.2, 0.75 * arrows.reduce((s, a) => s + a.amp, 0));
-    // 같이 도는 틀(원점이 아래): 한 변조 주기 동안 사슬이 닿는 범위를 재서 위 172 px · 옆 125 px · 아래 28 px에 맞춘다
-    let fit = 1.6;
+  const { rMax, layout } = useMemo(() => {
+    if (!rotating) return { rMax: Math.max(2.2, 0.75 * arrows.reduce((s, a) => s + a.amp, 0)), layout: 'center' as const };
+    // 같이 도는 틀: 한 변조 주기 동안 사슬(과 두 번째 화살표부터의 궤적 원)이 닿는 범위를 잰다.
+    // 원점 아래로 거의 안 내려가면(AM·맥놀이·작은 β) 원점을 아래에 두고(위 172 · 옆 125 · 아래 28 px),
+    // FM에서 β가 커져 아래로 휘면 원점을 가운데에 둔다 — 그래야 β 0.5와 2.4를 비교할 때 그림이 쪼그라들지 않는다.
+    let up = 1.6;
+    let side = 0;
+    let down = 0;
+    let radial = 1;
     for (let i = 0; i < 240; i++) {
-      for (const p of phasorChain(arrows, i / 240 / fMod, fFast)) {
-        fit = Math.max(fit, p.re, (Math.abs(p.im) * 172) / 125, (-p.re * 172) / 28);
-      }
+      const chain = phasorChain(arrows, i / 240 / fMod, fFast);
+      chain.forEach((p, k) => {
+        const a = arrows[k];
+        const r = a && Math.abs(a.freq - fFast) > 1e-9 ? a.amp : 0; // 화살표 k의 궤적 원 (중심 = 점 k, 틀과 같이 도는 반송파는 원 없음)
+        up = Math.max(up, p.re + r);
+        side = Math.max(side, Math.abs(p.im) + r);
+        down = Math.max(down, -(p.re - r));
+        radial = Math.max(radial, Math.hypot(p.re, p.im) + r);
+      });
     }
-    return fit * 1.04;
+    if (down > 0.15) return { rMax: radial * 1.04, layout: 'center' as const };
+    return { rMax: Math.max(up, (side * 172) / 125, (down * 172) / 28) * 1.04, layout: 'upper' as const };
   }, [rotating, arrows, fMod, fFast]);
   const yOf = (v: number) => (db ? relDb(v, 1) : clean(v));
   const carrier = beat ? peakNear(data.spec, f1) : peakNear(data.spec, fc);
@@ -234,7 +246,7 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
         frameFreq={rotating ? fFast : 0}
         trace={rotating ? 'length' : 'signal'}
         envelope={!rotating}
-        layout={rotating ? 'upper' : 'center'}
+        layout={layout}
         traceLabel={rotating ? '화살표 합의 길이 = 포락선' : '사슬 끝의 높이 = 파형 (점선: 포락선)'}
         ariaLabel={beat
           ? `길이 1과 ${ratio}인 두 화살표가 1초에 ${f1}바퀴와 ${f2}바퀴 돈다. 합의 길이가 ${formatNumber(1 + ratio, 3)}와 ${formatNumber(Math.abs(1 - ratio), 3)} 사이를 오간다.`
@@ -253,7 +265,7 @@ export default function ModulationLab({ initialMode = 'am' }: ModulationLabProps
                   ? '측대역들의 합이 사슬 끝을 반지름 1인 원호를 따라 좌우로 밀어, 길이는 그대로 1이고 방향만 흔들립니다. 방향이 흔들린다 = 도는 빠르기(주파수)가 흔들린다는 뜻입니다.'
                   : '이번에는 측대역 합이 반송파 방향과 비스듬해서 길이(크기)와 방향(주파수)이 함께 흔들립니다. 위상차를 바꾸면 위·아래 측대역의 길이가 달라집니다.'
             }`
-          : `실제처럼 모든 화살표가 반시계로 돕니다. 사슬 끝의 높이가 파형이고, 점선은 화살표 합의 길이(포락선)입니다. 반송파가 빨라 화면은 아주 느리게 재생합니다.`}
+          : `실제처럼 화살표가 각자의 주파수로 돕니다(양의 주파수는 반시계). 사슬 끝의 높이가 파형이고, 점선은 화살표 합의 길이(포락선)입니다. ${beat ? "f₁이" : "반송파가"} 빨라 화면은 아주 느리게 재생합니다.`}
       </p>
       <h4>파형과 포락선</h4>
       <Plot series={waveSeries} x={{ label: '시간 [s]', range: [0, data.tShow] }} y={{ label: '[mm/s]' }} height={240} ariaLabel="파형과 포락선" />
