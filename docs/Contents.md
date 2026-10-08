@@ -109,7 +109,7 @@
 | P8-1 | 강체/굽힘 모드와 여러 동기 공진, 복소 모드 중첩·상쇄, 분리 모드의 약180° 전이와 합성 위상의 차이, 피크·위상·Polar를 함께 읽기, 동일 방향 센서의 동상/역상은 모드 형상 단서(두 곳으로 모드 차수 확정 불가), 중앙 마디의 센서·가진 참여의 함정, 감쇠·가까운 모드의 AF 해석 한계, 냉간/열간과 bow의 등가 모드 변위·slow roll 보상 편향, 승인된 통과/보호 절차·자료 비교 | 모드 형상(P1-5), 1모드 Bode/Polar·AF·개념SM(P4-1), 위상·slow roll(P3-3), 과도 수집·보호(P3-5), 강체/유연 로터(P4-2), 반공진(P5-3), 필터 지연(P5-5), Waterfall·오빗·벡터 트렌드(P6-2~4), bow/러브(P7-2~3·미공개 위치만) |
 | P8-2 | 열 휨(thermal bow: 정지 중 상하 온도차 → 축이 휨 → 기동 시 큰 1X), 터닝 기어(정지 중 천천히 돌려 온도를 고르게)·eccentricity(slow roll 런아웃 p-p)로 기동 판단, bow 벡터 + 불평형 응답 벡터, Morton effect(저널 원주의 고르지 않은 가열·hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선, 부하·오일 온도 영향), Newkirk effect와의 구별(접촉 마찰열 vs 유막 전단열) | slow roll 보상(P3-3), heavy/high spot(P4-1), 오빗·hot spot 자리(P6-3), APHT·Acceptance region(P6-4), 여러 모드 통과(P8-1), bow(P7-2), 러브·Newkirk(P7-3) |
 | P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 조건 → 증기력 방향 → 베어링 하중 → Shaft centerline·편심률 변화; 안정성은 베어링 동계수·증기력·모드로 별도 평가), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
-| P8-4 | Alford force(터빈 팁 간극 변화 → 교차연성), GT 압축기 stall/surge와 동압 신호, 연소 동역학(동압 센서, 종방향/원주방향 음향 모드, 연소 튜닝과의 관계), 액세서리 기어박스 진단(구름베어링·기어 + TSA), 이물질 손상(FOD) → 1X 벡터 급변 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
+| P8-4 | Alford 팁 간극/일 추출 차이→교차력, 실속 셀 통과 vs 서지 압축계, 연소 압력/열방출·종방향/원주 진행·정재 모드·절점/위상, 센서 위치/단위/대역, 가상 기어축별 TSA, FOD 응답 벡터 차·국부 블레이드/Campbell 후보 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
 | P8-5 | 발전기 고정자 코어의 2×LF 진동·엔드와인딩 공진(2×LF 근처 고유진동수), 계자 열 민감도(계자 전류에 따라 1X가 변함 → 계자 전류 변경 시험), 샤프트 전압·전류와 접지 브러시, 축계 비틀림·SSR과 발전기, 터빈-발전기 커플링 미스얼라인 | 벡터 트렌드·APHT(P6-4), 1X 계열(P7-2), 미스얼라인(P7-3), 2×LF·극통과(P7-7), 비틀림·SSR(P7-9) |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
@@ -242,6 +242,8 @@
 
 - P8-3 지정 법칙: ℓ[—]=부하율0~1, q=q₀+q_Lℓ[N/m], q는 P4-4 k_xy와 같은 교차연성. qcrit/k=2ζ, ℓ*=(2ζ−q₀/k)/(q_L/k), q_L>0·0≤ℓ*≤1일 때 유일한 구간 경계. 정적 ε에서 q·ζ를 계산하지 않는다. 자유팽창 ΔL=α_T LΔT[m], 공통 기준 타깃 예제 DE=ΔL_r+u_T−ΔL_c; u_T[m]는 전체 축 이동, 실제 센서 배치는 별도 확인.
 
+- P8-4 동압: p′[Pa]=평균 압력에서의 변동, A_p[Pa Peak], θ[rad]=원주각, m[—]=공간 모드/셀 차수(축 차수와 구별), x/L[—]=축방향 위치. 진행 p′=A_p cos(2πft−mθ), 정재 p′=A_p cos(mθ)cos(2πft), 닫힌 관1차 p′=A_p cos(πx/L)cos(2πft). 랩의 A는 A_p. 표시 B−A 위상은 cos의 위상차·키페이저 지연각과 별도.
+
 ### 3-1. 공통 DSP 코어 구현 사양
 
 코드와 테스트가 기준이다. 랩·그림을 만들 때 알아야 할 규약만 적는다 (끝난 코어의 설계 메모는 `archive/Milestones.md`, D-030).
@@ -310,7 +312,7 @@
 | P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 검토 |
 | P8-2 | 열 휨 · 터닝 기어 · Morton | LAB-TRND-01 프리셋 | M8.5 (D-043) | 검토 |
 | P8-3 | ST 특화 | LAB-ST-01 | M8.2 | 검토 (그림8·문제6·본문2랩, 2026-10-08) |
-| P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
+| P8-4 | GT 특화 | LAB-GT-01·LAB-GEAR-02 프리셋 | M8.3 | 검토 |
 | P8-5 | 발전기와 축계 | (시나리오 프리셋) | M8.4 | 계획 |
 | P9-1 | 구조 공진 판별과 임팩트 시험 | LAB-HPB-01 | M9.1 | 계획 |
 | P9-2 | 밸런싱 | LAB-BAL-01 | M9.2 | 계획 |
@@ -396,6 +398,7 @@
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) + 맞물려 도는 기어(상한 이빨 충격·헌팅 투스 주기, D-044) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · `GearMesh` · lib/faults/gear.ts, gearMotion.ts |
 | LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
 | LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |
+| LAB-GT-01 | GT 동압의 실속/서지·종방향·원주 진행/정재 공간 모드·절점 | P8-4 | GasPressureLab (/lab/gt-01/) · lib/machine/gt.ts |
 | LAB-ST-01 | ST 부하 경계·부분 분사 합력·정적 중심 위치 (독립 모델) | P8-3 | `SteamLoadLab` (/lab/st-01/) · lib/rotor/steam.ts, journalBearing.ts, stability.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
@@ -715,6 +718,13 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 - 현재 x/v/−cv는 dampedMotionAt의 동일 해. 다음 피크 t=nT_d(정지 초기조건·양의 x₀), 임계/과감쇠 또는 2초 밖이면 비활성. 장치 고정 축척 ±20mm, 피스톤과 질량 동기.
 - 검증: dampedAnimation.test.ts 6개, 기존 해 동등·4감쇠 구간·피크 감소·감쇠력 방향·영점/경계. QA --damping-smoke·--anim-smoke: 재생/정지/재개/탐색 반복/속도/끝/화면밖·전체 Plot 갱신 없음.
 
+### P8-4 GT 동압·벡터 (M8.3)
+
+- LAB-GT-01: 셀 회전비0.4·셀1개·3000/6000 rpm →20/40 Hz, 셀2개·6000 rpm→80 Hz. 서지5 Hz·음향300 Hz는 회전수 독립 지정값.
+- A2 kPa Peak의 RMS=1.414213562 kPa. 원주m1·B90° 진행파는B−A −90°, 정재파는B0·위상 없음. 종방향x/L0.5는0, x/L1은2 kPa·반대 위상. 닫힌 관 c600 m/s·L1 m→300 Hz.
+- 가상23:61·입력1490 rpm: GMF571.1666667 Hz·출력9.363387978 Hz. 전후20 µm Peak·0→90°의응답 차=28.28427125 µm Peak. 12차 가진×3000 rpm=600 Hz 교차는 지정 모드 예제.
+- 테스트: machine/gt.test.ts(파장·공간/시간 주기·위상·절점·RMS·선형성·경계), figures-p8-4.test.ts(본문 수치·그림7개 범위). 실기 발생/튜닝/손상/보호 경계 계산 아님.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -754,6 +764,11 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-32 | [Bently Nevada, ORBIT 2012 Q4](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v32n4_2012_q4.pdf) | DE·축위치·케이싱 팽창 기준 (P8-3) | 측정 개념 요약 |
 | R-33 | [Salamone (1982), Rotor Dynamic Analysis And Bearing Optimization Study Of A 3800 Hp Steam Turbine](https://oaktrust.library.tamu.edu/items/2d8b06df-f769-41ed-aa81-6c88e9544387) | 열 정렬·하중 감소와 불안정 사례 (P8-3) | 베어링별 조건, 일반화하지 않음 |
 | R-34 | [Detection Of Rotor Cracks](https://oaktrust.library.tamu.edu/server/api/core/bitstreams/0a54b65f-73e8-4c3c-9018-3b612a9dcc15/content) | 연결 축계·catenary·응력 검토 (P8-3) | 공개 개념 요약 |
+
+| R-35 | [Martinez-Sanchez 외, Turbine Blade-Tip Excitation Forces](https://ntrs.nasa.gov/api/citations/19940029671/downloads/19940029671.pdf) | Alford 힘·팁 누설·씰 힘 구별 (P8-4) | 개념 요약·실험 수치/그림 전재 없음 |
+| R-36 | [NACA, Surge-Inception Study](https://ntrs.nasa.gov/citations/20050019238) | 압력 자료·실속/서지 관계 (P8-4) | 특정 엔진 경계를 일반화하지 않음 |
+| R-37 | [Noiray·Schuermans, Azimuthal thermoacoustic modes](https://doi.org/10.1098/rspa.2012.0535) | 원주 진행/정재 모드·동시 동압 (P8-4) | 공개 초록 개념 요약 |
+| R-38 | [GE Vernova, GER-3620P](https://www.gevernova.com/content/dam/gepower-new/global/en_US/downloads/gas-new-site/resources/reference/GER-3620-P.pdf) | 연소 동압 감시·튜닝·점검 (P8-4) | 경계값·정비 주기 전재 없음 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

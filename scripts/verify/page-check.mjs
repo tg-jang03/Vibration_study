@@ -32,6 +32,7 @@ const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
 const steamSmoke = flag('steam-smoke');
+const gtSmoke = flag('gt-smoke'); // LAB-GT-01 해석 모드·입력·절점 조작
 const forcedSmoke = flag('forced-smoke');
 const dampingSmoke = flag('damping-smoke');
 const cascadeSmoke = flag('cascade-smoke');
@@ -347,6 +348,36 @@ for (const p of paths) {
     })()`);
     if(smoke?.ok===false||!smoke)errors.push('강제진동 재생 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok)console.log('     강제진동 재생 '+smoke.checks+'항목 OK (위상·동기화·재생·정지·탐색·0Hz)');
+  }
+
+  if (gtSmoke) {
+    const smoke=await ev(`(async()=>{
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(l=>l.querySelector('.lab-id')?.textContent==='LAB-GT-01');
+      if(!labs.length)return {skipped:true};
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++},wait=()=>new Promise(r=>setTimeout(r,300));
+      try{for(const lab of labs){
+        const sliders=lab.querySelectorAll('input[type="range"]'),selects=lab.querySelectorAll('select'),initial=selects[0].value;
+        const choose=async(i,v)=>{selects[i].value=String(v);selects[i].dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+        const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+        const read=label=>{const r=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return r?parseFloat(r.cells[1].textContent.replaceAll(',','').replaceAll('−','-')):NaN};
+        const near=(l,v)=>Math.abs(read(l)-v)<.01,status=()=>lab.querySelector('[role="status"]').textContent;
+        require(lab.querySelectorAll('.js-plotly-plot').length===2,'압력/공간2 plots');
+        await choose(0,0);require(near('압력 주파수',20)&&near('B−A 위상',-90),'stall20Hz·위상');
+        await set(0,6000);require(near('압력 주파수',40),'stall rpm2배');await choose(1,1);require(near('압력 주파수',80),'셀2개');
+        await choose(0,1);require(near('압력 주파수',5)&&near('B−A 위상',0)&&selects[1].disabled&&sliders[1].disabled&&sliders[2].disabled,'서지·disabled');
+        await set(0,3000);require(near('압력 주파수',5),'서지 rpm독립');
+        await choose(1,0);await choose(0,3);require(near('압력 주파수',300)&&near('센서 B Peak',2)&&near('B−A 위상',-90)&&near('센서 A RMS',Math.SQRT2),'음향 진행파');
+        await choose(0,4);require(read('센서 B Peak')===0&&status().includes('정의되지')&&!Number.isFinite(read('B−A 위상')),'정재절점');
+        await set(1,180);require(near('센서 B Peak',2)&&near('B−A 위상',-180),'반대위상');
+        await choose(0,2);require(read('센서 B Peak')===0&&sliders[1].disabled&&!sliders[2].disabled,'종방향절점');
+        await set(2,1);require(near('센서 B Peak',2)&&near('B−A 위상',-180),'종방향끝');
+        await set(3,0);require(read('센서 A RMS')===0&&status().includes('정의되지'),'진폭0');
+        [...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();
+        require(selects[0].value===initial&&sliders[0].value==='3000'&&sliders[1].value==='90'&&sliders[2].value==='0.5'&&sliders[3].value==='2','초기화 시작현상');
+      }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('GT 동압 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     GT 동압 조작 '+smoke.checks+'항목 OK (주파수·공간위상·절점·초기화)');
   }
 
   if (steamSmoke) {

@@ -90,6 +90,7 @@ export const LABS: LabEntry[] = [
   { slug: 'gear-01', id: 'LAB-GEAR-01', component: 'GearSpectrumLab', part: 7, title: '기어 결함의 스펙트럼 지문', summary: '마모·편심·깨진 이·백래시·헌팅 투스와 부하를 골라 GMF 하모닉, 측대역의 간격·개수, 맞물림 공진 대역, 파형을 비교한다.' },
   { slug: 'gear-02', id: 'LAB-GEAR-02', component: 'GearTsaLab', part: 7, title: 'TSA와 켑스트럼: 어느 축의 몇 번 이빨인가', summary: '축마다 키페이저로 TSA한 Residual·Difference와 FM4, 켑스트럼 봉우리로 결함 축과 이빨 번호를 찾는다.' },
   // Part 8
+  { slug: 'gt-01', id: 'LAB-GT-01', component: 'GasPressureLab', part: 8, title: 'GT 동압: 센서 위치와 공간 모드', summary: '실속·서지·연소의 지정 압력 파형을 비교하고 원주/종방향 위치에 따른 진폭·위상·절점을 읽는다.' },
   { slug: 'st-01', id: 'LAB-ST-01', component: 'SteamLoadLab', part: 8, title: 'ST 부하·부분 분사: 경계와 중심 위치', summary: '부하·감쇠·교차연성으로 가상 안정 경계를 비교하고, 분사 합력·점성계수에 따른 정적 중심 위치를 별도로 읽는다.' },
   { slug: 'bode-01', id: 'LAB-BODE-01', component: 'MultiModeBodeLab', part: 8, title: '여러 모드의 Bode / Polar', summary: '모드 간격·감쇠·센서·열 상태·slow roll 보상을 바꿔 1X 중첩과 마디, 베어링별 위상과 Polar를 비교한다.' },
 ];
