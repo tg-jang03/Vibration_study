@@ -120,7 +120,7 @@ export const PARTS: Part[] = [
       { id: 'P7-3', title: '미스얼라인먼트 · 풀림 · 러브', status: 'planned' },
       { id: 'P7-4', title: '유체막 · 유체력 불안정', status: 'planned' },
       { id: 'P7-5', title: '구름베어링', status: 'review', href: '/p7-5/' },
-      { id: 'P7-6', title: '기어', status: 'planned' },
+      { id: 'P7-6', title: '기어', status: 'review', href: '/p7-6/' },
       { id: 'P7-7', title: '전기적 원인 (모터 · 발전기)', status: 'planned' },
       { id: 'P7-8', title: '유체 · 공력 원인', status: 'planned' },
       { id: 'P7-9', title: '비틀림 진동 · 블레이드 진동', status: 'planned' },

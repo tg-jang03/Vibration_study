@@ -84,6 +84,8 @@ export const LABS: LabEntry[] = [
   { slug: 'rpm-01', id: 'LAB-RPM-01', component: 'RpmLab', part: 7, title: '회전수 추정: 회전수를 모를 때 1X 찾기', summary: '하모닉 무리·켑스트럼·자기상관으로 1X를 찾고, 방법마다 틀리는 경우(절반을 고르기, 큰 성분에 덮이기)를 본다.' },
   { slug: 'brg-01', id: 'LAB-BRG-01', component: 'BearingCalcLab', part: 7, title: '베어링 결함 주파수 계산기', summary: '볼 수·볼 지름·피치 지름·접촉각·회전수·미끄럼으로 FTF·BSF(1배·2배)·BPFO·BPFI를 계산하고 어림값과 비교한다.' },
   { slug: 'brg-02', id: 'LAB-BRG-02', component: 'BearingStageLab', part: 7, title: '결함 위치와 고장 단계: 어디에 먼저 보이나', summary: '외륜·내륜·볼·케이지 결함과 고장 4단계를 골라 가속도(dB)·속도·엔벨로프 스펙트럼에서 결함이 어디에 먼저 보이는지 본다.' },
+  { slug: 'gear-01', id: 'LAB-GEAR-01', component: 'GearSpectrumLab', part: 7, title: '기어 결함의 스펙트럼 지문', summary: '마모·편심·깨진 이·백래시·헌팅 투스와 부하를 골라 GMF 하모닉, 측대역의 간격·개수, 맞물림 공진 대역, 파형을 비교한다.' },
+  { slug: 'gear-02', id: 'LAB-GEAR-02', component: 'GearTsaLab', part: 7, title: 'TSA와 켑스트럼: 어느 축의 몇 번 이빨인가', summary: '축마다 키페이저로 TSA한 Residual·Difference와 FM4, 켑스트럼 봉우리로 결함 축과 이빨 번호를 찾는다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);
