@@ -27,7 +27,7 @@ const DISPLAY_OPTIONS = [
   { value: 'total' as const, label: '정지 상태에서 시작 (과도 포함)' },
   { value: 'steady' as const, label: '정상상태만' },
 ];
-const SPEED_OPTIONS = [{value:0.1,label:'0.1배'}, {value:0.25,label:'0.25배'}, {value:0.5,label:'0.5배'}, {value:1,label:'1배'}];
+const SPEED_OPTIONS = [{value:0.1,label:'실제의 1/10'}, {value:0.25,label:'실제의 1/4'}, {value:0.5,label:'실제의 1/2'}, {value:1,label:'실제 속도'}];
 
 function springPath(x1:number,x2:number,y:number):string {
   const lead=16,span=x2-x1-2*lead;
@@ -50,7 +50,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
   const [forcingHz, setForcingHz] = useState(initialFrequency);
   const [zeta, setZeta] = useState(initialZeta);
   const [display, setDisplay] = useState<DisplayMode>('total');
-  const [elapsed,setElapsed]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(.25),[showAll,setShowAll]=useState(false);
+  const [elapsed,setElapsed]=useState(0),[sceneT,setSceneT]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(.25),[showAll,setShowAll]=useState(false);
   const arrowId=useId().replace(/:/g,'');
   useEffect(()=>{
     if(!playing)return;
@@ -58,6 +58,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
     let frame=0,lastDraw=0;
     const tick=(now:number)=>{
       const next=Math.max(0,Math.min(DURATION,(now-started)/1000*speed));
+      setSceneT(next); // 장치 그림은 매 프레임 (D-044 §4) — Plot·읽음값은 elapsed로 40 ms마다
       if(now-lastDraw>=40||next>=DURATION){setElapsed(next);lastDraw=now;}
       if(next>=DURATION)setPlaying(false);else frame=requestAnimationFrame(tick);
     };
@@ -95,8 +96,11 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
   const timeRange:[number,number]=showAll?[0,DURATION]:[Math.max(0,elapsed-windowSeconds),Math.max(windowSeconds,elapsed)];
   const startIndex=showAll?0:Math.floor(timeRange[0]/DURATION*(POINTS-1));
   const nextQuarter=nextForcedQuarter(elapsed,forcingHz,DURATION);
-  const scale=65/(yLimit/1.1),offset=currentMm*scale,massX=350+offset,pistonX=163+offset;
-  const forceEnd=massX+75*current.force/F0;
+  // 장치 그림: 재생 중에는 매 프레임 시각(sceneT). 점선 상자 = 같은 힘을 천천히 걸었을 때의 자리 F/k (같은 축척)
+  const scene=playing?forcedMotionAt(system,input,sceneT,display):current;
+  const sceneMm=clean(scene.displacement*1000),sceneForceMm=clean(scene.force/STIFFNESS*1000);
+  const scale=65/(yLimit/1.1),offset=sceneMm*scale,massX=350+offset,pistonX=163+offset,ghostX=350+sceneForceMm*scale;
+  const forceEnd=massX+75*scene.force/F0;
 
   const timeSeries = useMemo<PlotSeries[]>(() => [
     { x: time.slice(startIndex,count), y: force.slice(startIndex,count), name: '힘 F(t)/k [mm 환산]', color: 'var(--plot-2)', width: 1.4 },
@@ -146,7 +150,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
             <button className="lab-button" type="button" disabled={playing} onClick={()=>{if(elapsed>=DURATION)setElapsed(0);setPlaying(true);}}>{elapsed>=DURATION?'처음부터 재생':playing?'재생 중':'재생'}</button>
             <button className="lab-button" type="button" disabled={!playing} onClick={()=>setPlaying(false)}>정지</button>
             <button className="lab-button" type="button" disabled={nextQuarter===null} onClick={()=>{setPlaying(false);if(nextQuarter!==null)setElapsed(nextQuarter);}}>T/4 앞으로</button>
-            <button className="lab-button" type="button" onClick={reset}>처음 상태</button>
+            <button className="lab-button" type="button" onClick={reset}>처음으로</button>
           </div></div>
         </>
       }
@@ -204,7 +208,6 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
         <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--plot-2)"/></marker></defs>
         <line x1={52} y1={35} x2={52} y2={180} stroke="var(--text-muted)" strokeWidth={4}/>
         {Array.from({length:11},(_,i)=><line key={i} x1={30} y1={43+i*13} x2={52} y2={31+i*13} stroke="var(--text-muted)"/>)}
-        <line x1={350} y1={28} x2={350} y2={205} stroke="var(--text-muted)" strokeDasharray="5 5"/>
         <text x={350} y={225} textAnchor="middle" fontSize={14} fill="var(--text-muted)">평형 x=0</text>
         <path d={springPath(52,massX-42,88)} fill="none" stroke="var(--plot-1)" strokeWidth={3}/>
         <text x={170} y={63} textAnchor="middle" fontSize={14} fill="var(--text-muted)">스프링 k</text>
@@ -215,10 +218,14 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
         <text x={163} y={190} textAnchor="middle" fontSize={14} fill="var(--text-muted)">감쇠 c</text>
         <rect data-frc-mass="true" x={massX-42} y={65} width={84} height={112} rx={7} fill="var(--accent-soft)" stroke="var(--plot-1)" strokeWidth={3}/>
         <text x={massX} y={123} textAnchor="middle" fontSize={21} fontWeight={700} fill="var(--text)">m</text>
-        {Math.abs(current.force)>.002&&<line data-frc-force="true" x1={massX} y1={38} x2={forceEnd} y2={38} stroke="var(--plot-2)" strokeWidth={3} markerEnd={`url(#${arrowId})`}/>}
-        <text x={350} y={20} textAnchor="middle" fontSize={14} fill="var(--plot-2)">가진력 F(t)</text>
+        {Math.abs(scene.force)>.002&&<line data-frc-force="true" x1={massX} y1={38} x2={forceEnd} y2={38} stroke="var(--plot-2)" strokeWidth={3} markerEnd={`url(#${arrowId})`}/>}
+        <text x={Math.abs(scene.force)>.002?(massX+forceEnd)/2:massX} y={24} textAnchor="middle" fontSize={14} fill="var(--plot-2)">가진력 F(t)</text>
+        <rect data-frc-ghost="true" x={ghostX-42} y={65} width={84} height={112} rx={7} fill="none" stroke="var(--plot-2)" strokeWidth={2} strokeDasharray="6 4"/>
+        <text x={ghostX} y={198} textAnchor="middle" fontSize={13} fill="var(--plot-2)">F/k 자리</text>
+        <line x1={350} y1={28} x2={350} y2={205} stroke="var(--text-muted)" strokeDasharray="5 5" opacity={0.7}/>
+        <text x={505} y={225} textAnchor="end" fontSize={13} fill="var(--text-muted)">+x →</text>
       </svg>
-      <p className="lab-note">파랑은 질량 변위, 주황은 외부 가진력입니다. 장치 그림의 변위 범위는 조건마다 ±{(yLimit/1.1).toFixed(2)} mm로 조정합니다. 힘 화살표는 같은 힘에 같은 길이입니다. 진폭 크기는 파형·읽음값의 mm로 비교하세요.</p>
+      <p className="lab-note">파랑은 질량 변위, 주황은 외부 가진력입니다. 점선 주황 상자는 같은 힘을 아주 천천히 걸었을 때 질량이 갈 자리(F/k)입니다 — 질량이 이 상자보다 얼마나 멀리 가는지가 진폭비, 얼마나 늦게 따라가는지가 위상 지연입니다. 장치 그림의 축척은 조건마다 ±{(yLimit/1.1).toFixed(2)} mm에 맞추고, 질량과 상자는 같은 축척입니다.</p>
       <Plot
         series={timeSeries}
         x={{ label: '시간 t [s]', range: timeRange }}

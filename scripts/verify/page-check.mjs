@@ -341,7 +341,7 @@ for (const p of paths) {
         await press('재생');await choose(1,3);await wait(350);require(read('현재 시각')>t+.3,'재개·속도 변경');await press('정지');
         await set(2,3.98);await press('재생');require(read('현재 시각')===4&&[...lab.querySelectorAll('button')].find(b=>b.textContent==='정지').disabled,'끝 자동 정지');
         await press('처음부터 재생');require(read('현재 시각')<1&&read('현재 시각')>0,'재시작');await press('정지');
-        await press('처음 상태');require(read('현재 시각')===0,'시각 초기화');
+        await press('처음으로');require(read('현재 시각')===0,'시각 초기화');
         require([...lab.querySelectorAll('svg[role="img"] path')].every(p=>!/(NaN|Infinity)/.test(p.getAttribute('d'))),'SVG 유한');
         await choose(1,1);await choose(0,0);await set(0,2.5);
       }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
