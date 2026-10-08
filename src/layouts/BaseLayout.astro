@@ -30,6 +30,8 @@ const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <title>{fullTitle}</title>
+    {/* 방문 통계 (D-045): GoatCounter — 쿠키 없음, 배포 빌드에서만 넣고 localhost 방문은 스크립트가 스스로 세지 않는다 */}
+    {import.meta.env.PROD && <script is:inline data-goatcounter="https://vibstudy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>}
   </head>
   <body>
     <header class="site-header">
