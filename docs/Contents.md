@@ -97,6 +97,17 @@
 |---|---|---|
 | P7-1 | 주파수 → 원인 지도(차수로 후보 좁히기), 같은 자리의 후보를 위상·방향·운전조건으로 가르기, 결함 합성기(지문), 회전수 추정(하모닉 무리·켑스트럼·자기상관, 2배·절반으로 틀림), 명판·슬립·동기속도·기어비·날개 수로 역산 | 요소 주파수 지도(P1-8), 증거 5요소(P1-9), Δf = 1/T(P2-4), 측대역(P2-8), 스펙트로그램 줄 모양(P5-2), 엔벨로프(P5-6), 켑스트럼·자기상관(P5-7) |
 | P7-5 | 접촉각 α를 넣은 결함 주파수 식·앵귤러 볼베어링, 어림값의 한계, 미끄럼(케이지 늦음 → BPFO ↓·BPFI ↑), BSF 1배/2배 관례·볼 결함 2×BSF ± FTF, 위치마다의 변조(외륜 없음·내륜 1X·볼 FTF·케이지 FTF), 고장 4단계와 단계별 방법, 초음파 대역, 증거 5요소·감별·확인 | FTF·BPFO·BPFI·BSF(P1-8), 측대역·변조(P2-8), 가리비 손실·ENBW(P2-5), 설치 공진(P3-1), 엔벨로프·하중 영역·첨도·SK(P5-6), 특징량 추세(P5-7), 진단 지도·합성기(P7-1) |
+| P7-6 | 맞물림 주파수 GMF = z₁f₁ = z₂f₂(두 축에 공통인 줄 하나)·피니언, 전달 오차(건전해도 GMF, 부하에 따라 변함 → 같은 부하끼리 비교), 측대역 간격 = 결함 축의 회전수, 헌팅 투스 주파수 f_HT = GMF ÷ LCM(z₁, z₂)·GCD·헌팅 투스 설계, 결함마다의 모양(마모 = 2×·3×GMF·인벌류트, 편심 = 측대역 한 쌍, 깨진 이 = 작은 측대역 다수·한 바퀴 한 번 충격, 백래시 = 가벼운 부하에서 덜컥거림), 축마다의 TSA → Residual·Difference·FM4·이빨 번호, 켑스트럼 봉우리 추세, 증거 5요소·감별·확인 | 기어 맞물림(P1-8), Δf·Zoom FFT(P2-4), TSA·빗살 통과·Residual(P2-6), AM·FM 측대역(P2-8), 측정 설정(P2-9), 차수추적(P5-4), 포락선·첨도(P5-6), 켑스트럼·헌팅 투스(P5-7), 회전수 역산·합성기(P7-1), 구름베어링 감별(P7-5) |
+
+**Part 8 개념 척추** (D-043 — 트랙 B가 M8에서 쓴다. 현상 → 메커니즘(Part 4·7 링크) → 데이터에서 어떻게 보이나(Part 6 플롯) → 운전 대응. 메커니즘은 되짚기만, 판정 수치는 Part 10. 세부를 시작할 때 이 행을 다듬는다)
+
+| 페이지 | 새로 도입하는 개념 | 되짚기만 하는 것 (위치) |
+|---|---|---|
+| P8-1 | 여러 모드(강체 병진·원추, 1차·2차 굽힘)와 임계속도 여러 개, 모드 중첩으로 본 베어링마다의 1X, 모드마다 위상 약 180° 변화(모드·센서 위치에 따라 다름), "피크 + 위상 변화 = 공진"(피크만이면 다른 원인 의심, 위상 변화만 크고 피크가 작으면 감쇠 큰 모드), Polar 루프로 모드 식별, 두 베어링의 동상/역상 → 병진/원추·2차 굽힘, 모드 마디 근처 센서는 그 모드를 못 봄, 런업 vs 코스트다운(열 상태·bow·필터 지연), 통과 진폭을 키우는 요인(잔류 불평형 + bow), 임계속도 통과 운전(빨리 지나가기·머무르지 않기) | 1모드 Bode·Polar·AF·SM(P4-1), 모드 형상·동상/역상(P1-5), 위상 관례·1X 벡터·slow roll 보상(P3-3), 런업 수집·트립 배율(P3-5), Jeffcott·강성/유연 로터(P4-2), 필터 지연으로 Bode가 밀림(P5-5), 캐스케이드(P6-2), 벡터 트렌드(P6-4), 1X 계열·bow(P7-2) |
+| P8-2 | 열 휨(thermal bow: 정지 중 상하 온도차 → 축이 휨 → 기동 시 큰 1X), 터닝 기어(정지 중 천천히 돌려 온도를 고르게)·eccentricity(slow roll 런아웃 p-p)로 기동 판단, bow 벡터 + 불평형 응답 벡터, Morton effect(저널 원주의 고르지 않은 가열·hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선, 부하·오일 온도 영향), Newkirk effect와의 구별(접촉 마찰열 vs 유막 전단열) | slow roll 보상(P3-3), heavy/high spot(P4-1), 오빗·hot spot 자리(P6-3), APHT·Acceptance region(P6-4), 여러 모드 통과(P8-1), bow(P7-2), 러브·Newkirk(P7-3) |
+| P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 순서 → 증기력 방향 → 베어링 하중 → Shaft centerline 이동·편심률 저하 → 안정성 저하), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
+| P8-4 | Alford force(터빈 팁 간극 변화 → 교차연성), GT 압축기 stall/surge와 동압 신호, 연소 동역학(동압 센서, 종방향/원주방향 음향 모드, 연소 튜닝과의 관계), 액세서리 기어박스 진단(구름베어링·기어 + TSA), 이물질 손상(FOD) → 1X 벡터 급변 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
+| P8-5 | 발전기 고정자 코어의 2×LF 진동·엔드와인딩 공진(2×LF 근처 고유진동수), 계자 열 민감도(계자 전류에 따라 1X가 변함 → 계자 전류 변경 시험), 샤프트 전압·전류와 접지 브러시, 축계 비틀림·SSR과 발전기, 터빈-발전기 커플링 미스얼라인 | 벡터 트렌드·APHT(P6-4), 1X 계열(P7-2), 미스얼라인(P7-3), 2×LF·극통과(P7-7), 비틀림·SSR(P7-9) |
 
 ### 1-3. 그림 · 강조 상자 · 랩 배치 → `PageGuide.md` §5 · §6
 
@@ -283,12 +294,12 @@
 | P7-3 | 미스얼라인먼트 · 풀림 · 러브 | (LAB-FAULT-01 프리셋) | M7.2 | 계획 |
 | P7-4 | 유체막 · 유체력 불안정 | (LAB-WF-01, LAB-STB-01 프리셋) | M7.3 | 계획 |
 | P7-5 | 구름베어링 | LAB-BRG-01, LAB-BRG-02 | M7.4 | 검토 (그림 7, LAB-BRG-01 1곳·LAB-BRG-02 2곳, 2026-10-07) |
-| P7-6 | 기어 | LAB-GEAR-01 | M7.5 | 계획 |
+| P7-6 | 기어 | LAB-GEAR-01, LAB-GEAR-02 | M7.5 | 검토 (그림 8, LAB-GEAR-01·LAB-GEAR-02 각 1곳, 2026-10-08) |
 | P7-7 | 전기적 원인 | (LAB-MOD-01 프리셋) | M7.6 | 계획 |
 | P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
 | P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 계획 |
-| P8-2 | Thermal bow · Turning gear · Morton | (LAB-TRND-01 프리셋) | M8.1 | 계획 |
+| P8-2 | Thermal bow · Turning gear · Morton | (LAB-TRND-01 프리셋) | M8.5 (D-043) | 계획 |
 | P8-3 | ST 특화 | (시나리오 프리셋) | M8.2 | 계획 |
 | P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
 | P8-5 | 발전기와 축계 | (시나리오 프리셋) | M8.4 | 계획 |
@@ -370,18 +381,28 @@
 | LAB-RPM-01 | 회전수 추정: 회전수를 모를 때 1X 찾기 | P7-1 | `RpmLab` (/lab/rpm-01/) · lib/faults/rpm.ts, synth.ts |
 | LAB-BRG-01 | 베어링 결함 주파수 계산기 (접촉각·미끄럼·BSF 1배/2배) | P7-5 | `BearingCalcLab` (/lab/brg-01/) · lib/machine/frequencies.ts, lib/faults/bearing.ts |
 | LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 | P7-5 | `BearingStageLab` (/lab/brg-02/) · lib/faults/bearing.ts |
+| LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · lib/faults/gear.ts |
+| LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
 새 랩은 여기에 사양을 먼저 쓰고 구현한다 (템플릿 §2). 구현이 끝나면 사양을 `archive/LabSpecs.md`로 옮기고 위 표에 한 줄을 더한다.
+
+#### LAB-BODE-01 여러 모드의 Bode / Polar: 피크와 위상으로 모드 읽기
+- P8-1 · M8.1 · **사양 초안** (Claude, 2026-10-08, D-043). 트랙 B가 시작할 때 숫자·조작을 확정하고 이 줄을 고친다. 예시 숫자는 테스트로 고정하기 전까지 제안값이다
+- 목적: 임계속도가 둘인 유연 로터의 런업에서 베어링마다 피크와 위상 변화가 어떻게 나오는지 보고, "피크 + 위상 변화 = 공진", 두 베어링의 동상/역상 → 모드 형상, 모드 마디의 센서는 그 모드를 못 본다는 것을 체감한다.
+- 신호 (1X 벡터만, 시드 고정 잡음 선택): 모드 중첩 2모드. 예시 — 운전 3600 rpm, 1차 N₁ 1500 rpm·ζ₁ 0.06, 2차 N₂ 4300 rpm·ζ₂ 0.04 (과속 시험 구간 안에 2차 꼬리, 또는 N₂를 운전 아래로 내려 두 봉우리를 모두 보이게 — 시작 때 결정). 모드 형상 φ (센서 3곳: 베어링 1 · 베어링 2 · 중앙): 1차 [1, 1, 1.5], 2차 [1, −1, 0] (중앙 = 2차 마디). 모드 불평형 e₁·e₂ [µm]와 각 θ₁·θ₂ (1차 = 정적, 2차 = 커플 불평형), 선택: 열 bow b∠β (코스트다운 = 열간), 런아웃 벡터
+- 조작: N₁·N₂ [rpm], ζ₁·ζ₂, e₁·θ₁, e₂·θ₂, 센서(베어링 1 / 베어링 2 / 중앙, 여러 개 겹쳐 보기), 런업(냉간, bow 0) ↔ 코스트다운(열간, bow), slow roll 보상 on/off, 운전 회전수 표시
+- 출력: Bode(진폭·위상 지연 vs rpm, 센서별 색), Polar(`PolarPlot`, D-035 — 0° 위, 지연은 회전 반대), 읽음값 — 봉우리 회전수·진폭(센서별), 봉우리 앞뒤(0.7 ~ 1.4 N_m) 위상 변화, 1차 AF(Half-power, P4-1의 `halfPowerAF` 재사용), 봉우리에서 두 베어링 위상차(≈ 0° 동상 / ≈ 180° 역상), 운전 회전수와의 SM
+- 수식: 센서 j의 1X 벡터 X_j(Ω) = Σ_m φ_jm (e_m r_m² e^{−jθ_m} + b_m)/(1 − r_m² + j2ζ_m r_m), r_m = N/N_m, b_m = 열 bow의 모드 성분. 위상 지연 φ = −arg X_j (Contents §3 위상 관례, P3-3). 1X 벡터 A∠φ
+- 실험 과제: ① 기본값에서 베어링 두 곳의 봉우리 2개와 위상 변화 약 180°씩, 2차에서 두 베어링이 역상 ② 중앙 센서 → 2차 봉우리가 사라짐(마디), "피크가 없다 ≠ 모드가 없다" ③ ζ₂를 키우면 봉우리는 낮아지지만 위상 변화는 남음 → 피크만으로 판단하지 않는다 ④ N₂를 N₁ 쪽으로 → 두 모드가 겹쳐 위상 변화가 180°에서 벗어나고 Polar 루프가 섞임 ⑤ 코스트다운(bow) → 저속 벡터가 0이 아니고 Bode가 런업과 다름, slow roll 보상의 효과와 한계 ⑥ 런아웃과 응답이 반대 방향일 때 공진 아닌 골·봉우리
+- 검증: φ의 2차 성분 0·bow 0이면 P4-1 `simulateRunUp`(N₁, ζ₁, e₁)과 같음(상대 오차 1e-12) / 모드가 잘 떨어지면 봉우리 회전수 ≈ N_m/√(1 − 2ζ_m²)(P4-1 `theoreticalPeakRpm`)·위상 변화 ≈ 180° / 마디 센서에 2차 봉우리 없음 / N → 0에서 X_j → Σ φ_jm b_m (bow = slow roll 벡터) / AF ≈ 1/(2ζ₁)
 
 ### 5-2. 그 밖의 랩 (개요 — 해당 마일스톤 시작 시 상세화)
 
 | ID | 이름 | 핵심 조작 → 보이는 것 | 페이지 | M |
 |---|---|---|---|---|
 
-| LAB-BODE-01 | Bode / Polar | LAB-AF-01 확장: 2모드 로터, 위상 반전, 여러 베어링의 Polar 루프 | P8-1 | M8.1 |
-| LAB-GEAR-01 | 기어 측대역 | 잇수·결함 축 → GMF ± n×RPM, 헌팅 투스 | P7-6 | M7.5 |
 | LAB-CAMP-01 | Campbell 선도 | 고유진동수 강성화, 엔진 차수선 → 교차점 | P7-9 | M7.7 |
 | LAB-HPB-01 | Half-power & 임팩트 시험 | FRF 피크 → ζ, 지수 윈도우 영향, 해머 팁 → 가진 대역 | P9-1 | M9.1 |
 | LAB-BAL-01 | 영향계수 밸런싱 | 시험추 → 영향계수 → 보정추 → 잔류 진동 | P9-2 | M9.2 |
@@ -601,6 +622,21 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | 4단계 (외륜, 건전 · 1 · 2 · 3 · 4) | 엔벨로프 BPFO ÷ 바닥 초음파 2 · 78 · 83 · 86 · 3.4, 공진 1 · 2.3 · 117 · 168 · 4.6 / 속도 BPFO 0 · 0.004 · 0.036 · 0.72 · 0.23 mm/s / 1X 1.0 · 1.0 · 1.0 · 1.3 · 2.9 / 첨도 2.4 · 2.5 · 4.2 · 5.6 · 3.2 / overall 1.0 → 3.5 mm/s |
 | 성분 크기 읽기 (Hann) | ±3칸 제곱합 ÷ ENBW 1.5칸의 제곱근 → 칸 사이 성분도 1 % 안 (바로 읽으면 가리비 손실) |
 
+### P7-6 기어 (M7.5)
+
+결함 크기는 설명용 모델 값이다 (정도 60 %, 부하 80 %가 기본). `figures-p7-6.test.ts`·`gear.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 감속기 23 → 61이빨, 입력 1490 rpm | f₁ 24.83 Hz, GMF 571.2 Hz, f₂ 9.363 Hz(561.8 rpm), 회전수비 2.652, LCM 1403 → f_HT 0.4071 Hz(2.456 s = 피니언 61바퀴 = 기어 23바퀴), 큰 충격 1.42 · 3.88 · 6.33 s |
+| 잇수 조합의 LCM | 23·61 1403, 24·37 888, 24·36 72(GCD 12, 피니언 3바퀴), 20·60 60, 23·36 828 / Q1 20 → 47이빨 1800 rpm: GMF 600 Hz, f₂ 12.77 Hz(766 rpm), f_HT 0.6383 Hz(1.567 s) |
+| 건전 / 마모 (기어) | GMF 0.86 g, 2×÷GMF 0.35, 3×÷GMF 0.15, 공진 대역(2.2 ~ 3.0 kHz) RMS 0.018 g / 마모 0.96 g, 0.79 · 0.46, 공진 0.067 g(3.6배) |
+| 편심 | 측대역 ±1 약 19 %, ±2 약 1.8 %, GMF의 1 %를 넘는 것 4개 (그 축 간격만) |
+| 깨진 이 (충격 6 g × 정도) | 그 축 간격 측대역 ±15까지 30개 모두 1 % 넘음 (기어 가장 큰 것 약 3 %, 피니언 1 ~ 6 %), 파형 충격 봉우리 2.5 g vs 맞물림 물결 1.3 g |
+| 백래시 (부하 20 · 30 · 80 · 100 %) | 공진 대역 0.16 · 0.14(건전의 9.2배) · 0.044 · 0.020 g(= 건전) / 건전 공진 0.015 ~ 0.020 g, GMF 0.44 → 1.0 g |
+| TSA (깨진 기어 18번) | 기어 축 15바퀴: 102°·18번·FM4 약 100 / 피니언 축 1 · 5 · 15 · 40바퀴 FM4 33 · 17 · 5.3 · 3.5 (건전 3.6) / 깨진 피니언 6번: 피니언 축 40바퀴 84°·FM4 35 / 편심(기어) Difference FM4 3.7 (건전 3.2) |
+| 켑스트럼 | 깨진 피니언 1/f₁(40.27 ms) 0.11 (건전 0.0092), 깨진 기어 1/f₂(106.8 ms) 0.17 (건전 0.0064) |
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -623,9 +659,10 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-15 | [ABB 모터 설계](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles), [SKF bearing arrangement damping](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) | 모터 구성·베어링과 지지계 강성/감쇠 (P1-6) | 제조사 공개 자료, 2026-10-06 확인. 직렬 예제의 실제 기계 검증 자료로 쓰지 않음 |
 | R-16 | S. W. Smith, [*The Scientist and Engineer's Guide to Digital Signal Processing*](https://www.dspguide.com/) | 필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR (P5-1) | 공개 |
 | R-17 | [SciPy signal](https://docs.scipy.org/doc/scipy/reference/signal.html) (butter·cheby1·bessel·sosfiltfilt·decimate) | 필터 설계·두 번 거르기·데시메이션의 대조 기준 (P5-1) | 공식 문서, 2026-10-07 확인 |
-| R-18 | R. B. Randall, J. Antoni, "Rolling element bearing diagnostics — A tutorial", *Mechanical Systems and Signal Processing* 25 (2011) | 베어링 결함 주파수 식·미끄럼·위치마다의 변조 (P7-5) | |
 | R-18 | J. S. Bendat, A. G. Piersol, *Random Data: Analysis and Measurement Procedures* | 교차 스펙트럼, H1·H2, 코히어런스와 쏠림 (P5-3) | |
 | R-19 | K. R. Fyfe, E. D. S. Munck, "Analysis of computed order tracking", *Mechanical Systems and Signal Processing* 11(2), 1997 | 계산형 차수추적, 키페이저 시각의 2차 보간 (P5-4) | |
+| R-20 | R. B. Randall, J. Antoni, "Rolling element bearing diagnostics — A tutorial", *Mechanical Systems and Signal Processing* 25 (2011) | 베어링 결함 주파수 식·미끄럼·위치마다의 변조 (P7-5) | |
+| R-21 | P. D. McFadden, "Examination of a technique for the early detection of failure in gears by signal processing of the time domain average of the meshing vibration", *Mechanical Systems and Signal Processing* 1(2), 1987 | 축마다의 TSA, 규칙 성분을 뺀 신호(Residual·Difference)로 이빨 결함 찾기 (P7-6) | |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
