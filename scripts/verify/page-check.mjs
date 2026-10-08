@@ -4,6 +4,7 @@
 // 사용: 먼저 `npm run build` → `npx astro preview` (기본 http://localhost:4321)
 //   npm run verify:page -- /p3-5/ /lab/            (여러 경로)
 //   옵션: --base <URL>  --out <폴더(기본 dist/qa)>  --width <px(기본 1100)>  --no-shots  --edge <msedge 경로>
+//         --anim-smoke (움직이는 그림을 재생해 바뀌는지 보고 움직이는 중을 캡처)
 // 결과: 경로마다 한 줄 요약 + JSON(<out>/report.json). 오류가 있으면 종료 코드 1.
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -35,6 +36,7 @@ const forcedSmoke = flag('forced-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
+const animSmoke = flag('anim-smoke'); // 움직이는 그림 패널(.anim-panel)마다 재생 확인·캡처 (D-044)
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -480,6 +482,28 @@ for (const p of paths) {
     if(smoke?.ok) console.log('     Orbit 조작 '+smoke.checks+'항목 OK (형태·필터·점·방향·재생·초기화)');
   }
   const shots = [];
+  if (animSmoke) {
+    // 움직이는 그림 (D-044): 패널마다 재생 → 1.5 s 뒤 SVG가 바뀌었는지 보고, 움직이는 중의 패널을 캡처한 뒤 멈춘다
+    const slug = p.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
+    const count = (await ev(`document.querySelectorAll('.anim-panel').length`)) ?? 0;
+    if (!count) errors.push('움직이는 그림: .anim-panel이 없다');
+    for (let i = 0; i < count; i++) {
+      const r = await ev(`(async()=>{const p=document.querySelectorAll('.anim-panel')[${i}];p.scrollIntoView({block:'center'});const wait=ms=>new Promise(r=>setTimeout(r,ms));await wait(300);
+        const svg=()=>[...p.querySelectorAll('svg')].map(s=>s.innerHTML).join('');const a=svg();const btn=p.querySelector('.anim-button');btn.click();await wait(1500);
+        const b=svg();const rc=p.getBoundingClientRect();
+        return {lab:p.closest('.lab-frame')?.querySelector('.lab-id')?.textContent??'?',changed:a!==b,status:p.querySelector('.anim-status')?.textContent??'',x:rc.left+scrollX,y:rc.top+scrollY,w:rc.width,h:rc.height};})()`);
+      if (!r) { errors.push(`움직이는 그림 ${i}: 평가 실패`); continue; }
+      if (!noShots) {
+        const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true, clip: { x: r.x, y: r.y, width: r.w, height: r.h, scale: 1 } });
+        const file = path.join(outDir, `${slug}-anim${i}.png`);
+        await writeFile(file, Buffer.from(shot.data, 'base64'));
+        shots.push(file);
+      }
+      await ev(`document.querySelectorAll('.anim-panel')[${i}].querySelector('.anim-button').click()`);
+      if (!r.changed) errors.push(`움직이는 그림 ${i} (${r.lab}): 재생해도 그림이 바뀌지 않는다`);
+      console.log(`     움직이는 그림 ${i} ${r.lab}: ${r.changed ? '움직임 OK' : '안 움직임'} · ${r.status}`);
+    }
+  }
   if (!noShots) {
     await ev('window.scrollTo(0, 0)');
     const full = await ev('document.documentElement.scrollHeight');

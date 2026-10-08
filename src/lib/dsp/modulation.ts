@@ -30,6 +30,9 @@ export interface SidebandLine {
   n: number;
   /** 반송파 진폭에 대한 비 ∣c_n∣ */
   ratio: number;
+  /** 복소 계수 c_n (x = Re Σ c_n e^{j2π(f_c + n f_m)t}) — 도는 화살표 그림용 (D-044) */
+  re: number;
+  im: number;
 }
 
 /**
@@ -49,7 +52,7 @@ export function modulationLines(m: number, beta: number, psi = 0, nMax = 8): Sid
     const jp = besselJ(n + 1, beta);
     const re = jn + (m / 2) * (c * jm + c * jp);
     const im = (m / 2) * (s * jm - s * jp);
-    lines.push({ n, ratio: Math.hypot(re, im) });
+    lines.push({ n, ratio: Math.hypot(re, im), re, im });
   }
   return lines;
 }

@@ -6,7 +6,8 @@
  * 프레임마다 입력 스펙트럼 X_m(f)를 랜덤으로 만들고 Y_m = H·X_m에 잡음을 더한다 (FFT를 거친 것과 같은 bin 값을 바로 만든다).
  */
 import { createRng } from './dsp/random';
-import type { CxArray } from './dsp/twoChannel';
+import type { Phasor } from './dsp/phasor';
+import { forwardBackwardPhasors, type CxArray } from './dsp/twoChannel';
 
 export const FRF_DEMO = {
   df: 2,
@@ -131,4 +132,25 @@ export function orbitSignals(o: OrbitOptions): { t: Float64Array; x: Float64Arra
     y[i] = g * (-xt * Math.sin(d) + yt * Math.cos(d));
   }
   return { t, x, y };
+}
+
+/**
+ * 같은 오빗을 도는 화살표 사슬로 (D-044): [1X 정방향, 1X 역방향, (0.45X 정방향, 0.45X 역방향)] [m].
+ * 측정된 x·y의 복소 진폭에서 forwardBackwardPhasors로 나눈다. 사슬 끝 = (x(t), y(t)).
+ */
+export function orbitPhasors(o: OrbitOptions): Phasor[] {
+  const { f1 } = ORBIT_DEMO;
+  const lag = (o.lagDeg * Math.PI) / 180;
+  const d = ((o.angleErrDeg ?? 0) * Math.PI) / 180;
+  const g = 1 + (o.gainErr ?? 0);
+  // 1X: X̃ = a_x, 참 Ỹ = a_y e^{−j·lag}, 측정 Ỹ_m = g(−X̃ sin d + Ỹ cos d)
+  const yRe = g * (-o.ax * Math.sin(d) + o.ay * Math.cos(lag) * Math.cos(d));
+  const yIm = g * (-o.ay * Math.sin(lag) * Math.cos(d));
+  const chain: Phasor[] = forwardBackwardPhasors(o.ax, 0, yRe, yIm, f1);
+  if (o.whirl) {
+    // 0.45X 원: X̃ = W, 참 Ỹ = −jW
+    const w = o.whirl;
+    chain.push(...forwardBackwardPhasors(w, 0, -g * w * Math.sin(d), -g * w * Math.cos(d), 0.45 * f1));
+  }
+  return chain;
 }

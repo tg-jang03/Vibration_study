@@ -3,15 +3,22 @@ import Formula from '../ui/Formula';
 import LabFrame from '../ui/LabFrame';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
+import PhasorView, { type PhasorArrow } from '../ui/PhasorView';
 import Plot from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
 import { texNumber } from '../../lib/format';
 import { evaluateRange } from '../../lib/dsp/signal';
 
-/** LAB-BAS-01 정현파 3요소 — 진폭·주파수·위상 (P1-2, D-027) */
+/** LAB-BAS-01 정현파 3요소 — 진폭·주파수·위상 (P1-2, D-027). 도는 화살표와 그 높이로 "위상 = 출발 각도"를 본다 (D-044) */
 
 const DURATION = 1; // s
 const POINTS = 1500;
+const SPEEDS = [
+  { label: '아주 느리게 (실제의 1/20)', rate: 1 / 20 },
+  { label: '느리게 (실제의 1/10)', rate: 1 / 10 },
+  { label: '조금 느리게 (실제의 1/4)', rate: 1 / 4 },
+  { label: '실제 속도', rate: 1 },
+];
 
 export default function SineBasicsLab() {
   const [amp, setAmp] = useState(1);
@@ -27,6 +34,9 @@ export default function SineBasicsLab() {
       { x: cur.t, y: cur.x, name: '내가 만든 정현파', width: 2.5 },
     ];
   }, [amp, freq, phiDeg, showRef]);
+
+  const arrows = useMemo<PhasorArrow[]>(() => [{ amp, freq, phase: (phiDeg * Math.PI) / 180, color: 'var(--plot-1)', label: 'A' }], [amp, freq, phiDeg]);
+  const ghost = useMemo(() => (showRef ? [{ amp: 1, freq, phase: 0 }] : undefined), [showRef, freq]);
 
   const period = 1 / freq;
   const phiRad = (phiDeg * Math.PI) / 180;
@@ -48,6 +58,7 @@ export default function SineBasicsLab() {
       formulas={
         <>
           <Formula display tex={`x(t) = A\\cos(2\\pi f t + \\varphi) = ${texNumber(amp, 2)}\\cos(2\\pi\\cdot ${texNumber(freq)}\\,t ${phiDeg >= 0 ? '+' : '-'} ${texNumber(Math.abs(phiRad), 4)})`} />
+          <Formula display tex={`\\theta(t) = 2\\pi f t + \\varphi\\ \\text{(화살표 각도)},\\qquad x(t) = A\\cos\\theta(t)\\ \\text{(끝의 높이)}`} />
           <Formula display tex={`\\varphi = ${phiDeg}^\\circ = ${phiDeg}\\times\\dfrac{\\pi}{180} = ${texNumber(phiRad, 4)}\\ \\mathrm{rad}`} />
           <Formula display tex={`T = \\dfrac{1}{f} = \\dfrac{1}{${texNumber(freq)}} = ${texNumber(period)}\\ \\mathrm{s}`} />
           <Formula display tex={`\\Delta t = \\dfrac{\\varphi}{360^\\circ}\\times T = \\dfrac{${phiDeg}}{360}\\times ${texNumber(period)} = ${texNumber(shift)}\\ \\mathrm{s}`} />
@@ -77,11 +88,30 @@ export default function SineBasicsLab() {
           answer: '위아래가 정확히 뒤집힌 모양, 즉 부호가 반대인 정현파가 됩니다 (−A cos(2πft)). 진폭과 주파수는 그대로입니다.',
         },
         {
+          question: '위상을 +90°로 두고 “처음으로”를 누르면 화살표는 어디서 출발하나요? 재생하면 파형은 먼저 위로 갈까요, 아래로 갈까요?',
+          answer: '위(0°)에서 반시계로 90° 돌아간 왼쪽에서 출발합니다. 높이 0에서 시작해 반시계로 돌며 아래로 내려가므로 파형도 0에서 아래로 내려갑니다. 꼭대기(0°)를 이미 T/4 전에 지나온 셈이라 기준보다 “앞섬”입니다.',
+        },
+        {
           question: '진폭을 바꾸면 주기가 바뀔까요?',
           answer: '바뀌지 않습니다. 세 숫자는 서로 독립입니다 — 진폭은 높이, 주파수는 빠르기, 위상은 시작 시점만 정합니다.',
         },
       ]}
     >
+      <PhasorView
+        arrows={arrows}
+        ghost={ghost}
+        span={DURATION}
+        rMax={2.2}
+        speeds={SPEEDS}
+        defaultSpeed={1}
+        traceLabel="화살표 끝의 높이 = x(t)"
+        ariaLabel={`길이 ${amp}, 1초에 ${freq}바퀴 도는 화살표. t = 0에 위에서 반시계로 ${phiDeg}° 돌아간 곳에서 출발하고, 끝의 높이가 오른쪽에 정현파를 그린다.`}
+      />
+      <p className="anim-caption">
+        길이 A인 화살표가 1초에 f 바퀴씩 반시계로 돕니다. 화살표 끝의 <strong>높이</strong>가 그 순간의 x(t)이고, 오른쪽은 그 높이를 시간 순서로 옮겨 적은 것입니다.
+        t = 0에 화살표가 위(0°)에서 얼마나 돌아가 있는지가 위상 φ입니다 — 반시계로 돌아가 있으면 +, 시계 쪽이면 −.
+        {showRef && ' 회색 점선 화살표는 기준(A = 1, φ = 0°)입니다.'}
+      </p>
       <Plot series={series} x={{ label: '시간 t [s]', range: [0, DURATION] }} y={{ label: '진폭', range: [-2.2, 2.2] }} height={280} />
     </LabFrame>
   );

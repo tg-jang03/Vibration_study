@@ -149,6 +149,7 @@
 | n, k | 시간 샘플 / 주파수 bin 인덱스 | — | |
 | δ | 톤의 bin 오프셋 | bin | f = (k₀ + δ) Δf |
 | x(t) | 참(연속) 신호 — 정현파 성분은 A·cos(2π f t + φ) | SI | A: 피크 진폭, φ: 위상 [rad]. 모든 랩 공통 (M1.1, `lib/dsp/signal.ts`) |
+| 도는 화살표 (위상자, Phasor) | 길이 A, 각도 θ = 2πft + φ로 반시계로 도는 화살표. 끝의 높이 = x(t) | — | 그림에서 신호 축은 위(0°), φ = 출발 각도(반시계 +). 꼬리-머리로 이으면 끝 = 성분의 합. 오빗만 x 오른쪽·y 위 (D-044, `lib/dsp/phasor.ts`·`ui/PhasorView`) |
 | x[n] | 샘플된 신호 | SI | |
 | w[n] | 윈도우 (주기형, DFT-even) | — | n = 0 … N−1 |
 | X[k] | 윈도우를 적용한 DFT | | X[k] = Σ w[n] x[n] e^(−j2πkn/N) |
@@ -332,7 +333,7 @@
 
 | 랩 | 이름 | 처음 쓰인 곳 | 컴포넌트 (단독 페이지) · 계산 모듈 |
 |---|---|---|---|
-| LAB-BAS-01 | 정현파의 세 숫자 (진폭 · 주파수 · 위상) | P1-2 | `SineBasicsLab` (/lab/bas-01/) |
+| LAB-BAS-01 | 정현파의 세 숫자 (진폭 · 주파수 · 위상) + 도는 화살표와 그 높이 (D-044) | P1-2 | `SineBasicsLab` (/lab/bas-01/) · `PhasorView` |
 | LAB-BAS-02 | 진폭을 숫자 하나로 (Peak · Pk-Pk · RMS · Crest factor) | P2-1 | `AmplitudeMeasuresLab` (/lab/bas-02/) |
 | LAB-FOU-01 | 푸리에 기초 | P2-2 | `FourierHarmonicsLab` (/lab/fou-01/), `DftCorrelationLab` (/lab/fou-01-dft/), `ZeroPaddingLab` (/lab/fou-01-zeropad/) |
 | LAB-SMP-01 | 샘플링 & 에일리어싱 | P2-3 | `SamplingLab` (/lab/smp-01/) |

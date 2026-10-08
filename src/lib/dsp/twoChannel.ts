@@ -7,6 +7,7 @@
  */
 import { fft } from './fft';
 import { createWindow, type WindowType } from './window';
+import type { Phasor } from './phasor';
 
 export interface CxArray {
   re: Float64Array;
@@ -122,4 +123,19 @@ export function forwardBackward(xRe: number, xIm: number, yRe: number, yIm: numb
   const abRe = (xRe + yIm) / 2;
   const abIm = (-xIm + yRe) / 2;
   return { af: Math.hypot(afRe, afIm), ab: Math.hypot(abRe, abIm) };
+}
+
+/**
+ * 같은 식의 복소값을 도는 화살표 두 개로: 정방향(+f, 반시계)과 역방향(−f, 시계).
+ * x + jy = A_f e^{j2πft} + A_b e^{−j2πft} — 두 화살표를 이으면 끝이 오빗을 그린다 (D-044, LAB-FULL-01).
+ */
+export function forwardBackwardPhasors(xRe: number, xIm: number, yRe: number, yIm: number, f: number): [Phasor, Phasor] {
+  const afRe = (xRe - yIm) / 2;
+  const afIm = (xIm + yRe) / 2;
+  const abRe = (xRe + yIm) / 2;
+  const abIm = (-xIm + yRe) / 2;
+  return [
+    { amp: Math.hypot(afRe, afIm), freq: f, phase: Math.atan2(afIm, afRe) },
+    { amp: Math.hypot(abRe, abIm), freq: -f, phase: Math.atan2(abIm, abRe) },
+  ];
 }

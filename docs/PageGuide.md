@@ -293,6 +293,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 
 - `LabFrame`으로 감싸고, 입력은 `ParamSlider`·`ParamSelect`·`ParamToggle`, 읽음값은 `ReadoutTable`, 수식은 `Formula`, 플롯은 `Plot`만 쓴다 (극좌표 Polar는 `PolarPlot`, D-035 — 예: P3-3의 `PhaseLab`·`SlowRollLab`). 예시: `/dev/lab-ui/` (`LabUiDemo.tsx`).
 - 구조: 조작 → 플롯 → 수식(현재 값 대입) → 읽음값(측정값 vs 이론값) → 실험 과제(질문 + 접힌 답).
+- **움직이는 그림** (D-044): 시계는 `usePlayClock`, 재생 막대는 `PlayControls`, 도는 화살표 + 파형은 `PhasorView`(0° = 위·반시계·끝의 높이 = x(t)). 시계를 쓰는 부분은 따로 컴포넌트로 떼어 랩 본체의 `Plot`이 매 프레임 다시 그려지지 않게 한다. 재생 속도는 "실제의 1/N"으로 보여 준다. 점검은 `npm run verify:page -- <경로> --anim-smoke`.
 - 프리셋·라벨·과제에도 풀지 않은 전문용어를 쓰지 않는다.
 - 계산은 `lib/`의 순수 함수로. 본문 그림과 같은 신호·시드를 쓰면 그림과 랩의 숫자가 일치한다. 그림과 랩이 같이 쓰는 신호는 한 파일에 둔다 (예: `src/lib/gearbox.ts`).
 - `Plot` 색은 `'var(--plot-1)'`처럼 CSS 변수로 주면 라이트·다크 테마를 따른다 (래퍼가 실제 색으로 풀어 준다). 색을 주지 않은 계열은 **계열 순서대로** `--plot-1`, `--plot-2` …를 받으므로, 앞 계열(참값·기준선)에만 회색을 주면 뒤의 주인공 계열이 주황이 된다 → 주인공 계열에도 색을 적는다. 그림(`Figure`)과 같은 색 약속(§5-3)을 쓴다.

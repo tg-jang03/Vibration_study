@@ -498,6 +498,66 @@ main.container {
   cursor: pointer;
 }
 
+/* 움직이는 그림 (D-044): PhasorView · 스트로브 원판 · 오빗 — 재생 막대 + SVG */
+.anim-panel {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.6rem 0.3rem;
+}
+
+.anim-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.anim-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.anim-button[aria-pressed='true'] {
+  color: var(--surface);
+  background: var(--accent);
+}
+
+.anim-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+}
+
+.anim-speed select {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.15rem 0.35rem;
+}
+
+.anim-toolbar .param-toggle label {
+  padding-top: 0;
+}
+
+.anim-status {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.anim-caption {
+  margin: 0.2rem 0.2rem 0.1rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
 /* 절 페이지 이전/다음 이동 (MdxLayout) */
 .section-pager {
   display: flex;
