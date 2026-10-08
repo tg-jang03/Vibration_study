@@ -19,6 +19,7 @@ function clean(value: number): number {
 
 export default function DampingLab() {
   const [zeta, setZeta] = useState(0.05);
+  const [playSpeed, setPlaySpeed] = useState(1);
   const [frequencyHz, setFrequencyHz] = useState(5);
   const [x0Mm, setX0Mm] = useState(10);
   const [showEnvelope, setShowEnvelope] = useState(true);
@@ -140,7 +141,7 @@ export default function DampingLab() {
       ]}
       footer="m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. 피크 비·δ는 그려진 파형의 첫 두 양의 피크에서 재고, 이론은 δ = 2πζ/√(1−ζ²)입니다. ζ ≥ 1이거나 2초 안에 같은 방향 피크가 둘 없으면 읽음값을 —로 표시합니다."
     >
-      <DampingMotion key={`${zeta}:${frequencyHz}:${x0Mm}`} system={system} x0Mm={x0Mm} time={time} displacement={displacement} envelope={envelope} peaks={peakData} yLimit={yLimit} showEnvelope={showEnvelope && underdamped} showPeaks={showPeaks && underdamped} />
+      <DampingMotion key={`${zeta}:${frequencyHz}:${x0Mm}`} system={system} x0Mm={x0Mm} time={time} displacement={displacement} envelope={envelope} peaks={peakData} yLimit={yLimit} showEnvelope={showEnvelope && underdamped} showPeaks={showPeaks && underdamped} speed={playSpeed} onSpeed={setPlaySpeed} />
       <p className="lab-note">아래는 전체 2초 파형입니다. 피크 비·대수감쇠율은 재생 시각과 관계없이 이 전체 구간의 첫 두 양의 피크에서 계산합니다.</p>
       <Plot
         series={series}
