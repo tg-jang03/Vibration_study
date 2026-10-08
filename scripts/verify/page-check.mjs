@@ -32,6 +32,7 @@ const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
 const steamSmoke = flag('steam-smoke');
+const campbellSmoke = flag('campbell-smoke'); // LAB-CAMP-01 교차·응답·경계
 const generatorSmoke = flag('generator-smoke'); // LAB-GEN-01 열/벡터 조작
 const gtSmoke = flag('gt-smoke'); // LAB-GT-01 해석 모드·입력·절점 조작
 const forcedSmoke = flag('forced-smoke');
@@ -349,6 +350,38 @@ for (const p of paths) {
     })()`);
     if(smoke?.ok===false||!smoke)errors.push('강제진동 재생 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok)console.log('     강제진동 재생 '+smoke.checks+'항목 OK (위상·동기화·재생·정지·탐색·0Hz)');
+  }
+
+  if (campbellSmoke) {
+    const smoke=await ev(`(async()=>{
+  const labs=[...document.querySelectorAll('.lab-frame')].filter(l=>l.querySelector('.lab-id')?.textContent==='LAB-CAMP-01');
+  if(!labs.length)return {skipped:true};
+  let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++},wait=()=>new Promise(r=>setTimeout(r,300));
+  try{for(const lab of labs){
+    const sliders=lab.querySelectorAll('input[type="range"]'),select=lab.querySelector('select');
+    const choose=async(v)=>{select.value=String(v);select.dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+    const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait()};
+    const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replaceAll(',','').replaceAll('−','-')):NaN};
+    const near=(label,v,t=.015)=>Math.abs(read(label)-v)<t,status=()=>lab.querySelector('[role="status"]').textContent;
+    const reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait()};
+    require(lab.querySelectorAll('.js-plotly-plot').length===2,'Campbell/응답2 plots');
+    const formula=lab.querySelector('.lab-formulas'),rendered=[...formula.querySelectorAll('.katex-html')].map(n=>n.textContent).join('');require(rendered.includes('ζ')&&!rendered.includes('quad')&&!formula.querySelector('.katex-error'),'수식 렌더');
+    require(near('모드 1 교차 회전수',2353.39362)&&near('모드 2 교차 회전수',3771.71134),'기본 교차 해');
+    await set(2,0);require(near('모드 1 교차 회전수',2000),'c0');
+    await set(1,500);require(near('모드 1 교차 회전수',2500),'f0 변경');
+    await reset();await choose(1);require(near('모드 1 교차 회전수',4898.97949)&&near('모드 2 교차 회전수',6331.73824)&&status().includes('표시 범위 밖'),'8차 범위밖');
+    await choose(0);require(!Number.isFinite(read('모드 1 교차 회전수'))&&!Number.isFinite(read('모드 2 교차 회전수'))&&status().includes('교차 없음'),'4차 양의해 없음');
+    await choose(2);await set(2,144);require(!Number.isFinite(read('모드 1 교차 회전수'))&&Number.isFinite(read('모드 2 교차 회전수')),'차수²=c 경계');
+    await reset();const before=read('모드 1 응답비');await set(3,.08);require(near('모드 1 교차 회전수',2353.39362)&&read('모드 1 응답비')<before,'감쇠·교차 독립');
+    await set(0,0);require(read('모드 1 응답비')===1&&read('모드 1 위상 지연')===0,'정적극한');
+    await set(0,6000);await set(1,600);await set(2,180);await choose(3);await set(3,.01);
+    require(near('가진 주파수',1600)&&read('모드 1 고유진동수')<1700&&read('모드 2 고유진동수')<1700,'최대입력 주파수');
+    for(const plot of lab.querySelectorAll('.js-plotly-plot'))for(const trace of plot.data)require(Array.from(trace.y).every(y=>Number.isFinite(y)&&y>=0&&y<=plot.layout.yaxis.range[1]),'곡선 유한/축내');
+    await reset();require(sliders[0].value==='2400'&&sliders[1].value==='400'&&sliders[2].value==='40'&&sliders[3].value==='0.02'&&select.value==='2','초기화');
+  }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+})()`);
+    if(smoke?.ok===false||!smoke)errors.push('Campbell 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     Campbell 조작 '+smoke.checks+'항목 OK (교차·범위밖·경계·감쇠·초기화)');
   }
 
   if (generatorSmoke) {

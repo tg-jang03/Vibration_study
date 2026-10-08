@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-66
+ * 다음 번호: R-72
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -105,6 +105,12 @@ export const REFERENCES: Reference[] = [
   { id: 'R-63', kind: 'web', authors: 'Siemens', title: 'Orbit Plots', source: 'Siemens Community', url: 'https://community.sw.siemens.com/articles/en_US/Knowledge/Orbit-Plots', about: '같은 평면의 X/Y, AC/DC, 키페이저와 직접·필터 오빗' },
   { id: 'R-64', kind: 'web', authors: 'Bently Nevada (Baker Hughes)', title: "Radial rub at centrifugal compressor's ISO carbon seals", source: 'ORBIT', url: 'https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/radial-rub-centrifugal-compressors-iso-carbon-seals', about: '운전 중 위상·오빗 변화와 다른 플롯을 잇는 러브 사례' },
   { id: 'R-65', kind: 'web', authors: 'Bently Nevada (Baker Hughes)', title: 'The Usefulness of Acceptance Regions (ORBIT 2011 Q3)', source: 'ORBIT', url: 'https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v31n3_2011_q3.pdf', about: 'APHT의 시간축, Polar 표현과 허용 영역의 개념' },
+  { id: 'R-66', kind: 'web', authors: 'Dewesoft', title: 'Torsional Vibration Analysis', source: 'Dewesoft', url: 'https://dewesoft.com/applications/torsional-vibration', about: '등각도 펄스 시간 계수, 각속도·상대각, 표식·편심 오차' },
+  { id: 'R-67', kind: 'paper', authors: 'NASA', title: 'Forced Response of Distortion-Tolerant Fan Blades in a Boundary-Layer Ingesting Tail-Cone Thruster', source: 'NASA/TM-20250005209', year: '2025', url: 'https://ntrs.nasa.gov/citations/20250005209', about: '회전 블레이드의 원심 강성화, Campbell 선도와 엔진 차수 가진' },
+  { id: 'R-68', kind: 'web', authors: 'NPTEL', title: "Lecture 5: Approximate Methods (Holzer’s Method)", source: 'NPTEL Rotor Dynamics', url: 'https://archive.nptel.ac.in/content/storage2/courses/112101096/Mod%2012/Lect%205/12.5_2.html', about: '다관성 축계의 시험 주파수·각변동·토크 전달과 끝단 잔차' },
+  { id: 'R-69', kind: 'paper', authors: 'Bernard Lacaze', title: 'A Blade Tip-Timing method based on Periodic Nonuniform Sampling of order 2', source: 'arXiv:1711.06135', year: '2017', url: 'https://arxiv.org/abs/1711.06135', about: 'BTT의 주기적 비균일 표본과 비동기 진동 추정의 가정' },
+  { id: 'R-70', kind: 'web', authors: 'ABB', title: 'Twin benefits', source: 'ABB Review', url: 'https://new.abb.com/news/detail/106128/twin-benefits', about: '전기·제어·공정의 토크 변화와 드라이브 축계의 비틀림 응답' },
+  { id: 'R-71', kind: 'paper', authors: 'Mark Woike, Ali Abdul-Aziz, Michelle Clem', title: 'Structural Health Monitoring on Turbine Engines Using Microwave Blade Tip Clearance Sensors', source: 'NASA GRC-E-DAA-TN13685', year: '2014', url: 'https://ntrs.nasa.gov/citations/20140009171', about: 'BTT·NSMS의 팁 변위와 해석 모드 추정, 회전 부품의 비접촉 측정' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));
