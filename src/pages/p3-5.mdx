@@ -7,6 +7,7 @@ sectionId: P3-5
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import AlarmLab from '../components/labs/AlarmLab';
 import * as F from '../figures/p3-5';
 
@@ -256,6 +257,8 @@ Part 3을 마쳤습니다. 다음 Part 4(회전체 동역학)에서는 이 Part�
 
 ## 참고자료
 
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 과도 데이터 수집, 동기 샘플링, Bode·Polar·Cascade, 보호 시스템.
-- R-09: Bently Nevada ORBIT Magazine 아카이브 — 보호 시스템 설정과 헛트립 사례.
-- API 670 (기계 보호 시스템) — 채널 구성, 알람 레벨·지연·보팅·트립 배율의 기본 틀. 규격 본문과 수치는 옮기지 않는다 (I-009).
+<References items={[
+  ['R-02', '과도 데이터 수집, 동기 샘플링, Bode·Polar·Cascade, 보호 시스템'],
+  ['R-09', '보호 시스템 설정과 헛트립 사례'],
+  ['R-53', '채널 구성, 알람 레벨·지연·보팅·트립 배율의 기본 틀'],
+]} />

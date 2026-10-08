@@ -7,6 +7,7 @@ sectionId: P5-7
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import CepstrumLab from '../components/labs/CepstrumLab';
 import FeatureLab from '../components/labs/FeatureLab';
 import * as F from '../figures/p5-7';
@@ -246,6 +247,8 @@ Part 5를 마쳤습니다. 다음 Part 6(현장 플롯 읽기)에서는 이 Part
 
 ## 참고자료
 
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 켑스트럼·리프터링, 기어 측대역, MED·SANC
-- J. S. Bendat, A. G. Piersol, *Random Data: Analysis and Measurement Procedures* (R-18) — 자기상관
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 시간영역 특징량과 추세
+<References items={[
+  ['R-01', '켑스트럼·리프터링, 기어 측대역, MED·SANC'],
+  ['R-18', '자기상관'],
+  ['R-03', '시간영역 특징량과 추세'],
+]} />

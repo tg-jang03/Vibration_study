@@ -7,6 +7,7 @@ sectionId: P3-3
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import PhaseLab from '../components/labs/PhaseLab';
 import SlowRollLab from '../components/labs/SlowRollLab';
 import * as F from '../figures/p3-3';
@@ -362,7 +363,9 @@ Slow roll 벡터는 기동할 때마다 같은 저속 구간에서 기록해 둡
 
 ## 참고자료
 
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 키페이저, 위상 지연 관례, Polar 플롯, Slow roll 보상, 위상으로 본 모드 형상.
-- R-09: Bently Nevada ORBIT Magazine 아카이브 — 위상 측정과 런아웃 보상 사례.
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 위상 측정과 위상 비교로 하는 진단.
-- API 670 (기계 보호 시스템) — 키페이저 센서 설치의 일반 사항. 규격 본문과 수치는 옮기지 않는다 (I-009).
+<References items={[
+  ['R-02', '키페이저, 위상 지연 관례, Polar 플롯, slow roll 보상, 위상으로 본 모드 형상'],
+  ['R-09', '위상 측정과 런아웃 보상 사례'],
+  ['R-03', '위상 측정과 위상 비교로 하는 진단'],
+  ['R-53', '키페이저 센서 설치의 일반 사항'],
+]} />

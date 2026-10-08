@@ -1,0 +1,73 @@
+---
+/**
+ * 레퍼런스 > 기호·공식(/reference/formulas/)의 공식 카드 (D-046). 안에 수식과 기호 풀이를 쓰고, 그 공식을 설명하는 절로 잇는다.
+ */
+import { withBase } from '../../lib/site';
+
+interface Props {
+  name: string;
+  /** 설명하는 절 ID (예: 'P2-3') */
+  page: string;
+}
+
+const { name, page } = Astro.props;
+const href = withBase(`/${page.toLowerCase()}/`);
+---
+
+<article class="fx">
+  <header class="fx-head">
+    <span class="fx-name">{name}</span>
+    <a class="fx-page" href={href}>{page} →</a>
+  </header>
+  <div class="fx-body"><slot /></div>
+</article>
+
+<style>
+  .fx {
+    padding: 0.7rem 1rem 0.4rem;
+    margin: 0 0 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    min-width: 0;
+  }
+
+  .fx-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .fx-name {
+    font-weight: 700;
+  }
+
+  .fx-page {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .fx-page:hover {
+    text-decoration: underline;
+  }
+
+  .fx-body {
+    font-size: 0.92rem;
+  }
+
+  .fx-body :global(p) {
+    margin: 0.35rem 0;
+    color: var(--text-muted);
+  }
+
+  .fx-body :global(.katex-display) {
+    margin: 0.4rem 0;
+    padding: 0.25em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+</style>

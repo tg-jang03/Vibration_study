@@ -7,6 +7,7 @@ sectionId: P2-5
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import WindowLeakageLab from '../components/labs/WindowLeakageLab';
 import WindowComparisonLab from '../components/labs/WindowComparisonLab';
 import WindowCorrectionLab from '../components/labs/WindowCorrectionLab';
@@ -287,3 +288,10 @@ Hann은 프레임 가장자리를 0 쪽으로 줄이므로, 충격이 프레임 
 </details>
 
 다음 페이지(P2-6)에서는 한 번 잰 스펙트럼의 바닥이 왜 들쭉날쭉한지, 여러 번 재서 **평균**하면 무엇이 좋아지고 무엇은 그대로인지 봅니다.
+
+## 참고자료
+
+<References items={[
+  ['R-06', '윈도우의 메인로브·사이드로브·가리비 손실 비교'],
+  ['R-05', '윈도우 계수(S₁·S₂·CG·ENBW)와 정규화 — 이 사이트 계산의 검증 기준'],
+]} />

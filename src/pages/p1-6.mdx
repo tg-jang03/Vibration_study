@@ -7,6 +7,7 @@ sectionId: P1-6
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SupportStiffnessLab from '../components/labs/SupportStiffnessLab';
 import * as F from '../figures/p1-6';
 import { withBase } from '../lib/site';
@@ -269,5 +270,11 @@ P2-1에서는 같은 진동을 어디에서, 무엇을 기준으로 재는지(�
 
 ## 참고자료
 
-- [ABB: Design of motors, 4 and 6 poles](https://new.abb.com/motors-generators/motors-and-generators-for-explosive-atmospheres/design-of-motors--4-and-6-poles) — 로터·고정자·축·베어링·프레임의 구성 참고.
-- [SKF: Damping in a rolling bearing arrangement](https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/) — 축·베어링 위치와 강성·하우징 변형이 동특성에 관여한다는 설명 참고. 본문의 직렬 예제는 이를 그대로 재현한 실제 기계 모델이 아닙니다.
+<References items={[
+  ['R-15', '로터·고정자·축·베어링·프레임의 구성'],
+  ['R-50', '축·베어링 위치와 강성·하우징 변형이 동특성에 관여한다는 설명'],
+]}>
+
+본문의 직렬 강성 예제는 이 자료를 그대로 재현한 실제 기계 모델이 아닙니다.
+
+</References>

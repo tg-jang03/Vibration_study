@@ -7,6 +7,7 @@ sectionId: P7-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SubsyncLab from '../components/labs/SubsyncLab';
 import * as F from '../figures/p7-4';
 
@@ -195,6 +196,8 @@ P4-4에서 교차연성이 선회를 미는 원리와 오일 휠·휩을, P6-2�
 
 ## 참고자료
 
-- D. E. Bently, C. T. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 유체 유발 불안정(휠·휩), 캐스케이드·오빗 판독, 런업·코스트다운의 문턱
-- A. Muszynska, *Rotordynamics* (R-04) — 유체 평균 선회 속도비, 교차연성과 문턱 회전수, 러브와의 구별
-- J. Vance, F. Zeidan, B. Murphy, *Machinery Vibration and Rotordynamics* (R-04) — 유체력 선회·씰 교차연성, 틸팅 패드 베어링
+<References items={[
+  ['R-02', '유체 유발 불안정(휠·휩), 캐스케이드·오빗 판독, 런업·코스트다운의 문턱'],
+  ['R-49', '유체 평균 선회 속도비, 교차연성과 문턱 회전수, 러브와의 구별'],
+  ['R-04', '유체력 선회·씰 교차연성, 틸팅 패드 베어링'],
+]} />

@@ -1,0 +1,241 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RefHeader from '../../components/content/RefHeader.astro';
+import RefFilter from '../../components/content/RefFilter.astro';
+import { PARTS } from '../../data/curriculum';
+import { citedIds, KIND_LABEL, KIND_ORDER, REFERENCES, refAnchor, refLink } from '../../data/references';
+import { withBase } from '../../lib/site';
+
+/** 페이지 MDX 원문에서 어느 절이 어느 자료를 인용했는지 모은다 */
+const raw = import.meta.glob('../p*.mdx', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const sections = PARTS.flatMap((p) => p.sections);
+const citedBy = new Map<string, { id: string; title: string; href: string; key: number }[]>();
+for (const [path, text] of Object.entries(raw)) {
+  const m = path.match(/p(\d+)-(\d+)\.mdx$/);
+  if (!m) continue;
+  const id = `P${m[1]}-${m[2]}`;
+  const sec = sections.find((s) => s.id === id);
+  for (const rid of new Set(citedIds(text))) {
+    const list = citedBy.get(rid) ?? [];
+    list.push({ id, title: sec?.title ?? id, href: sec?.href ?? `/p${m[1]}-${m[2]}/`, key: Number(m[1]) * 100 + Number(m[2]) });
+    citedBy.set(rid, list);
+  }
+}
+for (const list of citedBy.values()) list.sort((a, b) => a.key - b.key);
+
+const groups = KIND_ORDER.map((kind) => ({ kind, items: REFERENCES.filter((r) => r.kind === kind) })).filter((g) => g.items.length > 0);
+const pageCount = new Set([...citedBy.values()].flat().map((p) => p.id)).size;
+---
+
+<BaseLayout title="참고 문헌 · 레퍼런스" description="사이트의 모든 페이지가 인용한 책·논문·규격·온라인 자료를 한곳에 모았다. 자료마다 원문 링크와 그 자료를 인용한 페이지를 붙였다.">
+  <RefHeader
+    current="sources"
+    title="참고 문헌"
+    lead={`페이지 ${pageCount}곳이 인용한 자료 ${REFERENCES.length}개입니다. 각 페이지 끝의 "참고자료"에 붙은 번호(R-01 …)를 누르면 여기로 옵니다. 원문 링크가 없는 책·논문은 "찾아보기"가 학술 검색으로 이어집니다.`}
+  />
+
+  <div class="ref-toolbar" role="search">
+    <div class="ref-chips" role="group" aria-label="종류로 거르기">
+      <button type="button" class="ref-chip" data-filter="all" aria-pressed="true">전체 {REFERENCES.length}</button>
+      {
+        groups.map((g) => (
+          <button type="button" class="ref-chip" data-filter={g.kind} aria-pressed="false">
+            {KIND_LABEL[g.kind]} {g.items.length}
+          </button>
+        ))
+      }
+    </div>
+    <input class="ref-search" type="search" placeholder="제목·저자·주제·페이지로 찾기 (예: 엔벨로프, Bently, P7-5)" aria-label="참고 문헌 찾기" />
+  </div>
+
+  {
+    groups.map((g) => (
+      <section class="ref-group" data-group={g.kind}>
+        <h2>
+          {KIND_LABEL[g.kind]} <span class="ref-count">{g.items.length}</span>
+        </h2>
+        <ol class="src-list">
+          {g.items.map((r) => {
+            const out = refLink(r);
+            const by = citedBy.get(r.id) ?? [];
+            const search = [r.id, r.authors, r.title, r.source, r.year, r.about, r.note, ...by.map((p) => `${p.id} ${p.title}`)].filter(Boolean).join(' ').toLowerCase();
+            return (
+              <li class="ref-entry src-item" id={refAnchor(r.id)} data-search={search}>
+                <div class="src-head">
+                  <span class="src-id">{r.id}</span>
+                  <a class="src-out" href={out.href} target="_blank" rel="noopener noreferrer" data-direct={out.direct ? '' : undefined}>
+                    {out.label} ↗
+                  </a>
+                </div>
+                <p class="src-cite">
+                  {r.authors && <span>{r.authors}, </span>}
+                  {r.kind === 'book' ? <cite>{r.title}</cite> : r.kind === 'standard' ? <strong>{r.title}</strong> : <strong>“{r.title}”</strong>}
+                  {r.source && <span>, {r.source}</span>}
+                  {r.year && <span>, {r.year}</span>}
+                  <span>.</span>
+                </p>
+                <p class="src-about">{r.about}</p>
+                {r.note && <p class="src-note">{r.note}</p>}
+                {by.length > 0 && (
+                  <p class="src-pages">
+                    <span class="src-pages-label">인용한 페이지</span>
+                    {by.map((p) => (
+                      <a href={withBase(p.href)} title={p.title}>
+                        {p.id}
+                      </a>
+                    ))}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))
+  }
+  <p class="ref-empty" hidden>찾는 자료가 없습니다.</p>
+
+  <section class="src-rules">
+    <h2>자료를 쓰는 원칙</h2>
+    <ul>
+      <li>본문의 수식·수치·그림은 이 사이트의 계산 코드로 직접 만들었습니다. 자료는 개념과 맥락의 근거로 인용합니다.</li>
+      <li>유료 규격(ISO·API)은 취지만 요약하고 본문·표·경계값은 옮기지 않습니다. 판정에 쓸 때는 원문을 봅니다.</li>
+      <li>제조사 문서·공개 사례는 개념만 요약하고, 그 기계의 수치·그림을 일반 기준으로 쓰지 않습니다.</li>
+    </ul>
+  </section>
+
+  <RefFilter />
+</BaseLayout>
+
+<style>
+  .src-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--gap);
+  }
+
+  .src-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: var(--radius);
+    scroll-margin-top: 4.5rem;
+  }
+
+  .src-item:target {
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    border-color: var(--accent);
+  }
+
+  .src-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .src-id {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .src-out {
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .src-out:not([data-direct]) {
+    color: var(--text-muted);
+  }
+
+  .src-cite,
+  .src-about,
+  .src-note,
+  .src-pages {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .src-cite {
+    font-size: 0.92rem;
+    overflow-wrap: anywhere;
+  }
+
+  .src-cite cite {
+    font-weight: 600;
+  }
+
+  .src-cite strong {
+    font-weight: 600;
+  }
+
+  .src-about {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .src-note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding-left: 0.5rem;
+    border-left: 2px solid var(--border);
+  }
+
+  .src-pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+    font-size: 0.78rem;
+  }
+
+  .src-pages-label {
+    color: var(--text-muted);
+    margin-right: 0.15rem;
+  }
+
+  .src-pages a {
+    font-family: var(--font-mono);
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+
+  .src-pages a:hover {
+    border-color: var(--accent);
+  }
+
+  .src-rules {
+    margin-top: 2rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .src-rules h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.4rem;
+  }
+
+  .src-rules ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+</style>

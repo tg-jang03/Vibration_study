@@ -7,6 +7,7 @@ sectionId: P8-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import MultiModeBodeLab from '../components/labs/MultiModeBodeLab';
 import * as F from '../figures/p8-1';
 import { withBase } from '../lib/site';
@@ -271,7 +272,14 @@ $\lvert3600-3020\rvert/3600\times100=16.11\%$입니다. 규격 요구값이나 �
 
 ## 참고자료
 
-- R-02: Bently·Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 모드·Bode·Polar·과도 기록 판독.
-- R-22: [COMSOL, Mode Superposition](https://www.comsol.com/multiphysics/mode-superposition) — 선형 모드 중첩·형상 정규화·모드 감쇠의 가정. 랩 수치는 이 페이지의 자체 교육용 계산값입니다.
-- R-23: [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data) — 기동·정지 기록 비교 사례. 현장 데이터와 수치는 전재하지 않았습니다.
-- 되짚기: <a href={withBase('/p4-1/')}>P4-1 한 모드 Bode·AF·SM</a>, <a href={withBase('/p3-3/')}>P3-3 slow roll 보상</a>, <a href={withBase('/p3-5/')}>P3-5 과도 수집·보호</a>, <a href={withBase('/p5-5/')}>P5-5 필터 지연</a>, <a href={withBase('/p6-4/')}>P6-4 벡터 트렌드</a>.
+<References items={[
+  ['R-02', '모드·Bode·Polar·과도 기록 판독'],
+  ['R-22', '선형 모드 중첩·형상 정규화·모드 감쇠의 가정'],
+  ['R-23', '기동·정지 기록 비교 사례'],
+]}>
+
+랩 수치는 이 페이지의 자체 교육용 계산값이며, 현장 데이터와 수치는 옮기지 않았습니다.
+
+되짚기: <a href={withBase('/p4-1/')}>P4-1 한 모드 Bode·AF·SM</a>, <a href={withBase('/p3-3/')}>P3-3 slow roll 보상</a>, <a href={withBase('/p3-5/')}>P3-5 과도 수집·보호</a>, <a href={withBase('/p5-5/')}>P5-5 필터 지연</a>, <a href={withBase('/p6-4/')}>P6-4 벡터 트렌드</a>.
+
+</References>

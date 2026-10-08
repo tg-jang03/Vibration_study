@@ -83,6 +83,7 @@ sectionId: P1-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import MassSpringLab from '../components/labs/MassSpringLab';
 import * as F from '../figures/p1-1';
 
@@ -113,7 +114,13 @@ import * as F from '../figures/p1-1';
 (다음 페이지 한 줄)
 
 ## 참고자료
+
+<References items={[
+  ['R-02', '이 페이지에서 쓴 곳 한 줄'],
+]} />
 ```
+
+- 참고자료는 `<References>`만 쓴다 (D-046). 서지는 `src/data/references.ts` 한 곳 — 새 자료는 거기에 다음 번호로 더한다. 본문에서 근거를 밝힐 때는 문장 끝에 `<Cite ids={['R-02']} />`. 이 페이지의 계산이 자체 모델이라는 등의 덧붙임은 `<References …>덧붙임</References>`.
 
 ### 3-2. 절의 리듬
 
@@ -366,6 +373,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 - [ ] `/dev/figures/`와 페이지 캡처에서 겹침·잘림·콘솔 오류가 없는가?
 - [ ] §8의 MDX 함정을 확인했는가?
 - [ ] 새 랩을 랩 모음(`labs.ts`·`lab/[slug].astro`)에 올렸는가? `npm run verify:page`가 OK인가?
+- [ ] 끝에 `## 참고자료` + `<References>`가 있고, 새 자료는 `src/data/references.ts`에 더했는가? (본문 인용은 `<Cite>`)
 - [ ] `Contents.md` §4·§5, `Glossary.md`, `curriculum.ts`, `Progress.md`를 고쳤는가?
 
 ---

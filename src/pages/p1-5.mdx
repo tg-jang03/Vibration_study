@@ -7,6 +7,7 @@ sectionId: P1-5
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import TwoDofModeLab from '../components/labs/TwoDofModeLab';
 import * as F from '../figures/p1-5';
 
@@ -291,6 +292,8 @@ P2-2(푸리에 기초)에서는 복잡한 파형을 순수한 정현파들의 �
 
 ## 참고자료
 
-- D. J. Inman, *Engineering Vibration*, 2자유도계의 고유모드 및 모드 좌표.
-- S. S. Rao, *Mechanical Vibrations*, 다자유도계의 특성방정식, 모드 형상, 연속체 진동.
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics*, 모드 형상과 절점 계측의 중요성.
+<References items={[
+  ['R-51', '2자유도계의 고유모드와 모드 좌표'],
+  ['R-52', '다자유도계의 특성방정식, 모드 형상, 연속체 진동'],
+  ['R-02', '모드 형상과 절점 계측의 중요성'],
+]} />

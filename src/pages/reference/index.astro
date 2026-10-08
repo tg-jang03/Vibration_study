@@ -1,0 +1,194 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RefHeader from '../../components/content/RefHeader.astro';
+import glossaryMd from '../../../docs/Glossary.md?raw';
+import formulasMdx from '../../components/reference/FormulasBody.mdx?raw';
+import { LABS } from '../../data/labs';
+import { REFERENCES } from '../../data/references';
+import { parseGlossary } from '../../lib/glossary';
+import { withBase } from '../../lib/site';
+
+const glossaryCount = parseGlossary(glossaryMd).length;
+const formulaCount = (formulasMdx.match(/<Fx /g) ?? []).length;
+
+const CARDS = [
+  { href: '/reference/sources/', title: '참고 문헌', count: `${REFERENCES.length}개`, text: `각 페이지가 인용한 책·논문·규격·온라인 자료. 원문 링크와 그 자료를 인용한 페이지를 함께 봅니다.` },
+  { href: '/reference/glossary/', title: '용어집', count: `${glossaryCount}개`, text: '용어의 한 줄 뜻·기호·단위와 처음 설명하는 페이지. Part로 거르고 이름으로 찾습니다.' },
+  { href: '/reference/formulas/', title: '기호 · 공식', count: `${formulaCount}개`, text: '고유진동수·감쇠부터 분해능·윈도우·위상·결함 주파수까지 자주 다시 찾는 공식과 기호표.' },
+  { href: '/lab/', title: 'Signal Lab', count: `${LABS.length}개`, text: '페이지에 흩어진 인터랙티브 랩을 한곳에서 골라 크게 엽니다.' },
+];
+
+/** 판단할 때 펼쳐 보는 표·순서 (페이지 안 위치) */
+const TABLES = [
+  { href: '/p1-8/#7-관심-주파수-구간-지도-기계-구성에서-어디까지-볼지-정한다', id: 'P1-8', title: '관심 주파수 구간 지도', text: '기계 구성에서 어디까지 볼지' },
+  { href: '/p2-5/#33-목적별로-고르기', id: 'P2-5', title: '윈도우 목적별로 고르기', text: 'Hann · Flat-top · Uniform · 힘/지수 윈도우' },
+  { href: '/p2-9/#1-설정은-질문-순서대로-정한다', id: 'P2-9', title: '측정 설정 순서', text: 'F_max → 분해능 → 윈도우 → 평균' },
+  { href: '/p6-2/#1-스펙트럼은-1x에서-출발해-여섯-순서로-읽습니다', id: 'P6-2', title: '스펙트럼 읽는 순서', text: '1X에서 출발하는 여섯 단계' },
+  { href: '/p7-1/#1-지도를-거꾸로-차수로-원인-후보를-좁힌다', id: 'P7-1', title: '주파수 → 원인 지도', text: '차수로 원인 후보 좁히기' },
+  { href: '/p7-2/#7-1x-감별-순서', id: 'P7-2', title: '1X 감별 순서', text: '불평형 · 휨 · 크랙 · 편심 · 공진' },
+  { href: '/p7-3/#6-증거-5요소로-정리하고-감별하기', id: 'P7-3', title: '미스얼라인 · 풀림 · 러브 감별', text: '증거 5요소로 정리' },
+  { href: '/p7-4/#5-서브싱크로너스-감별표', id: 'P7-4', title: '서브싱크로너스 감별표', text: '오일 휠 · 휩 · 러브 · stall · 구조 공진' },
+  { href: '/p7-7/#9-전기와-기계의-감별표', id: 'P7-7', title: '전기와 기계의 감별표', text: '2×LF · PPF 측대역 · 전원 차단' },
+  { href: '/p7-8/#6-유체--공력-원인의-감별표', id: 'P7-8', title: '유체 · 공력 원인의 감별표', text: '날개 통과 · 캐비테이션 · stall · 서지' },
+];
+---
+
+<BaseLayout title="레퍼런스" description="참고 문헌·용어집·기호와 공식, 판단에 쓰는 감별표를 한곳에서 찾는다.">
+  <RefHeader current="home" title="찾아보기: 문헌 · 용어 · 공식" lead="공부하다가 다시 확인하고 싶은 것을 한곳에 모았습니다. 출처가 궁금하면 참고 문헌, 뜻이 흐릿하면 용어집, 식이 필요하면 기호 · 공식으로 갑니다." />
+
+  <div class="hub-grid">
+    {
+      CARDS.map((c) => (
+        <a class="hub-card" href={withBase(c.href)}>
+          <span class="hub-count">{c.count}</span>
+          <span class="hub-title">{c.title}</span>
+          <span class="hub-text">{c.text}</span>
+          <span class="hub-go">열기 →</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <section class="hub-tables">
+    <h2>판단할 때 펼쳐 보는 표</h2>
+    <p class="hub-sub">진단 페이지 안의 감별표·고르기 표로 바로 갑니다.</p>
+    <ul>
+      {
+        TABLES.map((t) => (
+          <li>
+            <a href={withBase(t.href)}>
+              <span class="hub-id">{t.id}</span>
+              <span class="hub-t">{t.title}</span>
+              <span class="hub-d">{t.text}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="hub-how">
+    <h2>이 사이트의 표기 약속</h2>
+    <ul>
+      <li>진폭은 Peak · RMS · Pk-Pk를 늘 밝혀 씁니다. 정현파 하나일 때만 RMS = Peak ÷ √2입니다.</li>
+      <li>위상 φ는 키페이저 펄스에서 1X의 다음 양의 봉우리까지의 지연각이고, Polar는 0°를 위(센서 방향)에 두고 지연이 커질수록 회전 반대 방향으로 그립니다.</li>
+      <li>그림과 랩의 숫자는 이 사이트의 계산 코드로 만든 설명용 값이며, 규격의 판정 기준이 아닙니다.</li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--gap);
+    margin: 1.2rem 0 2rem;
+  }
+
+  .hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .hub-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .hub-count {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hub-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .hub-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+  }
+
+  .hub-go {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hub-tables h2,
+  .hub-how h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.3rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--accent);
+  }
+
+  .hub-sub {
+    margin: 0 0 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .hub-tables ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .hub-tables a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.1rem 0.6rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .hub-tables a:hover {
+    border-color: var(--accent);
+  }
+
+  .hub-id {
+    grid-row: span 2;
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hub-t {
+    font-weight: 700;
+  }
+
+  .hub-d {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .hub-how {
+    margin-top: 2rem;
+  }
+
+  .hub-how ul {
+    color: var(--text-muted);
+    padding-left: 1.2rem;
+  }
+</style>

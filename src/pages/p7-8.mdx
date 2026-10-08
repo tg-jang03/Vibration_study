@@ -7,6 +7,7 @@ sectionId: P7-8
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FlowLab from '../components/labs/FlowLab';
 import * as F from '../figures/p7-8';
 
@@ -226,8 +227,10 @@ BEP에서 멀어지면 날개에 들어가는 물의 각도가 어긋나, 날개
 
 ## 참고자료
 
-- J. F. Gülich, *Centrifugal Pumps* (Springer) (R-41) — 날개 통과 압력 맥동과 간극, 부분 유량의 재순환, NPSH와 캐비테이션
-- I. J. Day, "Stall, surge, and 75 years of research", *Journal of Turbomachinery* 138(1), 2016 (R-42) — Rotating stall 셀의 회전 속도, 서지와 서지 방지
-- E. M. Greitzer, "Surge and rotating stall in axial flow compressors, Part I · II", *Journal of Engineering for Power* 98(2), 1976 (R-43) — 압축기와 배관 체적이 함께 만드는 서지, stall과 서지의 구분
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 포락선 분석으로 베어링 결함과 넓은 대역 잡음 구별
-- D. E. Bently, C. T. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 압축기의 1X 아래 성분과 유체 원인
+<References items={[
+  ['R-41', '날개 통과 압력 맥동과 간극, 부분 유량의 재순환, NPSH와 캐비테이션'],
+  ['R-42', 'Rotating stall 셀의 회전 속도, 서지와 서지 방지'],
+  ['R-43', '압축기와 배관 체적이 함께 만드는 서지, stall과 서지의 구분'],
+  ['R-01', '포락선 분석으로 베어링 결함과 넓은 대역 잡음 구별'],
+  ['R-02', '압축기의 1X 아래 성분과 유체 원인'],
+]} />

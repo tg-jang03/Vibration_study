@@ -7,6 +7,7 @@ sectionId: P6-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import TimeWaveformLab from '../components/labs/TimeWaveformLab';
 import * as F from '../figures/p6-1';
 import { withBase } from '../lib/site';
@@ -251,6 +252,11 @@ $60/3600=1/60$ s이므로 약 16.67 ms입니다. 60 Hz는 1X 주파수이고 60 
 
 ## 참고자료
 
-- [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data): 러브 판독에서 오빗·회전수 변화·스펙트럼 등 여러 증거를 함께 확인하는 이유. 이 페이지의 제한식은 해당 자료의 실제 측정값을 재현하지 않은 가상 모양입니다.
-- [Fluke 805 사용자 설명서](https://assets.fluke.com/manuals/805_____umeng0000.pdf): CF 정의와 결함 진행 중 CF 하나로 상태를 판단할 때의 한계. 제조사의 CF+는 이 랩의 일반 CF와 다른 지표입니다.
-- 신호식·본문 수치는 공개된 이 사이트의 계산 코드 `lib/plots/waveform.ts`와 해석해 테스트에서 계산했습니다. 실제 설비의 진단 경계값을 제공하지 않습니다.
+<References items={[
+  ['R-23', '러브 판독에서 오빗·회전수 변화·스펙트럼 등 여러 증거를 함께 보는 이유'],
+  ['R-61', 'CF 정의와 결함 진행 중 CF 하나로 상태를 판단할 때의 한계 (제조사의 CF+는 이 랩의 CF와 다른 지표)'],
+]}>
+
+신호식·본문 수치는 이 사이트의 계산 코드(lib/plots/waveform.ts)와 해석해 테스트에서 나왔으며, 실제 설비의 진단 경계값이 아닙니다. 제한식은 자료의 실측값을 재현하지 않은 가상 모양입니다.
+
+</References>

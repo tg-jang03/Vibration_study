@@ -7,6 +7,7 @@ sectionId: P5-3
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FrfLab from '../components/labs/FrfLab';
 import FullSpectrumLab from '../components/labs/FullSpectrumLab';
 import * as F from '../figures/p5-3';
@@ -238,6 +239,8 @@ $\gamma^2 = \lvert H_1 \rvert / \lvert H_2 \rvert$이므로 $\lvert H_2 \rvert =
 
 ## 참고자료
 
-- J. S. Bendat, A. G. Piersol, *Random Data: Analysis and Measurement Procedures* — 교차 스펙트럼, H1·H2, 코히어런스와 그 쏠림
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — Full spectrum, 정방향·역방향 선회
-- SciPy [`signal.csd`·`coherence`](https://docs.scipy.org/doc/scipy/reference/signal.html) (R-17) — 교차 스펙트럼·코히어런스 정의 대조
+<References items={[
+  ['R-18', '교차 스펙트럼, H1·H2, 코히어런스와 그 쏠림'],
+  ['R-02', 'Full spectrum, 정방향·역방향 선회'],
+  ['R-17', 'csd·coherence — 교차 스펙트럼·코히어런스 정의 대조'],
+]} />

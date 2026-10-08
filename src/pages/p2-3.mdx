@@ -7,6 +7,7 @@ sectionId: P2-3
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SamplingLab from '../components/labs/SamplingLab';
 import AafLab from '../components/labs/AafLab';
 import AdcLab from '../components/labs/AdcLab';
@@ -307,3 +308,10 @@ $f_s$가 바뀌자 위치가 바뀌었으므로 실제 820 Hz 성분이 아니�
 </details>
 
 다음 페이지(P2-4)에서는 여기서 계속 나온 $\Delta f = 1/T$로 돌아갑니다 — 가까운 두 성분을 가르려면 얼마나 오래 재야 하고, 측정하는 동안 회전수가 변하면 스펙트럼에 무슨 일이 생길까요?
+
+## 참고자료
+
+<References items={[
+  ['R-16', '샘플링 정리·안티에일리어싱 필터·양자화 (3장 ADC와 DAC)'],
+  ['R-01', 'FFT 분석기의 샘플링과 에일리어싱'],
+]} />

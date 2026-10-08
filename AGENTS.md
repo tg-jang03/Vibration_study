@@ -57,7 +57,7 @@
 - 내부 링크·정적 파일은 `withBase()` (`/Vibration_study/` 하위 배포). 목차 `src/data/curriculum.ts` = Curriculum 절 구성 = Contents §4 상태.
 - `lib/`의 계산 모듈은 **순수 함수**(DOM·React·플롯 의존 없음), 내부 단위 SI (변환은 UI에서, D-012), 난수는 시드 고정, 새 계산에는 **해석해·문헌값 테스트**(기준값 Contents §6), 기호는 Contents §3.
 - 랩: 사양(Contents §5)을 먼저 쓰고 구현. `LabFrame` + `ParamSlider`·`ParamSelect`·`ParamToggle`·`ReadoutTable`·`Formula`·`Plot`(극좌표는 `PolarPlot`, D-035). 첫 렌더에 시간·시드 없는 난수·`window`를 쓰지 않고, 이론상 0인 값은 0으로 표시 (I-019). 랩 모음 등록은 §4 공유 규칙.
-- 페이지: `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 작성은 **`docs/PageGuide.md`** (질문에서 출발하는 구어체·과장 금지·"학교 vs 현장" 금지, 앞 페이지 개념만, 개념마다 `Figure`, `Callout` 6종, 랩 앞 따라 하기·뒤 해석, 코드 블록·아스키 도표 금지). push 전 체크리스트 PageGuide §11.
+- 페이지: `src/pages/p{Part}-{절}.mdx` + frontmatter `sectionId` (D-023). 작성은 **`docs/PageGuide.md`** (질문에서 출발하는 구어체·과장 금지·"학교 vs 현장" 금지, 앞 페이지 개념만, 개념마다 `Figure`, `Callout` 6종, 랩 앞 따라 하기·뒤 해석, 코드 블록·아스키 도표 금지). 참고자료는 `<References>`·`<Cite>`로만(서지 단일 기준 `src/data/references.ts`, D-046). push 전 체크리스트 PageGuide §11.
 - `texNumber`·`formatNumber`의 둘째 인자는 **유효숫자**. KaTeX는 `overrides`로 한 버전 (`npm ls katex`, I-021). 성능 측정은 `scripts/bench/plot-bench.mjs` (I-020).
 
 ## 7. 토큰 절약 수칙 (D-038)

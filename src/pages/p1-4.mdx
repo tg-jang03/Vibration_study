@@ -7,6 +7,7 @@ sectionId: P1-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ForcedVibrationLab from '../components/labs/ForcedVibrationLab';
 import * as F from '../figures/p1-4';
 
@@ -273,5 +274,7 @@ P2-1에서는 신호의 성분표인 스펙트럼과 계의 성질인 FRF를 구
 
 ## 참고자료
 
-- D. J. Inman, *Engineering Vibration*, 조화 가진을 받는 감쇠 1자유도계.
-- S. S. Rao, *Mechanical Vibrations*, 진폭비·위상 곡선, Half-power 폭과 Q 값.
+<References items={[
+  ['R-51', '조화 가진을 받는 감쇠 1자유도계'],
+  ['R-52', '진폭비·위상 곡선, Half-power 폭과 Q 값'],
+]} />

@@ -7,6 +7,7 @@ sectionId: P2-2
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FourierHarmonicsLab from '../components/labs/FourierHarmonicsLab';
 import DftCorrelationLab from '../components/labs/DftCorrelationLab';
 import ZeroPaddingLab from '../components/labs/ZeroPaddingLab';
@@ -326,3 +327,11 @@ DFT를 식 그대로 계산하면 bin $N$개마다 샘플 $N$개를 곱해 더�
 </details>
 
 다음 페이지(P2-3)에서는 P2-1 §6에서 맛만 본 질문으로 돌아갑니다 — $f_s/2$보다 높은 성분이 들어오면 스펙트럼에 무엇이 보이고, 분석기는 그것을 어떻게 막을까요?
+
+## 참고자료
+
+<References items={[
+  ['R-16', 'DFT·푸리에 변환의 성질·FFT (8 ~ 12장)'],
+  ['R-12', 'DFT의 부호·bin 순서·정규화 — 이 사이트 FFT 계산의 대조 기준'],
+  ['R-01', '진동 신호의 주파수 분석'],
+]} />

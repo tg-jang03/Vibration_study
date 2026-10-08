@@ -7,6 +7,7 @@ sectionId: P5-5
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import TrackingLab from '../components/labs/TrackingLab';
 import * as F from '../figures/p5-5';
 
@@ -287,6 +288,8 @@ $\tau_g = \sqrt{2}/(\pi \times 1) \approx$ **0.45 s**이고, 그동안 300 × 0.
 
 ## 참고자료
 
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 트래킹 필터로 만든 1X 벡터, Bode·Polar, 직접·1X 필터 오빗, Not-1X
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 회전 성분을 뽑는 필터와 차수추적
-- S. W. Smith, *The Scientist and Engineer's Guide to Digital Signal Processing* (R-16) — 필터의 계단 응답과 군지연
+<References items={[
+  ['R-02', '트래킹 필터로 만든 1X 벡터, Bode·Polar, 직접·1X 필터 오빗, Not-1X'],
+  ['R-01', '회전 성분을 뽑는 필터와 차수추적'],
+  ['R-16', '필터의 계단 응답과 군지연'],
+]} />

@@ -8,6 +8,7 @@ sectionId: P3-1
 import Figure from '../components/content/Figure.astro';
 import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SensorLab from '../components/labs/SensorLab';
 import * as F from '../figures/p3-1';
 
@@ -247,6 +248,11 @@ $50 / 100 = 0.5$ g Peak $= 0.5 \times 9.81 \approx 4.9$ m/s² Peak입니다.
 
 ## 참고자료
 
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 센서 종류와 마운팅.
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 비접촉 변위 센서로 축을 재는 이유.
-- I-025: 마운팅별 설치 공진 예시값 출처 대조 (진행 중).
+<References items={[
+  ['R-03', '센서 종류와 마운팅'],
+  ['R-02', '비접촉 변위 센서로 축을 재는 이유'],
+]}>
+
+마운팅별 설치 공진 예시값의 출처는 대조 중입니다.
+
+</References>

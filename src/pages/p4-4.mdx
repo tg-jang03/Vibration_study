@@ -7,6 +7,7 @@ sectionId: P4-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import StabilityLab from '../components/labs/StabilityLab';
 import * as F from '../figures/p4-4';
 import { withBase } from '../lib/site';
@@ -295,9 +296,18 @@ Part 4에서는 불평형 응답 → 선회·오빗 → 유막 평균 위치 →
 
 ## 참고자료
 
-- [NPTEL, 선형화한 유막 계수의 안정성 분석](https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec2/2.html): 작은 교란·고유치 실수부의 판정. 이 페이지의 반대칭 모델과 수치·한계식은 명시한 운동방정식에서 직접 계산했습니다.
-- [NPTEL, 자기여진의 에너지 공급·소산](https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec1/2.html): 진동에 들어오는 일과 감쇠 손실, 실제 비선형 진폭의 구분.
-- [R. Grissom, Whirl/whip demonstration, NASA NTRS (1985)](https://ntrs.nasa.gov/citations/19860020723): 회전수 추종에서 모드 공진 근처의 거의 일정한 주파수로 이어지는 관측. 가상 0.45X 그림의 실제 발생점·진폭을 제공하는 자료는 아닙니다.
-- [Ansys, Campbell Diagram](https://ansyshelp.ansys.com/public/Views/Secured/corp/v251/en/ans_rot/Hlp_G_ROTCAMPDIAGS.html): 모드 주파수·차수 교차와 성장률·Log decrement의 구분. 그림 6의 모드선은 실제 Ansys 결과가 아닙니다.
-- [Gruntfest·Andronis·Marscher, 틸팅패드 지지 압축기의 불안정 사례 (2001)](https://oaktrust.library.tamu.edu/bitstreams/0e5fd805-577b-420a-b14d-e33c937b46aa/download): 베어링 이외의 씰 교차력과 스월 브레이크 효과.
-- [NASA, Blade-Tip-Clearance Forces in Turbines (1987)](https://ntrs.nasa.gov/citations/19870000039) · [NPTEL, Steam whirl](https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec5/1.html): 팁 간극의 불균일과 증기 유로에서 생기는 교차력의 배경.
+<References items={[
+  ['R-55', '선형화한 유막 계수의 안정성 분석, 자기여진의 에너지 공급·소산, steam whirl', [
+    ['안정성 분석', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec2/2.html'],
+    ['자기여진', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec1/2.html'],
+    ['Steam whirl', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module11/lec5/1.html'],
+  ]],
+  ['R-57', '회전수 추종에서 모드 공진 근처의 거의 일정한 주파수로 이어지는 관측'],
+  ['R-58', '모드 주파수·차수 교차와 성장률·Log decrement의 구분'],
+  ['R-59', '베어링 밖의 씰 교차력과 스월 브레이크 효과'],
+  ['R-60', '팁 간극의 불균일이 만드는 교차력의 배경'],
+]}>
+
+이 페이지의 반대칭 모델과 수치·한계식은 밝힌 운동방정식에서 직접 계산했습니다. 가상 0.45X 그림의 발생점·진폭과 그림 6의 모드선은 위 자료의 실제 결과가 아닙니다.
+
+</References>

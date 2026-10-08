@@ -7,6 +7,7 @@ sectionId: P4-3
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ShaftCenterlineLab from '../components/labs/ShaftCenterlineLab';
 import * as F from '../figures/p4-3';
 import { withBase } from '../lib/site';
@@ -270,7 +271,15 @@ X 변위가 Y 힘에 미치는 관계입니다. 여기의 부호 정의는 δFy�
 
 ## 참고자료
 
-- [F. W. Ocvirk, NACA TN-2808 (1952), NASA NTRS](https://ntrs.nasa.gov/citations/19930083541): 짧은 베어링의 정적 하중·자세각 관계. 본문의 수치와 그림은 명시한 가상 치수·하중으로 직접 계산했습니다.
-- [NPTEL, Hydrodynamic Oil-Lubricated Bearings — 유막 원리](https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/1.html): 회전·수렴 간극과 정적 평형의 개념.
-- [NPTEL, 평형점 근처의 유막 동적 계수](https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/3.html): 작은 변위·속도와 8개 계수의 관계.
-- [NPTEL, 유한 길이 베어링의 해석 범위](https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/5.html): 짧은·긴 베어링 근사와 실제 유한 길이 형상의 구분.
+<References items={[
+  ['R-56', '짧은 베어링의 정적 하중·자세각 관계'],
+  ['R-55', '유막 원리, 평형점 근처의 동적 계수, 유한 길이 베어링 근사의 범위', [
+    ['유막 원리', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/1.html'],
+    ['동적 계수', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/3.html'],
+    ['유한 길이 베어링', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module3/lec2/5.html'],
+  ]],
+]}>
+
+본문의 수치와 그림은 밝힌 가상 치수·하중으로 직접 계산했습니다.
+
+</References>

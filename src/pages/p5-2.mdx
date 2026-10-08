@@ -7,6 +7,7 @@ sectionId: P5-2
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import StftLab from '../components/labs/StftLab';
 import * as F from '../figures/p5-2';
 
@@ -234,6 +235,8 @@ $T_{best} = 1/\sqrt{4} = 0.5$ s, $N = 0.5 \times 1024 = 512$입니다. 2 s 프�
 
 ## 참고자료
 
-- SciPy [`signal.ShortTimeFFT`·`spectrogram`](https://docs.scipy.org/doc/scipy/reference/signal.html) (R-17) — 프레임·hop·윈도우의 정의 대조
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — Waterfall·Cascade, 오일 휠·휩
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 시간–주파수 분석, 웨이블릿
+<References items={[
+  ['R-17', 'ShortTimeFFT·spectrogram — 프레임·hop·윈도우의 정의 대조'],
+  ['R-02', 'Waterfall·Cascade, 오일 휠·휩'],
+  ['R-01', '시간–주파수 분석, 웨이블릿'],
+]} />

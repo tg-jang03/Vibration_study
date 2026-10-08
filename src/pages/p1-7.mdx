@@ -7,6 +7,7 @@ sectionId: P1-7
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import UnbalanceLab from '../components/labs/UnbalanceLab';
 import * as F from '../figures/p1-7';
 
@@ -285,6 +286,8 @@ P2-1에서는 회전수(rpm), 1X, 차수(Order: 회전 주파수의 몇 배인�
 
 ## 참고자료
 
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 불평형 응답, 1X 벡터, 초임계 영역의 질량 중심 회전.
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 1X 진동과 회전체 밸런싱 기초.
-- ISO 20816-1, 회전기계 진동 측정 및 평가 일반 지침 (진동 크기 평가의 일반 원칙).
+<References items={[
+  ['R-02', '불평형 응답, 1X 벡터, 초임계 영역의 질량 중심 회전'],
+  ['R-03', '1X 진동과 회전체 밸런싱 기초'],
+  ['R-08', '진동 크기 평가의 일반 원칙'],
+]} />

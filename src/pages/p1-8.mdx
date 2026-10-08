@@ -7,6 +7,7 @@ sectionId: P1-8
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FrequencyMapLab from '../components/labs/FrequencyMapLab';
 import * as F from '../figures/p1-8';
 
@@ -334,7 +335,9 @@ $f_r$ = 25 Hz. $f_{FTF}$ = 25 ÷ 2 × (1 − 0.2) = **10 Hz**(0.4X), $f_{BPFO}$ 
 
 ## 참고자료
 
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 기계 요소별 주파수와 측정.
-- R-01: R. B. Randall, *Vibration-based Condition Monitoring* — 구름베어링·기어 주파수와 충격 울림.
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 미끄럼 베어링 기름막과 1X보다 낮은 성분.
-- R-10: CWRU Bearing Data Center — 6205 베어링 치수(그림 6 예시).
+<References items={[
+  ['R-03', '기계 요소별 주파수와 측정'],
+  ['R-01', '구름베어링·기어 주파수와 충격 울림'],
+  ['R-02', '미끄럼 베어링 기름막과 1X보다 낮은 성분'],
+  ['R-10', '6205 베어링 치수 (그림 6 예시)'],
+]} />

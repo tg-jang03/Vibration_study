@@ -7,6 +7,7 @@ sectionId: P5-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FilterLab from '../components/labs/FilterLab';
 import IntegrationLab from '../components/labs/IntegrationLab';
 import * as F from '../figures/p5-1';
@@ -316,6 +317,11 @@ $0.001 \times 9.81 = 0.00981$ m/s²이므로 1초에 9.8 mm/s 떠내려갑니다
 
 ## 참고자료
 
-- S. W. Smith, *The Scientist and Engineer's Guide to Digital Signal Processing*, 14 ~ 21장 (필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR) — [dspguide.com](https://www.dspguide.com/)
-- SciPy 신호 처리: [IIR 필터 설계](https://docs.scipy.org/doc/scipy/reference/signal.html), [sosfiltfilt](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html), [decimate](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.decimate.html) — 이 페이지 계산의 대조 기준 (Bessel 극, 두 번 거르기, 데시메이션 기본 필터)
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 적분과 낮은 주파수 문제
+<References items={[
+  ['R-16', '필터의 크기·계단 응답, Chebyshev, 되먹임 필터, 창 sinc FIR (14 ~ 21장)'],
+  ['R-17', 'IIR 필터 설계·두 번 거르기·데시메이션 — 이 페이지 계산의 대조 기준 (Bessel 극, 두 번 거르기, 데시메이션 기본 필터)', [
+    ['sosfiltfilt', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html'],
+    ['decimate', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.decimate.html'],
+  ]],
+  ['R-01', '적분과 낮은 주파수 문제'],
+]} />

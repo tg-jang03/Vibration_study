@@ -1,0 +1,173 @@
+---
+/**
+ * 페이지 끝의 "참고자료" 목록 (D-046). 서지는 `data/references.ts` 한 곳에서 꺼내 모든 페이지가 같은 형식으로 보인다.
+ * 쓰는 법 (MDX):
+ *   ## 참고자료
+ *   <References items={[
+ *     ['R-02', '이 페이지에서 쓴 곳'],
+ *     ['R-55', '쓴 곳', [['Jeffcott 모델', 'https://…'], …]],   // 세부 쪽 링크가 따로 있을 때
+ *   ]} />
+ * 자체 계산 모델·출처 대조 상태 같은 덧붙임은 태그 사이에 쓴다: <References items={…}>덧붙임</References>
+ */
+import { REF_BY_ID, refAnchor, refLink } from '../../data/references';
+import { withBase } from '../../lib/site';
+
+type Cite = [string, string?, [string, string][]?];
+interface Props {
+  items: Cite[];
+}
+
+const { items } = Astro.props;
+const rows = items.map(([id, note, links]) => {
+  const r = REF_BY_ID[id];
+  if (!r) throw new Error(`참고자료 ${id}가 data/references.ts에 없다`);
+  return { r, note, links: links ?? [], out: refLink(r) };
+});
+const hasExtra = Astro.slots.has('default');
+---
+
+<div class="refs">
+  <ol class="ref-list">
+    {
+      rows.map(({ r, note, links, out }) => (
+        <li class="ref-item" id={`cite-${refAnchor(r.id)}`}>
+          <a class="ref-id" href={withBase(`/reference/sources/#${refAnchor(r.id)}`)} title="레퍼런스 > 참고 문헌에서 보기">
+            {r.id}
+          </a>
+          <div class="ref-body">
+            <p class="ref-cite">
+              {r.authors && <span class="ref-authors">{r.authors}, </span>}
+              {r.kind === 'book' ? <cite class="ref-title">{r.title}</cite> : r.kind === 'standard' ? <span class="ref-title">{r.title}</span> : <span class="ref-title">“{r.title}”</span>}
+              {r.source && <span class="ref-source">, {r.source}</span>}
+              {r.year && <span class="ref-year">, {r.year}</span>}
+              <span>. </span>
+              <a class="ref-out" href={out.href} target="_blank" rel="noopener noreferrer" data-direct={out.direct ? '' : undefined}>
+                {out.label} ↗
+              </a>
+            </p>
+            {note && <p class="ref-note">{note}</p>}
+            {links.length > 0 && (
+              <p class="ref-deep">
+                {links.map(([label, url], i) => (
+                  <>
+                    {i > 0 && <span aria-hidden="true"> · </span>}
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {label} ↗
+                    </a>
+                  </>
+                ))}
+              </p>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  {
+    hasExtra && (
+      <div class="ref-extra">
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .refs {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .ref-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .ref-item {
+    scroll-margin-top: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.55rem 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .ref-id {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    margin-top: 0.15rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .ref-item:target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .ref-id:hover {
+    text-decoration: underline;
+  }
+
+  .ref-body {
+    min-width: 0;
+  }
+
+  .ref-cite,
+  .ref-note,
+  .ref-deep {
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .ref-cite {
+    font-size: 0.92rem;
+    overflow-wrap: anywhere;
+  }
+
+  .ref-title {
+    font-weight: 600;
+  }
+
+  cite.ref-title {
+    font-style: italic;
+  }
+
+  .ref-out {
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .ref-out:not([data-direct]) {
+    color: var(--text-muted);
+  }
+
+  .ref-note {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+
+  .ref-deep {
+    font-size: 0.8rem;
+  }
+
+  .ref-extra {
+    margin-top: 0.6rem;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+
+  .ref-extra :global(p) {
+    margin: 0.3rem 0;
+  }
+</style>

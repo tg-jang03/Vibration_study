@@ -7,6 +7,8 @@ sectionId: P5-6
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
+import Cite from '../components/content/Cite.astro';
 import EnvelopeLab from '../components/labs/EnvelopeLab';
 import KurtogramLab from '../components/labs/KurtogramLab';
 import * as F from '../figures/p5-6';
@@ -76,7 +78,7 @@ $$
 
 <Callout type="term" title="해석 신호 · 힐베르트 변환 (Analytic signal, Hilbert transform)">
 
-해석 신호는 실신호 $x$에 모든 성분을 90° 늦춘 짝 $\mathcal{H}\{x\}$를 허수부로 붙인 복소 신호입니다. FFT로 만들면 간단합니다 — 스펙트럼의 음의 주파수를 0으로, 양의 주파수를 2배로 하고 역FFT합니다. 크기가 포락선, 각도가 순간 위상입니다. 포락선 대신 그 제곱(제곱 포락선, Squared envelope)을 FFT하기도 합니다. 제곱 포락선의 스펙트럼은 정확히 0 ~ 대역 폭 안에만 생겨 해석이 깔끔하므로, 문헌(R-01)은 이쪽을 권합니다.
+해석 신호는 실신호 $x$에 모든 성분을 90° 늦춘 짝 $\mathcal{H}\{x\}$를 허수부로 붙인 복소 신호입니다. FFT로 만들면 간단합니다 — 스펙트럼의 음의 주파수를 0으로, 양의 주파수를 2배로 하고 역FFT합니다. 크기가 포락선, 각도가 순간 위상입니다. 포락선 대신 그 제곱(제곱 포락선, Squared envelope)을 FFT하기도 합니다. 제곱 포락선의 스펙트럼은 정확히 0 ~ 대역 폭 안에만 생겨 해석이 깔끔하므로, Randall의 책은 이쪽을 권합니다 <Cite ids={['R-01']} />.
 
 </Callout>
 
@@ -272,6 +274,8 @@ BPFO 간격(수 ms)보다 프레임이 훨씬 길어 모든 프레임에 충격�
 
 ## 참고자료
 
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 엔벨로프 분석, Spectral Kurtosis, 대역 선택
-- J. Antoni, "Fast computation of the kurtogram for the detection of transient faults", *Mechanical Systems and Signal Processing* 21(1), 2007 (R-11) — Kurtogram
-- Case Western Reserve University Bearing Data Center (R-10) — 6205 시험 베어링 치수
+<References items={[
+  ['R-01', '엔벨로프 분석, Spectral Kurtosis, 대역 선택'],
+  ['R-11', 'Kurtogram'],
+  ['R-10', '6205 시험 베어링 치수'],
+]} />

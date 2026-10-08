@@ -8,6 +8,7 @@ sectionId: P2-8
 import Figure from '../components/content/Figure.astro';
 import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ModulationLab from '../components/labs/ModulationLab';
 import * as F from '../figures/p2-8';
 
@@ -307,4 +308,6 @@ $J_1(1)/J_0(1) = 0.440/0.765 \approx 0.575$ → $20\log_{10} 0.575 \approx -4.8$
 
 ## 참고자료
 
-- R-01: R. B. Randall, *Vibration-based Condition Monitoring* — 기어·베어링 진단에서 측대역과 변조 해석.
+<References items={[
+  ['R-01', '기어·베어링 진단에서 측대역과 변조 해석'],
+]} />

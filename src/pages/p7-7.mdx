@@ -7,6 +7,7 @@ sectionId: P7-7
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ElectricLab from '../components/labs/ElectricLab';
 import * as F from '../figures/p7-7';
 
@@ -260,7 +261,9 @@ $$
 
 ## 참고자료
 
-- W. R. Finley, M. M. Hodowanec, W. G. Holter, "An analytical approach to solving motor vibration problems", *IEEE Transactions on Industry Applications* 36(5), 2000 (R-39) — 2×LF·공극 편심·로터바·소프트 풋, 전원 차단 시험
-- W. T. Thomson, M. Fenger, "Current signature analysis to detect induction motor faults", *IEEE Industry Applications Magazine* 7(4), 2001 (R-40) — 로터바 결함의 전류 측대역(LF ± 2 × 슬립 × LF), 부하 의존성
-- D. E. Bently, C. T. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 전기적 런아웃·발전기 진단
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 전동기 진동의 감별, 측대역과 맥놀이
+<References items={[
+  ['R-39', '2×LF·공극 편심·로터바·소프트 풋, 전원 차단 시험'],
+  ['R-40', '로터바 결함의 전류 측대역(LF ± 2 × 슬립 × LF), 부하 의존성'],
+  ['R-02', '전기적 런아웃·발전기 진단'],
+  ['R-03', '전동기 진동의 감별, 측대역과 맥놀이'],
+]} />

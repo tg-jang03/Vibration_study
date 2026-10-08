@@ -7,6 +7,7 @@ sectionId: P5-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import OrderTrackingLab from '../components/labs/OrderTrackingLab';
 import * as F from '../figures/p5-4';
 
@@ -241,6 +242,8 @@ o_max = N_spr/2.56 ≥ 23 → N_spr ≥ 58.9 → **64**입니다. 32로는 최�
 
 ## 참고자료
 
-- K. R. Fyfe, E. D. S. Munck, "Analysis of computed order tracking", *Mechanical Systems and Signal Processing* 11(2), 1997 (R-19) — 키페이저 시각의 2차 보간과 등각도 재샘플링
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 차수추적, tacholess 방법
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 키페이저와 1X 위상
+<References items={[
+  ['R-19', '키페이저 시각의 2차 보간과 등각도 재샘플링'],
+  ['R-01', '차수추적, 키페이저 없는(tacholess) 방법'],
+  ['R-02', '키페이저와 1X 위상'],
+]} />

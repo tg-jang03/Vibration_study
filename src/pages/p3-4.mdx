@@ -7,6 +7,7 @@ sectionId: P3-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ChainQuizLab from '../components/labs/ChainQuizLab';
 import * as F from '../figures/p3-4';
 
@@ -292,6 +293,11 @@ $$
 
 ## 참고자료
 
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 센서 설치, 측정 오류와 가짜 신호.
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 측정 체인과 신호 확인.
-- 가속도계 제조사의 설치·IEPE 기술 자료 — 설치 방법별 대역, 바이어스 전압과 정착 시간. 정상 범위는 사용하는 센서의 설명서를 따른다.
+<References items={[
+  ['R-03', '센서 설치, 측정 오류와 가짜 신호'],
+  ['R-02', '측정 체인과 신호 확인'],
+]}>
+
+설치 방법별 대역, IEPE 바이어스 전압과 정착 시간의 정상 범위는 사용하는 가속도계 제조사의 설명서를 따릅니다.
+
+</References>

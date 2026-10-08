@@ -7,6 +7,7 @@ description: 1X 기준의 스펙트럼 판독, 회전수 추종과 주파수 잠
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import WaterfallLab from '../components/labs/WaterfallLab';
 import * as F from '../figures/p6-2';
 import { withBase } from '../lib/site';
@@ -266,6 +267,12 @@ X/Y의 동시성·감도·각도·극성·축 방향과 위상 관례를 확인�
 
 ## 참고자료
 
-- [Bently Nevada, ORBIT 2012 Q4](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v32n4_2012_q4.pdf): 서브싱크로너스 선회와 모드 주파수, 운전·하중 조건을 함께 확인하는 실제 휩 분석의 맥락. 이 페이지의 주파수·진폭·교차점은 별도의 학습 모델입니다.
-- [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data): Waterfall·Full spectrum을 시간파형·오빗과 함께 읽고 런아웃과 기계 응답을 구별하는 이유.
-- [Bently Nevada, Vibration issue on Compressor in a Nitric Acid Plant](https://www.bakerhughes.com/cordant/blog/vibration-issue-compressor-nitric-acid-plant): 직교 X/Y 신호·선회 방향·Full spectrum cascade를 함께 확인한 공개 사례. 역 성분을 원인 이름 하나로 단순화하지 않는 참고입니다.
+<References items={[
+  ['R-32', '서브싱크로너스 선회와 모드 주파수, 운전·하중 조건을 함께 보는 실제 휩 분석의 맥락'],
+  ['R-23', 'Waterfall·Full spectrum을 시간파형·오빗과 함께 읽고 런아웃과 기계 응답을 구별하는 이유'],
+  ['R-62', '직교 X/Y 신호·선회 방향·Full spectrum cascade를 함께 본 사례 — 역방향 성분을 원인 이름 하나로 단순화하지 않는다'],
+]}>
+
+이 페이지의 주파수·진폭·교차점은 별도의 학습 모델입니다.
+
+</References>

@@ -7,6 +7,7 @@ sectionId: P1-2
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import MassSpringLab from '../components/labs/MassSpringLab';
 import SineBasicsLab from '../components/labs/SineBasicsLab';
 import * as F from '../figures/p1-2';
@@ -355,5 +356,7 @@ $\delta_{st}=0.010$ m이므로 $f_n=(1/2\pi)\sqrt{9.80665/0.010}\approx4.98$ Hz�
 
 ## 참고자료
 
-- D. J. Inman, *Engineering Vibration*, 감쇠 없는 질량-스프링 계의 자유진동과 초기조건.
-- S. S. Rao, *Mechanical Vibrations*, 고유진동수와 정적 처짐 관계.
+<References items={[
+  ['R-51', '감쇠 없는 질량-스프링 계의 자유진동과 초기조건'],
+  ['R-52', '고유진동수와 정적 처짐의 관계'],
+]} />

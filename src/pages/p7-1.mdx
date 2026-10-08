@@ -7,6 +7,7 @@ sectionId: P7-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import FaultMapLab from '../components/labs/FaultMapLab';
 import FaultSynthLab from '../components/labs/FaultSynthLab';
 import RpmLab from '../components/labs/RpmLab';
@@ -255,6 +256,8 @@ $$
 
 ## 참고자료
 
-- D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 1X 계열 원인과 위상·방향 증거
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 원인별 스펙트럼 패턴, 회전수 확인
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 켑스트럼·자기상관으로 주기 찾기
+<References items={[
+  ['R-02', '1X 계열 원인과 위상·방향 증거'],
+  ['R-03', '원인별 스펙트럼 패턴, 회전수 확인'],
+  ['R-01', '켑스트럼·자기상관으로 주기 찾기'],
+]} />

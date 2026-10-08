@@ -20,6 +20,7 @@ const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
 const path = Astro.url.pathname.replace(/\/+$/, '');
 const isHome = path === withBase('/').replace(/\/+$/, '');
 const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
+const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
 ---
 
 <!doctype html>
@@ -40,7 +41,7 @@ const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
         <nav class="site-nav" aria-label="주 메뉴">
           <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>커리큘럼</a>
           <a href={withBase('/lab/')} aria-current={isLab ? 'page' : undefined}>Signal Lab</a>
-          <span class="nav-soon" title="M11.3에서 추가">레퍼런스</span>
+          <a href={withBase('/reference/')} aria-current={isRef ? 'page' : undefined}>레퍼런스</a>
         </nav>
       </div>
     </header>

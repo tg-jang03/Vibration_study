@@ -7,6 +7,7 @@ sectionId: P2-7
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SpectrumScalingLab from '../components/labs/SpectrumScalingLab';
 import AmplitudeScaleLab from '../components/labs/AmplitudeScaleLab';
 import UnitConverterLab from '../components/labs/UnitConverterLab';
@@ -367,5 +368,11 @@ Peak 25 µm → $2\pi \times 25 \times 25\ \mu\mathrm{m} \approx 3.93$ mm/s Peak
 
 ## 참고자료
 
-- R-05: Heinzel·Rüdiger·Schilling, *Spectrum and spectral density estimation by the DFT…* — 파워 스펙트럼·PSD 정규화와 ENBW.
-- ISO 1683: 음향·진동 레벨의 기준값 (I-006: 원문 대조 전).
+<References items={[
+  ['R-05', '파워 스펙트럼·PSD 정규화와 ENBW'],
+  ['R-54', 'dB 기준값'],
+]}>
+
+ISO 1683의 기준값은 원문과 대조 중입니다.
+
+</References>

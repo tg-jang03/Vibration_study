@@ -7,6 +7,7 @@ sectionId: P2-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import AmplitudeMeasuresLab from '../components/labs/AmplitudeMeasuresLab';
 import * as F from '../figures/p2-1';
 import { withBase } from '../lib/site';
@@ -341,5 +342,7 @@ P1-9에서처럼 회전수·위상·위치·운전 조건 등을 함께 확인�
 
 ## 참고자료
 
-- R-03: V. Wowk, <em>Machinery Vibration: Measurement and Analysis</em> — 진동 측정량과 분석 화면의 기본.
-- R-01: R. B. Randall, <em>Vibration-based Condition Monitoring</em> — 시간 신호와 주파수 분석.
+<References items={[
+  ['R-03', '진동 측정량과 분석 화면의 기본'],
+  ['R-01', '시간 신호와 주파수 분석'],
+]} />

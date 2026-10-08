@@ -1,0 +1,40 @@
+---
+/**
+ * 레퍼런스 페이지의 거르기 (D-046): `.ref-chip[data-filter]`로 묶음(`.ref-group[data-group]`)을 고르고,
+ * `.ref-search`로 `.ref-entry[data-search]`를 찾는다. 결과가 없으면 `.ref-empty`를 보인다.
+ */
+---
+
+<script is:inline>
+  (() => {
+    const chips = [...document.querySelectorAll('.ref-chip')];
+    const input = document.querySelector('.ref-search');
+    const groups = [...document.querySelectorAll('.ref-group')];
+    const none = document.querySelector('.ref-empty');
+    let pick = 'all';
+    const apply = () => {
+      const q = ((input && input.value) || '').trim().toLowerCase();
+      let shown = 0;
+      for (const g of groups) {
+        const groupOk = pick === 'all' || g.dataset.group === pick;
+        let n = 0;
+        for (const e of g.querySelectorAll('.ref-entry')) {
+          const ok = groupOk && (!q || (e.dataset.search || '').includes(q));
+          e.hidden = !ok;
+          if (ok) n++;
+        }
+        g.hidden = n === 0;
+        shown += n;
+      }
+      if (none) none.hidden = shown > 0;
+    };
+    for (const c of chips) {
+      c.addEventListener('click', () => {
+        pick = c.dataset.filter;
+        for (const o of chips) o.setAttribute('aria-pressed', String(o === c));
+        apply();
+      });
+    }
+    if (input) input.addEventListener('input', apply);
+  })();
+</script>

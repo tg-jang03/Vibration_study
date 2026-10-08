@@ -1,0 +1,161 @@
+---
+/**
+ * 레퍼런스 페이지(/reference/…) 공통 머리: 제목·소개·탭 (D-046).
+ * 아래 `.ref-toolbar`·`.ref-chip`·`.ref-search`·`.ref-group` 모양을 레퍼런스 페이지들이 함께 쓴다.
+ */
+import { withBase } from '../../lib/site';
+
+export type RefTab = 'home' | 'sources' | 'glossary' | 'formulas';
+interface Props {
+  current: RefTab;
+  title: string;
+  lead: string;
+}
+
+const { current, title, lead } = Astro.props;
+const TABS: { id: RefTab; label: string; href: string }[] = [
+  { id: 'home', label: '개요', href: '/reference/' },
+  { id: 'sources', label: '참고 문헌', href: '/reference/sources/' },
+  { id: 'glossary', label: '용어집', href: '/reference/glossary/' },
+  { id: 'formulas', label: '기호 · 공식', href: '/reference/formulas/' },
+];
+---
+
+<section class="ref-hero">
+  <p class="ref-kicker">레퍼런스</p>
+  <h1>{title}</h1>
+  <p class="lead">{lead}</p>
+  <nav class="ref-tabs" aria-label="레퍼런스 메뉴">
+    {
+      TABS.map((t) => (
+        <a href={withBase(t.href)} aria-current={t.id === current ? 'page' : undefined}>
+          {t.label}
+        </a>
+      ))
+    }
+  </nav>
+</section>
+
+<style>
+  .ref-hero {
+    padding: 1rem 0 0.25rem;
+  }
+
+  .ref-kicker {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .ref-hero h1 {
+    margin: 0.2rem 0 0.5rem;
+  }
+
+  .ref-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.9rem 0 0.4rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ref-tabs a {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.35rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .ref-tabs a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .ref-tabs a[aria-current='page'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--surface);
+  }
+
+  :global(.ref-toolbar) {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.6rem 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  :global(.ref-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  :global(.ref-chip) {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  :global(.ref-chip[aria-pressed='true']) {
+    background: var(--c, var(--accent));
+    border-color: var(--c, var(--accent));
+    color: var(--surface);
+  }
+
+  :global(.ref-search) {
+    flex: 1;
+    min-width: 14rem;
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  :global(.ref-group) {
+    margin-top: 1.5rem;
+  }
+
+  :global(.ref-group > h2) {
+    font-size: 1.2rem;
+    margin: 0 0 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--c, var(--accent));
+  }
+
+  :global(.ref-group[hidden]),
+  :global(.ref-entry[hidden]) {
+    display: none;
+  }
+
+  :global(.ref-count) {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  :global(.ref-empty) {
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+  }
+</style>

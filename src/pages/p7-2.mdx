@@ -7,6 +7,7 @@ sectionId: P7-2
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import OneXLab from '../components/labs/OneXLab';
 import * as F from '../figures/p7-2';
 
@@ -249,7 +250,9 @@ $$
 
 ## 참고자료
 
-- D. E. Bently, C. T. Hatch, *Fundamentals of Rotating Machinery Diagnostics* (R-02) — 불평형·휨·런아웃·slow roll 보상, 크랙의 1X·2X 벡터 추세
-- J. C. Nicholas, E. J. Gunter, P. E. Allaire, "Effect of residual shaft bow on unbalance response and balancing of a single mass flexible rotor", *Journal of Engineering for Power* 98(2), 1976 (R-24) — 휨의 응답 b ÷ (1 − r² + j2ζr)과 평형추의 한계
-- A. Muszynska, *Rotordynamics* (R-04) — 크랙 로터의 2X와 임계속도 절반의 공진
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 편심 풀리·벨트, 구조 공진의 판별
+<References items={[
+  ['R-02', '불평형·휨·런아웃·slow roll 보상, 크랙의 1X·2X 벡터 추세'],
+  ['R-24', '휨의 응답 b ÷ (1 − r² + j2ζr)과 평형추의 한계'],
+  ['R-49', '크랙 로터의 2X와 임계속도 절반의 공진'],
+  ['R-03', '편심 풀리·벨트, 구조 공진의 판별'],
+]} />

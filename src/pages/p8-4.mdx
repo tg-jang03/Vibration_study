@@ -7,6 +7,8 @@ sectionId: P8-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
+import Cite from '../components/content/Cite.astro';
 import GasPressureLab from '../components/labs/GasPressureLab';
 import GearTsaLab from '../components/labs/GearTsaLab';
 import {withBase} from '../lib/site';
@@ -38,7 +40,7 @@ GT의 부하를 바꾸자 동압 화면에 봉우리가 나타납니다. 다른 
 
 <Callout type="term" title="Alford 힘 (Alford force)">
 
-팁 간극 차이에 따른 날개 일 추출의 불균일이 로터 변위에 직각인 유체력을 만드는 메커니즘입니다. 그림 1은 터빈에서 순방향 선회에 에너지를 공급할 수 있는 방향을 보여 줍니다. 씰 압력의 비대칭이 만드는 힘은 별도로 구별합니다. [R-35]
+팁 간극 차이에 따른 날개 일 추출의 불균일이 로터 변위에 직각인 유체력을 만드는 메커니즘입니다. 그림 1은 터빈에서 순방향 선회에 에너지를 공급할 수 있는 방향을 보여 줍니다. 씰 압력의 비대칭이 만드는 힘은 별도로 구별합니다. <Cite ids={['R-35']} />
 
 </Callout>
 
@@ -62,7 +64,7 @@ GT의 부하를 바꾸자 동압 화면에 봉우리가 나타납니다. 다른 
 
 <Callout type="term" title="회전 실속 (Rotating stall) · 서지 (Surge)">
 
-회전 실속은 흐름이 분리된 구역인 실속 셀이 압축기 원주를 따라 이동하는 현상입니다. 서지는 압축기·덕트·용적 등 압축계의 압력과 유량이 크게 변동하는 현상이며, 깊은 서지에서는 역류도 나타날 수 있습니다. 두 현상이 항상 같은 순서로 이어지지는 않습니다. [R-36]
+회전 실속은 흐름이 분리된 구역인 실속 셀이 압축기 원주를 따라 이동하는 현상입니다. 서지는 압축기·덕트·용적 등 압축계의 압력과 유량이 크게 변동하는 현상이며, 깊은 서지에서는 역류도 나타날 수 있습니다. 두 현상이 항상 같은 순서로 이어지지는 않습니다. <Cite ids={['R-36']} />
 
 </Callout>
 
@@ -93,7 +95,7 @@ GT의 부하를 바꾸자 동압 화면에 봉우리가 나타납니다. 다른 
 
 ## 3. 연소 동압은 주파수 하나로 구별할 수 있나요?
 
-연소기 안에서는 압력 변동과 열방출 변동이 서로 영향을 줍니다. 한 주기 동안 열방출이 음향 운동에 공급하는 에너지가 손실을 넘으면 압력 진동이 유지·성장할 수 있습니다. 이를 **연소 동역학 (Combustion dynamics)** 또는 열음향 불안정의 관점에서 봅니다. [R-37]
+연소기 안에서는 압력 변동과 열방출 변동이 서로 영향을 줍니다. 한 주기 동안 열방출이 음향 운동에 공급하는 에너지가 손실을 넘으면 압력 진동이 유지·성장할 수 있습니다. 이를 **연소 동역학 (Combustion dynamics)** 또는 열음향 불안정의 관점에서 봅니다. <Cite ids={['R-37']} />
 
 <Figure {...F.acoustic} />
 
@@ -105,7 +107,7 @@ GT의 부하를 바꾸자 동압 화면에 봉우리가 나타납니다. 다른 
 
 </Callout>
 
-**원주방향 모드**는 원주 각도에 따라 압력이 달라지는 모드입니다. $m$은 원주에 놓이는 공간 파형의 차수이며 축 회전수의 하모닉 차수와 다릅니다. 진행파는 압력 모양이 원주를 따라 이동하고, 정재파는 배와 절점의 위치가 고정됩니다. 실제 환형 연소기에서는 진행·정재 성분이 섞이고 방향도 바뀔 수 있어 여러 원주 센서의 동시 자료가 필요합니다. [R-37]
+**원주방향 모드**는 원주 각도에 따라 압력이 달라지는 모드입니다. $m$은 원주에 놓이는 공간 파형의 차수이며 축 회전수의 하모닉 차수와 다릅니다. 진행파는 압력 모양이 원주를 따라 이동하고, 정재파는 배와 절점의 위치가 고정됩니다. 실제 환형 연소기에서는 진행·정재 성분이 섞이고 방향도 바뀔 수 있어 여러 원주 센서의 동시 자료가 필요합니다. <Cite ids={['R-37']} />
 
 <Callout type="try">
 
@@ -126,7 +128,7 @@ GT의 부하를 바꾸자 동압 화면에 봉우리가 나타납니다. 다른 
 
 </Callout>
 
-연소 튜닝은 연료 분배·연료 특성·공기 조건을 조절하며 동압과 배출물·연소 안정성을 함께 맞추는 작업입니다. 모든 GT에 통하는 주파수 회피값이나 연료 분배값을 이 페이지에서 정하지 않습니다. 제작사 범위에서 부하·외기·연료 조건별 동압을 추적하고 승인된 튜닝 절차를 사용합니다. [R-38]
+연소 튜닝은 연료 분배·연료 특성·공기 조건을 조절하며 동압과 배출물·연소 안정성을 함께 맞추는 작업입니다. 모든 GT에 통하는 주파수 회피값이나 연료 분배값을 이 페이지에서 정하지 않습니다. 제작사 범위에서 부하·외기·연료 조건별 동압을 추적하고 승인된 튜닝 절차를 사용합니다. <Cite ids={['R-38']} />
 
 ---
 
@@ -250,7 +252,9 @@ $2\times0.4\times(3000/60)=40$ Hz입니다. 셀 회전 자체는 20 Hz이고 센
 
 ## 참고자료
 
-- **R-35**: [Martinez-Sanchez 외, Experimental Investigation of Turbine Blade-Tip Excitation Forces](https://ntrs.nasa.gov/api/citations/19940029671/downloads/19940029671.pdf) — 팁 간극·일 추출과 교차력의 실험적 메커니즘. 수치·그림을 옮기지 않고 개념만 요약했습니다.
-- **R-36**: [NACA, Surge-Inception Study in a Two-Spool Turbojet Engine](https://ntrs.nasa.gov/citations/20050019238) — 빠른 압력 측정과 실속·서지의 관계. 특정 엔진 사례를 GT 운전 경계로 일반화하지 않았습니다.
-- **R-37**: [Noiray·Schuermans, On the dynamic nature of azimuthal thermoacoustic modes in annular gas turbine combustion chambers](https://doi.org/10.1098/rspa.2012.0535) — 여러 원주 센서로 본 정재·진행 모드와 방향 전환.
-- **R-38**: [GE Vernova, Heavy-Duty Gas Turbine Operating and Maintenance Considerations, GER-3620P](https://www.gevernova.com/content/dam/gepower-new/global/en_US/downloads/gas-new-site/resources/reference/GER-3620-P.pdf) — 운전조건별 연소 동압 감시·튜닝과 점검의 연결. 경계값·정비 간격을 옮기지 않았습니다.
+<References items={[
+  ['R-35', '팁 간극·일 추출과 교차력의 실험적 메커니즘 — 수치·그림은 옮기지 않고 개념만 요약'],
+  ['R-36', '빠른 압력 측정과 실속·서지의 관계 — 특정 엔진 사례를 GT 운전 경계로 일반화하지 않음'],
+  ['R-37', '여러 원주 센서로 본 정재·진행 모드와 방향 전환'],
+  ['R-38', '운전조건별 연소 동압 감시·튜닝과 점검의 연결 — 경계값·정비 간격은 옮기지 않음'],
+]} />

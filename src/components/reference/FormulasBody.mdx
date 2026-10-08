@@ -1,0 +1,430 @@
+import Fx from '../content/Fx.astro';
+import { withBase } from '../../lib/site';
+
+{/* 레퍼런스 > 기호·공식 본문 (D-046). 페이지 틀은 pages/reference/formulas.astro */}
+
+**바로 가기**: <a href="#part-1-진동의-기초">Part 1</a> · <a href="#part-2-신호처리-기초">Part 2</a> · <a href="#part-3-센서와-측정-체인">Part 3</a> · <a href="#part-4-회전체-동역학-기초">Part 4</a> · <a href="#part-5-신호처리-확장">Part 5</a> · <a href="#part-6-현장-플롯-읽기">Part 6</a> · <a href="#part-7-결함별-진단">Part 7</a> · <a href="#part-8-gtst-특화-현상">Part 8</a> · <a href="#자주-쓰는-기호">기호표</a>
+
+## Part 1 진동의 기초
+
+<Fx name="고유진동수" page="P1-2">
+
+$$
+\omega_n = \sqrt{\frac{k}{m}}, \qquad f_n = \frac{\omega_n}{2\pi} = \frac{1}{2\pi}\sqrt{\frac{k}{m}}
+$$
+
+$k$ 강성 [N/m], $m$ 질량 [kg]. 무거우면 느리고 단단하면 빠르다.
+
+</Fx>
+
+<Fx name="감쇠비 · 감쇠 고유진동수" page="P1-3">
+
+$$
+\zeta = \frac{c}{c_c} = \frac{c}{2\sqrt{km}}, \qquad \omega_d = \omega_n\sqrt{1-\zeta^2}
+$$
+
+$c$ 점성 감쇠계수, $c_c$ 임계감쇠. $\zeta < 1$이면 출렁이며 잦아든다.
+
+</Fx>
+
+<Fx name="대수감쇠율" page="P1-3">
+
+$$
+\delta = \ln\frac{x_i}{x_{i+1}} = \frac{2\pi\zeta}{\sqrt{1-\zeta^2}} \approx 2\pi\zeta
+$$
+
+이웃한 두 봉우리의 비로 감쇠비를 잰다.
+
+</Fx>
+
+<Fx name="강제진동의 진폭비와 위상" page="P1-4">
+
+$$
+\frac{X}{X_{st}} = \frac{1}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}, \qquad r = \frac{f}{f_n}
+$$
+
+$$
+\varphi = \operatorname{atan2}(2\zeta r,\ 1-r^2)
+$$
+
+$X_{st} = F_0/k$. 공진($r = 1$)에서 진폭비 $1/(2\zeta)$, 위상 지연 90°.
+
+</Fx>
+
+<Fx name="여러 질량의 고유진동수" page="P1-5">
+
+$$
+\det\left(\mathbf{K} - \omega^2\mathbf{M}\right) = 0
+$$
+
+$\mathbf{M}$ 질량 행렬, $\mathbf{K}$ 강성 행렬. 근의 개수만큼 고유진동수와 모드 형상이 있다.
+
+</Fx>
+
+<Fx name="직렬 강성 (축 · 베어링 · 지지)" page="P1-6">
+
+$$
+\frac{1}{k_{eq}} = \frac{1}{k_{sh}} + \frac{1}{k_{br}} + \frac{1}{k_{sup}}
+$$
+
+가장 무른 요소가 등가 강성을 정한다 (연결부 질량을 무시한 한 방향 예제).
+
+</Fx>
+
+<Fx name="회전 주파수와 불평형 응답" page="P1-7">
+
+$$
+f_r = \frac{\text{rpm}}{60}, \qquad F_u = m_u e\,\Omega^2
+$$
+
+$$
+\frac{X}{m_u e / M} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}
+$$
+
+$m_u e$ 불평형량, $\Omega = 2\pi f_r$. 임계속도 아래에서는 회전수의 제곱으로 커진다.
+
+</Fx>
+
+<Fx name="기계 요소가 만드는 주파수" page="P1-8">
+
+$$
+f_{GM} = z\,f_r, \qquad f_{BP} = N_b\,f_r, \qquad f_{belt} = \frac{\pi D_p f_r}{L}
+$$
+
+$z$ 잇수, $N_b$ 날개 수, $D_p$ 풀리 지름, $L$ 벨트 길이. 구름베어링은 P7-5 카드.
+
+</Fx>
+
+## Part 2 신호처리 기초
+
+<Fx name="정현파와 진폭 표기" page="P2-1">
+
+$$
+x(t) = A\cos(2\pi f t + \varphi)
+$$
+
+$$
+A_{rms} = \frac{A_{pk}}{\sqrt{2}}, \qquad A_{pp} = 2A_{pk}, \qquad CF = \frac{A_{pk}}{A_{rms}}
+$$
+
+진폭 관계는 정현파 하나일 때만 성립한다. Peak·RMS·Pk-Pk를 늘 밝혀 쓴다.
+
+</Fx>
+
+<Fx name="DFT와 단일측 진폭" page="P2-2">
+
+$$
+X[k] = \sum_{n=0}^{N-1} w[n]\,x[n]\,e^{-j2\pi kn/N}
+$$
+
+$$
+A_k = \frac{2\,\lvert X[k]\rvert}{S_1}
+$$
+
+$w[n]$ 윈도우, $S_1 = \sum w[n]$. $k = 0$과 $N/2$에는 2를 곱하지 않는다.
+
+</Fx>
+
+<Fx name="나이퀴스트와 에일리어스" page="P2-3">
+
+$$
+f_N = \frac{f_s}{2}, \qquad f_a = \lvert f - k f_s \rvert, \quad k = \operatorname{round}\!\left(\frac{f}{f_s}\right)
+$$
+
+$f_N$보다 높은 성분은 $f_a$로 접혀 들어와 진짜와 구별되지 않는다.
+
+</Fx>
+
+<Fx name="ADC 양자화" page="P2-3">
+
+$$
+1\ \mathrm{LSB} = \frac{2V_{fs}}{2^b}, \qquad \mathrm{SQNR} \approx 6.02\,b + 1.76\ \mathrm{dB}
+$$
+
+$b$ 비트 수, $V_{fs}$ 입력 범위. 비트 하나에 약 6 dB.
+
+</Fx>
+
+<Fx name="분해능 세 식" page="P2-4">
+
+$$
+\Delta f = \frac{f_s}{N} = \frac{F_{max}}{\mathrm{LOR}}, \qquad T = \frac{1}{\Delta f}, \qquad N = 2.56\,\mathrm{LOR}
+$$
+
+가까운 두 줄을 가르려면 기록을 길게 — 분해능은 측정 시간이 정한다.
+
+</Fx>
+
+<Fx name="윈도우 계수" page="P2-5">
+
+$$
+CG = \frac{S_1}{N}, \qquad \mathrm{ACF} = \frac{N}{S_1}
+$$
+
+$$
+\mathrm{ECF} = \sqrt{\frac{N}{S_2}}, \qquad \mathrm{ENBW} = \frac{N S_2}{S_1^2}\ [\mathrm{bin}]
+$$
+
+$S_2 = \sum w[n]^2$. 줄의 크기는 ACF, 잡음의 크기는 ECF로 바로잡는다.
+
+</Fx>
+
+<Fx name="평균화" page="P2-6">
+
+$$
+\bar S_m = (1-\alpha)\,\bar S_{m-1} + \alpha\,S_m, \qquad T_{tot} = T\,[\,1 + (M-1)(1-r)\,]
+$$
+
+$\alpha = 1/M$ 지수 평균 가중치, $r$ 오버랩 비율. 파워 평균은 흔들림만 줄이고 바닥 높이는 그대로다.
+
+</Fx>
+
+<Fx name="TSA (회전 동기 평균)" page="P2-6">
+
+$$
+\bar x(\theta) = \frac{1}{M}\sum_{m=0}^{M-1} x(\theta + 2\pi m)
+$$
+
+키페이저에 맞춰 $M$바퀴를 겹쳐 더한다. 그 축에 묶이지 않은 성분은 약해진다.
+
+</Fx>
+
+<Fx name="파워 스펙트럼 · PSD · 대역 RMS" page="P2-7">
+
+$$
+PS_k = \frac{2\,\lvert X[k]\rvert^2}{S_1^2}, \qquad PSD_k = \frac{PS_k}{\mathrm{ENBW}\cdot\Delta f}
+$$
+
+$$
+\text{대역 RMS} = \sqrt{\frac{\sum_k PS_k}{\mathrm{ENBW}}}
+$$
+
+정현파는 진폭 스펙트럼, 잡음은 PSD로 읽는다.
+
+</Fx>
+
+<Fx name="변위 · 속도 · 가속도와 dB" page="P2-7">
+
+$$
+v = 2\pi f\,d, \qquad a = (2\pi f)^2 d, \qquad L = 20\log_{10}\frac{A}{A_{ref}}
+$$
+
+같은 진동도 주파수가 높을수록 가속도로 크게 보인다. dB는 기준값을 함께 적는다.
+
+</Fx>
+
+<Fx name="변조와 맥놀이" page="P2-8">
+
+$$
+A(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t
+$$
+
+$$
+= A\cos 2\pi f_c t + \frac{Am}{2}\cos 2\pi(f_c \pm f_m)t
+$$
+
+$$
+\cos 2\pi f_1 t + \cos 2\pi f_2 t = 2\cos\pi(f_1 - f_2)t\,\cos\pi(f_1 + f_2)t
+$$
+
+측대역 간격 = 변조 주파수, 맥놀이 주기 = $1/\lvert f_1 - f_2\rvert$.
+
+</Fx>
+
+## Part 3 센서와 측정 체인
+
+<Fx name="비접촉 변위 센서" page="P3-2">
+
+$$
+d = \frac{V_{gap}}{-S}, \qquad d_{pp} = \frac{\Delta V_{pp}}{S}
+$$
+
+$S$ 감도(예 7.87 V/mm). 출력은 음전압이고 간극이 클수록 더 음이다.
+
+</Fx>
+
+<Fx name="위상과 1X 벡터" page="P3-3">
+
+$$
+\varphi = 360^\circ \times \Delta t \times f_r, \qquad \vec V = A\angle\varphi = A\,e^{-j\varphi}
+$$
+
+$$
+\vec V_c = \vec V - \vec V_{sr}
+$$
+
+$\varphi$ 키페이저에서 다음 양의 봉우리까지의 지연각, $\vec V_{sr}$ slow roll 벡터(보상).
+
+</Fx>
+
+## Part 4 회전체 동역학 기초
+
+<Fx name="증폭계수와 분리여유" page="P4-1">
+
+$$
+\mathrm{AF} = \frac{N_c}{N_2 - N_1} \approx \frac{1}{2\zeta}, \qquad \mathrm{SM} = \frac{\lvert N_{op} - N_c\rvert}{N_{op}} \times 100\ [\%]
+$$
+
+$N_1, N_2$ 피크의 0.707배 지점 회전수. 판정 수치는 규격 원문을 본다.
+
+</Fx>
+
+<Fx name="Jeffcott 로터와 정 · 역 선회" page="P4-2">
+
+$$
+m\ddot z + c\dot z + kz = m e\,\Omega^2 e^{j\Omega t}, \qquad z = A_f e^{j\Omega t} + A_b e^{-j\Omega t}
+$$
+
+$z = x + jy$. 정방향 $A_f$와 역방향 $A_b$의 크기로 오빗 모양이 정해진다.
+
+</Fx>
+
+<Fx name="교차연성과 안정 한계" page="P4-4">
+
+$$
+m\lambda^2 + c\lambda + k - j k_{xy} = 0, \qquad \delta = -\frac{2\pi\sigma}{\omega_d}
+$$
+
+$$
+k_{xy}^{\,limit} = c\,\omega_n = 2\zeta k
+$$
+
+$\lambda = \sigma \pm j\omega_d$. $\sigma > 0$(대수감쇠율 음수)이면 선회가 스스로 커진다.
+
+</Fx>
+
+## Part 5 신호처리 확장
+
+<Fx name="FRF와 코히어런스" page="P5-3">
+
+$$
+H_1 = \frac{G_{xy}}{G_{xx}}, \qquad H_2 = \frac{G_{yy}}{G_{yx}}, \qquad \gamma^2 = \frac{\lvert G_{xy}\rvert^2}{G_{xx}G_{yy}}
+$$
+
+$G_{xy}$ 교차 스펙트럼. $\gamma^2$가 1에 가까울수록 출력이 입력으로 설명된다.
+
+</Fx>
+
+<Fx name="트래킹 필터 (nX 벡터)" page="P5-5">
+
+$$
+\vec V_{nX}(t) = 2\,\mathrm{LPF}\left\{x(t)\,e^{-jn\theta(t)}\right\}
+$$
+
+$\theta(t)$ 키페이저로 잰 회전각. 회전수가 변해도 그 차수 성분만 따라간다.
+
+</Fx>
+
+<Fx name="엔벨로프와 첨도" page="P5-6">
+
+$$
+\mathrm{env}(t) = \lvert x(t) + j\,\mathcal{H}\{x(t)\}\rvert, \qquad K = \frac{E[(x-\mu)^4]}{\sigma^4}
+$$
+
+$\mathcal{H}$ 힐베르트 변환. 정규 잡음은 $K = 3$, 충격이 섞이면 커진다.
+
+</Fx>
+
+<Fx name="켑스트럼과 자기상관" page="P5-7">
+
+$$
+c(\tau) = \mathcal{F}^{-1}\left\{\ln A(f)\right\}, \qquad R(\tau) = \frac{E[x(t)\,x(t+\tau)]}{E[x(t)^2]}
+$$
+
+같은 간격의 줄 무리(하모닉·측대역)가 $\tau$ = 1/간격에서 봉우리 하나가 된다.
+
+</Fx>
+
+## Part 6 현장 플롯 읽기
+
+<Fx name="벡터 변화량" page="P6-4">
+
+$$
+\Delta\vec V = \vec V(t) - \vec V_{ref}
+$$
+
+$$
+\lvert\Delta\vec V\rvert = 2A\,\lvert\sin(\Delta\varphi/2)\rvert \quad (\text{진폭이 같을 때})
+$$
+
+진폭이 그대로여도 위상이 돌면 벡터는 크게 변한다.
+
+</Fx>
+
+## Part 7 결함별 진단
+
+<Fx name="구름베어링 결함 주파수" page="P7-5">
+
+$$
+f_{FTF} = \frac{f_r}{2}\left(1 - \frac{d}{D}\cos\alpha\right)
+$$
+
+$$
+f_{BPFO} = N_r f_{FTF}, \qquad f_{BPFI} = N_r (f_r - f_{FTF})
+$$
+
+$$
+f_{BSF} = \frac{D}{2d} f_r \left(1 - \left(\frac{d}{D}\cos\alpha\right)^2\right)
+$$
+
+$N_r$ 볼 수, $d$ 볼 지름, $D$ 피치 지름, $\alpha$ 접촉각. 실제로는 미끄럼으로 1 ~ 2 % 어긋난다.
+
+</Fx>
+
+<Fx name="기어 맞물림과 헌팅 투스" page="P7-6">
+
+$$
+\mathrm{GMF} = z_1 f_1 = z_2 f_2, \qquad f_{HT} = \frac{\mathrm{GMF}}{\mathrm{LCM}(z_1, z_2)}
+$$
+
+측대역 간격 = 결함 축의 회전수. 같은 이빨 쌍은 $1/f_{HT}$마다 다시 만난다.
+
+</Fx>
+
+<Fx name="유도전동기의 슬립과 극통과 주파수" page="P7-7">
+
+$$
+f_{sync} = \frac{2f_L}{P}, \qquad f_{slip} = f_{sync} - f_r
+$$
+
+$$
+\mathrm{PPF} = P\,f_{slip} = 2f_L - P\,f_r
+$$
+
+$f_L$ 전원 주파수, $P$ 극수. 2×LF는 극수 번째 하모닉보다 PPF만큼 위에 선다.
+
+</Fx>
+
+## Part 8 GT/ST 특화 현상
+
+<Fx name="두 관성 축계의 비틀림 고유진동수" page="P8-5">
+
+$$
+f_t = \frac{1}{2\pi}\sqrt{K_t\left(\frac{1}{J_1} + \frac{1}{J_2}\right)}
+$$
+
+$J_1, J_2$ 관성 모멘트, $K_t$ 비틀림 강성. 축 하나로 이은 두 관성의 탄성 모드.
+
+</Fx>
+
+## 자주 쓰는 기호
+
+| 기호 | 뜻 | 단위 |
+|---|---|---|
+| $f_r$, 1X | 회전 주파수 (rpm ÷ 60) | Hz |
+| $f_n$, $\omega_n$ | 고유진동수 | Hz, rad/s |
+| $\zeta$ | 감쇠비 | — |
+| $r$ | 주파수비 $f/f_n$ (회전체는 $N/N_n$) | — |
+| $f_s$, $f_N$ | 샘플링 주파수, 나이퀴스트 주파수 | Hz |
+| $N$, $T$, $\Delta f$ | 프레임 샘플 수, 프레임 길이, 분해능 | —, s, Hz |
+| $F_{max}$, LOR | 분석 최대 주파수, 분해능 라인 수 | Hz, — |
+| $w[n]$, $S_1$, $S_2$ | 윈도우, 윈도우 합, 제곱합 | — |
+| ENBW | 등가잡음대역폭 | bin |
+| $M$, $r$ | 평균 횟수, 오버랩 비율 | — |
+| $\varphi$ | 위상 (키페이저 기준 지연각) | ° |
+| $\vec V$ | 1X 벡터 $A\angle\varphi$ | 진폭 단위 |
+| $N_c$ | 임계속도 (피크 회전수) | rpm |
+| $f_L$, $P$ | 전원 주파수, 극수 | Hz, — |
+| $z$, $N_b$, $N_r$ | 잇수, 날개 수, 볼 수 | — |
+
+전체 용어와 기호는 <a href={withBase('/reference/glossary/')}>용어집</a>에서 찾을 수 있습니다.

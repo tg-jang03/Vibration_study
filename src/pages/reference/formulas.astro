@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RefHeader from '../../components/content/RefHeader.astro';
+import FormulasBody from '../../components/reference/FormulasBody.mdx';
+---
+
+<BaseLayout title="기호 · 공식 · 레퍼런스" description="사이트 전체에서 쓰는 핵심 공식(고유진동수·감쇠·공진, 요소 주파수, 샘플링·분해능·윈도우·스케일링, 위상·1X 벡터, 회전체 안정성, 결함 주파수)과 기호를 Part별로 모으고 설명하는 절로 이었다.">
+  <RefHeader current="formulas" title="기호 · 공식" lead="자주 다시 찾게 되는 공식을 Part 순서로 모았습니다. 기호는 사이트 전체에서 같은 뜻으로 씁니다. 카드 오른쪽 위의 절 번호를 누르면 그 공식을 처음 설명한 곳으로 갑니다." />
+  <div class="fx-wrap">
+    <FormulasBody />
+  </div>
+</BaseLayout>
+
+<style>
+  .fx-wrap {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+    column-gap: 1rem;
+    align-items: start;
+    line-height: 1.7;
+  }
+
+  .fx-wrap > :global(:not(article)) {
+    grid-column: 1 / -1;
+  }
+
+  .fx-wrap > :global(h2) {
+    font-size: 1.2rem;
+    margin: 1.6rem 0 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--accent);
+    scroll-margin-top: 1rem;
+  }
+
+  .fx-wrap > :global(p:first-child) {
+    margin-top: 0.8rem;
+  }
+
+  .fx-wrap > :global(table) {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 760px;
+    font-size: 0.92rem;
+  }
+
+  .fx-wrap :global(th),
+  .fx-wrap :global(td) {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+</style>

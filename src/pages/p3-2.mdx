@@ -7,6 +7,7 @@ sectionId: P3-2
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ProximityLab from '../components/labs/ProximityLab';
 import * as F from '../figures/p3-2';
 
@@ -249,6 +250,8 @@ gap을 너무 넓게(또는 좁게) 설치하면 무슨 일이 생길까요?
 
 ## 참고자료
 
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 와전류 프로브, gap 전압, 런아웃과 Slow roll.
-- R-09: Bently Nevada ORBIT Magazine 아카이브 — 프로브 설치와 런아웃 사례.
-- API 670 (기계 보호 시스템) — 센서 설치의 일반 사항. 규격 본문과 수치는 옮기지 않는다 (I-009).
+<References items={[
+  ['R-02', '와전류 프로브, gap 전압, 런아웃과 slow roll'],
+  ['R-09', '프로브 설치와 런아웃 사례'],
+  ['R-53', '센서 설치의 일반 사항'],
+]} />

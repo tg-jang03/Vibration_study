@@ -7,6 +7,7 @@ sectionId: P6-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import TrendLab from '../components/labs/TrendLab';
 import * as F from '../figures/p6-4';
 import { withBase } from '../lib/site';
@@ -244,7 +245,12 @@ ISO 20816의 일반 평가도 진동 크기와 그 변화를 함께 봅니다. �
 
 ## 참고자료
 
-- [Bently Nevada, The Usefulness of Acceptance Regions, ORBIT 2011 Q3](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v31n3_2011_q3.pdf): APHT의 시간축, Polar 표현과 허용 영역의 개념. 그림의 부채꼴·수치·가상 기록은 이 사이트에서 정한 학습 예시입니다.
-- [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data): 거의 정속인 구간에서 진폭·위상·Polar 변화와 다른 플롯을 함께 확인하는 판독 맥락. 원인 확정과 실제 진단 수치는 이 랩에서 재현하지 않습니다.
+<References items={[
+  ['R-65', 'APHT의 시간축, Polar 표현과 허용 영역의 개념'],
+  ['R-23', '거의 정속인 구간에서 진폭·위상·Polar 변화를 다른 플롯과 함께 보는 판독 맥락'],
+  ['R-08', '진동 크기와 변화에 따른 일반 평가의 취지'],
+]}>
 
-- [ISO 20816-1:2016 공식 개요](https://committee.iso.org/cms/live/live/en/sites/isoorg/contents/data/standard/06/31/63180.html): 진동 크기와 변화에 따른 일반 평가의 취지. 규격 본문·표·경계값은 옮기지 않았습니다.
+그림의 부채꼴·수치·가상 기록은 이 사이트의 학습 예시이며, 원인 확정과 실제 진단 수치를 재현하지 않습니다.
+
+</References>

@@ -8,6 +8,7 @@ sectionId: P2-6
 import Figure from '../components/content/Figure.astro';
 import { withBase } from '../lib/site';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import AveragingLab from '../components/labs/AveragingLab';
 import TsaLab from '../components/labs/TsaLab';
 import * as F from '../figures/p2-6';
@@ -475,7 +476,9 @@ $1 \times [1 + 15 \times 0.25] = 4.75$ s입니다. 다만 흔들림 감소 효�
 
 ## 참고자료
 
-- R-01: R. B. Randall, *Vibration-based Condition Monitoring* — TSA, 기어의 Residual 신호.
-- R-05: Heinzel·Rüdiger·Schilling, *Spectrum and spectral density estimation by the DFT…* — 윈도우와 평균, 오버랩의 정규화.
-- R-13: [NI — RMS·피크 홀드·벡터 평균과 트리거 조건](https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html)
-- R-14: [SciPy — Welch 파워 평균과 오버랩](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.welch.html)
+<References items={[
+  ['R-01', 'TSA, 기어의 Residual 신호'],
+  ['R-05', '윈도우와 평균, 오버랩의 정규화'],
+  ['R-13', 'RMS·피크 홀드·벡터 평균과 트리거 조건'],
+  ['R-14', 'Welch 파워 평균과 오버랩'],
+]} />

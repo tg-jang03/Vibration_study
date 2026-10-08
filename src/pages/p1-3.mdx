@@ -7,6 +7,7 @@ sectionId: P1-3
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import DampingLab from '../components/labs/DampingLab';
 import * as F from '../figures/p1-3';
 
@@ -309,5 +310,7 @@ $N_{1/2}=\ln2/0.3146\approx2.20$주기입니다.
 
 ## 참고자료
 
-- D. J. Inman, *Engineering Vibration*, 점성 감쇠 1자유도계의 자유응답.
-- S. S. Rao, *Mechanical Vibrations*, 감쇠비·임계감쇠·대수감쇠율.
+<References items={[
+  ['R-51', '점성 감쇠 1자유도계의 자유응답'],
+  ['R-52', '감쇠비·임계감쇠·대수감쇠율'],
+]} />

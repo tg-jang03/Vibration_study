@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RefHeader from '../../components/content/RefHeader.astro';
+import RefFilter from '../../components/content/RefFilter.astro';
+import glossaryMd from '../../../docs/Glossary.md?raw';
+import { PARTS, STAGES } from '../../data/curriculum';
+import { parseGlossary, sortGlossary, splitSectionIds } from '../../lib/glossary';
+import { withBase } from '../../lib/site';
+
+/** 용어집의 원본은 docs/Glossary.md 한 곳 — 빌드할 때 그 표를 읽는다 (D-046) */
+const entries = sortGlossary(parseGlossary(glossaryMd));
+const hrefOf = new Map(PARTS.flatMap((p) => p.sections).filter((s) => s.href).map((s) => [s.id, s.href!]));
+const partGroups = PARTS.map((p) => ({
+  key: String(p.num),
+  label: `Part ${p.num}`,
+  title: p.title.split(':')[0],
+  color: STAGES.find((s) => s.parts.includes(p.num))?.color ?? 'var(--accent)',
+  items: entries.filter((e) => e.part === p.num),
+}));
+const other = entries.filter((e) => !PARTS.some((p) => p.num === e.part));
+const groups = [...partGroups, { key: 'etc', label: '기타', title: '', color: 'var(--text-muted)', items: other }].filter((g) => g.items.length > 0);
+---
+
+<BaseLayout title="용어집 · 레퍼런스" description="사이트에 나오는 진동·신호처리·진단 용어의 한 줄 뜻과 기호, 처음 설명하는 페이지를 Part별로 모았다.">
+  <RefHeader
+    current="glossary"
+    title="용어집"
+    lead={`용어 ${entries.length}개를 처음 설명하는 Part 순서로 모았습니다. 한 줄 뜻으로 기억을 되살리고, "처음 나오는 곳"을 눌러 자세한 설명으로 갑니다.`}
+  />
+
+  <div class="ref-toolbar" role="search">
+    <div class="ref-chips" role="group" aria-label="Part로 거르기">
+      <button type="button" class="ref-chip" data-filter="all" aria-pressed="true">전체</button>
+      {
+        groups.map((g) => (
+          <button type="button" class="ref-chip" data-filter={g.key} aria-pressed="false" style={`--c:${g.color}`}>
+            {g.label}
+          </button>
+        ))
+      }
+    </div>
+    <input class="ref-search" type="search" placeholder="용어·기호·뜻으로 찾기 (예: 위상, ENBW, 오일 휠)" aria-label="용어 찾기" />
+  </div>
+
+  {
+    groups.map((g) => (
+      <section class="ref-group" data-group={g.key} style={`--c:${g.color}`}>
+        <h2>
+          {g.label} {g.title && <span class="gl-part-title">{g.title}</span>} <span class="ref-count">{g.items.length}</span>
+        </h2>
+        <ul class="gl-list">
+          {g.items.map((e) => (
+            <li class="ref-entry gl-item" data-search={`${e.term} ${e.symbol} ${e.meaning}`.toLowerCase()}>
+              <p class="gl-term">
+                <strong>{e.term}</strong>
+                {e.symbol && <span class="gl-symbol">{e.symbol}</span>}
+              </p>
+              <p class="gl-meaning">{e.meaning}</p>
+              <p class="gl-first">
+                <span class="gl-first-label">처음 나오는 곳</span>
+                {splitSectionIds(e.first).map((p) => {
+                  const href = p.id ? hrefOf.get(p.id) : undefined;
+                  return href ? <a href={withBase(href)}>{p.text}</a> : <span>{p.text}</span>;
+                })}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+  <p class="ref-empty" hidden>찾는 용어가 없습니다.</p>
+
+  <RefFilter />
+</BaseLayout>
+
+<style>
+  .gl-part-title {
+    font-weight: 600;
+  }
+
+  .gl-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .gl-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--c);
+    border-radius: var(--radius);
+  }
+
+  .gl-term,
+  .gl-meaning,
+  .gl-first {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .gl-term {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.5rem;
+    align-items: baseline;
+  }
+
+  .gl-symbol {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+  }
+
+  .gl-meaning {
+    font-size: 0.88rem;
+    flex: 1;
+  }
+
+  .gl-first {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .gl-first-label {
+    margin-right: 0.35rem;
+    font-weight: 600;
+  }
+
+  .gl-first a {
+    font-family: var(--font-mono);
+  }
+</style>

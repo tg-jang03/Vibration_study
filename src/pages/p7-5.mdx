@@ -7,6 +7,7 @@ sectionId: P7-5
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import BearingCalcLab from '../components/labs/BearingCalcLab';
 import BearingStageLab from '../components/labs/BearingStageLab';
 import * as F from '../figures/p7-5';
@@ -288,7 +289,9 @@ $f_r$ = 1785 ÷ 60 = 29.75 Hz입니다. 1X의 배수는 회전수와 상관없�
 
 ## 참고자료
 
-- R. B. Randall, J. Antoni, "Rolling element bearing diagnostics — A tutorial", *Mechanical Systems and Signal Processing* 25 (2011) (R-20) — 결함 주파수 식, 미끄럼, 위치마다의 변조
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 엔벨로프로 베어링 결함 진단
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 베어링 결함의 스펙트럼 패턴과 진행
-- CWRU Bearing Data Center (R-10) — 6205 베어링 치수
+<References items={[
+  ['R-20', '결함 주파수 식, 미끄럼, 위치마다의 변조'],
+  ['R-01', '엔벨로프로 베어링 결함 진단'],
+  ['R-03', '베어링 결함의 스펙트럼 패턴과 진행'],
+  ['R-10', '6205 베어링 치수'],
+]} />

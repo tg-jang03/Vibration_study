@@ -7,6 +7,7 @@ sectionId: P1-9
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import SourceSynthesisLab from '../components/labs/SourceSynthesisLab';
 import * as F from '../figures/p1-9';
 import { withBase } from '../lib/site';
@@ -261,6 +262,8 @@ rpm을 바꿔도 진폭 조작값은 고정됩니다. 공진 때문에 응답이
 
 ## 참고자료
 
-- R-03: V. Wowk, *Machinery Vibration: Measurement and Analysis* — 측정 증거와 진단의 연결.
-- R-02: D. Bently, C. Hatch, *Fundamentals of Rotating Machinery Diagnostics* — 응답·위상·운전조건을 함께 보는 회전체 진단.
-- R-01: R. B. Randall, *Vibration-based Condition Monitoring* — 합쳐진 신호에서 성분을 분리하는 신호처리.
+<References items={[
+  ['R-03', '측정 증거와 진단의 연결'],
+  ['R-02', '응답·위상·운전조건을 함께 보는 회전체 진단'],
+  ['R-01', '합쳐진 신호에서 성분을 분리하는 신호처리'],
+]} />

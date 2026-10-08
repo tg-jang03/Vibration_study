@@ -7,6 +7,7 @@ sectionId: P7-6
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import GearSpectrumLab from '../components/labs/GearSpectrumLab';
 import GearTsaLab from '../components/labs/GearTsaLab';
 import * as F from '../figures/p7-6';
@@ -282,6 +283,8 @@ $f_1$ = 30 Hz이므로 GMF = 20 × 30 = **600 Hz**, $f_2$ = 600 ÷ 47 = <strong>
 
 ## 참고자료
 
-- R. B. Randall, *Vibration-based Condition Monitoring* (R-01) — 기어 진단: 측대역, 헌팅 투스, TSA와 Residual, 켑스트럼
-- P. D. McFadden, "Examination of a technique for the early detection of failure in gears by signal processing of the time domain average of the meshing vibration", *Mechanical Systems and Signal Processing* 1(2), 1987 (R-21) — 축마다의 TSA와 규칙 성분을 뺀 신호로 이빨 결함 찾기
-- V. Wowk, *Machinery Vibration: Measurement and Analysis* (R-03) — 기어 결함의 스펙트럼 패턴
+<References items={[
+  ['R-01', '기어 진단: 측대역, 헌팅 투스, TSA와 Residual, 켑스트럼'],
+  ['R-21', '축마다의 TSA와 규칙 성분을 뺀 신호로 이빨 결함 찾기'],
+  ['R-03', '기어 결함의 스펙트럼 패턴'],
+]} />

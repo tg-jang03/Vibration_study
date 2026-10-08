@@ -7,6 +7,7 @@ sectionId: P2-4
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import ResolutionLab from '../components/labs/ResolutionLab';
 import SmearingLab from '../components/labs/SmearingLab';
 import ZoomLab from '../components/labs/ZoomLab';
@@ -240,3 +241,10 @@ $\Delta f = 1000/1600 = 0.625\ \mathrm{Hz}$, $T = 1/\Delta f = 1.6\ \mathrm{s}$�
 </details>
 
 다음 페이지(P2-5)에서는 이 페이지에서 미리 본 **Hann 윈도우**가 무엇인지 다룹니다. 성분이 bin과 bin 사이에 있으면 왜 막대가 퍼지고 높이가 틀리게 나오는지(누설), 윈도우가 그것을 어떻게 줄이는지 직접 확인합니다.
+
+## 참고자료
+
+<References items={[
+  ['R-01', '주파수 분해능과 줌(Zoom) 분석'],
+  ['R-05', 'bin 간격·측정 시간과 스펙트럼 정규화'],
+]} />

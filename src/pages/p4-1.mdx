@@ -7,6 +7,7 @@ sectionId: P4-1
 
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import RunUpBodeLab from '../components/labs/RunUpBodeLab';
 import * as F from '../figures/p4-1';
 import { withBase } from '../lib/site';
@@ -162,7 +163,7 @@ $$
 
 Half-power 대역은 진폭이 피크의 0.707배 이상인 구간입니다. AF가 크면 감쇠가 작고 공진에 민감하므로, 대역이 좁다는 이유로 작은 분리여유를 안전하다고 읽을 수 없습니다.
 
-API 684 등에서는 AF에 따라 요구 분리여유가 달라집니다(참고 R-07). 구체적인 규격 경계값은 해당 원문으로 확인하며, 판정 절차는 Part 10에서 다룹니다. 여기서 계산한 16.67 % 자체는 합격 판정이 아닙니다.
+API RP 684 등에서는 AF에 따라 요구 분리여유가 달라집니다(페이지 끝 참고자료). 구체적인 규격 경계값은 해당 원문으로 확인하며, 판정 절차는 Part 10에서 다룹니다. 여기서 계산한 16.67 % 자체는 합격 판정이 아닙니다.
 
 </Callout>
 
@@ -292,6 +293,8 @@ $\zeta = 0.005$이면 이론 AF는 100이고 Half-power 대역폭은 $N_c / 100 
 
 ## 참고자료
 
-- API RP 684, *API Standard Paragraphs Rotordynamic Tutorial: Lateral Critical Speeds, Unbalance Response, Stability, Train Torsionals, and Rotor Balancing* (R-07) — 증폭계수(AF) 정의, 분리여유(SM), 불평형 응답 해석의 개념. 판정 수치는 원문을 본다.
-- D. E. Bently, C. T. Hatch, *Fundamentals of Rotating Machinery Diagnostics*, Bently Pressurized Bearing Press (2002) (R-02) — heavy spot·high spot, Bode·Polar 판독.
-- J. M. Vance, F. Y. Zeidan, B. Murphy, *Machinery Vibration and Rotordynamics*, John Wiley & Sons (2010) (R-04) — 1자유도 로터의 임계속도와 불평형 응답.
+<References items={[
+  ['R-07', '증폭계수(AF) 정의, 분리여유(SM), 불평형 응답 해석의 개념 — 판정 수치는 원문을 본다'],
+  ['R-02', 'heavy spot·high spot, Bode·Polar 판독'],
+  ['R-04', '1자유도 로터의 임계속도와 불평형 응답'],
+]} />

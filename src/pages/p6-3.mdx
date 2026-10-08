@@ -6,6 +6,7 @@ description: '직접·1X 필터 오빗을 비교하고 키페이저 점의 시�
 ---
 
 import Callout from '../components/content/Callout.astro';
+import References from '../components/content/References.astro';
 import Figure from '../components/content/Figure.astro';
 import OrbitLab from '../components/labs/OrbitLab';
 import * as F from '../figures/p6-3';
@@ -267,6 +268,12 @@ Part 6의 네 가지 판독 화면이 연결됐습니다. <a href={withBase('/p6
 
 ## 참고자료
 
-- Siemens, [Orbit Plots](https://community.sw.siemens.com/articles/en_US/Knowledge/Orbit-Plots): 같은 평면의 X/Y, AC/DC, 키페이저와 직접/필터 오빗.
-- Bently Nevada, [Rub Diagnostics Based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data): 러브 판독에서 파형·오빗·트렌드·Full spectrum의 증거를 함께 확인하는 사례.
-- Bently Nevada, [Radial rub at centrifugal compressor’s ISO carbon seals](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/radial-rub-centrifugal-compressors-iso-carbon-seals): 운전 중 위상·오빗 변화와 다른 플롯을 연결하는 사례. 이 페이지의 그림은 출처 그림을 전재하지 않은 자체 합성 예제입니다.
+<References items={[
+  ['R-63', '같은 평면의 X/Y, AC/DC, 키페이저와 직접·필터 오빗'],
+  ['R-23', '파형·오빗·트렌드·Full spectrum의 증거를 함께 보는 러브 사례'],
+  ['R-64', '운전 중 위상·오빗 변화와 다른 플롯을 잇는 사례'],
+]}>
+
+이 페이지의 그림은 출처 그림을 옮기지 않은 자체 합성 예제입니다.
+
+</References>
