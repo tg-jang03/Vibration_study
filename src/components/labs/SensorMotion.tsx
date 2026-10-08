@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
-import { seismicMotion } from '../../lib/sensor';
+import { seismicMotion, sensorResponse } from '../../lib/sensor';
 import { usePlayClock } from '../ui/hooks';
-import PlayControls, { turnSpeeds } from '../ui/PlayControls';
+import PlayControls, { rateLabel, turnSpeeds } from '../ui/PlayControls';
 
 /**
  * LAB-SNS-01의 움직이는 그림 (D-044): 바닥과 함께 흔들리는 센서 케이스와 그 안의 질량-스프링.
@@ -42,10 +42,10 @@ function spring(x: number, yBottom: number, yTop: number, coils = 7, half = 16):
 
 export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number; zeta: number; testF: number; velocity: boolean }) {
   const box = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<View>('low');
+  const [view, setView] = useState<View>(velocity ? 'high' : 'low');
   const r = view === 'test' ? testF / fn : VIEW_R[view];
   const f = r * fn;
-  const speeds = useMemo(() => turnSpeeds(f, [0.25, 0.5, 1]).map((s, i) => ({ ...s, label: `${['느리게', '보통', '빠르게'][i]} — 1초에 ${[0.25, 0.5, 1][i]}번 왕복` })), [f]);
+  const speeds = useMemo(() => turnSpeeds(f, [0.25, 0.5, 1]).map((s, i) => ({ ...s, label: `${['느리게', '보통', '빠르게'][i]} — 1초에 ${[0.25, 0.5, 1][i]}번 왕복 (${rateLabel(s.rate)})` })), [f]);
   const [speed, setSpeed] = useState(1);
   const clock = usePlayClock(speeds[speed].rate, 2 / f, box);
   const th = TWO_PI * f * clock.t;
@@ -72,12 +72,16 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
   const upto = Math.max(1, Math.floor((th / (2 * TWO_PI)) * (N - 1)) + 1);
   const path = (ys: number[], n = ys.length) => ys.slice(0, n).map((y, i) => `${i ? 'L' : 'M'}${m.xs[i].toFixed(1)},${y.toFixed(1)}`).join('');
   const cursor = X0 + ((X1 - X0) * th) / (2 * TWO_PI);
-  const regime = r < 0.5 ? 'low' : r <= 2 ? 'res' : 'high';
-  const say = {
-    low: `아래(r = ${formatNumber(r, 2)}): 질량이 케이스와 거의 함께 움직이고, 스프링은 바닥 움직임의 ${formatNumber(m.za, 2)}배만 늘었다 줄었다 합니다. 이 작은 늘어남은 바닥의 가속도에 비례하므로 가속도계는 이것을 압전 소자로 읽습니다 — 가속도계의 평탄 대역입니다.`,
-    res: `고유진동수 근처(r = ${formatNumber(r, 2)}): 질량이 바닥보다 훨씬 크게 흔들립니다. 스프링 늘어남이 바닥 움직임의 ${formatNumber(m.za, 3)}배(r = 1이면 1/(2ζ))라 센서가 실제보다 크게 읽습니다 — 공진.`,
-    high: `위(r = ${formatNumber(r, 2)}): 질량은 공간에서 거의 멈춰 있고(바닥의 ${formatNumber(m.xa, 2)}배) 케이스만 그 둘레를 오갑니다. 스프링 늘어남 ≈ 바닥 변위(부호 반대)라, 동전형 속도계는 이 상대 운동의 빠르기를 코일로 읽습니다 — 속도계의 평탄 대역입니다.`,
-  }[regime];
+  // 문장은 r 구간이 아니라 실제 숫자로 만든다: 질량/바닥 |x|, 스프링/바닥 |z|, 센서가 읽는 배율(평탄 = ±10 %)
+  const kind = velocity ? '속도계' : '가속도계';
+  const read = sensorResponse(velocity ? 'velocity' : 'accelerometer', f, fn, zeta).ratio;
+  const massSay = m.xa > 1.5 ? `질량이 바닥보다 크게(바닥의 ${formatNumber(m.xa, 3)}배) 흔들립니다`
+    : m.xa < 0.5 ? `질량은 공간에서 거의 멈춰 있고(바닥의 ${formatNumber(m.xa, 2)}배) 케이스만 그 둘레를 오갑니다`
+    : m.za < 0.2 ? `질량이 케이스와 거의 함께 움직입니다(바닥의 ${formatNumber(m.xa, 3)}배)`
+    : `질량은 바닥의 ${formatNumber(m.xa, 2)}배로 움직입니다`;
+  const why = velocity ? '코일은 이 상대 운동의 빠르기를 읽습니다' : '압전 소자는 이 늘어남(r이 작을 때 바닥 가속도에 비례)을 읽습니다';
+  const verdict = Math.abs(read - 1) <= 0.1 ? '평탄 대역(±10 %) 안입니다' : read > 1 ? '실제보다 크게 읽습니다' : '실제보다 작게 읽습니다';
+  const say = `r = ${formatNumber(r, 3)}: ${massSay}. 스프링 늘어남 z는 바닥 움직임의 ${formatNumber(m.za, 3)}배이고, ${why}. 그래서 ${kind}는 실제의 ${formatNumber(read, 3)}배로 읽습니다 — ${verdict}.`;
 
   return (
     <div className="anim-panel" ref={box}>
@@ -99,7 +103,7 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
         <text x={218} y={M0 - 6} fontSize="11.5" fill="var(--status-wip)">질량의 제자리</text>
         {/* 바닥판 (기계 표면) */}
         <rect x={40} y={floor} width={220} height={12} fill="var(--border)" stroke="var(--text-muted)" />
-        <text x={150} y={floor + 30} textAnchor="middle" fontSize="12" fill="var(--text-muted)">기계 표면 (흔들림)</text>
+        <text x={266} y={floor + 10} fontSize="12" fill="var(--text-muted)">기계 표면</text>
         {/* 케이스 */}
         <rect x={CX - 62} y={floor - CASE_H} width={124} height={CASE_H} rx={6} fill="none" stroke="var(--text-muted)" strokeWidth="2.4" />
         <text x={CX + 66} y={floor - CASE_H + 14} fontSize="12" fill="var(--text-muted)">케이스</text>
@@ -125,7 +129,7 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
         <path d={path(m.rel, upto)} fill="none" stroke="var(--plot-2)" strokeWidth="2.4" />
         <line x1={cursor} y1={26} x2={cursor} y2={H - 8} stroke="var(--text-muted)" opacity="0.5" />
       </svg>
-      <p className="anim-caption">{say} 그림은 상자 안에 들어가게 크기를 맞췄고 실제보다 아주 느리게 재생합니다 (센서 고유진동수 {formatNumber(fn, 4)} Hz, ζ = {formatNumber(zeta, 2)}).</p>
+      <p className="anim-caption">{say} 그림은 상자 안에 들어가게 크기를 맞췄고 재생 속도는 위 선택(실제 대비 배율)대로입니다 (센서 고유진동수 {formatNumber(fn, 4)} Hz, ζ = {formatNumber(zeta, 2)}).</p>
     </div>
   );
 }

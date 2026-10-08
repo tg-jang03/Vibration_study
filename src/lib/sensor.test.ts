@@ -52,6 +52,7 @@ describe('seismicMotion — 통 안 질량의 움직임 (LAB-SNS-01 움직이는
     const m = seismicMotion(1, 0.05);
     expect(amp(m.zRe, m.zIm)).toBeCloseTo(10, 9);
     expect(m.zRe).toBeCloseTo(0, 9);
+    expect(m.zIm).toBeCloseTo(-10, 9); // 늦음 = 허수부 음 (부호까지 고정)
     const h = seismicMotion(20, 0.05);
     expect(amp(h.xRe, h.xIm)).toBeLessThan(0.01);
     expect(h.zRe).toBeCloseTo(-1, 2);
