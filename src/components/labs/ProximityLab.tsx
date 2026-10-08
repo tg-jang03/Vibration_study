@@ -5,6 +5,7 @@ import ParamSelect from '../ui/ParamSelect';
 import ParamSlider from '../ui/ParamSlider';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
+import ProbeMotion from './ProbeMotion';
 import { formatNumber, texNumber } from '../../lib/format';
 import { gapVoltage, PROBE, ROTOR, simulateProbe, type RunoutKind } from '../../lib/proximity';
 
@@ -45,10 +46,8 @@ export default function ProximityLab({ initialGap = 1.2, initialRpm = 3600, init
   const [runout, setRunout] = useState<RunoutKind>(initialRunout);
   const [target, setTarget] = useState<Target>('same');
 
-  const sim = useMemo(() => {
-    const probe = target === 'same' ? PROBE : { ...PROBE, sensitivity: PROBE.sensitivity * 0.88 };
-    return simulateProbe({ gap: gapMm / 1000, rpm, vibPp: vib * 1e-6, runout, probe });
-  }, [gapMm, rpm, vib, runout, target]);
+  const probe = useMemo(() => (target === 'same' ? PROBE : { ...PROBE, sensitivity: PROBE.sensitivity * 0.88 }), [target]);
+  const sim = useMemo(() => simulateProbe({ gap: gapMm / 1000, rpm, vibPp: vib * 1e-6, runout, probe }), [gapMm, rpm, vib, runout, probe]);
 
   const deg = Array.from(sim.rev, (r) => r * 360);
   const minGap = Math.min(...sim.gap) * 1000;
@@ -104,6 +103,8 @@ export default function ProximityLab({ initialGap = 1.2, initialRpm = 3600, init
       ]}
       footer={<p>교정 곡선의 선형 범위 밖 모양, 런아웃 무늬, 표적 재질에 따른 감도 차이(12 %)는 설명용 예시값입니다. 진동은 임계속도 {ROTOR.criticalRpm} rpm·감쇠비 {ROTOR.zeta}인 불평형 응답으로 회전수에 따라 바뀝니다.</p>}
     >
+      <h4>프로브 앞으로 축이 지나갈 때</h4>
+      <ProbeMotion gapMm={gapMm} rpm={rpm} vibPp={vib * 1e-6} runout={runout} probe={probe} sim={sim} />
       <h4>교정 곡선 위에서 신호가 오가는 구간</h4>
       <Plot series={curveSeries} x={{ label: '축까지의 거리 gap [mm]', range: [0, 3] }} y={{ label: '출력 [V]', range: [-22, 0] }} height={240} ariaLabel="교정 곡선과 동작 구간" />
       <h4>출력 전압 (두 바퀴)</h4>
