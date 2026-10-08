@@ -4,6 +4,7 @@ import LabFrame from '../ui/LabFrame';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
 import PhasorView, { type PhasorArrow } from '../ui/PhasorView';
+import { rateLabel } from '../ui/PlayControls';
 import Plot from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
 import { texNumber } from '../../lib/format';
@@ -24,6 +25,9 @@ export default function SineBasicsLab() {
   const [amp, setAmp] = useState(1);
   const [freq, setFreq] = useState(5);
   const [phiDeg, setPhiDeg] = useState(0);
+  // 반정수 f는 1초에 반 바퀴가 남아 되감을 때 180° 튀므로 그때는 2초 단위로 되감는다(span).
+  // '실제 속도'는 화면에서 1초에 6바퀴(60 fps에서 프레임당 0.1바퀴)를 넘으면 거꾸로 보이므로 그 위에서는 느리게 (D-044 §4)
+  const speeds = useMemo(() => SPEEDS.map((sp, i) => (i === SPEEDS.length - 1 && freq > 6 ? { rate: 6 / freq, label: `빠르게 (${rateLabel(6 / freq)})` } : sp)), [freq]);
   const [showRef, setShowRef] = useState(true);
 
   const series = useMemo(() => {
@@ -31,7 +35,7 @@ export default function SineBasicsLab() {
     const ref = evaluateRange({ components: [{ type: 'sine', freq, amp: 1 }] }, 0, DURATION, POINTS);
     return [
       ...(showRef ? [{ x: ref.t, y: ref.x, name: '기준 (A = 1, φ = 0°)', color: '#94a3b8', dash: 'dash' as const, width: 1.5 }] : []),
-      { x: cur.t, y: cur.x, name: '내가 만든 정현파', width: 2.5 },
+      { x: cur.t, y: cur.x, name: '내가 만든 정현파', width: 2.5, color: 'var(--plot-1)' },
     ];
   }, [amp, freq, phiDeg, showRef]);
 
@@ -100,9 +104,9 @@ export default function SineBasicsLab() {
       <PhasorView
         arrows={arrows}
         ghost={ghost}
-        span={DURATION}
+        span={Number.isInteger(freq) ? DURATION : 2 * DURATION}
         rMax={2.2}
-        speeds={SPEEDS}
+        speeds={speeds}
         defaultSpeed={1}
         traceLabel="화살표 끝의 높이 = x(t)"
         ariaLabel={`길이 ${amp}, 1초에 ${freq}바퀴 도는 화살표. t = 0에 위에서 반시계로 ${phiDeg}° 돌아간 곳에서 출발하고, 끝의 높이가 오른쪽에 정현파를 그린다.`}
