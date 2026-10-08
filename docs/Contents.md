@@ -101,6 +101,8 @@
 | P7-4 | 1X 아래 후보 지도(오일 휠·휩, 유체력 선회, ½X, Rotating stall, 구조 공진, 케이지 FTF — 자리는 겹친다), 유체막 불안정의 증거 5요소(0.38 ~ 0.48X 추종 → 모드에 잠김, 정방향, 흩어지는 키페이저 점, 갑작스러운 시작, 히스테리시스), 가벼운 베어링·낮은 유온, 유체력 선회(증기·씰 교차연성 — 부하·압력 문턱), Rotating stall(유량 ↓), 운전조건 시험(유온·베어링 하중·공정 부하), 서브싱크로너스 감별표(방향·키페이저 점·반응하는 조건), 대책의 방향 | 교차연성·휠·휩·대책(P4-4), 편심률·Shaft centerline(P4-3), 캐스케이드 잠김(P6-2), 오빗·키페이저 점(P6-3), Full spectrum(P5-3), 러브·풀림 ½X·원주 러브(P7-3), 서브싱크로너스(P2-1), 케이지 FTF(P7-5) |
 | P7-5 | 접촉각 α를 넣은 결함 주파수 식·앵귤러 볼베어링, 어림값의 한계, 미끄럼(케이지 늦음 → BPFO ↓·BPFI ↑), BSF 1배/2배 관례·볼 결함 2×BSF ± FTF, 위치마다의 변조(외륜 없음·내륜 1X·볼 FTF·케이지 FTF), 고장 4단계와 단계별 방법, 초음파 대역, 증거 5요소·감별·확인 | FTF·BPFO·BPFI·BSF(P1-8), 측대역·변조(P2-8), 가리비 손실·ENBW(P2-5), 설치 공진(P3-1), 엔벨로프·하중 영역·첨도·SK(P5-6), 특징량 추세(P5-7), 진단 지도·합성기(P7-1) |
 | P7-6 | 맞물림 주파수 GMF = z₁f₁ = z₂f₂(두 축에 공통인 줄 하나)·피니언, 전달 오차(건전해도 GMF, 부하에 따라 변함 → 같은 부하끼리 비교), 측대역 간격 = 결함 축의 회전수, 헌팅 투스 주파수 f_HT = GMF ÷ LCM(z₁, z₂)·GCD·헌팅 투스 설계, 결함마다의 모양(마모 = 2×·3×GMF·인벌류트, 편심 = 측대역 한 쌍, 깨진 이 = 작은 측대역 다수·한 바퀴 한 번 충격, 백래시 = 가벼운 부하에서 덜컥거림), 축마다의 TSA → Residual·Difference·FM4·이빨 번호, 켑스트럼 봉우리 추세, 증거 5요소·감별·확인 | 기어 맞물림(P1-8), Δf·Zoom FFT(P2-4), TSA·빗살 통과·Residual(P2-6), AM·FM 측대역(P2-8), 측정 설정(P2-9), 차수추적(P5-4), 포락선·첨도(P5-6), 켑스트럼·헌팅 투스(P5-7), 회전수 역산·합성기(P7-1), 구름베어링 감별(P7-5) |
+| P7-7 | 자기력 ∝ 전류² → 2×LF(회전수와 무관한 고정 자리), 고른 공극은 합력 0·고정자만 출렁, 정적 공극 편심·고정자 결함·소프트 풋 → 2×LF, 동기속도·슬립 주파수·극통과 주파수 PPF = P·f_slip = 2f_L − P·f_r(2×LF는 P·X보다 PPF 위, 4극은 4X), 로터바·동적 공극 편심 → 1X ± PPF·2×LF ± PPF(부하 의존, T ≥ 3/PPF, 전류 측대역 LF ± PPF), 전원 차단 시험(첫 순간에 사라지는 몫 = 전기), 인버터 구동의 LF, 2극 동기 발전기 1X = LF·2X = 2×LF → 회전수를 유지한 계자 차단·변경(즉시 = 자기력, 느림 = 계자 열 → P8-5), 축 전압·베어링 전식, 감별표 | 공극·고정자(P1-6), Δf = 1/T·2X vs 2LF·Zoom FFT(P2-4), AM 측대역·맥놀이(P2-8), 과도 수집(P3-5), 스펙트로그램(P5-2), 동기속도·슬립·명판(P7-1), 열 휨(P7-2), 미스얼라인 2X(P7-3), 구름베어링 결함(P7-5) |
+| P7-8 | 날개 통과 f_BP = N_b f_r(볼류트 혀·디퓨저, 2배), 크기 = 간극·운전점·손상·공진, 최고 효율점(BEP)·성능 곡선, BEP에서 멀수록 날개 통과 ↑, 저유량 재순환(낮은 주파수 넓은 둔덕), 수력 불평형(유량에 반응하는 1X) vs 기계 불평형, 캐비테이션(증기압·NPSHa/NPSHr, 유량 ↑·흡입 ↓ → kHz 넓은 대역, 포락선에 줄 없음 → 베어링 결함과 구별), 압축기 성능 지도·서지선, Rotating stall(유량 ↑ → 사라짐, 오일 휠과 구별), 서지(역류, 몇 Hz 이하·축방향 위치 튐)·서지 방지(재순환 밸브), 연소 동역학(→ P8-4), 감별 시험 = 회전수를 두고 유량·압력 바꾸기 | 임펠러(P1-6), 날개 통과(P1-8), 넓은 대역·줄(P2-1), dB(P2-3), 포락선(P5-6), 1X 계열(P7-2), Rotating stall·오일 휠(P7-4), 구름베어링 단계·BPFO(P7-5), 기어 맞물림(P7-6) |
 
 **Part 8 개념 척추** (D-043 — 트랙 B가 M8에서 쓴다. 현상 → 메커니즘(Part 4·7 링크) → 데이터에서 어떻게 보이나(Part 6 플롯) → 운전 대응. 메커니즘은 되짚기만, 판정 수치는 Part 10. 세부를 시작할 때 이 행을 다듬는다)
 
@@ -171,6 +173,7 @@
 | N_b | 날개 수 | — | 날개 통과 f_BP = N_b f_r |
 | N_r, d, D | 구름베어링 볼(구름요소) 수 / 볼 지름 / 피치 지름 | —, m, m | 접촉각 α는 P7-5 (지수 평균 계수 α(P2-6)와 같은 글자 — 본문에서 "접촉각 α"로 밝혀 쓴다) |
 | f_L | 전원 주파수 | Hz | 60 Hz. 전자기력 2 f_L |
+| f_sync, f_slip, PPF | 동기속도 / 슬립 주파수 / 극통과 주파수 | Hz | f_sync = 2f_L/P (P 극수), f_slip = f_sync − f_r, PPF = P f_slip = 2f_L − P f_r (P7-7) |
 | θ | 축 회전 각도 | rad | 키페이저 기준 |
 | N_c, N_n | 임계속도(피크 회전수) / 고유 회전수 | rpm | |
 | S | 비접촉 변위 센서 감도 | V/m (표시 V/mm) | 예 7.87 V/mm = 200 mV/mil (P3-2) |
@@ -306,8 +309,8 @@
 | P7-4 | 유체막 · 유체력 불안정 | LAB-SUB-01 | M7.3 | 검토 (그림 5, LAB-SUB-01 1곳, 2026-10-08) |
 | P7-5 | 구름베어링 | LAB-BRG-01, LAB-BRG-02 | M7.4 | 검토 (그림 7, LAB-BRG-01 1곳·LAB-BRG-02 2곳, 2026-10-07) |
 | P7-6 | 기어 | LAB-GEAR-01, LAB-GEAR-02 | M7.5 | 검토 (그림 8, LAB-GEAR-01·LAB-GEAR-02 각 1곳, 2026-10-08) |
-| P7-7 | 전기적 원인 | (LAB-MOD-01 프리셋) | M7.6 | 계획 |
-| P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
+| P7-7 | 전기적 원인 | LAB-ELEC-01 | M7.6 | 검토 (그림 6, LAB-ELEC-01 1곳, 2026-10-08) |
+| P7-8 | 유체 · 공력 원인 | LAB-FLOW-01 | M7.6 | 검토 (그림 6, LAB-FLOW-01 1곳, 2026-10-08) |
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
 | P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 검토 |
 | P8-2 | 열 휨 · 터닝 기어 · Morton | LAB-TRND-01 프리셋 | M8.5 (D-043) | 검토 |
@@ -397,6 +400,8 @@
 | LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 + 도는 베어링(볼이 결함에 닿을 때 충격, 하중대 가중, D-044) | P7-5 | `BearingStageLab` (/lab/brg-02/) · `BearingSpin` · lib/faults/bearing.ts, bearingMotion.ts |
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) + 맞물려 도는 기어(상한 이빨 충격·헌팅 투스 주기, D-044) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · `GearMesh` · lib/faults/gear.ts, gearMotion.ts |
 | LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
+| LAB-ELEC-01 | 전기냐 기계냐: 2×LF · 극통과 측대역 · 전원(계자) 차단 시험 (유도전동기 2극·4극, 2극 동기 발전기, 원인 6종·숨은 케이스 7개) | P7-7 | `ElectricLab` (/lab/elec-01/) · lib/faults/electric.ts |
+| LAB-FLOW-01 | 운전점을 바꿔 원인 가리기: 날개 통과 · 재순환 · 수력 불평형 · 캐비테이션 · Rotating stall · 서지 (펌프 상태 5종, 압축기 서지 방지, 숨은 케이스 7개) | P7-8 | `FlowLab` (/lab/flow-01/) · lib/faults/flow.ts, synth.ts |
 | LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |
 | LAB-GT-01 | GT 동압의 실속/서지·종방향·원주 진행/정재 공간 모드·절점 | P8-4 | GasPressureLab (/lab/gt-01/) · lib/machine/gt.ts |
 | LAB-ST-01 | ST 부하 경계·부분 분사 합력·정적 중심 위치 (독립 모델) | P8-3 | `SteamLoadLab` (/lab/st-01/) · lib/rotor/steam.ts, journalBearing.ts, stability.ts |
@@ -685,6 +690,33 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | TSA (깨진 기어 18번) | 기어 축 15바퀴: 102°·18번·FM4 약 100 / 피니언 축 1 · 5 · 15 · 40바퀴 FM4 33 · 17 · 5.3 · 3.5 (건전 3.6) / 깨진 피니언 6번: 피니언 축 40바퀴 84°·FM4 35 / 편심(기어) Difference FM4 3.7 (건전 3.2) |
 | 켑스트럼 | 깨진 피니언 1/f₁(40.27 ms) 0.11 (건전 0.0092), 깨진 기어 1/f₂(106.8 ms) 0.17 (건전 0.0064) |
 
+### P7-7 전기적 원인 (M7.6)
+
+크기·시간 상수는 설명용 모델 값이다(`lib/faults/electric.ts`). `figures-p7-7.test.ts`·`electric.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 2극 60 Hz, 명판 3560 rpm, 부하 60 % (슬립 ∝ 부하) | 3576 rpm, 1X 59.6 Hz, 슬립 0.67 %, f_slip 0.4 Hz, PPF 0.8 Hz, 2X 119.2 Hz, 맥놀이 1.25 s / 전부하 PPF 1.33 Hz / 부하 20 % PPF 0.27 Hz / 30 % 0.4 Hz |
+| 4극 50 Hz, 명판 1470 rpm | 부하 60 %: 1482 rpm, 24.7 Hz, 4X 98.8 Hz, PPF 1.2 Hz / 80 %: 1476 rpm, 24.6 Hz, PPF 1.6 Hz / Q1 4극 60 Hz 1785 rpm: f_slip 0.25, PPF 1.0, 4X 119.0 Hz |
+| 항등식 | PPF = P·f_slip = 2f_L − P·f_r, 전류 측대역 LF ± 2·s·LF = LF ± PPF, 동기기 PPF 0 (1X = LF, 2X = 2×LF) |
+| 로터바 (2극, 부하 60 %, Hann) | 1X 둘레 봉우리: 2 s 1개, 4 s 이상 3개 (T ≥ 3/PPF = 3.75 s), 부하 20 %는 16 s에서 3개 / 측대역 0.5 × 부하 mm/s |
+| 전원 차단 (τ_e 0.1 s, 회전수 f_r/(1 + t/3 s), 기계 ∝ 회전수²) | 0.5 s 뒤 전기 0.67 %, 기계 73 %, 회전수 86 %(2X 102.2 Hz) / 남은 크기(시험 전 = 1): 고정자 0.19 · 0.089(2 s), 미스얼라인 0.71 · 0.35 |
+| 2극 동기 발전기 (계자 τ 0.8 s, 회전수 유지) | 120 Hz: 고정자 3.4 → 0.46, 미스얼라인 3.38 → 3.26 mm/s (2 s 뒤, 계자 8.2 %) |
+| 8 s 기록 2×LF 둘레 (2극, 부하 60 %) | 고정자 120 Hz 3.2 · 119.2 Hz 약 0.22 / 미스얼라인 119.2 Hz 약 2.9(실제 3.25, 칸 사이) · 120 Hz 0.2 mm/s |
+
+### P7-8 유체 · 공력 원인 (M7.6)
+
+설명용 모델 값이다(`lib/faults/flow.ts`, 펌프는 P7-1·LAB-FAULT-01과 같은 3575 rpm·날개 7장). `figures-p7-8.test.ts`·`flow.test.ts`가 고정한다.
+
+| 조건 | 기준값 |
+|---|---|
+| 펌프 3575 rpm, 날개 7장 | 1X 59.58 Hz, VPF 417.1 Hz, 2×VPF 834.2 Hz, 두 바퀴 33.6 ms / Q1 팬 6장 1480 rpm: 148 · 296 Hz |
+| 날개 통과 0.6/간극 × (1 + 3(q − 1)²) | 0.6(BEP) · 1.25(40 %) · 0.71(125 %) · 1.2 mm/s(간극 절반, BEP) |
+| 재순환 (q < 0.6) | 2.5 × ramp(0.6 − q, 0.3): 40 %에서 1.67 (측정 대역 RMS 약 1.8) mm/s |
+| 1X | 수력 불평형 2.56(60 %) · 1.6(BEP) · 2.32(130 %), 기계 불평형 4.3 일정, 건전 0.8 mm/s |
+| 캐비테이션 (NPSHr ∝ 0.55 + 0.45q², 여유 1.2 아래에서 시작) | 흡입 여유 1.0(BEP)에서 2 ~ 6 kHz 1 g, +0.2 또는 유량 70 %면 0, 110 %면 더 큼 / 정상 펌프 여유 1.34(120 %) · 1.22(130 %) / 외륜 결함 비교 BPFO 213.6 Hz |
+| 압축기 9000 rpm (1X 150 Hz) | 압력비 설계 2.29, 서지선 0.55에서 3.0 / stall(φ < 0.72) λ = 0.22 − 0.3(0.72 − φ): 0.70 → 32.1 Hz · 0.214X · 2 µm, 0.64 → 29.4 Hz · 0.196X · 8 µm / 서지 방지 0.62 유지: 28.5 Hz · 10 µm / 서지(φ < 0.55) 0.7 Hz, 토출 압력 약 40 % 폭, 축방향 약 120 µm |
+
 ### P8-1 여러 모드 Bode/Polar (M8.1)
 - 교육용 N₁/N₂=1500/3000 rpm·ζ=.06/.04·e=5/3 µm Peak·형상 [1,1,1.5]/[1,−1,0]·20 rpm 표본·운전3600 rpm.
 - 베어링1 피크: 1500 rpm·83.4635277 µm pp, 3020 rpm·78.7255436 µm pp. 3000 rpm 베어링1/2/중앙=77.2051148/75.1176725/19.9363056 µm pp.
@@ -764,11 +796,15 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-32 | [Bently Nevada, ORBIT 2012 Q4](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v32n4_2012_q4.pdf) | DE·축위치·케이싱 팽창 기준 (P8-3) | 측정 개념 요약 |
 | R-33 | [Salamone (1982), Rotor Dynamic Analysis And Bearing Optimization Study Of A 3800 Hp Steam Turbine](https://oaktrust.library.tamu.edu/items/2d8b06df-f769-41ed-aa81-6c88e9544387) | 열 정렬·하중 감소와 불안정 사례 (P8-3) | 베어링별 조건, 일반화하지 않음 |
 | R-34 | [Detection Of Rotor Cracks](https://oaktrust.library.tamu.edu/server/api/core/bitstreams/0a54b65f-73e8-4c3c-9018-3b612a9dcc15/content) | 연결 축계·catenary·응력 검토 (P8-3) | 공개 개념 요약 |
-
 | R-35 | [Martinez-Sanchez 외, Turbine Blade-Tip Excitation Forces](https://ntrs.nasa.gov/api/citations/19940029671/downloads/19940029671.pdf) | Alford 힘·팁 누설·씰 힘 구별 (P8-4) | 개념 요약·실험 수치/그림 전재 없음 |
 | R-36 | [NACA, Surge-Inception Study](https://ntrs.nasa.gov/citations/20050019238) | 압력 자료·실속/서지 관계 (P8-4) | 특정 엔진 경계를 일반화하지 않음 |
 | R-37 | [Noiray·Schuermans, Azimuthal thermoacoustic modes](https://doi.org/10.1098/rspa.2012.0535) | 원주 진행/정재 모드·동시 동압 (P8-4) | 공개 초록 개념 요약 |
 | R-38 | [GE Vernova, GER-3620P](https://www.gevernova.com/content/dam/gepower-new/global/en_US/downloads/gas-new-site/resources/reference/GER-3620-P.pdf) | 연소 동압 감시·튜닝·점검 (P8-4) | 경계값·정비 주기 전재 없음 |
+| R-39 | W. R. Finley, M. M. Hodowanec, W. G. Holter, "An analytical approach to solving motor vibration problems", *IEEE Transactions on Industry Applications* 36(5), 2000 | 2×LF·공극 편심·로터바·소프트 풋, 전원 차단으로 전기/기계 가르기 (P7-7) | |
+| R-40 | W. T. Thomson, M. Fenger, "Current signature analysis to detect induction motor faults", *IEEE Industry Applications Magazine* 7(4), 2001 | 로터바 결함의 전류 측대역 LF(1 ± 2s), 부하 의존 (P7-7) | |
+| R-41 | J. F. Gülich, *Centrifugal Pumps* (Springer) | 날개 통과 압력 맥동과 간극, 부분 유량 재순환, NPSH·캐비테이션 (P7-8) | |
+| R-42 | I. J. Day, "Stall, surge, and 75 years of research", *Journal of Turbomachinery* 138(1), 2016 | Rotating stall 셀 속도, 서지·서지 방지 (P7-8) | |
+| R-43 | E. M. Greitzer, "Surge and rotating stall in axial flow compressors, Part I · II", *Journal of Engineering for Power* 98(2), 1976 | 압축계 체적이 만드는 서지, stall과 서지 구분 (P7-8) | |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

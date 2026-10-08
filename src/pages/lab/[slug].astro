@@ -60,6 +60,8 @@ import NonlinearLab from '../../components/labs/NonlinearLab';
 import SubsyncLab from '../../components/labs/SubsyncLab';
 import GearSpectrumLab from '../../components/labs/GearSpectrumLab';
 import GearTsaLab from '../../components/labs/GearTsaLab';
+import ElectricLab from '../../components/labs/ElectricLab';
+import FlowLab from '../../components/labs/FlowLab';
 import SamplingLab from '../../components/labs/SamplingLab';
 import SandboxLab from '../../components/labs/SandboxLab';
 import SensorLab from '../../components/labs/SensorLab';
@@ -190,6 +192,8 @@ const c = lab.component;
       {c === 'SubsyncLab' && <SubsyncLab client:load />}
       {c === 'GearSpectrumLab' && <GearSpectrumLab client:load />}
       {c === 'GearTsaLab' && <GearTsaLab client:load />}
+      {c === 'ElectricLab' && <ElectricLab client:load />}
+      {c === 'FlowLab' && <FlowLab client:load />}
     </div>
 
     <nav class="lab-pager" aria-label="랩 이동">

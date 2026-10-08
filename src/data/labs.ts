@@ -89,6 +89,8 @@ export const LABS: LabEntry[] = [
   { slug: 'sub-01', id: 'LAB-SUB-01', component: 'SubsyncLab', part: 7, title: '1X 아래 성분 감별: 어느 원인의 줄인가', summary: '오일 휠·휩·유체력 선회·러브·풀림·Rotating stall·구조 공진을 런업 캐스케이드, Full spectrum, 키페이저 점, 나타남·사라짐 회전수, 유온·베어링 하중·공정 부하 시험으로 가르고 숨은 원인 7개를 맞힌다.' },
   { slug: 'gear-01', id: 'LAB-GEAR-01', component: 'GearSpectrumLab', part: 7, title: '기어 결함의 스펙트럼 지문', summary: '마모·편심·깨진 이·백래시·헌팅 투스와 부하를 골라 GMF 하모닉, 측대역의 간격·개수, 맞물림 공진 대역, 파형을 비교한다.' },
   { slug: 'gear-02', id: 'LAB-GEAR-02', component: 'GearTsaLab', part: 7, title: 'TSA와 켑스트럼: 어느 축의 몇 번 이빨인가', summary: '축마다 키페이저로 TSA한 Residual·Difference와 FM4, 켑스트럼 봉우리로 결함 축과 이빨 번호를 찾는다.' },
+  { slug: 'elec-01', id: 'LAB-ELEC-01', component: 'ElectricLab', part: 7, title: '전기냐 기계냐: 2×LF · 극통과 측대역 · 전원 차단 시험', summary: '유도전동기(2극·4극)와 2극 동기 발전기에 고정자·로터바·공극 편심·불평형·미스얼라인을 넣고, 부하(슬립)와 기록 길이를 바꿔 1X·2×LF 둘레의 PPF 측대역을 보며, 전원(계자) 차단 전후 스펙트로그램으로 전기와 기계를 가르고 숨은 원인 7개를 맞힌다.' },
+  { slug: 'flow-01', id: 'LAB-FLOW-01', component: 'FlowLab', part: 7, title: '운전점을 바꿔 원인 가리기: 날개 통과 · 재순환 · 캐비테이션 · stall · 서지', summary: '원심 펌프의 유량·흡입 압력과 원심 압축기의 유량·서지 방지를 바꾸며 날개 통과, 저유량 재순환, 수력 불평형, 캐비테이션, Rotating stall, 서지가 스펙트럼·압력·축방향 위치에서 어떻게 반응하는지 보고 숨은 원인 7개를 맞힌다.' },
   // Part 8
   { slug: 'gt-01', id: 'LAB-GT-01', component: 'GasPressureLab', part: 8, title: 'GT 동압: 센서 위치와 공간 모드', summary: '실속·서지·연소의 지정 압력 파형을 비교하고 원주/종방향 위치에 따른 진폭·위상·절점을 읽는다.' },
   { slug: 'st-01', id: 'LAB-ST-01', component: 'SteamLoadLab', part: 8, title: 'ST 부하·부분 분사: 경계와 중심 위치', summary: '부하·감쇠·교차연성으로 가상 안정 경계를 비교하고, 분사 합력·점성계수에 따른 정적 중심 위치를 별도로 읽는다.' },
