@@ -54,6 +54,7 @@ import RpmLab from '../../components/labs/RpmLab';
 import BearingCalcLab from '../../components/labs/BearingCalcLab';
 import BearingStageLab from '../../components/labs/BearingStageLab';
 import OneXLab from '../../components/labs/OneXLab';
+import NonlinearLab from '../../components/labs/NonlinearLab';
 import GearSpectrumLab from '../../components/labs/GearSpectrumLab';
 import GearTsaLab from '../../components/labs/GearTsaLab';
 import SamplingLab from '../../components/labs/SamplingLab';
@@ -180,6 +181,7 @@ const c = lab.component;
       {c === 'BearingCalcLab' && <BearingCalcLab client:load />}
       {c === 'BearingStageLab' && <BearingStageLab client:load />}
       {c === 'OneXLab' && <OneXLab client:load />}
+      {c === 'NonlinearLab' && <NonlinearLab client:load />}
       {c === 'GearSpectrumLab' && <GearSpectrumLab client:load />}
       {c === 'GearTsaLab' && <GearTsaLab client:load />}
     </div>

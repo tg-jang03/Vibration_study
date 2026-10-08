@@ -85,6 +85,7 @@ export const LABS: LabEntry[] = [
   { slug: 'brg-01', id: 'LAB-BRG-01', component: 'BearingCalcLab', part: 7, title: '베어링 결함 주파수 계산기', summary: '볼 수·볼 지름·피치 지름·접촉각·회전수·미끄럼으로 FTF·BSF(1배·2배)·BPFO·BPFI를 계산하고 어림값과 비교한다.' },
   { slug: 'brg-02', id: 'LAB-BRG-02', component: 'BearingStageLab', part: 7, title: '결함 위치와 고장 단계: 어디에 먼저 보이나', summary: '외륜·내륜·볼·케이지 결함과 고장 4단계를 골라 가속도(dB)·속도·엔벨로프 스펙트럼에서 결함이 어디에 먼저 보이는지 본다.' },
   { slug: '1x-01', id: 'LAB-1X-01', component: 'OneXLab', part: 7, title: '1X 감별: 1X가 크면 무엇일까', summary: '불평형(정적·커플·동적)·휨·런아웃·크랙·방향이 정해진 힘·구조 공진을 코스트다운 Bode, slow roll 벡터, 두 베어링·두 방향의 위상, 2X로 가르고, 숨은 원인 케이스 7개를 맞힌다.' },
+  { slug: 'nl-01', id: 'LAB-NL-01', component: 'NonlinearLab', part: 7, title: '비선형의 지문: 미스얼라인 · 풀림 · 러브', summary: '같은 로터에 미스얼라인 힘·베어링 간극·씰 접촉을 넣고 회전수·정도를 바꾸며 오빗·파형·Full spectrum에서 바나나·8자, 하모닉·½X 무리, 역방향 선회를 본다.' },
   { slug: 'gear-01', id: 'LAB-GEAR-01', component: 'GearSpectrumLab', part: 7, title: '기어 결함의 스펙트럼 지문', summary: '마모·편심·깨진 이·백래시·헌팅 투스와 부하를 골라 GMF 하모닉, 측대역의 간격·개수, 맞물림 공진 대역, 파형을 비교한다.' },
   { slug: 'gear-02', id: 'LAB-GEAR-02', component: 'GearTsaLab', part: 7, title: 'TSA와 켑스트럼: 어느 축의 몇 번 이빨인가', summary: '축마다 키페이저로 TSA한 Residual·Difference와 FM4, 켑스트럼 봉우리로 결함 축과 이빨 번호를 찾는다.' },
   // Part 8
