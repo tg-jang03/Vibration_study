@@ -392,7 +392,7 @@
 | LAB-NL-01 | 비선형의 지문: 미스얼라인 · 풀림 · 러브 (시간 적분 Jeffcott, 오빗·파형·Full spectrum) | P7-3 | `NonlinearLab` (/lab/nl-01/) · lib/faults/contact.ts |
 | LAB-SUB-01 | 1X 아래 성분 감별 (원인 6종·숨은 케이스 7개, 런업 캐스케이드·Full spectrum·키페이저 점·운전조건 시험) | P7-4 | `SubsyncLab` (/lab/sub-01/) · lib/faults/subsync.ts |
 | LAB-BRG-01 | 베어링 결함 주파수 계산기 (접촉각·미끄럼·BSF 1배/2배) | P7-5 | `BearingCalcLab` (/lab/brg-01/) · lib/machine/frequencies.ts, lib/faults/bearing.ts |
-| LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 | P7-5 | `BearingStageLab` (/lab/brg-02/) · lib/faults/bearing.ts |
+| LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 + 도는 베어링(볼이 결함에 닿을 때 충격, 하중대 가중, D-044) | P7-5 | `BearingStageLab` (/lab/brg-02/) · `BearingSpin` · lib/faults/bearing.ts, bearingMotion.ts |
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · lib/faults/gear.ts |
 | LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
 | LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |

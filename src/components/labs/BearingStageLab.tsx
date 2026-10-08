@@ -3,6 +3,7 @@ import LabFrame from '../ui/LabFrame';
 import ParamSelect from '../ui/ParamSelect';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
+import BearingSpin from './BearingSpin';
 import { formatNumber } from '../../lib/format';
 import { G } from '../../lib/faults/synth';
 import {
@@ -131,6 +132,8 @@ export default function BearingStageLab({ initial = {} }: { initial?: Partial<Be
       ]}
       footer={<p>설명용 모델입니다: P7-1의 펌프 축(3575 rpm, 6205, 미끄럼 1 %), f_s {BRG_DEMO.fs} Hz, 1초. 충격마다 부품 공진 {BRG_DEMO.res.f} Hz와 초음파 대역 공진 {BRG_DEMO.ultra.f} Hz를 울리고, 기계의 다른 소리 0.5 ~ 12 kHz {BRG_DEMO.machineNoiseG} g가 있습니다. 단계는 흔히 쓰는 4단계 설명을 따른 것으로, 실제 베어링은 단계를 건너뛰거나 머무는 시간이 제각각입니다. 크기는 판정 기준이 아닙니다.</p>}
     >
+      <h4>베어링이 도는 모습: 결함에 닿을 때마다 충격</h4>
+      <BearingSpin fault={p.fault} healthy={p.stage === 0} />
       <h4>가속도 스펙트럼 (dB re 1 g) · 고른 엔벨로프 대역</h4>
       <Plot series={[
         { x: healthy.accDb.x.map(kHz), y: healthy.accDb.y, name: '건전', color: 'var(--text-muted)', width: 1 },
