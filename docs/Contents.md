@@ -352,7 +352,7 @@
 | LAB-UNIT-01 | 진동 단위 환산기 | P2-7 §6 | `UnitConverterLab` (/lab/unit-01/) · lib/units.ts |
 | LAB-MOD-01 | 변조 · 측대역 · 맥놀이 + 도는 화살표(반송파와 같이 도는 틀: 합의 길이 = 포락선, D-044) | P2-8 §2 | `ModulationLab` (/lab/mod-01/) · lib/dsp/modulation.ts (modulationLines 복소 계수), lib/modulationDemo.ts |
 | LAB-SBX-01 | Signal Lab 샌드박스 + 설정 도우미 | P2-9 §6 | `SandboxLab` (/lab/sbx-01/) · lib/sandbox.ts |
-| LAB-SNS-01 | 센서 = 질량-스프링 계 | P3-1 §3· | `SensorLab` (/lab/sns-01/) · lib/sensor.ts |
+| LAB-SNS-01 | 센서 = 질량-스프링 계 + 케이스 안 질량의 움직임(r 아래·근처·위, D-044) | P3-1 §3· | `SensorLab` (/lab/sns-01/) · `SensorMotion` · lib/sensor.ts (seismicMotion) |
 | LAB-PROX-01 | 비접촉 변위 센서: gap 전압과 런아웃 | P3-2 §3· | `ProximityLab` (/lab/prox-01/) · lib/proximity.ts |
 | LAB-PHS-01 | 위상 측정: 키페이저 펄스와 1X 위상 + 두 단면이 도는 축(홈 → 펄스, high spot → 봉우리, D-044) | P3-3 §2· | `PhaseLab` (/lab/phs-01/) · `PhaseShaft` · lib/phase.ts |
 | LAB-SRO-01 | Slow roll 보상: 런아웃을 벡터로 빼기 | P3-3 §5· | `SlowRollLab` (/lab/sro-01/) · lib/phase.ts |

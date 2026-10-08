@@ -74,3 +74,27 @@ export const MOUNTS: Record<MountKind, { label: string; fn: number; zeta: number
   magnet: { label: '자석', fn: 7000, zeta: 0.05 },
   hand: { label: '손으로 대기 (탐침)', fn: 2000, zeta: 0.1 },
 };
+
+export interface SeismicMotion {
+  /** 통에 대한 질량의 상대 운동 z/Y (복소: re, im — x = Re(· e^{jωt})) */
+  zRe: number;
+  zIm: number;
+  /** 공간에서 본 질량의 운동 x/Y = 1 + z/Y */
+  xRe: number;
+  xIm: number;
+}
+
+/**
+ * 통(바닥)이 y = Y cos ωt로 움직일 때 안쪽 질량의 운동 (움직이는 그림용, D-044).
+ * z/Y = r²H(r) e^{−jφ}, φ = atan2(2ζr, 1 − r²)  — r ≪ 1: 질량이 통과 함께(z ≈ r²), r = 1: 크게(∣z∣ = 1/(2ζ)), r ≫ 1: 공간에 거의 멈춤(x ≈ 0)
+ */
+export function seismicMotion(r: number, zeta: number): SeismicMotion {
+  if (!(r >= 0) || !(zeta >= 0)) throw new RangeError('r ≥ 0, ζ ≥ 0이어야 한다');
+  const dRe = 1 - r * r;
+  const dIm = 2 * zeta * r;
+  const d2 = dRe * dRe + dIm * dIm;
+  // z/Y = r² / (1 − r² + j2ζr)
+  const zRe = (r * r * dRe) / d2;
+  const zIm = (-r * r * dIm) / d2;
+  return { zRe, zIm, xRe: 1 + zRe, xIm: zIm };
+}

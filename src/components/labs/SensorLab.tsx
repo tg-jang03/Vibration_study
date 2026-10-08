@@ -5,6 +5,7 @@ import ParamSelect from '../ui/ParamSelect';
 import ParamSlider from '../ui/ParamSlider';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
+import SensorMotion from './SensorMotion';
 import { formatNumber, texNumber } from '../../lib/format';
 import { flatBand, MOUNTS, sensorResponse, type MountKind } from '../../lib/sensor';
 
@@ -112,6 +113,8 @@ export default function SensorLab({ initialKind = 'accelerometer', initialMount 
       ]}
       footer={<p>센서는 통 안의 질량-스프링(기초가진 1자유도 계)으로 보고 계산했습니다 (P1-4의 진폭비 H(r)). 실제 센서에는 이 밖에도 전기적 필터·케이블·증폭기의 대역이 더해집니다 (P3-4).</p>}
     >
+      <h4>센서 안을 들여다보면: 바닥이 흔들릴 때 질량은</h4>
+      <SensorMotion fn={fn} zeta={zeta} testF={testF} velocity={!acc} />
       <h4>센서의 응답 (읽은 값 ÷ 실제 값, 로그 주파수)</h4>
       <Plot series={respSeries} x={{ label: '주파수 [Hz]', log: true }} y={{ label: '진폭비', range: [0, 3] }} height={260} ariaLabel="센서의 진폭 응답" />
       <Plot series={phaseSeries} x={{ label: '주파수 [Hz]', log: true }} y={{ label: '[°]', range: acc ? [0, 180] : [-180, 0] }} height={200} ariaLabel="센서의 위상 응답" />

@@ -81,10 +81,10 @@
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 
-### 2026-10-08 · Claude · 움직이는 그림 2차 (D-044) — 4 / 6
+### 2026-10-08 · Claude · 움직이는 그림 2차 (D-044) — 5 / 6
 - 요청: 사용자 — PHS-01 → BRG-02 → GEAR-01 → 1X-01 → SNS-01 → PROX-01을 움직이게 (하나씩 커밋·기록)
-- 완료: **PHS-01**(P3-3) `PhaseShaft`: 같은 축 두 단면(홈 + 키페이저 / high spot + 진동 센서), 펄스 → 봉우리 Δt 막대, 축 위의 φ 호. 공용 `PlayControls`에 `rateLabel`·`turnSpeeds`. **BRG-02**(P7-5) `BearingSpin`·`bearingMotion.ts`: 볼 9개·케이지 FTF, 결함 충격 막대(내륜은 1X로 오르내림). **GEAR-01**(P7-6) `GearMesh`·`gearMotion.ts`: 23·61이빨 맞물림, 깨진 이 한 바퀴에 한 번, 헌팅 투스 2.456 s. **1X-01**(P7-2) `OneXRotor`: 옆에서 본 원판 두 개 로터, 정적 = 원통형(−4°)·커플 = 원추형(−164°), 맞히기 모드는 불평형 숨김
-- 다음: SNS-01 → PROX-01 (각 커밋)
+- 완료: **PHS-01**(P3-3) `PhaseShaft`: 같은 축 두 단면(홈 + 키페이저 / high spot + 진동 센서), 펄스 → 봉우리 Δt 막대, 축 위의 φ 호. 공용 `PlayControls`에 `rateLabel`·`turnSpeeds`. **BRG-02**(P7-5) `BearingSpin`·`bearingMotion.ts`: 볼 9개·케이지 FTF, 결함 충격 막대(내륜은 1X로 오르내림). **GEAR-01**(P7-6) `GearMesh`·`gearMotion.ts`: 23·61이빨 맞물림, 깨진 이 한 바퀴에 한 번, 헌팅 투스 2.456 s. **1X-01**(P7-2) `OneXRotor`: 옆에서 본 원판 두 개 로터, 정적 = 원통형(−4°)·커플 = 원추형(−164°), 맞히기 모드는 불평형 숨김. **SNS-01**(P3-1) `SensorMotion`·`seismicMotion`: 케이스 안 질량, r 0.2·1·5
+- 다음: PROX-01 (각 커밋)
 ### 2026-10-08 · Claude · 도는 화살표 애니메이션 (D-044) — 5 / 5 완료
 - 요청: 사용자 — 위상자 2순위 표의 랩 5개(BAS-01 → SMP-01 → FULL-01 → FOU-01 → MOD-01)를 움직이게, 하나씩 커밋·기록
 - 공용: `lib/dsp/phasor.ts`(+ 테스트), `usePlayClock`·`PlayControls`·`PhasorView`·`.anim-*`, `verify:page --anim-smoke`

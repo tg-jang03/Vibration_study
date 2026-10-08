@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { flatBand, MOUNTS, sensorResponse } from './sensor';
+import { flatBand, MOUNTS, seismicMotion, sensorResponse } from './sensor';
 
 describe('sensorResponse — 기초가진 1자유도 센서', () => {
   it('가속도계: r ≪ 1에서 1, 공진(r = 1)에서 위상 90°, 진폭비 1/(2ζ)', () => {
@@ -38,5 +38,28 @@ describe('flatBand — ±10 % 평탄 대역', () => {
     const damped = flatBand('velocity', 10, 0.6).lo;
     expect(damped).toBeLessThan(low);
     expect(damped).toBeGreaterThan(10); // 그래도 고유진동수보다는 위
+  });
+});
+
+describe('seismicMotion — 통 안 질량의 움직임 (LAB-SNS-01 움직이는 그림)', () => {
+  const amp = (re: number, im: number) => Math.hypot(re, im);
+  it('r ≪ 1: 질량이 통과 함께(x ≈ 1), 스프링 늘어남 ≈ r² — 가속도에 비례', () => {
+    const m = seismicMotion(0.1, 0.02);
+    expect(amp(m.xRe, m.xIm)).toBeCloseTo(1.01, 3);
+    expect(amp(m.zRe, m.zIm)).toBeCloseTo(0.01 / Math.sqrt((1 - 0.01) ** 2 + 0.004 ** 2), 9);
+  });
+  it('r = 1: 상대 운동 1/(2ζ), 위상 90° 늦음 / r ≫ 1: 질량이 공간에 거의 멈춤, z ≈ −y', () => {
+    const m = seismicMotion(1, 0.05);
+    expect(amp(m.zRe, m.zIm)).toBeCloseTo(10, 9);
+    expect(m.zRe).toBeCloseTo(0, 9);
+    const h = seismicMotion(20, 0.05);
+    expect(amp(h.xRe, h.xIm)).toBeLessThan(0.01);
+    expect(h.zRe).toBeCloseTo(-1, 2);
+  });
+  it('상대 운동의 크기 = 가속도계 응답 × r² (sensorResponse와 같은 H)', () => {
+    for (const r of [0.2, 0.7, 1.3, 3]) {
+      const m = seismicMotion(r, 0.1);
+      expect(amp(m.zRe, m.zIm)).toBeCloseTo(r * r * sensorResponse('accelerometer', r * 1000, 1000, 0.1).ratio, 12);
+    }
   });
 });
