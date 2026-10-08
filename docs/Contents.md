@@ -336,7 +336,7 @@
 | LAB-BAS-01 | 정현파의 세 숫자 (진폭 · 주파수 · 위상) + 도는 화살표와 그 높이 (D-044) | P1-2 | `SineBasicsLab` (/lab/bas-01/) · `PhasorView` |
 | LAB-BAS-02 | 진폭을 숫자 하나로 (Peak · Pk-Pk · RMS · Crest factor) | P2-1 | `AmplitudeMeasuresLab` (/lab/bas-02/) |
 | LAB-FOU-01 | 푸리에 기초 | P2-2 | `FourierHarmonicsLab` (/lab/fou-01/), `DftCorrelationLab` (/lab/fou-01-dft/), `ZeroPaddingLab` (/lab/fou-01-zeropad/) |
-| LAB-SMP-01 | 샘플링 & 에일리어싱 | P2-3 | `SamplingLab` (/lab/smp-01/) |
+| LAB-SMP-01 | 샘플링 & 에일리어싱 + 스트로브로 본 회전 원판(마차 바퀴 효과, D-044) | P2-3 | `SamplingLab` (/lab/smp-01/) · `StrobeDisk` |
 | LAB-SMP-02 | AAF와 f_s = 2.56 F_max | P2-3 | `AafLab` (/lab/smp-02/) |
 | LAB-SMP-03 | ADC & 입력 레인지 | P2-3 | `AdcLab` (/lab/smp-03/) |
 | LAB-RES-01 | 분해능: 두 성분 분리 | P2-4 | `ResolutionLab` (/lab/res-01/) |

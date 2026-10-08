@@ -9,6 +9,7 @@ import ReadoutTable from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
 import { acquire, aliasComponent } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
+import StrobeDisk from './StrobeDisk';
 
 /**
  * LAB-SMP-01 샘플링 & 에일리어싱 (P2-3, Contents §5-1).
@@ -340,12 +341,19 @@ export default function SamplingLab() {
         },
         {
           question:
+            '원판 그림에서 재생을 누르고 60 Hz, 940 Hz, 1060 Hz 프리셋을 차례로 고르세요. 플래시로 본 원판은 각각 어느 방향으로, 플래시마다 얼마나 돌까요?',
+          answer:
+            '60 Hz와 1060 Hz는 플래시마다 +0.06바퀴, 반시계(실제와 같은 방향)로 천천히 돕니다. 940 Hz는 0.94바퀴를 돌지만 0.06바퀴 모자라 −0.06바퀴, 즉 거꾸로 도는 것처럼 보입니다. 이 "거꾸로"가 위상 부호가 뒤집혀 접히는 것(위상 반전)입니다. 오른쪽 띠의 샘플 점은 세 경우 모두 같은 느린 60 Hz 물결을 그립니다.',
+        },
+        {
+          question:
             '1940 Hz 프리셋을 누르면 왜 여전히 60 Hz로 보일까요?',
           answer:
             '1940 Hz = 2 × 1000 − 60이라 2f_s에서 60 Hz만큼 떨어져 있기 때문입니다. f_N을 넘는 주파수는 f_s, 2f_s, 3f_s … 근처마다 지그재그로 계속 0 ~ f_N 안에 접혀 들어옵니다. 샘플만으로는 진짜와 가짜를 구분할 수 없으므로, 샘플링하기 전에 필터(AAF)로 높은 주파수를 미리 깎아야 합니다.',
         },
       ]}
     >
+      <StrobeDisk freq={freq} fs={fs} phase={phaseRad} />
       <Plot
         series={timeSeries}
         x={{ label: '시간 t [s]', range: [0, duration] }}
