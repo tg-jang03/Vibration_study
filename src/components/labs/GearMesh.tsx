@@ -52,10 +52,10 @@ function toothMark(c: { x: number; y: number }, r: number, a: number, z: number)
 const EXPLAIN: Record<GearFault, (side: GearSide) => string> = {
   healthy: () => `맞물림은 1초에 GMF = ${z1} × ${formatNumber(f1, 4)} = ${formatNumber(GEAR_PAIR.gmf, 4)}번, 이빨마다 고르게 일어납니다. 이 그림에서 막대는 고르고, 결함은 스펙트럼과 파형에서 봅니다.`,
   wear: () => '마모는 모든 이빨이 고르게 닳아 맞물림마다 조금씩 세집니다. 막대는 고르게 높아질 뿐이라, 결함 모양은 GMF 하모닉의 키(스펙트럼)에서 봅니다.',
-  eccentric: (s) => `편심인 ${s === 'pinion' ? '피니언' : '기어'}는 한 바퀴에 한 번 더 깊게 물렸다 얕게 물립니다. 막대 높이가 그 기어의 회전(${formatNumber(s === 'pinion' ? f1 : f2, 4)} Hz)으로 오르내림 → GMF 둘레에 그 간격의 측대역.`,
+  eccentric: (s) => `편심인 ${s === 'pinion' ? '피니언은' : '기어는'} 한 바퀴에 한 번 더 깊게 물렸다 얕게 물립니다. 막대 높이가 그 기어의 회전(${formatNumber(s === 'pinion' ? f1 : f2, 4)} Hz)으로 오르내림 → GMF 둘레에 그 간격의 측대역.`,
   broken: (s) => `깨진 이(빨강)는 ${s === 'pinion' ? `피니언이 한 바퀴 돌 때(${formatNumber(1000 / f1, 3)} ms)` : `기어가 한 바퀴 돌 때(${formatNumber(1000 / f2, 4)} ms)`} 한 번만 맞물려 그때만 큰 충격이 옵니다 — 파형에서 한 바퀴에 한 번 튀는 봉우리, 스펙트럼에서 GMF 둘레의 ${s === 'pinion' ? '피니언' : '기어'} 1X 간격 측대역이 넓게.`,
   backlash: () => '백래시가 크면 가벼운 부하에서 이빨이 떨어졌다 다시 부딪힙니다. 이 그림의 맞물림은 고르게 그렸고, 모양은 파형·스펙트럼에서 봅니다.',
-  hunting: () => `피니언의 상한 이빨과 기어의 상한 이빨(둘 다 빨강)은 ${z1} × ${z2} = ${z1 * z2}번 맞물림마다 = 피니언 ${z2}바퀴 = 기어 ${z1}바퀴마다 한 번만 만납니다(${formatNumber(htPeriod, 4)} s, 헌팅 투스 주기). 작은 막대는 각 상한 이빨이 혼자 맞물릴 때, 큰 막대가 둘이 만날 때입니다.`,
+  hunting: () => `피니언의 상한 이빨과 기어의 상한 이빨(둘 다 빨강)은 ${z1} × ${z2} = ${z1 * z2}번 맞물림마다 = 피니언 ${z2}바퀴 = 기어 ${z1}바퀴마다 한 번만 만납니다(${formatNumber(htPeriod, 4)} s, 헌팅 투스 주기). 작은 주황 막대는 상한 이빨 하나가 맞물릴 때, 큰 빨강 막대는 둘이 만날 때입니다 — 띠에는 두 주기를 담아 큰 막대 사이 간격이 곧 헌팅 투스 주기입니다.`,
 };
 
 export default function GearMesh({ fault, side }: { fault: GearFault; side: GearSide }) {
@@ -67,9 +67,11 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
   const clock = usePlayClock(rate, undefined, box);
   const t = clock.t;
 
-  // 오른쪽 띠의 창: 헌팅 = 한 주기, 기어 쪽 결함 = 기어 2바퀴, 그 밖 = 피니언 4바퀴
+  // 이빨이 한 프레임(60 fps)에 0.3피치 넘게 움직이면 이빨 윤곽이 거꾸로 기는 것처럼 보인다(D-044 §4) → 그때는 피치원만 그린다
+  const blur = (f1 * rate * z1) / 60 > 0.3;
+  // 오른쪽 띠의 창: 헌팅 = 두 주기(큰 막대 간격이 보이게), 기어 쪽 결함 = 기어 2바퀴, 그 밖 = 피니언 4바퀴
   const gearSideWin = (fault === 'broken' || fault === 'eccentric') && side === 'gear';
-  const Tw = hunting ? htPeriod : gearSideWin ? 2 / f2 : 4 / f1;
+  const Tw = hunting ? 2 * htPeriod : gearSideWin ? 2 / f2 : 4 / f1;
   const w0 = Math.floor(t / Tw) * Tw;
   const events = useMemo(() => meshEvents(fault, side, w0, w0 + Tw, hunting), [fault, side, w0, Tw, hunting]);
   const shown = events.filter((e) => e.t <= t);
@@ -82,11 +84,11 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
   const markPinion = (fault === 'broken' && side === 'pinion') || hunting;
   const markGear = (fault === 'broken' && side === 'gear') || hunting;
   // 기어 이빨은 반 칸 비켜 그린다: 피니언 이빨이 맞물림 자리에서 기어 이빨 사이 골에 들어가게
-  const gearDraw = (g: number) => gearToothAngle(g, t) + Math.PI / z2;
+  const gearDraw = (g: number) => gearToothAngle(g, t) - Math.PI / z2; // −: 충격 순간 빨간 이빨이 밀리는 쪽(맞물림 자리)에 온다
   const mesh = pos(P, 0, R1);
-  const grid = hunting ? 10 : gearSideWin ? 1 / f2 : 1 / f1;
+  const grid = hunting ? 20 : gearSideWin ? 1 / f2 : 1 / f1;
   const gridLines = hunting
-    ? Array.from({ length: 7 }, (_, i) => w0 + (i * 10) / f1)
+    ? Array.from({ length: Math.floor((2 * z2) / 20) + 1 }, (_, i) => w0 + (i * 20) / f1)
     : Array.from({ length: Math.round(Tw / grid) + 1 }, (_, i) => w0 + i * grid);
 
   return (
@@ -95,8 +97,17 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
         status={`피니언 ${(t * f1).toFixed(2)}바퀴 · 기어 ${(t * f2).toFixed(2)}바퀴`} />
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`${z1}이빨 피니언과 ${z2}이빨 기어가 맞물려 돈다. ${EXPLAIN[fault](side)}`}>
-        <path d={gearPath(G, R2, z2, gearDraw)} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" />
-        <path d={gearPath(P, R1, z1, (p) => pinionToothAngle(p, t))} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" />
+        {blur ? (
+          <>
+            <circle cx={G.x} cy={G.y} r={R2} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="5 4" />
+            <circle cx={P.x} cy={P.y} r={R1} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="5 4" />
+          </>
+        ) : (
+          <>
+            <path d={gearPath(G, R2, z2, gearDraw)} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" />
+            <path d={gearPath(P, R1, z1, (p) => pinionToothAngle(p, t))} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" />
+          </>
+        )}
         {/* 회전을 보이는 표시선 */}
         <line x1={P.x} y1={P.y} x2={pos(P, pinionToothAngle(0, t) + Math.PI, R1 - 10)[0]} y2={pos(P, pinionToothAngle(0, t) + Math.PI, R1 - 10)[1]} stroke="var(--plot-1)" strokeWidth="3" strokeLinecap="round" />
         <line x1={G.x} y1={G.y} x2={pos(G, gearDraw(0) + Math.PI, R2 - 18)[0]} y2={pos(G, gearDraw(0) + Math.PI, R2 - 18)[1]} stroke="var(--plot-4)" strokeWidth="3" strokeLinecap="round" />
@@ -118,14 +129,14 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
 
         {/* 오른쪽 띠 */}
         <text x={X0} y={18} fontSize="12.5" fill="var(--text-muted)">
-          {hunting ? `상한 이빨이 맞물릴 때만 · 헌팅 투스 주기 ${formatNumber(htPeriod, 4)} s 동안` : `맞물림마다의 충격 (막대 높이) · ${gearSideWin ? '기어 2바퀴' : '피니언 4바퀴'} 동안 ${events.length}번`}
+          {hunting ? `상한 이빨이 맞물릴 때만 · 헌팅 투스 두 주기 (2 × ${formatNumber(htPeriod, 4)} s)` : `맞물림마다의 충격 (막대 높이) · ${gearSideWin ? '기어 2바퀴' : '피니언 4바퀴'} 동안 ${events.length}번`}
         </text>
         <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke="var(--border)" />
         {gridLines.map((g, i) => (
           <g key={i}>
             <line x1={xAt(g)} y1={30} x2={xAt(g)} y2={BASE + 5} stroke="var(--text-muted)" strokeDasharray="3 4" opacity="0.45" />
             <text x={xAt(g)} y={BASE + 19} textAnchor={i === 0 ? 'start' : 'middle'} fontSize="11.5" fill="var(--text-muted)">
-              {hunting ? `${i * 10}` : `${i}`}
+              {hunting ? `${i * 20}` : `${i}`}
             </text>
           </g>
         ))}
@@ -138,7 +149,7 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
         ))}
         <line x1={xAt(t)} y1={30} x2={xAt(t)} y2={BASE + 5} stroke="var(--text-muted)" />
       </svg>
-      <p className="anim-caption">{EXPLAIN[fault](side)} 그림은 실제보다 느리게 재생합니다{hunting ? '(헌팅 투스는 한 주기를 보려고 더 빠르게)' : ''}.</p>
+      <p className="anim-caption">{EXPLAIN[fault](side)} 파랑·보라 선은 두 기어가 도는 것을 보이는 표시선입니다. 그림은 실제보다 느리게 재생합니다{hunting ? '(헌팅 투스는 주기를 보려고 더 빠르게 — 이빨이 너무 빨라 거꾸로 도는 것처럼 보이지 않게 피치원만 그림)' : ''}.</p>
     </div>
   );
 }
