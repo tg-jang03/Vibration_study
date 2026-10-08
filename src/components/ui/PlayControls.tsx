@@ -20,6 +20,18 @@ interface PlayControlsProps {
 
 const ICON = { width: 11, height: 11, viewBox: '0 0 10 10', 'aria-hidden': true } as const;
 
+/** 재생 배율 이름: 1보다 작으면 "실제의 1/N", 1이면 "실제 속도", 크면 "실제의 N배" */
+export function rateLabel(rate: number): string {
+  const fmt = (v: number) => String(Number(v.toPrecision(3)));
+  return Math.abs(rate - 1) < 1e-9 ? '실제 속도' : rate < 1 ? `실제의 1/${fmt(1 / rate)}` : `실제의 ${fmt(rate)}배`;
+}
+
+/** 회전체 그림용 재생 속도: 화면에서 1초에 0.25 · 0.5 · 1바퀴 (fr = 실제 회전 주파수 [Hz]) */
+export function turnSpeeds(fr: number, turns: readonly number[] = [0.25, 0.5, 1]): PlaySpeed[] {
+  const names = ['느리게', '보통', '빠르게', '더 빠르게'];
+  return turns.map((k, i) => ({ rate: k / fr, label: `${names[i] ?? ''} (${rateLabel(k / fr)})` }));
+}
+
 /** 움직이는 그림의 재생 막대 (D-044): 재생/멈춤 · 처음으로 · 재생 속도. 시계는 usePlayClock. */
 export default function PlayControls({ clock, speeds, speed = 0, onSpeed, children, status }: PlayControlsProps) {
   return (

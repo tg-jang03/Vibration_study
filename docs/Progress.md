@@ -16,7 +16,7 @@
 - 사용자 확인 대기: **P2-6 TSA 절** (M1.12, §6: 그림 9 ~ 12, LAB-AVG-02 두 곳), **P2-7 스케일링·단위(M1.13)**, **P2-8 변조·맥놀이(M1.14)**, **P2-9 측정 설정 종합·Signal Lab(M1.15)**, **P3-1 ~ P3-5** (M3.1 ~ M3.5), **P5-1 ~ P5-7 신호처리 확장 전체 (M4.1 ~ M4.8)**, **P1-1~P1-9** (M2.1~M2.8, P1-1~P1-5·P1-7은 2026-10-06 전수 검토 반영), **P2-1 정리(M2.9)**, **P1-6(M5.0)**, **P4-1(M5.1)**, **P4-2(M5.2)**, **P4-3(M5.3)**, **P4-4(M5.4)**, **P6-1(M6.1)**, **P6-2(M6.2)**, **P6-3(M6.3)**, **P6-4(M6.6)**, **P7-1(M7.1)**, **P7-5(M7.4)**, **P7-6(M7.5)**, **P7-2 · P7-3(M7.2)**, **P7-4(M7.3)**, **P8-1(M8.1)**, **P8-2(M8.5)**, **P8-3(M8.2)**
 
 ## 핸드오프 — 공통
-- **도는 화살표 애니메이션 (D-044, 2026-10-08, 트랙 A, 공용 코어 하위 호환 추가)**: `ui/hooks.ts`의 `usePlayClock`, 새 `ui/PlayControls`·`ui/PhasorView`, `global.css`의 `.anim-*`, `lib/dsp/phasor.ts`, `verify:page --anim-smoke`. 관례 0° = 위·반시계·끝의 높이 = x(t). **트랙 B 파일 수정(사용자 요청)**: `SineBasicsLab`·`p1-2.mdx` §2.1(화살표 설명·따라 하기 5번). 기존 동작은 그대로.
+- **도는 화살표 애니메이션 (D-044, 2026-10-08, 트랙 A, 공용 코어 하위 호환 추가)**: `ui/hooks.ts`의 `usePlayClock`, 새 `ui/PlayControls`(+ `rateLabel`·`turnSpeeds`)·`ui/PhasorView`, `global.css`의 `.anim-*`, `lib/dsp/phasor.ts`, `verify:page --anim-smoke`. 관례 0° = 위·반시계·끝의 높이 = x(t). **트랙 B 파일 수정(사용자 요청)**: `SineBasicsLab`·`p1-2.mdx` §2.1(화살표 설명·따라 하기 5번). 기존 동작은 그대로.
 - **Part 4 재검토·수정 (2026-10-07, 트랙 A가 사용자 요청으로 트랙 B 파일 수정)**: `p4-1 ~ p4-4.mdx`, `figures/p4-1 ~ 4.ts`, 테스트 2개, 랩 `RunUpBodeLab`·`JeffcottLab`·`StabilityLab`(문구·표시만, 계산 모듈은 그대로). 이어서 P6-1 ~ P6-4: `p6-1 ~ 4.mdx`, `figures/p6-1 ~ 4.ts`, `TimeWaveformLab`·`WaterfallLab`·`OrbitLab`·`TrendLab`, `lib/plots/waveform.ts`의 충격 감쇠 상수, `lib/plots/orbit.ts`의 루프 기본 진폭. 내용은 트랙 A 세션 로그. **트랙 B는 rebase 뒤 이 변경을 기준으로 이어 가 주세요.**
 - **트랙 B 다음 = M8 Part 8 (D-043 확정, 2026-10-08, 트랙 A가 사용자 지시로 기반 마련)**: 세부 5개 **M8.1 P8-1(LAB-BODE-01) → M8.5 P8-2 → M8.2 P8-3 → M8.3 P8-4 → M8.4 P8-5** (Roadmap §6-10). 준비된 것: Contents §1-2 **Part 8 척추**, §5-1b **LAB-BODE-01 사양 초안**(2모드 중첩식·센서 3곳·과제 6·검증: 1모드 극한 = P4-1 `simulateRunUp`, 숫자는 시작 때 확정), §4 P8-2 → M8.5, AGENTS 파일 소유(`p8-*`·`lib/plots`). 트랙 A는 M7 남은 순서를 **M7.2 → M7.3 → M7.6 → M7.7**로 바꿔 P8이 링크할 P7-2·P7-3(bow·러브) → P7-4(서브싱크로너스 감별) → P7-7 ~ P7-9를 먼저 낸다. 없는 페이지는 한 줄로 풀고 "P7-4에서"처럼 위치만.
 - **`lib/faults/` 공개 (2026-10-07, 트랙 A, D-042) — 재사용할 수 있는 것**: `catalog.ts`(원인 19개의 증거 5요소·확인 방법·자리 계산, `candidatesAt` 주파수 → 후보), `synth.ts`(결함 합성기: 기계 4종 × 결함 13종 → H·V·A 가속도, `velocitySpectrum`·`peakAt`·`topLine`·`hvLagDeg`), `rpm.ts`(하모닉 무리·켑스트럼·자기상관 회전수 추정, `syncRpm`), `bearing.ts`(P7-5: 미끄럼 결함 주파수, 위치 4 × 단계 0 ~ 4 베어링 신호 f_s 65536 Hz, `toneAmp` = 칸 사이 성분도 제 크기로), `gear.ts`(P7-6: 23 → 61이빨 감속기 결함 6종, `gearSignal`·`analyzeGear`·축마다 `gearTsa`(Residual·Difference·FM4)·`gearCepstrum` — P8-4 액세서리 기어박스에 재사용). P6 판독 예시가 결함 신호가 필요하면 이것을 쓴다. 공용 `global.css`에 `.lab-note`·`.fault-cards` 추가(하위 호환). **P7-2·P7-3 추가 (2026-10-08)**: `oneX.ts`(베어링 2개 강성 로터의 원인별 1X·2X 벡터·코스트다운·slow roll 보상), `contact.ts`(무차원 Jeffcott 시간 적분 RK4: 씰 접촉·마찰, 베어링 간극, 미스얼라인 예하중·1X·2X 힘 → 오빗·Full spectrum·차수 성분, 구조적 풀림 2자유도, Newkirk 반복 모델) — P8-3 steam whirl·P8-4 감별에서 러브·풀림 비교가 필요하면 가져다 쓴다.
@@ -81,18 +81,16 @@
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 
+### 2026-10-08 · Claude · 움직이는 그림 2차 (D-044) — 1 / 6
+- 요청: 사용자 — PHS-01 → BRG-02 → GEAR-01 → 1X-01 → SNS-01 → PROX-01을 움직이게 (하나씩 커밋·기록)
+- 완료: **PHS-01**(P3-3) `PhaseShaft`: 같은 축 두 단면(홈 + 키페이저 / high spot + 진동 센서), 펄스 → 봉우리 Δt 막대, 축 위의 φ 호. 공용 `PlayControls`에 `rateLabel`·`turnSpeeds`
+- 다음: BRG-02 → GEAR-01 → 1X-01 → SNS-01 → PROX-01 (각 커밋)
 ### 2026-10-08 · Claude · 도는 화살표 애니메이션 (D-044) — 5 / 5 완료
 - 요청: 사용자 — 위상자 2순위 표의 랩 5개(BAS-01 → SMP-01 → FULL-01 → FOU-01 → MOD-01)를 움직이게, 하나씩 커밋·기록
 - 공용: `lib/dsp/phasor.ts`(+ 테스트), `usePlayClock`·`PlayControls`·`PhasorView`·`.anim-*`, `verify:page --anim-smoke`
 - 완료: **BAS-01**(P1-2, 트랙 B 파일 — 사용자 요청) 도는 화살표 + 높이가 그리는 파형, 따라 하기 5번·해석. **SMP-01**(P2-3) `StrobeDisk`: 실제 원판(흐림) · 플래시로 본 원판(앞선 5번 자리) · 샘플 띠, 940 Hz는 거꾸로 = 위상 반전. **FULL-01**(P5-3) `OrbitView`: +1X·−1X(·0.45X) 화살표 사슬 끝 = 오빗, 막대를 같은 색으로. **FOU-01**(P2-2) 하모닉 화살표 사슬. **MOD-01**(P2-8 네 곳) 측대역·맥놀이 화살표, 반송파와 같이 도는 틀(합의 길이 = 포락선, `layout='upper'`)
 - 검증: 단계마다 test·check·build·`verify:page --anim-smoke`(움직임·캡처), 커밋 5개
 - 다음: M7.6 (P7-7·P7-8). 사용자 확인: 다섯 랩의 움직이는 그림
-### 2026-10-08 · Claude · M7.3 유체막·유체력 불안정 — P7-4, LAB-SUB-01
-- 요청: 사용자 — "다음 작업 ㄱㄱ"
-- 한 일: `subsync.ts`(설명용 규칙 모델: 유체막 문턱·잠김·히스테리시스, 유체력 선회 부하 문턱, 러브·풀림 ½X, stall 유량, 구조 공진, 운전조건 반응, 오빗), 그림 5(후보 지도·히스테리시스·조건 곡선·오빗·부하 문턱), 랩(원인 고르기·숨은 케이스 7개, 런업 캐스케이드), 본문 9절·감별표
-- 고친 것: 코스트다운 사라짐 회전수 계산(러브가 7350으로 나옴), ½X 범위 문구, 아직 없는 P8-3 링크 → 글
-- 검증: 모듈 7·숫자 고정 5, test·check·build·verify:page — 커밋 메시지
-- 다음: M7.6 (P7-7·P7-8)
 
 ## 세션 로그 — 트랙 B (Part 1 → Part 4 → Part 6 → Part 8) · 최근 2개, 최신이 위
 

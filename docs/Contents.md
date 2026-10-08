@@ -354,7 +354,7 @@
 | LAB-SBX-01 | Signal Lab 샌드박스 + 설정 도우미 | P2-9 §6 | `SandboxLab` (/lab/sbx-01/) · lib/sandbox.ts |
 | LAB-SNS-01 | 센서 = 질량-스프링 계 | P3-1 §3· | `SensorLab` (/lab/sns-01/) · lib/sensor.ts |
 | LAB-PROX-01 | 비접촉 변위 센서: gap 전압과 런아웃 | P3-2 §3· | `ProximityLab` (/lab/prox-01/) · lib/proximity.ts |
-| LAB-PHS-01 | 위상 측정: 키페이저 펄스와 1X 위상 | P3-3 §2· | `PhaseLab` (/lab/phs-01/) · lib/phase.ts |
+| LAB-PHS-01 | 위상 측정: 키페이저 펄스와 1X 위상 + 두 단면이 도는 축(홈 → 펄스, high spot → 봉우리, D-044) | P3-3 §2· | `PhaseLab` (/lab/phs-01/) · `PhaseShaft` · lib/phase.ts |
 | LAB-SRO-01 | Slow roll 보상: 런아웃을 벡터로 빼기 | P3-3 §5· | `SlowRollLab` (/lab/sro-01/) · lib/phase.ts |
 | LAB-CHAIN-01 | 센서 문제인가, 기계 문제인가 (측정 체인 판정 퀴즈) | P3-4 §4· | `ChainQuizLab` (/lab/chain-01/) · lib/measurementChain.ts |
 | LAB-ALM-01 | 보호 시스템 알람 논리: 레벨 · 지연 · 보팅 · 트립 배율 | P3-5 §4· | `AlarmLab` (/lab/alm-01/) · lib/protection.ts, lib/transient.ts |

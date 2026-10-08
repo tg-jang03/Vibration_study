@@ -5,6 +5,7 @@ import ParamSelect from '../ui/ParamSelect';
 import ParamSlider from '../ui/ParamSlider';
 import ParamToggle from '../ui/ParamToggle';
 import PhasorView, { type PhasorArrow } from '../ui/PhasorView';
+import { rateLabel } from '../ui/PlayControls';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable, { type Readout } from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
@@ -20,10 +21,6 @@ import { BEAT_EXAMPLE, GEAR_EXAMPLE, MOD_AMP, modSpectrum, peakNear, relDb } fro
  * 움직이는 그림 (D-044): 스펙트럼의 선 하나 = 도는 화살표 하나. 반송파와 같이 도는 틀에서 보면 반송파는 멈추고
  * 측대역 화살표가 그 끝에서 ±f_m으로 돈다 — 합의 길이 = 포락선. 맥놀이는 f₂ 화살표가 f₁ 끝에서 (f₂ − f₁)로 돈다.
  */
-
-/** 재생 배율 이름: 1보다 작으면 "실제의 1/N" */
-const rateLabel = (rate: number) =>
-  Math.abs(rate - 1) < 1e-9 ? '실제 속도' : rate < 1 ? `실제의 1/${formatNumber(1 / rate, 3)}` : `실제의 ${formatNumber(rate, 3)}배`;
 
 type Mode = 'am' | 'fm' | 'amfm' | 'beat';
 const MODES: { value: Mode; label: string }[] = [

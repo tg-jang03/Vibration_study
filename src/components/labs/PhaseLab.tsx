@@ -6,6 +6,7 @@ import ParamSlider from '../ui/ParamSlider';
 import Plot, { type PlotSeries } from '../ui/Plot';
 import PolarPlot, { type PolarSeries } from '../ui/PolarPlot';
 import ReadoutTable from '../ui/ReadoutTable';
+import PhaseShaft from './PhaseShaft';
 import { texNumber } from '../../lib/format';
 import {
   highestPeakAngle,
@@ -136,11 +137,15 @@ export default function PhaseLab({ initialLag = 120, initialRpm = 3600, initialT
           answer: '원신호의 봉우리는 약 138°로 18° 비켜납니다. 동기 DFT는 1X 성분만 골라내므로 진폭 50 µm pp, 각도 −120°(= 지연 120°) 그대로입니다. 위상은 1X 성분으로 정합니다.' },
         { question: '관례를 "FFT 위상"으로 바꾸면 같은 신호가 몇 도로 적히나요? "영점 기준"이면?',
           answer: '앞섬각으로는 −120°, 영점 기준으로는 30°입니다. 신호는 하나인데 숫자가 셋입니다. 다른 장비의 위상과 비교하기 전에 관례부터 맞춰야 합니다.' },
+        { question: '축 그림에서 재생을 누르고 "처음으로"를 눌러 펄스 순간에 멈춰 보세요. 위상 120°에서 high spot(주황 점)은 어디에 있나요? 위상을 240°로 바꾸면?',
+          answer: '120°에서는 위(센서)에서 시계 방향으로 120° — 오른쪽 아래에 있습니다. 축이 반시계로 120° 더 돌아야 센서 앞에 오므로 봉우리가 Δt = 5.56 ms 뒤에 옵니다. 240°면 시계 방향으로 240°(왼쪽 아래)에 있어 두 배 늦은 11.1 ms 뒤에 옵니다. 두 경우 모두 Polar 화살표가 펄스 순간의 high spot 쪽을 가리킵니다.' },
         { question: '위상을 350°로 두면 Polar 화살표는 어디를 가리키나요? 앞섬각으로는?',
           answer: '0°(위)에서 시계 방향으로 350° — 0°에서 반시계 쪽으로 10° 기운 자리입니다. 앞섬각으로는 −350° = +10°로 적힙니다. 지연이 거의 한 바퀴면 "조금 앞선다"와 같은 자리입니다.' },
       ]}
       footer={<p>1X 진폭은 50 µm pp, 2X의 위상은 300°로 고정한 예시입니다. 키페이저 펄스는 P3-2의 교정 곡선 위에서 gap 1.2 mm, 홈 깊이 1.0 mm, 폭 12°인 예시 홈으로 만들었습니다. 동기 DFT는 펄스에서 시작한 4바퀴(한 바퀴 {SPR}점)를 씁니다.</p>}
     >
+      <h4>축이 돌 때: 홈 → 펄스, high spot → 봉우리</h4>
+      <PhaseShaft lagDeg={lagDeg} rpm={rpm} oneXpp={AMP_PP} twoXpp={(AMP_PP * twoXPct) / 100} twoXLag={TWO_X_LAG} />
       <h4>키페이저 출력 (두 바퀴)</h4>
       <Plot series={kpSeries} x={{ label: '시각 [ms]' }} y={{ label: '[V]', range: [-19, -7] }} height={150} ariaLabel="키페이저 펄스" />
       <h4>축 진동 신호 (센서 쪽이 +)</h4>
