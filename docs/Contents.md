@@ -374,7 +374,7 @@
 | LAB-INT-01 | 적분 & ski-slope | P5-1 | `IntegrationLab` (/lab/int-01/) · lib/dsp/filter.ts (integrateSpectral·integrateCumulative), lib/filterDemo.ts |
 | LAB-STFT-01 | 스펙트로그램 · 워터폴 · 캐스케이드 | P5-2 | `StftLab` (/lab/stft-01/) · lib/dsp/stft.ts, lib/stftDemo.ts |
 | LAB-XCH-01 | FRF 추정과 코히어런스 | P5-3 | `FrfLab` (/lab/xch-01/) · lib/dsp/twoChannel.ts, lib/xchDemo.ts |
-| LAB-FULL-01 | Full spectrum: 오빗과 정방향·역방향 | P5-3 | `FullSpectrumLab` (/lab/full-01/) · lib/dsp/twoChannel.ts (fullSpectrum), lib/xchDemo.ts |
+| LAB-FULL-01 | Full spectrum: 오빗과 정방향·역방향 + 반대로 도는 두 화살표가 오빗을 그림 (D-044) | P5-3 | `FullSpectrumLab` (/lab/full-01/) · lib/dsp/twoChannel.ts (fullSpectrum, forwardBackwardPhasors), lib/xchDemo.ts (orbitPhasors) |
 | LAB-ORD-01 | 차수추적: 시간 FFT vs 차수 스펙트럼 | P5-4 | `OrderTrackingLab` (/lab/ord-01/) · lib/dsp/order.ts, lib/orderDemo.ts |
 | LAB-FLT-02 | 트래킹 필터와 노치: 런업에서 1X 벡터 뽑기 | P5-5 | `TrackingLab` (/lab/flt-02/) · lib/dsp/tracking.ts, lib/trackingDemo.ts |
 | LAB-ENV-01 | 엔벨로프 분석: 대역 고르기 → 포락선 → 엔벨로프 스펙트럼 | P5-6 | `EnvelopeLab` (/lab/env-01/) · lib/dsp/envelope.ts, lib/envelopeDemo.ts |
