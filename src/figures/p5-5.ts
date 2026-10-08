@@ -191,9 +191,9 @@ export const demodulation: FigureSpec = {
 const STEP_COLORS: FigColor[] = ['c1', 'c3', 'c4'];
 export const bandwidthStep: FigureSpec = {
   id: 'fig-p5-5-3',
-  caption: `그림 3. 3600 rpm에서 t = ${STEP.at} s에 1X가 ${fmt(pp(V36.amp), 3)} → ${fmt(pp(V36.amp * STEP.factor), 3)} µm pp로 바뀐다(회색 점선). 넓은 대역 잡음 σ = ${fmt(STEP.noise * um, 2)} µm가 섞여 있다. 같은 신호를 폭이 다른 트래킹 필터 셋으로 읽었다. B = ${STEP.Bs[0]} Hz는 ${fmt(step[0].t50, 2)} s 만에 변화의 절반을 따라잡지만 크기가 ±${fmt(pp(step[0].noise), 2)} µm pp(표준편차)쯤 흔들린다. B = ${STEP.Bs[2]} Hz는 흔들림이 ${fmt(pp(step[2].noise), 2)} µm pp로 작지만 절반에 ${fmt(step[2].t50, 3)} s, 90 %에 ${fmt(step[2].t90, 2)} s가 걸린다.`,
+  caption: `그림 3. 3600 rpm에서 t = ${STEP.at} s에 1X가 ${fmt(pp(V36.amp), 3)} → ${fmt(pp(V36.amp * STEP.factor), 3)} µm pp로 바뀐다(회색 점선). 넓은 대역 잡음 σ = ${fmt(STEP.noise * um, 2)} µm가 섞여 있다. 같은 신호를 폭이 다른 트래킹 필터 셋으로 읽었다. B = ${STEP.Bs[0]} Hz는 ${fmt(step[0].t50, 2)} s 만에 변화의 절반을 따라잡지만 크기가 ±${fmt(pp(step[0].noise), 3)} µm pp(표준편차, 이론값)쯤 흔들린다. B = ${STEP.Bs[2]} Hz는 흔들림이 ${fmt(pp(step[2].noise), 2)} µm pp로 작지만 절반에 ${fmt(step[2].t50, 3)} s, 90 %에 ${fmt(step[2].t90, 2)} s가 걸린다.`,
   panels: step.map((s, k) => ({
-    title: `B = ${s.B} Hz — 지연 ${fmt(s.delay, 2)} s, 잡음 흔들림 ${fmt(pp(s.noise), 2)} µm pp`,
+    title: `B = ${s.B} Hz — 지연 τ_g ${fmt(s.delay, 3)} s, 잡음 흔들림(이론) ${fmt(pp(s.noise), 3)} µm pp`,
     series: [
       { x: [0, STEP.at, STEP.at, STEP.seconds], y: [pp(V36.amp), pp(V36.amp), pp(V36.amp * STEP.factor), pp(V36.amp * STEP.factor)], color: 'muted', dash: true, width: 1.6 },
       { x: s.t, y: s.a, color: STEP_COLORS[k], width: 1.6 },
@@ -215,7 +215,7 @@ const lagLine = (a: TrackAnalysis, color: FigColor, label?: string): FigSeries =
 };
 const truthAmp = (a: TrackAnalysis): FigSeries => ({ x: a.rpm, y: a.trueAmp.map(pp), color: 'muted', dash: true, width: 1.6, label: '참값 (그 회전수의 정상 응답)' });
 const truthLag = (a: TrackAnalysis): FigSeries => ({ x: a.rpm, y: a.trueLag.map((l) => deg(lagForPlot(l))), color: 'muted', dash: true, width: 1.6 });
-const peakMark = (a: TrackAnalysis, color: FigColor): FigAnnotation => ({ type: 'point', x: a.peakRpm, y: pp(a.peakAmp), color, label: `${fmt(a.peakRpm, 4)} rpm`, dy: -10 });
+const peakMark = (a: TrackAnalysis, color: FigColor, dx = 8, dy = -10): FigAnnotation => ({ type: 'point', x: a.peakRpm, y: pp(a.peakAmp), color, label: `${fmt(a.peakRpm, 4)} rpm`, dx, dy });
 
 export const runupBode: FigureSpec = {
   id: 'fig-p5-5-4',
@@ -242,12 +242,12 @@ export const runupBode: FigureSpec = {
 
 export const upDownZeroPhase: FigureSpec = {
   id: 'fig-p5-5-5',
-  caption: `그림 5. 같은 B = 0.5 Hz, ${D.rate} rpm/s. 위: 실시간 필터는 늘 "지나온 쪽"으로 밀린다 — 런업(파랑)은 봉우리가 ${fmt(V.runB05.peakRpm, 4)} rpm, 코스트다운(주황)은 ${fmt(V.downB05.peakRpm, 4)} rpm으로 둘이 ${fmt(V.runB05.peakRpm - V.downB05.peakRpm, 3)} rpm 벌어진다. 아래: 기록을 두 번 거르면(영위상, P5-1) 지연이 없어 봉우리 회전수가 ${fmt(V.zpB05.peakRpm, 4)} rpm으로 돌아오지만, 크기는 ${pp(V.zpB05.peakAmp).toFixed(1)} µm pp로 오히려 더 깎인다(초록). 폭을 2 Hz로 넓혀 두 번 거르면(보라) ${fmt(V.zpB2.peakRpm, 4)} rpm·${fmt(pp(V.zpB2.peakAmp), 3)} µm pp로 참값에 가깝다.`,
+  caption: `그림 5. 같은 B = 0.5 Hz, ${D.rate} rpm/s. 위: 실시간 필터는 늘 "지나온 쪽"으로 밀린다 — 런업(주황, 그림 4와 같은 기록)은 봉우리가 ${fmt(V.runB05.peakRpm, 4)} rpm, 코스트다운(파랑)은 ${fmt(V.downB05.peakRpm, 4)} rpm으로 둘이 ${fmt(V.runB05.peakRpm - V.downB05.peakRpm, 3)} rpm 벌어진다. 아래: 기록을 두 번 거르면(영위상, P5-1) 지연이 없어 봉우리 회전수가 ${fmt(V.zpB05.peakRpm, 4)} rpm으로 거의 돌아오지만, 크기는 ${pp(V.zpB05.peakAmp).toFixed(1)} µm pp로 오히려 더 깎인다(초록). 폭을 2 Hz로 넓혀 두 번 거르면(보라) ${fmt(V.zpB2.peakRpm, 4)} rpm·${fmt(pp(V.zpB2.peakAmp), 3)} µm pp로 참값에 가깝다.`,
   panels: [
     {
       title: '실시간(한 방향): 런업 vs 코스트다운',
-      series: [truthAmp(V.runB05), ampLine(V.runB05, 'c1', '런업'), ampLine(V.downB05, 'c2', '코스트다운')],
-      annotations: [peakMark(V.runB05, 'c1'), peakMark(V.downB05, 'c2')],
+      series: [truthAmp(V.runB05), ampLine(V.runB05, 'c2', '런업'), ampLine(V.downB05, 'c1', '코스트다운')],
+      annotations: [peakMark(V.runB05, 'c2'), peakMark(V.downB05, 'c1', -74)],
       x: { range: RPM_ZOOM, ticks: [2000, 2400, 2800, 3200, 3600] },
       y: { range: [0, 115], ticks: [0, 25, 50, 75, 100], label: '[µm pp]' },
       height: 160,
@@ -255,7 +255,7 @@ export const upDownZeroPhase: FigureSpec = {
     {
       title: '저장된 기록을 두 번 거르기 (런업)',
       series: [truthAmp(V.runB05), ampLine(V.zpB05, 'c3', 'B = 0.5 Hz, 두 번'), ampLine(V.zpB2, 'c4', 'B = 2 Hz, 두 번')],
-      annotations: [peakMark(V.zpB05, 'c3')],
+      annotations: [peakMark(V.zpB05, 'c3', 8, 22)],
       x: { range: RPM_ZOOM, ticks: [2000, 2400, 2800, 3200, 3600], label: '회전수 [rpm]' },
       y: { range: [0, 115], ticks: [0, 25, 50, 75, 100], label: '[µm pp]' },
       height: 160,
@@ -267,7 +267,7 @@ export const upDownZeroPhase: FigureSpec = {
 const blocks = V.notchRun.blocks;
 export const notch: FigureSpec = {
   id: 'fig-p5-5-6',
-  caption: `그림 6. 노치로 1X를 지운다 (트래킹 필터 B = ${NOTCH_PARAMS.bandwidth} Hz로 뽑은 1X 파형을 뺀다). 위: 3600 rpm의 측정 파형 — 1X(${fmt(pp(V36.amp), 3)} µm pp)에 가려 0.45X(${fmt(pp(TRK.aWhirl), 2)} µm pp)가 잘 보이지 않는다. 가운데: 1X를 뺀 Not-1X 파형(주황)은 참 성분(회색 점선, 2X + 0.45X + 잡음)과 겹친다. 아래 둘: 런업(${NOTCH_PARAMS.rate} rpm/s) 동안 0.25초마다 잰 RMS. 0.45X가 생기는 ${TRK.whirlFrom} rpm 위에서 Not-1X(주황)는 ${fmt(V.notOneXBefore * um, 2)} → ${fmt(V.notchRun.holdNotOneX * um, 3)} µm로 두 배가 넘게 커지지만, 직접(파랑)은 1X가 대부분이라 그 변화가 드러나지 않는다. 임계속도 근처의 작은 언덕은 1X가 빨리 변해 노치가 다 지우지 못한 몫이다.`,
+  caption: `그림 6. 노치로 1X를 지운다 (트래킹 필터 B = ${NOTCH_PARAMS.bandwidth} Hz로 뽑은 1X 파형을 뺀다). 위: 3600 rpm의 측정 파형 — 1X(${fmt(pp(V36.amp), 3)} µm pp)에 섞인 0.45X(${fmt(pp(TRK.aWhirl), 2)} µm pp)는 봉우리 높이를 들쭉날쭉하게 할 뿐, 그것이 무엇이고 얼마인지는 파형으로 읽기 어렵다. 가운데: 1X를 뺀 Not-1X 파형(주황)은 참 성분(회색 점선, 2X + 0.45X + 잡음)과 겹친다. 아래 둘: 런업(${NOTCH_PARAMS.rate} rpm/s) 동안 0.25초마다 잰 RMS. 0.45X가 생기는 ${TRK.whirlFrom} rpm 위에서 Not-1X(주황)는 ${fmt(V.notOneXBefore * um, 3)} → ${fmt(V.notchRun.holdNotOneX * um, 3)} µm로 두 배가 넘게 커지지만, 직접(파랑)은 1X가 대부분이라 그 변화가 드러나지 않는다. 임계속도 근처의 작은 언덕은 1X가 빨리 변해 노치가 다 지우지 못한 몫이다.`,
   panels: [
     {
       title: '① 직접 (거르지 않은 파형), 3600 rpm',
@@ -318,7 +318,7 @@ const cross = (cx: number): FigAnnotation[] => [
 ];
 export const orbitCompare: FigureSpec = {
   id: 'fig-p5-5-7',
-  caption: `그림 7. 3600 rpm에서 X(가로, 오른쪽 +)·Y(세로, 위 +) 두 센서로 ${ORB.revs}바퀴 동안 그린 오빗 (P4-2). 왼쪽: 거르지 않은 직접 오빗 — 1X 타원에 0.45X(바퀴마다 조금씩 어긋나는 큰 고리)와 2X·잡음이 더해져 바퀴마다 다른 길을 간다. 오른쪽: 두 채널을 각각 트래킹 필터(B = 2 Hz)로 거른 1X 필터 오빗 — ${ORB.revs}바퀴가 한 타원에 겹친다. 1X 필터 오빗은 불평형 응답의 모양을, 직접 오빗은 1X 밖의 움직임까지 보여 준다. 읽는 법은 P6-3.`,
+  caption: `그림 7. 3600 rpm에서 X(가로, 오른쪽 +)·Y(세로, 위 +) 두 센서로 ${ORB.revs}바퀴 동안 그린 오빗 (P4-2). 왼쪽: 거르지 않은 직접 오빗 — 1X 타원에 0.45X(바퀴마다 조금씩 어긋나는 큰 고리)와 2X·잡음이 더해져 바퀴마다 다른 길을 간다. 오른쪽: 두 채널을 각각 트래킹 필터(B = 2 Hz)로 거른 1X 필터 오빗 — ${ORB.revs}바퀴가 한 타원에 겹친다. 1X 필터 오빗은 1X(동기) 응답 — 이 예에서는 불평형 응답 — 의 모양을, 직접 오빗은 1X 밖의 움직임까지 보여 준다. 읽는 법은 P6-3.`,
   panels: [
     {
       frame: false,

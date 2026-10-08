@@ -50,6 +50,8 @@ describe('P5-5 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(f(pp(V.runB05.peakAmp), 3)).toBe('76.5');
     expect(f(V.runB05.af!.af, 3)).toBe('5.88');
     expect(f(V.runB05.phase90Rpm, 4)).toBe('3187');
+    expect(Math.round(V.runB05.peakRpm - V.runB05.truePeakRpm)).toBe(189);
+    expect(Math.round(V.runB05.phase90Rpm - 3000)).toBe(187);
     expect(V.runB05.trueAf!.n2 - V.runB05.trueAf!.n1).toBeGreaterThan(295);
     expect(V.runB05.trueAf!.n2 - V.runB05.trueAf!.n1).toBeLessThan(310);
   });
@@ -85,6 +87,7 @@ describe('P5-5 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(f(n.maxLeak * um, 3)).toBe('2.67');
     const at = n.blocks.reduce((m, b) => (b.leak > m.leak ? b : m));
     expect(Math.round(at.rpm)).toBe(3031);
+    expect(f(at.notOneX * um, 2)).toBe('3.7');
     const narrow = analyzeTracking({ ...D, rate: 50, bandwidth: 0.5, noise: 1e-6, notch: true });
     expect(f(narrow.maxLeak * um, 3)).toBe('10.5');
     const noisy = analyzeTracking({ ...D, rate: 50, bandwidth: 2, noise: 5e-6, notch: true });

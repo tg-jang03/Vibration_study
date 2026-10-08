@@ -83,9 +83,9 @@ export default function KurtogramLab({ initial = {} }: { initial?: Partial<Kurto
       ]} />}
       tasks={[
         { question: '처음 상태에서 Kurtogram이 고른 대역은? 원신호 전체의 첨도는 3보다 큰가요?',
-          answer: '레벨 3의 2560 ~ 3584 Hz(폭 1024 Hz, SK 약 1.0)로, 결함이 울리는 3.3 kHz를 담습니다. 원신호 전체의 첨도는 약 2.3으로 3보다 작습니다 — 크기가 일정한 기어 맞물림이 신호를 지배해서, 전체 첨도로는 충격이 보이지 않습니다.' },
+          answer: '레벨 3의 2560 ~ 3584 Hz(폭 1024 Hz, SK 약 1.0)로, 결함이 울리는 3.3 kHz를 담습니다. 원신호 전체의 첨도는 약 2.3으로 3보다 작습니다 — 크기가 거의 일정한 기어 맞물림(첨도 약 1.9)이 신호를 지배해서, 전체 첨도로는 충격이 보이지 않습니다.' },
         { question: '충격 크기를 0.1 g로 줄이면 추천 대역은? 베어링 상태를 "결함 없음"으로 하면?',
-          answer: '0.1 g에서도 같은 대역을 고르지만 SK가 약 0.3으로 낮아집니다. 결함이 없으면 좁은 칸 하나(SK 약 0.3)를 고릅니다 — Kurtogram은 결함이 없어도 늘 "가장 큰 칸"을 고르므로, SK가 잡음의 흔들림 수준인지 결함이 없는 기록과 비교해 판단합니다.' },
+          answer: '0.1 g에서도 같은 대역(레벨 3)을 고르지만 SK가 약 0.28로 낮아집니다. 결함이 없으면 레벨 6의 좁은 칸 하나를 SK 약 0.28로 고릅니다 — 가장 큰 SK만 보면 둘을 가를 수 없습니다. 좁은 칸일수록 잡음만으로도 SK가 크게 흔들리기 때문입니다. 같은 대역의 SK를 비교하면 다릅니다: 2560 ~ 3584 Hz에서 결함 없음은 약 −0.07, 0.1 g는 0.28입니다.' },
         { question: '기어 맞물림을 0으로 하면 추천 대역과 SK는? 3 g로 키우면?',
           answer: '0이면 2048 ~ 4096 Hz(SK 약 2.5)를 고릅니다. 2400 Hz의 기어 2배가 사라져 넓은 대역에도 충격만 남기 때문입니다. 3 g로 키워도 추천 대역은 2560 ~ 3584 Hz 그대로입니다 — 크기가 큰 성분이 있어도 SK는 충격성을 봅니다.' },
       ]}
@@ -93,7 +93,7 @@ export default function KurtogramLab({ initial = {} }: { initial?: Partial<Kurto
     >
       <h4>Kurtogram (위로 갈수록 넓은 대역, 진할수록 큰 SK)</h4>
       <Plot series={[best]} heatmap={{ x: xc, y: levels, z: zRows, zRange: [0, Math.max(1, b.sk)], colorLabel: 'SK' }}
-        x={{ label: '대역 가운데 주파수 [Hz]', range: [0, ENV.fs / 2] }} y={{ label: `레벨 k (폭 ${ENV.fs / 2}/2^k Hz)`, range: [NL + 0.5, 0.5] }} height={260} ariaLabel="Kurtogram" />
+        x={{ label: '대역 가운데 주파수 [Hz]', range: [0, ENV.fs / 2] }} y={{ label: `레벨 k (맨 위 1 ~ 맨 아래 ${NL}, 폭 ${ENV.fs / 2}/2^k Hz)`, range: [NL + 0.5, 0.5] }} height={260} ariaLabel="Kurtogram" />
       <h4>Spectral Kurtosis SK(f)</h4>
       <Plot series={[
         { x: skX, y: skY, name: 'SK(f)', color: 'var(--plot-2)', width: 1.8 },

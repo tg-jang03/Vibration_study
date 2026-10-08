@@ -73,7 +73,7 @@ export default function OrderTrackingLab({ initial = {} }: OrderTrackingLabProps
     <LabFrame id="LAB-ORD-01" title="차수추적: 시간 FFT vs 차수 스펙트럼"
       controls={<>
         <ParamSelect label="각도 기준" value={p.reference} options={REF_OPTIONS} onChange={set('reference')} />
-        <ParamSlider label="가속률" value={p.rate} min={0} max={300} step={10} unit="rpm/s" onChange={set('rate')} hint="프레임 시작에서 1500 rpm" />
+        <ParamSlider label="가속률" value={p.rate} min={0} max={300} step={10} unit="rpm/s" onChange={set('rate')} hint="프레임 시작에서 약 1500 rpm" />
         <ParamSelect label="프레임 바퀴 수 N_rev" value={p.revs} options={POW_OPTIONS} onChange={set('revs')} />
         <ParamSelect label="회전당 샘플 수 N_spr" value={p.spr} options={POW_OPTIONS} onChange={set('spr')} />
         <ParamSelect label="신호 보간" value={p.interp} options={INTERP_OPTIONS} onChange={set('interp')} />
@@ -94,13 +94,13 @@ export default function OrderTrackingLab({ initial = {} }: OrderTrackingLabProps
       ]} />}
       tasks={[
         { question: '가속률을 0으로 두면 시간 FFT와 차수 스펙트럼의 1X는 어떻게 되나요? 300 rpm/s로 올리면?',
-          answer: '0이면 둘 다 25 µm 근처로 같습니다. 300 rpm/s에서는 시간 FFT 봉우리가 약 11 µm로 낮아지고 넓게 번지지만, 차수 스펙트럼의 1X는 25 µm 그대로입니다. 반대로 고정 95 Hz 성분은 차수 스펙트럼에서 번집니다.' },
+          answer: '0이면 둘 다 25 µm 근처로 같습니다. 300 rpm/s에서는 시간 FFT 봉우리가 약 10.6 µm로 낮아지고 넓게 번지지만, 차수 스펙트럼의 1X는 25 µm 그대로입니다. 반대로 고정 95 Hz 성분은 차수 스펙트럼에서 번집니다.' },
         { question: '회전당 샘플 수를 32로 두고 에일리어싱 방지를 끄면 어디에 가짜 줄이 서나요? 켜면?',
           answer: '23X가 차수 16(= 32/2)을 넘어 32 − 23 = 9X에 약 3 µm의 가짜 줄로 섭니다. 켜면 차수 영역에서 걸러져 사라지고, 23X도 최대 차수 12.5 밖이라 보이지 않습니다. 23X를 보려면 회전당 64점 이상이 필요합니다.' },
         { question: '신호 보간을 선형으로 바꾸면 23X는 얼마나 작게 읽히나요? 1X는?',
           answer: '23X는 약 8 % 작게(약 2.76 µm), 3차 보간은 약 1.6 % 작게 읽힙니다. 1X는 두 방법 모두 거의 그대로입니다. 높은 차수일수록 보간 오차가 커집니다.' },
         { question: '각도 기준을 "키페이저 없음"으로 바꾸면 1X와 23X는? 위상은 읽을 수 있나요?',
-          answer: '1X는 거의 그대로(약 24.9 µm)지만 23X는 각도 오차가 23배로 커져 번지면서 약 0.5 µm로 낮아집니다. 각도의 시작점을 모르므로 위상은 읽을 수 없습니다 — 밸런싱처럼 위상이 필요한 일에는 키페이저가 있어야 합니다.' },
+          answer: '1X는 거의 그대로(약 24.9 µm)지만 23X는 각도 오차가 23배로 커져 이웃 칸으로 흩어지고, 23X 칸의 읽음값은 약 0.5 µm로 낮아집니다. 각도의 시작점을 모르므로 위상은 읽을 수 없습니다 — 밸런싱처럼 위상이 필요한 일에는 키페이저가 있어야 합니다.' },
       ]}
       footer={<p>신호는 설명용 예시입니다 (f_s {ORD.fs} Hz, 1X 25 µm · 2X 8 µm · 23X 3 µm · 고정 95 Hz 4 µm · 잡음 0.2 µm, 진폭은 일정). 키페이저 시각은 각도가 정수 바퀴가 되는 시각으로 정확히 주었습니다.</p>}
     >

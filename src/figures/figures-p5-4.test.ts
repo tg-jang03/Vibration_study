@@ -42,6 +42,16 @@ describe('P5-4 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(f(V.tacho.ridgeErrRpm ?? 0, 2)).toBe('3.8');
     expect(f(V.tacho.amp1 * um, 3)).toBe('24.9');
     expect(f(V.tacho.ampHigh * um, 2)).toBe('0.54');
+    expect(f(V.tachoHighMax * um, 2)).toBe('1.4');
+    expect(f(V.tacho.amp2 * um, 3)).toBe('7.92');
+  });
+
+  it('tacholess + 가속 0: 능선 오차가 한쪽으로 쏠려 쌓인다 → 1X 24.0 µm(−4 %), 2X 6.67 µm(−17 %)', () => {
+    expect(f(V.tachoSteady.ridgeErrRpm ?? 0, 2)).toBe('4');
+    expect(f(V.tachoSteady.amp1 * um, 3)).toBe('24');
+    expect(f(V.tachoSteady.amp2 * um, 3)).toBe('6.67');
+    expect(Math.round((1 - V.tachoSteady.amp1 / ORD.a1) * 100)).toBe(4);
+    expect(Math.round((1 - V.tachoSteady.amp2 / ORD.a2) * 100)).toBe(17);
   });
 
   it('그림 id 5개가 겹치지 않는다', () => {

@@ -21,7 +21,8 @@ const good = analyzeEnvelope(sig, ...BANDS.good);
 const gearBand = analyzeEnvelope(sig, ...BANDS.gear);
 const noiseBand = analyzeEnvelope(sig, ...BANDS.noise);
 const kg = analyzeKurtogram(D);
-const innerKg = analyzeKurtogram({ ...D, fault: 'inner' });
+/** 내륜 결함 — 랩 과제와 같은 결함 대역(2800 ~ 3800 Hz) */
+const inner = analyzeEnvelope(envSignal({ ...D, fault: 'inner' }), ...BANDS.good);
 const raw = singleSidedSpectrum({ fs, x: sig.x }, { window: 'hann' });
 
 /** 큰 스펙트럼을 묶음마다 최댓값으로 줄여 그린다 (봉우리를 잃지 않게) */
@@ -73,9 +74,14 @@ export const P56_VALUES = {
   bearingKurtosis: kurtosis(sig.bearing),
   good,
   gearBand,
+  /** 기어 대역 엔벨로프의 1X 줄 (그림 4 위에서 눈금 밖) */
+  gear1X: peakNear(gearBand.env.freq, gearBand.env.amp, ENV.fr, 2),
   noiseBand,
   kg,
-  innerKg,
+  inner,
+  innerSbLo: peakNear(inner.env.freq, inner.env.amp, BRG.bpfi - ENV.fr, 3),
+  innerSbHi: peakNear(inner.env.freq, inner.env.amp, BRG.bpfi + ENV.fr, 3),
+  inner1X: peakNear(inner.env.freq, inner.env.amp, ENV.fr, 2),
   kdemo: KDEMO.k,
 };
 const V = P56_VALUES;
@@ -93,7 +99,7 @@ const impactMarks = (from: number, to: number): FigAnnotation[] =>
 
 export const rawSignal: FigureSpec = {
   id: 'fig-p5-6-1',
-  caption: `그림 1. 외륜에 흠이 있는 6205 베어링(3000 rpm, BPFO ${fmt(BRG.bpfo, 4)} Hz)의 하우징 가속도 — 설명용 예시. 위: 파형 40 ms. 1200 Hz 기어 맞물림과 잡음이 커서 충격(회색 점선 = BPFO 박자)이 잘 드러나지 않는다. 가운데: 0 ~ 8 kHz 스펙트럼(dB). 가장 큰 것은 기어 맞물림(${fmt(g(V.rawGear), 3)} g)이고, 결함이 울리는 3.3 kHz 언덕은 ${fmt(g(V.rawHump), 2)} g로 낮다. 아래: 0 ~ 1000 Hz. BPFO 자리에는 ${fmt(g(V.rawAtBpfo), 1)} g로 거의 아무것도 없다(1X는 ${fmt(g(V.rawAt1X), 2)} g).`,
+  caption: `그림 1. 외륜에 흠이 있는 6205 베어링(3000 rpm, BPFO ${fmt(BRG.bpfo, 4)} Hz)의 하우징 가속도 — 설명용 예시. 위: 파형 40 ms. 1200 Hz 기어 맞물림과 잡음이 커서 충격(회색 점선 = BPFO 박자)이 잘 드러나지 않는다. 가운데: 0 ~ 8 kHz 스펙트럼(dB). 가장 큰 것은 기어 맞물림(${fmt(g(V.rawGear), 3)} g)이고, 결함이 울리는 3.3 kHz 언덕은 ${fmt(g(V.rawHump), 2)} g로 낮다. 아래: 0 ~ 1000 Hz. BPFO와 그 하모닉 자리(주황 점선)에는 0.01 g 남짓(BPFO ${fmt(g(V.rawAtBpfo), 1)} g)으로 거의 아무것도 없다(1X는 ${fmt(g(V.rawAt1X), 2)} g).`,
   panels: [
     {
       title: '① 파형 (40 ms)',
@@ -118,11 +124,7 @@ export const rawSignal: FigureSpec = {
     {
       title: '③ 0 ~ 1000 Hz (선형)',
       series: [{ x: rawLo.x, y: rawLo.y, color: 'c1', width: 1.2 }],
-      annotations: [
-        { type: 'vline', x: BRG.bpfo, color: 'warn', dash: true, label: 'BPFO' },
-        { type: 'vline', x: 2 * BRG.bpfo, color: 'warn', dash: true },
-        { type: 'vline', x: 3 * BRG.bpfo, color: 'warn', dash: true },
-      ],
+      annotations: [1, 2, 3, 4, 5].map((k) => ({ type: 'vline', x: k * BRG.bpfo, color: 'warn', dash: true, label: k === 1 ? 'BPFO' : undefined }) as FigAnnotation),
       x: { range: [0, 1000], ticks: [0, 200, 400, 600, 800, 1000], label: '주파수 [Hz]' },
       y: { range: [0, 0.12], ticks: [0, 0.05, 0.1], label: '[g]' },
       height: 110,
@@ -198,25 +200,28 @@ const envPanel = (a: typeof good, title: string, color: FigColor, marks: FigAnno
 });
 export const bandChoice: FigureSpec = {
   id: 'fig-p5-6-4',
-  caption: `그림 4. 같은 신호를 대역만 바꿔 엔벨로프 분석했다 (세 그래프의 세로 눈금이 같다). 위: 기어 맞물림 대역(${BANDS.gear[0]} ~ ${BANDS.gear[1]} Hz) — 1X(50 Hz) 간격의 줄만 선다(기어가 1X로 변조되어 있기 때문, P2-8). 가운데: 다른 원인의 잡음 대역(${BANDS.noise[0]} ~ ${BANDS.noise[1]} Hz) — 줄이 없다(BPFO 자리 ${fmt(g(noiseBand.lines[0]), 1)} g). 아래: 결함이 울리는 대역(${BANDS.good[0]} ~ ${BANDS.good[1]} Hz) — BPFO 하모닉이 선다. 대역을 잘못 고르면 결함이 있어도 보이지 않거나, 다른 원인의 줄을 결함으로 오해할 수 있다.`,
+  caption: `그림 4. 같은 신호를 대역만 바꿔 엔벨로프 분석했다 (세 그래프의 세로 눈금이 같다). 위: 기어 맞물림 대역(${BANDS.gear[0]} ~ ${BANDS.gear[1]} Hz) — 1X(50 Hz) 줄 하나가 ${fmt(g(V.gear1X), 2)} g로 눈금 밖까지 솟는다(기어 맞물림의 크기가 1X로 오르내리기 때문, P2-8). BPFO 자리에는 줄이 없다. 가운데: 다른 원인의 잡음 대역(${BANDS.noise[0]} ~ ${BANDS.noise[1]} Hz) — 줄이 없다(BPFO 자리 ${fmt(g(noiseBand.lines[0]), 1)} g). 아래: 결함이 울리는 대역(${BANDS.good[0]} ~ ${BANDS.good[1]} Hz) — BPFO 하모닉이 선다. 대역을 잘못 고르면 결함이 있어도 보이지 않거나, 다른 원인의 줄을 결함으로 오해할 수 있다.`,
   panels: [
-    envPanel(gearBand, `${BANDS.gear[0]} ~ ${BANDS.gear[1]} Hz: 기어 맞물림`, 'c4', [1, 2, 3, 4, 5].map((k) => ({ type: 'vline', x: 50 * k, color: 'muted', dash: true, label: k === 1 ? '1X' : undefined }) as FigAnnotation)),
+    envPanel(gearBand, `${BANDS.gear[0]} ~ ${BANDS.gear[1]} Hz: 기어 맞물림`, 'c4', [
+      { type: 'text', x: ENV.fr + 14, y: 0.075, text: `← 1X ${fmt(g(V.gear1X), 2)} g`, anchor: 'start', color: 'c4' },
+      ...faultMarks(BRG.bpfo, 'muted'),
+    ]),
     envPanel(noiseBand, `${BANDS.noise[0]} ~ ${BANDS.noise[1]} Hz: 다른 원인의 잡음`, 'muted', faultMarks(BRG.bpfo, 'muted')),
     envPanel(good, `${BANDS.good[0]} ~ ${BANDS.good[1]} Hz: 결함이 울리는 곳`, 'c2', faultMarks(BRG.bpfo, 'muted'), true),
   ],
 };
 
-// ── 그림 5: 첨도 ──
+// ── 그림 6: 첨도 ──
 const kPanel = (y: number[], title: string, color: FigColor, last = false) => ({
   title,
   series: [{ x: KDEMO.t.map((v) => v * 1000), y, color, width: 1 }] as FigSeries[],
   x: { range: [0, 200] as [number, number], ...(last ? { label: '시각 [ms]' } : {}) },
-  y: { range: [-5, 5] as [number, number], ticks: [-4, 0, 4] },
+  y: { range: [-7, 7] as [number, number], ticks: [-6, 0, 6] },
   height: 70,
 });
 export const kurtosisIntro: FigureSpec = {
-  id: 'fig-p5-6-5',
-  caption: `그림 5. RMS가 모두 1인 세 신호의 첨도 K. 정규분포 잡음(위)은 ${fmt(V.kdemo[0], 3)}, 정현파(가운데)는 ${fmt(V.kdemo[1], 2)}, 드문드문 울리는 충격(아래)은 ${fmt(V.kdemo[2], 3)}이다. 크기(RMS)는 같아도, 드물게 크게 튀는 값이 많을수록 K가 커진다.`,
+  id: 'fig-p5-6-6',
+  caption: `그림 6. RMS가 모두 1인 세 신호의 첨도 K. 정규분포 잡음(위)은 ${fmt(V.kdemo[0], 3)}, 정현파(가운데)는 ${fmt(V.kdemo[1], 2)}, 드문드문 울리는 충격(아래)은 ${fmt(V.kdemo[2], 3)}이다. 크기(RMS)는 같아도, 드물게 크게 튀는 값이 많을수록 K가 커진다.`,
   panels: [
     kPanel(KDEMO.noise, `정규분포 잡음 — K = ${fmt(V.kdemo[0], 3)}`, 'muted'),
     kPanel(KDEMO.sine, `정현파 — K = ${fmt(V.kdemo[1], 2)}`, 'c1'),
@@ -224,7 +229,7 @@ export const kurtosisIntro: FigureSpec = {
   ],
 };
 
-// ── 그림 6: 크기가 큰 대역 ≠ 충격 대역 ──
+// ── 그림 7: 크기가 큰 대역 ≠ 충격 대역 ──
 const skX: number[] = [];
 const skY: number[] = [];
 const pwY: number[] = [];
@@ -236,8 +241,8 @@ kg.sk.freq.forEach((f, k) => {
 });
 const pwMax = Math.max(...pwY);
 export const skVsPower: FigureSpec = {
-  id: 'fig-p5-6-6',
-  caption: `그림 6. 같은 신호를 짧은 프레임(64점, 3.9 ms — 충격 간격 5.58 ms보다 짧게)으로 잘라 본 두 가지. 위: 평균 파워(dB, 가장 큰 곳 = 0). 기어 맞물림(1200·2400 Hz)과 5 ~ 7 kHz 잡음이 크다. 아래: 주파수마다의 첨도(Spectral Kurtosis). 잡음 대역은 0 근처, 크기가 일정한 기어 맞물림은 음수이고, 결함이 울리는 2.8 ~ 4.5 kHz만 양수로 솟는다. 크기가 큰 대역과 충격이 있는 대역은 다르다.`,
+  id: 'fig-p5-6-7',
+  caption: `그림 7. 같은 신호를 짧은 프레임(64점, 3.9 ms — 충격 간격 5.58 ms보다 짧게)으로 잘라 본 두 가지. 위: 평균 파워(dB, 가장 큰 곳 = 0). 기어 맞물림(1200·2400 Hz)과 5 ~ 7 kHz 잡음이 크다. 아래: 주파수마다의 첨도(Spectral Kurtosis). 잡음 대역은 0 근처, 크기가 거의 일정한 기어 맞물림은 음수(−0.8쯤)이고, 결함이 울리는 2.8 ~ 4.5 kHz만 양수로 솟는다. 크기가 큰 대역과 충격이 있는 대역은 다르다.`,
   panels: [
     {
       title: '① 평균 파워 (dB)',
@@ -257,7 +262,7 @@ export const skVsPower: FigureSpec = {
   ],
 };
 
-// ── 그림 7: Kurtogram ──
+// ── 그림 8: Kurtogram ──
 const grid = kurtogramGrid(kg.kg, fs, 256);
 const NL = kg.kg.levels.length;
 /** 세로 위치: 레벨 1(넓은 대역)이 맨 위 */
@@ -266,8 +271,8 @@ const yEdges = Array.from({ length: NL + 1 }, (_, i) => i + 0.5);
 const zRows = Array.from({ length: NL }, (_, j) => grid.z[NL - 1 - j]);
 const b = kg.kg.best;
 export const kurtogramFig: FigureSpec = {
-  id: 'fig-p5-6-7',
-  caption: `그림 7. Kurtogram: 세로는 대역폭(위로 갈수록 좁다: 레벨 k의 폭 = 8192/2^k Hz), 가로는 대역의 가운데 주파수(칸은 반 칸씩 겹쳐 옮기므로 색 하나가 그 가운데 근처를 칠한다), 색의 진하기는 그 대역 포락선의 첨도(SK, 0 이하는 칠하지 않음)다. 가장 진한 칸은 레벨 ${b.level}의 ${fmt(b.f1, 4)} ~ ${fmt(b.f2, 4)} Hz(폭 ${fmt(b.bw, 4)} Hz, SK ${fmt(b.sk, 3)})로, 결함이 울리는 3.3 kHz를 담는다. 이 대역으로 엔벨로프 분석하면 BPFO 줄이 바닥의 ${fmt(kg.best.lines[0] / kg.best.floor, 2)}배로 선다.`,
+  id: 'fig-p5-6-8',
+  caption: `그림 8. Kurtogram: 세로는 대역폭(위로 갈수록 넓다: 레벨 k의 폭 = 8192/2^k Hz), 가로는 대역의 가운데 주파수(칸은 반 칸씩 겹쳐 옮기므로 색 하나가 그 가운데 근처를 칠한다), 색의 진하기는 그 대역 포락선의 첨도(SK, 0 이하는 칠하지 않음)다. 가장 진한 칸은 레벨 ${b.level}의 ${fmt(b.f1, 4)} ~ ${fmt(b.f2, 4)} Hz(폭 ${fmt(b.bw, 4)} Hz, SK ${fmt(b.sk, 3)})로, 결함이 울리는 3.3 kHz를 담는다. 이 대역으로 엔벨로프 분석하면 BPFO 줄이 바닥의 ${fmt(kg.best.lines[0] / kg.best.floor, 2)}배로 선다.`,
   panels: [
     {
       series: [],
@@ -294,8 +299,8 @@ export const kurtogramFig: FigureSpec = {
   ],
 };
 
-// ── 그림 8: 내륜 결함 ──
-const ib = innerKg.best;
+// ── 그림 5: 내륜 결함 ──
+const ib = inner;
 const innerMarks: FigAnnotation[] = [
   { type: 'vline', x: ENV.fr, color: 'muted', dash: true, label: '1X' },
   { type: 'vline', x: BRG.bpfi, color: 'warn', dash: true, label: 'BPFI' },
@@ -304,8 +309,8 @@ const innerMarks: FigAnnotation[] = [
   { type: 'vline', x: 2 * BRG.bpfi, color: 'warn', dash: true, label: '2×' },
 ];
 export const innerRace: FigureSpec = {
-  id: 'fig-p5-6-8',
-  caption: `그림 8. 내륜 결함의 엔벨로프 스펙트럼 (Kurtogram이 고른 ${fmt(innerKg.kg.best.f1, 4)} ~ ${fmt(innerKg.kg.best.f2, 4)} Hz). 결함이 축과 함께 돌며 하중을 받는 아래쪽을 1X마다 드나들어, 충격 크기가 1X 박자로 오르내린다. 그래서 BPFI(${fmt(BRG.bpfi, 4)} Hz, ${fmt(g(ib.lines[0]), 2)} g) 양옆에 1X 간격의 측대역(${fmt(g(peakNear(ib.env.freq, ib.env.amp, BRG.bpfi - ENV.fr, 3)), 2)}·${fmt(g(peakNear(ib.env.freq, ib.env.amp, BRG.bpfi + ENV.fr, 3)), 2)} g)이 서고, 1X 자체(${fmt(g(peakNear(ib.env.freq, ib.env.amp, ENV.fr, 2)), 2)} g)도 선다 — P2-8의 진폭 변조다.`,
+  id: 'fig-p5-6-5',
+  caption: `그림 5. 내륜 결함의 엔벨로프 스펙트럼 (외륜과 같은 결함 대역 ${BANDS.good[0]} ~ ${BANDS.good[1]} Hz). 결함이 축과 함께 돌며 하중을 받는 아래쪽을 1X마다 드나들어, 충격 크기가 1X 박자로 오르내린다. 그래서 BPFI(${fmt(BRG.bpfi, 4)} Hz, ${fmt(g(ib.lines[0]), 2)} g) 양옆에 1X 간격의 측대역(${fmt(g(V.innerSbLo), 2)}·${fmt(g(V.innerSbHi), 2)} g)이 서고, 1X 자체(${fmt(g(V.inner1X), 2)} g)도 선다 — P2-8의 진폭 변조다.`,
   panels: [
     {
       series: [{ x: Array.from(ib.env.freq), y: Array.from(ib.env.amp, g), color: 'c2', width: 1.4 }],

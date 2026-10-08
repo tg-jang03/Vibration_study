@@ -72,14 +72,37 @@ describe('P5-6 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(analyzeKurtogram({ ...D, gearScale: 3 }).kg.best).toMatchObject({ f1: 2560, f2: 3584 });
   });
 
-  it('그림 8: 내륜 — BPFI 양옆 1X 측대역과 1X 줄', () => {
-    const ib = V.innerKg.best;
-    const bpfi = ib.lines[0];
-    const sbLo = peakNear(ib.env.freq, ib.env.amp, BRG.bpfi - 50, 3);
-    const sbHi = peakNear(ib.env.freq, ib.env.amp, BRG.bpfi + 50, 3);
-    const one = peakNear(ib.env.freq, ib.env.amp, 50, 2);
-    expect(sbLo / ib.floor).toBeGreaterThan(10);
-    expect(sbHi / ib.floor).toBeGreaterThan(10);
-    expect(one).toBeGreaterThan(0.5 * bpfi);
+  it('그림 5: 내륜(2800 ~ 3800 Hz) — BPFI 0.068 g, 양옆 1X 측대역 0.036·0.027 g, 1X 0.065 g, 가장 큰 줄은 BPFI', () => {
+    expect(f(g(V.inner.lines[0]), 2)).toBe('0.068');
+    expect([f(g(V.innerSbLo), 2), f(g(V.innerSbHi), 2)]).toEqual(['0.036', '0.027']);
+    expect(f(g(V.inner1X), 2)).toBe('0.065');
+    expect(V.inner.topHz).toBeCloseTo(BRG.bpfi, -1);
+  });
+
+  it('그림 4 위: 기어 대역은 1X 줄 하나(0.30 g)뿐, 1X 하모닉은 바닥 수준', () => {
+    expect(f(g(V.gear1X), 2)).toBe('0.3');
+    for (const k of [2, 3, 4, 5]) expect(g(peakNear(V.gearBand.env.freq, V.gearBand.env.amp, 50 * k, 2))).toBeLessThan(0.003);
+  });
+
+  it('대역 폭: 3배 줄(538 Hz)은 폭 800 Hz에서도 1000 Hz의 약 30 %, 2배 줄은 500 Hz 폭에서 약 1/10', () => {
+    const w800 = analyzeEnvelope(envSignal(D), 2900, 3700);
+    expect(Math.round((w800.lines[2] / V.good.lines[2]) * 10) / 10).toBe(0.3);
+    const w500 = analyzeEnvelope(envSignal(D), 3050, 3550);
+    expect(Math.round((w500.lines[1] / V.good.lines[1]) * 10)).toBe(1);
+  });
+
+  it('Kurtogram 비교: 같은 2560 ~ 3584 Hz 칸에서 결함 없음 SK ≈ −0.07, 0.1 g ≈ 0.28. 결함 없음 레벨 3 최대 0.05', () => {
+    const cell = (a: ReturnType<typeof analyzeKurtogram>) => a.kg.rows[a.kg.levels.indexOf(3)].find((c) => c.f1 === 2560 && c.f2 === 3584)!;
+    const none = analyzeKurtogram({ ...D, fault: 'none' });
+    expect(f(cell(none).sk, 1)).toBe('−0.07');
+    expect(f(cell(analyzeKurtogram({ ...D, impact: 0.1 * G })).sk, 2)).toBe('0.28');
+    expect(f(Math.max(...none.kg.rows[none.kg.levels.indexOf(3)].map((c) => c.sk)), 1)).toBe('0.05');
+    expect(f(none.kg.best.sk, 2)).toBe('0.28');
+  });
+
+  it('엔벨로프 랩 과제 5: 폭 2000 Hz(2300 ~ 4300 Hz) → BPFO 줄 0.040 g, 줄 ÷ 바닥 23', () => {
+    const wide = analyzeEnvelope(envSignal(D), 2300, 4300);
+    expect(f(g(wide.lines[0]), 2)).toBe('0.04');
+    expect(Math.round(wide.lines[0] / wide.floor)).toBe(23);
   });
 });

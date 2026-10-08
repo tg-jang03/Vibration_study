@@ -89,18 +89,18 @@ export default function TrackingLab({ initial = {} }: TrackingLabProps) {
       </>}
       readouts={<ReadoutTable caption="읽음값 (이론 = 참 응답에서 같은 방법으로 읽은 값)" rows={rows} />}
       tasks={[
-        { question: '처음 상태(200 rpm/s, B = 0.5 Hz, 실시간)에서 B를 2 Hz로 넓히면 봉우리와 AF는 어떻게 되나요? 대신 무엇을 잃나요?',
+        { question: '올림·200 rpm/s·B = 0.5 Hz·실시간에서 B를 2 Hz로 넓히면 봉우리와 AF는 어떻게 되나요? 대신 무엇을 잃나요?',
           answer: '봉우리가 3197 rpm·76.5 µm pp에서 3066 rpm·98.9 µm pp로, AF가 5.9에서 10.0으로 참값(3008 rpm·100 µm pp·AF 9.9)에 가까워집니다. 대신 3600 rpm에서 크기 흔들림이 약 0.5에서 0.9 µm pp로 커집니다.' },
-        { question: 'B = 0.5 Hz로 두고 가속률을 50 rpm/s로 낮추면? 200 rpm/s·B = 2 Hz와 비교해 보세요.',
+        { question: '올림·실시간에서 50 rpm/s·B = 0.5 Hz로 두면? 200 rpm/s·B = 2 Hz와 비교해 보세요.',
           answer: '둘 다 봉우리가 약 3065 rpm·99 µm pp로 거의 같습니다. 지연 동안 지나가는 회전수 R·τ_g가 50 × 0.9 = 200 × 0.225 = 45 rpm으로 같기 때문입니다. 결과를 정하는 것은 B 하나가 아니라 가속률과의 짝입니다.' },
-        { question: '회전수 변화를 "내림"으로 바꾸면 봉우리는 어느 쪽으로 밀리나요?',
+        { question: '200 rpm/s·B = 0.5 Hz·실시간에서 회전수 변화를 "내림"으로 바꾸면 봉우리는 어느 쪽으로 밀리나요?',
           answer: '아래로, 2864 rpm으로 밀립니다. 실시간 필터는 늘 지나온 회전수를 보여 주므로, 런업(3197 rpm)과 코스트다운의 봉우리가 333 rpm 벌어집니다. 둘을 같은 B로 비교할 때 이 차이를 기계의 변화로 읽지 않도록 합니다.' },
-        { question: '거르기를 "저장된 기록 (두 번 거르기)"로 바꾸면 봉우리 회전수와 크기는?',
-          answer: '지연이 없어져 봉우리가 3038 rpm, 위상 90°가 2997 rpm으로 제자리에 옵니다. 그러나 크기는 69.0 µm pp로 더 깎입니다. 두 번 거르면 크기 응답이 |H|²라 더 좁은 필터가 되기 때문입니다. B를 2 Hz로 넓히면 97.6 µm pp까지 돌아옵니다.' },
+        { question: '올림·200 rpm/s·B = 0.5 Hz에서 거르기를 "저장된 기록 (두 번 거르기)"로 바꾸면 봉우리 회전수와 크기는?',
+          answer: '지연이 없어져 봉우리가 3038 rpm, 위상 90°가 2997 rpm으로 거의 제자리에 옵니다. 그러나 크기는 69.0 µm pp로 더 깎입니다. 두 번 거르면 크기 응답이 |H|²라 더 좁은 필터가 되기 때문입니다. B를 2 Hz로 넓히면 97.6 µm pp까지 돌아옵니다.' },
         { question: '노치를 켜고(50 rpm/s, B = 2 Hz, 잡음 1 µm) 3300 rpm 위에서 직접과 Not-1X를 비교하세요. B를 0.5 Hz로 좁히면 임계속도 근처의 Not-1X는?',
           answer: '0.45X가 생기면 Not-1X는 약 2.3에서 4.9 µm로 두 배가 넘게 커지지만, 직접 RMS는 1X에 가려 거의 그대로입니다. B를 0.5 Hz로 좁히면 임계속도 근처에서 1X가 빨리 변하는 것을 노치가 따라가지 못해, 남은 1X가 최대 약 10.5 µm로 Not-1X를 크게 부풀립니다.' },
       ]}
-      footer={<p>신호는 설명용 예시입니다: P4-1의 예시 로터(고유 회전수 {ROTOR.naturalRpm} rpm, ζ {ROTOR.zeta}, 편심 {formatNumber(ROTOR.eccentricity * um, 2)} µm)의 1X 정상 응답 + 2X {formatNumber(pp(TRK.a2), 2)} µm pp + 0.45X({TRK.whirlFrom} → {TRK.whirlTo} rpm에서 0 → {formatNumber(pp(TRK.aWhirl), 2)} µm pp) + 넓은 대역 잡음, f_s {TRK.fs} Hz. 회전체가 공진에 자리 잡는 시간(약 64 ms)이 짧아 1X는 그 회전수의 정상 응답으로 두었으므로, 참값과의 어긋남은 모두 필터 때문입니다. 양 끝 회전수에서 {TRK.hold}초씩 머문 기록이며, 1X가 2 µm pp보다 작은 곳은 위상을 그리지 않습니다.</p>}
+      footer={<p>신호는 설명용 예시입니다: P4-1의 예시 로터(고유 회전수 {ROTOR.naturalRpm} rpm, ζ {ROTOR.zeta}, 편심 {formatNumber(ROTOR.eccentricity * um, 2)} µm)의 1X 정상 응답 + 2X {formatNumber(pp(TRK.a2), 2)} µm pp + 0.45X({TRK.whirlFrom} → {TRK.whirlTo} rpm에서 0 → {formatNumber(pp(TRK.aWhirl), 2)} µm pp) + 넓은 대역 잡음, f_s {TRK.fs} Hz. 회전체가 공진에 자리 잡는 시간(약 64 ms)이 짧아 1X는 그 회전수의 정상 응답으로 두었으므로, 이 랩에서 참값과의 어긋남은 모두 필터 때문입니다. 실제 회전체는 빨리 지나가면 자체 과도 응답으로도 봉우리가 같은 방향으로 조금 밀립니다(이 로터를 200 rpm/s로 지나면 약 30 rpm, 800 rpm/s면 약 90 rpm). 양 끝 회전수에서 {TRK.hold}초씩 머문 기록이며, 1X가 2 µm pp보다 작은 곳은 위상을 그리지 않습니다.</p>}
     >
       <h4>1X 크기 (Bode)</h4>
       <Plot series={[truthAmp, estAmp, peak]} x={{ label: '회전수 [rpm]', range: [TRK.rpmLo, TRK.rpmHi] }} y={{ label: '[µm pp]', range: [0, 115] }} height={240} ariaLabel="1X 크기 Bode" />

@@ -23,7 +23,13 @@ const spr32raw = analyzeOrder({ ...D, spr: 32, antiAlias: false });
 const spr32aa = analyzeOrder({ ...D, spr: 32, antiAlias: true });
 const lin = analyzeOrder({ ...D, interp: 'linear' });
 const tacho = analyzeOrder({ ...D, reference: 'tacholess' });
+const tachoSteady = analyzeOrder({ ...D, reference: 'tacholess', rate: 0 });
 const amp9 = (a: typeof base) => a.spectrum.amplitude[Math.round(9 / a.deltaOrder)];
+const maxIn = (a: typeof base, lo: number, hi: number) => {
+  let m = 0;
+  a.spectrum.order.forEach((o, i) => { if (o >= lo && o <= hi) m = Math.max(m, a.spectrum.amplitude[i]); });
+  return m;
+};
 
 /** 본문·캡션이 인용하는 숫자 (회귀 테스트 `figures-p5-4.test.ts`) */
 export const P54_VALUES = {
@@ -33,6 +39,9 @@ export const P54_VALUES = {
   spr32aa,
   lin,
   tacho,
+  tachoSteady,
+  /** 키페이저 없음: 22.5 ~ 23.5차 안에서 가장 높은 칸 (23.00차 칸 대신 이웃으로 흩어진 곳) */
+  tachoHighMax: maxIn(tacho, 22.5, 23.5),
   alias9raw: amp9(spr32raw),
   alias9aa: amp9(spr32aa),
   fixedOrderLo: ORD.fixedHz / (base.rpmEnd / 60),
@@ -40,7 +49,7 @@ export const P54_VALUES = {
 };
 const V = P54_VALUES;
 
-// 그림 1 — 계산 순서 (설명용: 4 Hz에서 1초에 8 Hz/s로 빨라지는 축)
+// 그림 2 — 계산 순서 (설명용: 4 Hz에서 1초에 8 Hz/s로 빨라지는 축)
 const demo = (() => {
   const f0 = 4;
   const a = 8;
@@ -59,8 +68,8 @@ const demo = (() => {
 })();
 const pulseLines = (top: number): FigAnnotation[] => Array.from(demo.pulses, (p) => ({ type: 'line', x1: p, y1: -top, x2: p, y2: top, color: 'warn', dash: true, width: 1 }) as FigAnnotation);
 export const pipeline: FigureSpec = {
-  id: 'fig-p5-4-1',
-  caption: `그림 1. 계산형 차수추적의 순서 (설명용: 4 Hz에서 출발해 1초에 8 Hz씩 빨라지는 축, 1X + 2X). 위: 고정 f_s로 기록한 파형과 키페이저 시각(주황 점선) — 축이 빨라질수록 펄스 사이가 좁아진다. 가운데: 키페이저 시각마다 각도가 한 바퀴씩 늘어난다는 것으로 각도-시간 곡선(파랑)을 만들고, 한 바퀴를 ${demo.spr}등분한 각도마다 그 시각을 곡선에서 읽는다(초록 점). 아래: 그 시각에서 파형을 보간한 값을 각도 순서로 늘어놓으면 — 빨라지는 동안에도 한 바퀴마다 같은 모양이 되풀이된다.`,
+  id: 'fig-p5-4-2',
+  caption: `그림 2. 계산형 차수추적의 순서 (설명용: 4 Hz에서 출발해 1초에 8 Hz씩 빨라지는 축, 1X + 2X). 위: 고정 f_s로 기록한 파형과 키페이저 시각(주황 점선) — 축이 빨라질수록 펄스 사이가 좁아진다. 가운데: 키페이저 시각마다 각도가 한 바퀴씩 늘어난다는 것으로 각도-시간 곡선(파랑)을 만들고, 한 바퀴를 ${demo.spr}등분한 각도마다 그 시각을 곡선에서 읽는다(초록 점). 아래: 그 시각에서 파형을 보간한 값을 각도 순서로 늘어놓으면 — 빨라지는 동안에도 한 바퀴마다 같은 모양이 되풀이된다.`,
   panels: [
     {
       title: '① 고정 f_s 파형과 키페이저',
@@ -93,12 +102,12 @@ export const pipeline: FigureSpec = {
   ],
 };
 
-// 그림 2 — 같은 프레임, 시간 FFT vs 차수 스펙트럼
+// 그림 1 — 같은 프레임, 시간 FFT vs 차수 스펙트럼
 const tf = upTo(base.timeFreq, base.timeAmp, 150);
 const os = upTo(base.spectrum.order, base.spectrum.amplitude, 5);
 export const timeVsOrder: FigureSpec = {
-  id: 'fig-p5-4-2',
-  caption: `그림 2. 같은 프레임(${D.revs}바퀴, ${fmt(base.tEnd - base.tStart, 3)} s 동안 ${fmt(base.rpmStart, 4)} → ${fmt(base.rpmEnd, 4)} rpm, 가속 ${D.rate} rpm/s)을 두 가지로 본다. 위: 고정 f_s 그대로 Hann FFT — 1X·2X가 프레임 동안 움직여 번지고 봉우리가 낮다(1X ${fmt(base.timePeak1 * um, 3)} µm, 참값 ${fmt(ORD.a1 * um, 2)} µm). 고정 ${ORD.fixedHz} Hz 성분은 또렷하다. 아래: 키페이저로 각도에 맞춰 다시 찍은 차수 스펙트럼 — 1X ${fmt(base.amp1 * um, 3)} µm, 2X ${fmt(base.amp2 * um, 3)} µm로 또렷하고, 이번에는 고정 ${ORD.fixedHz} Hz가 차수 ${fmt(V.fixedOrderLo, 3)} ~ ${fmt(V.fixedOrderHi, 3)}에 걸쳐 번진다.`,
+  id: 'fig-p5-4-1',
+  caption: `그림 1. 같은 프레임(${D.revs}바퀴, ${fmt(base.tEnd - base.tStart, 3)} s 동안 ${fmt(base.rpmStart, 4)} → ${fmt(base.rpmEnd, 4)} rpm, 가속 ${D.rate} rpm/s)을 두 가지로 본다. 위: 고정 f_s 그대로 Hann FFT — 1X·2X가 프레임 동안 움직여 번지고 봉우리가 낮다(1X ${fmt(base.timePeak1 * um, 3)} µm, 참값 ${fmt(ORD.a1 * um, 2)} µm). 고정 ${ORD.fixedHz} Hz 성분은 또렷하다. 아래: 키페이저로 각도에 맞춰 다시 찍은 차수 스펙트럼 — 1X ${fmt(base.amp1 * um, 3)} µm, 2X ${fmt(base.amp2 * um, 3)} µm로 또렷하고, 이번에는 고정 ${ORD.fixedHz} Hz가 차수 ${fmt(V.fixedOrderLo, 3)} ~ ${fmt(V.fixedOrderHi, 3)}에 걸쳐 번진다.`,
   panels: [
     {
       title: '시간 기반 FFT (가로축 Hz)',
@@ -131,13 +140,11 @@ export const timeVsOrder: FigureSpec = {
 const orderPanel = (a: typeof base, title: string, color: 'c1' | 'c2' | 'c3', extra: FigAnnotation[] = []) => {
   const half = a.params.spr / 2;
   const d = upTo(a.spectrum.order, a.spectrum.amplitude, half);
+  const unseen: FigAnnotation[] = half < 32 ? [{ type: 'band', x1: half, x2: 32, color: 'muted', label: `${a.params.spr}점으로는 볼 수 없는 차수` }] : [];
   return {
-    title,
+    title: `${title} (최대 차수 ${fmt(a.orderMax, 3)}, 회색 점선)`,
     series: [{ x: d.x, y: toUm(d.y), color, width: 1.6 }] as FigSeries[],
-    annotations: [
-      { type: 'vline', x: a.orderMax, color: 'muted', dash: true, label: `최대 차수 ${fmt(a.orderMax, 3)}` } as FigAnnotation,
-      ...extra,
-    ],
+    annotations: [...unseen, { type: 'vline', x: a.orderMax, color: 'muted', dash: true } as FigAnnotation, ...extra],
     x: { range: [0, 32] as [number, number], ticks: [0, 4, 8, 12, 16, 20, 24, 28, 32], label: '차수' },
     y: { range: [0, 6] as [number, number], ticks: [0, 2, 4, 6], label: '[µm]' },
     height: 110,
@@ -147,9 +154,9 @@ export const orderAliasing: FigureSpec = {
   id: 'fig-p5-4-3',
   caption: `그림 3. 23X(${fmt(ORD.aHigh * um, 2)} µm, 날개 통과 예시)가 들어 있는 신호를 회전당 샘플 수를 바꿔 차수추적했다 (1X·2X는 위로 잘려 있다). 위: 회전당 64점 — 최대 차수 ${fmt(V.base.orderMax, 3)} 안이라 23X가 제자리에 ${fmt(V.base.ampHigh * um, 3)} µm로 선다. 가운데: 회전당 32점으로 바로 찍으면 차수 16을 넘는 23X가 32 − 23 = 9X로 접혀 ${fmt(V.alias9raw * um, 3)} µm짜리 가짜 줄이 선다 — 재샘플링도 샘플링이다 (P2-3). 아래: 회전당 256점으로 넉넉히 찍은 뒤 차수 영역에서 저역 통과하고 솎으면 가짜 9X가 사라진다(${fmt(V.alias9aa * um, 1)} µm).`,
   panels: [
-    orderPanel(V.base, '회전당 64점 (최대 차수 25)', 'c1', [{ type: 'text', x: ORD.highOrder, y: V.base.ampHigh * um + 0.7, text: '23X', anchor: 'middle', color: 'c1' }]),
+    orderPanel(V.base, '회전당 64점', 'c1', [{ type: 'text', x: ORD.highOrder, y: V.base.ampHigh * um + 0.7, text: '23X', anchor: 'middle', color: 'c1' }]),
     orderPanel(V.spr32raw, '회전당 32점, 바로 찍음', 'c2', [
-      { type: 'vline', x: 16, color: 'warn', dash: true, label: '차수 16 (접히는 곳)' },
+      { type: 'vline', x: 16, color: 'warn', dash: true, label: '접히는 곳 16' },
       { type: 'text', x: 9, y: V.alias9raw * um + 0.7, text: '가짜 9X', anchor: 'middle', color: 'c2' },
     ]),
     orderPanel(V.spr32aa, '회전당 32점, 넉넉히 찍고 거른 뒤 솎음', 'c3'),
@@ -162,7 +169,7 @@ const linLoss = ratios(V.lin);
 const cubLoss = ratios(V.base);
 export const interpolationLoss: FigureSpec = {
   id: 'fig-p5-4-4',
-  caption: `그림 4. 등각도 시각의 값을 고정 f_s 표본 사이에서 보간할 때 생기는 진폭 손실 (참값 대비 %). 1X·2X는 f_s ${ORD.fs} Hz에 비해 느려서 두 방법 모두 거의 손실이 없다. 23X(약 ${fmt((ORD.highOrder * base.rpmStart) / 60, 3)} ~ ${fmt((ORD.highOrder * base.rpmEnd) / 60, 3)} Hz)는 표본 사이에서 크게 출렁여 선형 보간(주황)이 ${fmt(linLoss[2], 2)} %, 3차 보간(파랑)이 ${fmt(cubLoss[2], 2)} % 작게 읽는다. 높은 차수를 볼수록 보간을 촘촘히(높은 f_s, 3차 이상) 해야 한다.`,
+  caption: `그림 4. 등각도 시각의 값을 고정 f_s 표본 사이에서 보간할 때 생기는 진폭 손실 (참값 대비 %). 1X·2X는 f_s ${ORD.fs} Hz에 비해 느려서 두 방법 모두 거의 손실이 없다. 23X(약 ${fmt((ORD.highOrder * base.rpmStart) / 60, 3)} ~ ${fmt((ORD.highOrder * base.rpmEnd) / 60, 3)} Hz)는 표본 사이에서 크게 출렁여 선형 보간(주황)이 ${fmt(linLoss[2], 2)} %, 3차 보간(파랑)이 ${fmt(cubLoss[2], 2)} % 작게 읽는다(막대에는 차수 영역 에일리어싱 방지 필터의 몫 약 0.1 %도 들어 있다). 높은 차수를 볼수록 보간을 촘촘히(높은 f_s, 3차 이상) 해야 한다.`,
   panels: [
     {
       series: [
@@ -187,7 +194,7 @@ const near1 = (a: typeof base) => upTo(a.spectrum.order, a.spectrum.amplitude, 1
 const near23 = (a: typeof base) => upTo(a.spectrum.order, a.spectrum.amplitude, 24, 22);
 export const tacholess: FigureSpec = {
   id: 'fig-p5-4-5',
-  caption: `그림 5. 키페이저 없이 차수추적하기. 위: 스펙트로그램(P5-2)에서 프레임마다 가장 큰 봉우리(1X)의 주파수를 읽은 능선과 실제 회전수의 차 — 프레임 안에서 최대 ${fmt(V.tacho.ridgeErrRpm ?? 0, 2)} rpm 어긋난다. 이 주파수를 적분해 각도를 만들고 같은 방법으로 재샘플링한다. 가운데: 1X는 키페이저(파랑) ${fmt(base.amp1 * um, 3)} µm, 능선(주황) ${fmt(V.tacho.amp1 * um, 3)} µm로 거의 같다. 아래: 23X는 각도 오차가 23배로 커져 능선 쪽이 번지고 ${fmt(V.tacho.ampHigh * um, 2)} µm로 낮아진다. 각도의 시작점도 알 수 없어 위상은 읽을 수 없다.`,
+  caption: `그림 5. 키페이저 없이 차수추적하기. 위: 스펙트로그램(P5-2)에서 프레임마다 가장 큰 봉우리(1X)의 주파수를 읽은 능선과 실제 회전수의 차 — 프레임 안에서 최대 ${fmt(V.tacho.ridgeErrRpm ?? 0, 2)} rpm 어긋난다. 이 주파수를 적분해 각도를 만들고 같은 방법으로 재샘플링한다. 가운데: 1X는 키페이저(파랑) ${fmt(base.amp1 * um, 3)} µm, 능선(주황) ${fmt(V.tacho.amp1 * um, 3)} µm로 거의 같다. 아래: 23X는 각도 오차가 23배로 커져 능선 쪽이 번진다 — 23.00차 칸은 ${fmt(V.tacho.ampHigh * um, 2)} µm로 낮아지고, 나머지는 이웃 칸으로 흩어진다(가장 높은 칸 ${fmt(V.tachoHighMax * um, 2)} µm). 각도의 시작점도 알 수 없어 위상은 읽을 수 없다.`,
   panels: [
     {
       title: '능선으로 읽은 회전수 − 실제 회전수',
