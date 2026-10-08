@@ -107,7 +107,7 @@
 |---|---|---|
 | P8-1 | 강체/굽힘 모드와 여러 동기 공진, 복소 모드 중첩·상쇄, 분리 모드의 약180° 전이와 합성 위상의 차이, 피크·위상·Polar를 함께 읽기, 동일 방향 센서의 동상/역상은 모드 형상 단서(두 곳으로 모드 차수 확정 불가), 중앙 마디의 센서·가진 참여의 함정, 감쇠·가까운 모드의 AF 해석 한계, 냉간/열간과 bow의 등가 모드 변위·slow roll 보상 편향, 승인된 통과/보호 절차·자료 비교 | 모드 형상(P1-5), 1모드 Bode/Polar·AF·개념SM(P4-1), 위상·slow roll(P3-3), 과도 수집·보호(P3-5), 강체/유연 로터(P4-2), 반공진(P5-3), 필터 지연(P5-5), Waterfall·오빗·벡터 트렌드(P6-2~4), bow/러브(P7-2~3·미공개 위치만) |
 | P8-2 | 열 휨(thermal bow: 정지 중 상하 온도차 → 축이 휨 → 기동 시 큰 1X), 터닝 기어(정지 중 천천히 돌려 온도를 고르게)·eccentricity(slow roll 런아웃 p-p)로 기동 판단, bow 벡터 + 불평형 응답 벡터, Morton effect(저널 원주의 고르지 않은 가열·hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선, 부하·오일 온도 영향), Newkirk effect와의 구별(접촉 마찰열 vs 유막 전단열) | slow roll 보상(P3-3), heavy/high spot(P4-1), 오빗·hot spot 자리(P6-3), APHT·Acceptance region(P6-4), 여러 모드 통과(P8-1), bow(P7-2), 러브·Newkirk(P7-3) |
-| P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 순서 → 증기력 방향 → 베어링 하중 → Shaft centerline 이동·편심률 저하 → 안정성 저하), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
+| P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 조건 → 증기력 방향 → 베어링 하중 → Shaft centerline·편심률 변화; 안정성은 베어링 동계수·증기력·모드로 별도 평가), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
 | P8-4 | Alford force(터빈 팁 간극 변화 → 교차연성), GT 압축기 stall/surge와 동압 신호, 연소 동역학(동압 센서, 종방향/원주방향 음향 모드, 연소 튜닝과의 관계), 액세서리 기어박스 진단(구름베어링·기어 + TSA), 이물질 손상(FOD) → 1X 벡터 급변 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
 | P8-5 | 발전기 고정자 코어의 2×LF 진동·엔드와인딩 공진(2×LF 근처 고유진동수), 계자 열 민감도(계자 전류에 따라 1X가 변함 → 계자 전류 변경 시험), 샤프트 전압·전류와 접지 브러시, 축계 비틀림·SSR과 발전기, 터빈-발전기 커플링 미스얼라인 | 벡터 트렌드·APHT(P6-4), 1X 계열(P7-2), 미스얼라인(P7-3), 2×LF·극통과(P7-7), 비틀림·SSR(P7-9) |
 
@@ -238,6 +238,8 @@
 
 - P8-2 열 기여: V=U+Q, Q=B₀ exp(−t/τ) exp(−iβ) 또는 B₀(1+g t/t_end) exp[−i(β+2πt/P)]. U·Q는 센서의1X 복소 응답[m Peak], B₀[m Peak], β[rad], τ·P·t_end[s], g[—]. t_end=3600 s, Q는 Q factor와 구별. α_T[K⁻¹]는 열팽창계수. 저속 eccentricity 기하 예제는 고속 응답과 별개.
 
+- P8-3 지정 법칙: ℓ[—]=부하율0~1, q=q₀+q_Lℓ[N/m], q는 P4-4 k_xy와 같은 교차연성. qcrit/k=2ζ, ℓ*=(2ζ−q₀/k)/(q_L/k), q_L>0·0≤ℓ*≤1일 때 유일한 구간 경계. 정적 ε에서 q·ζ를 계산하지 않는다. 자유팽창 ΔL=α_T LΔT[m], 공통 기준 타깃 예제 DE=ΔL_r+u_T−ΔL_c; u_T[m]는 전체 축 이동, 실제 센서 배치는 별도 확인.
+
 ### 3-1. 공통 DSP 코어 구현 사양
 
 코드와 테스트가 기준이다. 랩·그림을 만들 때 알아야 할 규약만 적는다 (끝난 코어의 설계 메모는 `archive/Milestones.md`, D-030).
@@ -305,7 +307,7 @@
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
 | P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 검토 |
 | P8-2 | 열 휨 · 터닝 기어 · Morton | LAB-TRND-01 프리셋 | M8.5 (D-043) | 검토 |
-| P8-3 | ST 특화 | (시나리오 프리셋) | M8.2 | 계획 |
+| P8-3 | ST 특화 | LAB-ST-01 | M8.2 | 검토 (그림8·문제6·본문2랩, 2026-10-08) |
 | P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
 | P8-5 | 발전기와 축계 | (시나리오 프리셋) | M8.4 | 계획 |
 | P9-1 | 구조 공진 판별과 임팩트 시험 | LAB-HPB-01 | M9.1 | 계획 |
@@ -391,6 +393,7 @@
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · lib/faults/gear.ts |
 | LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
 | LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |
+| LAB-ST-01 | ST 부하 경계·부분 분사 합력·정적 중심 위치 (독립 모델) | P8-3 | `SteamLoadLab` (/lab/st-01/) · lib/rotor/steam.ts, journalBearing.ts, stability.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
@@ -681,6 +684,13 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 - B₀20@170°·열 휨0분에서 합0. 합1X≤1 µm Peak의 위상/영역 보류는 학습 예제의 표시 조건.
 - 검증: lib/plots/thermal.test.ts·figures/figures-p8-2.test.ts. 복소합·지수·닫힌 원·RMS/DFT·위상 공백·그림 범위.
 
+### P8-3 ST 부하·부분 분사 (M8.2)
+- 가상 Ω=3000 rpm·Nn=1800 rpm·ζ=.06·q/k=.03+.15ℓ, 경계ℓ*=.6. 50/60/80% 안정/경계/불안정, 경계σ=δ=0. ζ=.04 경계1/3.
+- 부하50% δ=.04700480202, 80% δ=−.09367975528·σ=2.813220873/s·f=30.03019025Hz(.600603805X). 초기5µm Peak, 8고유주기 뒤3.433423040/5/10.58703506µm Peak.
+- P4-3 원통·중력1000N·μ.02Pa·s. 50% 지정분사힘600N 상향/하향/우향→합력400/1600/1166.190379N. 전주/상향/하향 ε=.6757879254/.5165520952/.7389636618; 전주/상향 hmin=32.42120746/48.34479048µm. 분사·μ는 별도 안정 계수를 변경하지 않음.
+- 자유팽창 α_T12e−6/K·L8m·ΔTr250/ΔTc150K→24/14.4mm·차이9.6mm. 전체축+.2mm→공통기준 상대타깃9.8mm. 실제 DE·열간 정렬·다축 반력 예측 아님.
+- 검증: lib/rotor/steam.test.ts14·figures/figures-p8-3.test.ts2, 기존API동등·합력회전·지수해·초기진폭비례·경계구간·그림숫자/범위.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -715,6 +725,11 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-27 | [Marscher·Illis, Journal Bearing “Morton Effect” Cause of Cyclic Vibration in Compressors](https://doi.org/10.1080/10402000601147781) | 순환 진동·열 전달 지연 (P8-2) | 공개 초록, 사례 조치를 일반화하지 않음 |
 | R-28 | [Bently Nevada, Vibration and Dynamic Measurements](https://www.bakerhughes.com/cordant/blog/vibration-and-dynamic-measurements) | Eccentricity 측정 목적 (P8-2) | 공개 개념 요약 |
 | R-29 | F. F. Ehrich, "High order subharmonic response of high speed rotors in bearing clearance", *Journal of Vibration, Acoustics, Stress, and Reliability in Design* 110(1), 1988 | 간극 안 로터의 ½X·⅓X (P7-3) | |
+| R-30 | [ASME Turbo Expo, Steam Whirl Detection and Correction in 135 MW Steam Turbine](https://asme-turboexpo.secure-platform.com/a/solicitations/223/sessiongallery/15461/application/128518) | 증기 조건·모드·감쇠·부하 이력 (P8-3) | 공개 사례 개념, 수치·그림 미사용 |
+| R-31 | [Edney·Lucas (2000), Designing High Performance Steam Turbines With Rotordynamics As A Prime Consideration](https://oaktrust.library.tamu.edu/items/8ee29812-bbba-46ff-8efb-7488ec823470) | 부분 분사 힘·씰/블레이드 교차력 (P8-3) | 공개 초록 요약 |
+| R-32 | [Bently Nevada, ORBIT 2012 Q4](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/orbit_v32n4_2012_q4.pdf) | DE·축위치·케이싱 팽창 기준 (P8-3) | 측정 개념 요약 |
+| R-33 | [Salamone (1982), Rotor Dynamic Analysis And Bearing Optimization Study Of A 3800 Hp Steam Turbine](https://oaktrust.library.tamu.edu/items/2d8b06df-f769-41ed-aa81-6c88e9544387) | 열 정렬·하중 감소와 불안정 사례 (P8-3) | 베어링별 조건, 일반화하지 않음 |
+| R-34 | [Detection Of Rotor Cracks](https://oaktrust.library.tamu.edu/server/api/core/bitstreams/0a54b65f-73e8-4c3c-9018-3b612a9dcc15/content) | 연결 축계·catenary·응력 검토 (P8-3) | 공개 개념 요약 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

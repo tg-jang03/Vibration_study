@@ -30,6 +30,7 @@ const stabilitySmoke = flag('stability-smoke');
 const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const thermalSmoke = flag('thermal-smoke');
+const steamSmoke = flag('steam-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
@@ -258,6 +259,40 @@ for (const p of paths) {
     if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
   }
+  if (steamSmoke) {
+    const smoke=await ev(`(async()=>{
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-ST-01');
+      if(!labs.length)return {skipped:true};
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;};
+      const wait=()=>new Promise(r=>setTimeout(r,260));
+      try{for(const lab of labs){
+        const sliders=lab.querySelectorAll('input[type="range"]'),select=lab.querySelector('select'),toggle=lab.querySelector('input[type="checkbox"]'),initial=select.value;
+        const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const choose=async v=>{select.value=String(v);select.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();};
+        const read=label=>{const r=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return r?parseFloat(r.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+        const near=(label,v,t=.01)=>Math.abs(read(label)-v)<t,status=()=>lab.querySelector('[role="status"]').textContent;
+        require(lab.querySelectorAll('.js-plotly-plot').length===3&&lab.querySelector('svg[role="img"]'),'3 plots·중심 위치');
+        await choose(0);require(near('베어링 하중 크기',1000)&&near('정적 편심률 ε',.6758,.0001)&&near('가상 부하 경계 ℓ*',60)&&status().includes('안정:'),'기본50%');
+        await set(0,60);require(read('성장률 σ')===0&&read('Log decrement δ')===0&&read('자유응답 끝 진폭')===5&&status().includes('경계:'),'60% 경계');
+        await set(0,80);require(status().includes('불안정:')&&near('자유응답 끝 진폭',10.587,.005)&&near('가상 모드 주파수',30.03,.005),'80% 성장');
+        await set(0,50);await choose(1);require(near('베어링 하중 크기',400)&&near('정적 편심률 ε',.5166,.0001)&&near('최소 유막 hmin',48.34)&&near('가상 부하 경계 ℓ*',60),'상향 힘');
+        await choose(2);require(near('베어링 하중 크기',1600)&&near('정적 편심률 ε',.739,.0001),'하향 힘');
+        await choose(3);require(near('베어링 하중 크기',1166,1)&&read('합력 X')===600&&read('합력 Y')===-1000,'우향 힘');
+        await choose(1);await set(2,40);require(read('정적 편심률 ε')<.5166&&near('가상 부하 경계 ℓ*',60),'점성과 별도 경계');
+        await set(0,0);require(read('합력 Y')===-1000,'부하0 지정 증기력0');await set(0,100);require(read('합력 Y')===-1000,'부하100 지정 증기력0');
+        await set(0,50);await set(1,4);require(near('가상 부하 경계 ℓ*',33.33)&&status().includes('불안정:'),'감쇠 변경');
+        await reset();await choose(0);await set(3,0);await set(4,0);require(!Number.isFinite(read('가상 부하 경계 ℓ*'))&&status().includes('안정:'),'교차력0 경계 없음');
+        await reset();const a=read('자유응답 끝 진폭');await set(5,10);require(Math.abs(read('자유응답 끝 진폭')-2*a)<.01&&near('가상 부하 경계 ℓ*',60),'초기 진폭 비례');
+        toggle.click();await wait();require(lab.querySelectorAll('.js-plotly-plot')[2].data.length===2,'X 자유응답 토글');
+        require([...lab.querySelectorAll('svg[role="img"] path')].every(p=>!/(NaN|Infinity)/.test(p.getAttribute('d'))),'중심 경로 유한');
+        await reset();require(select.value===initial&&Number(sliders[0].value)===50&&Number(sliders[1].value)===6&&Number(sliders[2].value)===20&&Number(sliders[3].value)===3&&Number(sliders[4].value)===15&&Number(sliders[5].value)===5&&!toggle.checked,'초기화와 시작 분사');
+      }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('ST 부하 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     ST 부하 조작 '+smoke.checks+'항목 OK (경계·성장·분사·점성·초기화)');
+  }
+
   if (thermalSmoke) {
     const smoke = await ev(`(async () => {
       const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-TRND-01');

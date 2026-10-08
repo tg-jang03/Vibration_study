@@ -263,13 +263,15 @@ scripts/bench/           플롯 성능 측정 (I-020)
 |---|---|---|---|---|---|
 | 1 | M8.1 | 기동·정지와 임계속도 통과, 여러 모드 Bode/Polar | P8-1 · LAB-BODE-01 | 2모드 불평형 응답 모델(모드 중첩, `lib/rotor`), 베어링 2곳의 Bode·Polar, 피크 + 위상 변화 = 공진(피크만이면 다른 원인 의심), Polar 루프로 모드 식별, 두 베어링 동상/역상 → 병진/원추·2차 굽힘, 모드 마디 근처 센서의 함정, 런업 vs 코스트다운(열 상태·필터 지연), 통과 진폭을 키우는 요인(잔류 불평형 + bow), 트립 배율 되짚기. **1모드 극한이 P4-1 `simulateRunUp`과 같다는 테스트** | P1-5, P3-3, P3-5, P4-1, P4-2, P5-5, P6-2, P6-4 (공개) · bow는 P7-2 (트랙 A M7.2, 없으면 한 줄로 풀고 링크) |
 | 2 | M8.5 | Thermal bow · Turning gear · Morton effect | P8-2 · LAB-TRND-01 프리셋 (thermal bow, Morton) | 정지 중 상하 온도차 → bow → 기동 시 큰 1X, 터닝 기어·eccentricity(slow roll 런아웃)로 기동 판단, bow 벡터 + 불평형 응답 벡터(slow roll 보상 되짚기), Morton: 저널 hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선(APHT·Polar), 부하·오일 온도 영향, Newkirk(러브 마찰열)와 접촉 여부로 구별 | P3-3, P4-1, P6-3, P6-4, P8-1 · P7-2·P7-3 (트랙 A M7.2) |
-| 3 | M8.2 | ST 특화 | P8-3 · 시나리오 랩 (예: 부하 → threshold load에서 서브싱크로너스, partial arc → Shaft centerline·편심률; ID·사양은 시작 때) | Steam whirl/whip·threshold load·노즐 분사력·씰 교차연성, partial arc admission → 하중 방향 → centerline·편심률 → 안정성, 차열팽창·축방향 위치·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | P3-5, P4-3, P4-4 (`lib/rotor` journalBearing·stability), P6-2 · P7-3·P7-4 (트랙 A M7.2·M7.3) |
+| 3 | M8.2 | ST 특화 | P8-3 · LAB-ST-01 (지정 부하 경계·부분 분사 합력·정적 중심 위치) | Steam whirl/whip·threshold load·노즐 분사력·씰 교차연성, partial arc admission → 하중 방향 → centerline·편심률 → 안정성, 차열팽창·축방향 위치·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | P3-5, P4-3, P4-4 (`lib/rotor` journalBearing·stability), P6-2 · P7-3·P7-4 (트랙 A M7.2·M7.3) |
 | 4 | M8.3 | GT 특화 | P8-4 · LAB-FAULT-01·LAB-GEAR-02 프리셋 또는 새 랩 (시작 때 결정) | Alford force(팁 간극 → 교차연성), 압축기 stall/surge의 동압 신호, 연소 동역학(동압 센서·종/원주 음향 모드·튜닝), 액세서리 기어박스(구름베어링·기어 + TSA), FOD → 1X 벡터 급변, 블레이드 진동 연결 | P4-4, P6-4, P7-5·P7-6 (공개) · P7-8·P7-9 (트랙 A M7.6·M7.7) |
 | 5 | M8.4 | 발전기와 축계 | P8-5 · 시나리오 프리셋 (예: 계자 전류 변경 시험 → 1X 벡터) | 2×LF 코어 진동·엔드와인딩 공진, 계자 열 민감도와 계자 전류 변경 시험, 샤프트 전압·전류(접지 브러시), 축계 비틀림·SSR 연결, 터빈-발전기 커플링 미스얼라인 | P6-4 · P7-3·P7-7·P7-9 (트랙 A) |
 
 **M8.1 구현 완료 (2026-10-08)**: P8-1 검토·그림8·문제6·LAB-BODE-01(본문냉간/열간2곳·독립랩). 고정2모드복소중첩·센서마디·분리AF·개념SM·bow/slow roll. 다음은 **M8.5 P8-2**.
 
 **M8.5 구현 완료 (2026-10-08)**: P8-2 검토·그림8·문제6·LAB-TRND-01 열 휨/Morton형 프리셋(본문2곳·독립랩). 고정응답+지정열벡터·eccentricity 별도 기하·상쇄 위상 보류·루프 중간 이력·Newkirk 감별. 다음은 **M8.2 P8-3 ST 특화**.
+
+**M8.2 구현 완료 (2026-10-08)**: P8-3 검토·그림8·문제6·LAB-ST-01(본문전주/상향2곳·독립랩). 부하 교차연성 경계·모드 자유응답과 분사 합력·정적 평형을 별도로 계산. DE/축위치/케이싱 기준·catenary/냉간열간 정렬의 범위. 다음은 **M8.3 P8-4 GT 특화**.
 
 트랙 A가 내놓는 순서(D-043): M7.2(P7-2·P7-3) → M7.3(P7-4) → M7.6(P7-7·P7-8) → M7.7(P7-9). 트랙 B는 기댈 페이지가 아직 없으면 한 줄로 풀고 링크(`withBase`, 아직 없는 페이지는 링크 없이 "P7-4에서")만 한다.
 
