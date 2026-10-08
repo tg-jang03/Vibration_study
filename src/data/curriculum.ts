@@ -118,7 +118,7 @@ export const PARTS: Part[] = [
       { id: 'P7-1', title: '진단 주파수 지도와 회전수 추정', status: 'review', href: '/p7-1/' },
       { id: 'P7-2', title: '1X 계열: 불평형 · 휨 · 크랙 · 편심 · 공진', status: 'review', href: '/p7-2/' },
       { id: 'P7-3', title: '미스얼라인먼트 · 풀림 · 러브', status: 'review', href: '/p7-3/' },
-      { id: 'P7-4', title: '유체막 · 유체력 불안정', status: 'planned' },
+      { id: 'P7-4', title: '유체막 · 유체력 불안정', status: 'review', href: '/p7-4/' },
       { id: 'P7-5', title: '구름베어링', status: 'review', href: '/p7-5/' },
       { id: 'P7-6', title: '기어', status: 'review', href: '/p7-6/' },
       { id: 'P7-7', title: '전기적 원인 (모터 · 발전기)', status: 'planned' },

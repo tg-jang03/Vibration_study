@@ -255,6 +255,8 @@ scripts/bench/           플롯 성능 측정 (I-020)
 
 **M7.2 구현 완료 (2026-10-08)**: P7-2 1X 계열(그림 8·LAB-1X-01, `lib/faults/oneX.ts`) + P7-3 미스얼라인·풀림·러브(그림 9·LAB-NL-01, `lib/faults/contact.ts`: 무차원 Jeffcott 시간 적분 — 접촉·마찰·간극·미스얼라인 힘, 구조적 풀림, Newkirk). I-013 해결. 다음은 M7.3 (P7-4).
 
+**M7.3 구현 완료 (2026-10-08)**: P7-4 유체막·유체력 불안정 — 그림 5·LAB-SUB-01(원인 6종·숨은 케이스 7개), `lib/faults/subsync.ts`(설명용 규칙 모델: 문턱·잠김·히스테리시스·부하 문턱·운전조건 반응), 서브싱크로너스 감별표. 다음은 M7.6 (P7-7·P7-8).
+
 ### 6-10. 세부 마일스톤 — M8 GT/ST 특화 현상 (Part 8) · 트랙 B (2026-10-08 구체화 · Claude, D-043 확정)
 
 공통 완료 기준: 교육 내용은 `Curriculum.md` Part 8의 그 절, 개념 순서는 Contents §1-2 **Part 8 척추**. 현상마다 **현상 → 메커니즘(Part 4·7 링크) → 데이터에서 어떻게 보이나(Part 6 플롯) → 운전 대응**. 메커니즘은 되짚기만, 판정 수치·규격 경계는 쓰지 않는다(I-009). 새 랩은 Contents §5-1b에 사양을 먼저(LAB-BODE-01은 초안이 있다). 본문 숫자는 `figures-p8-*.test.ts`로 고정. 체크리스트(PageGuide §11) + check·test·build + `verify:page` → Contents §4 `검토`·`curriculum.ts`·`Glossary.md`·랩 모음 두 곳 → push. 세부 번호는 ID라 순서와 다르다(M8.5 = P8-2, D-043).
