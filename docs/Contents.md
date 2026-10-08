@@ -103,7 +103,7 @@
 
 | 페이지 | 새로 도입하는 개념 | 되짚기만 하는 것 (위치) |
 |---|---|---|
-| P8-1 | 여러 모드(강체 병진·원추, 1차·2차 굽힘)와 임계속도 여러 개, 모드 중첩으로 본 베어링마다의 1X, 모드마다 위상 약 180° 변화(모드·센서 위치에 따라 다름), "피크 + 위상 변화 = 공진"(피크만이면 다른 원인 의심, 위상 변화만 크고 피크가 작으면 감쇠 큰 모드), Polar 루프로 모드 식별, 두 베어링의 동상/역상 → 병진/원추·2차 굽힘, 모드 마디 근처 센서는 그 모드를 못 봄, 런업 vs 코스트다운(열 상태·bow·필터 지연), 통과 진폭을 키우는 요인(잔류 불평형 + bow), 임계속도 통과 운전(빨리 지나가기·머무르지 않기) | 1모드 Bode·Polar·AF·SM(P4-1), 모드 형상·동상/역상(P1-5), 위상 관례·1X 벡터·slow roll 보상(P3-3), 런업 수집·트립 배율(P3-5), Jeffcott·강성/유연 로터(P4-2), 필터 지연으로 Bode가 밀림(P5-5), 캐스케이드(P6-2), 벡터 트렌드(P6-4), 1X 계열·bow(P7-2) |
+| P8-1 | 강체/굽힘 모드와 여러 동기 공진, 복소 모드 중첩·상쇄, 분리 모드의 약180° 전이와 합성 위상의 차이, 피크·위상·Polar를 함께 읽기, 동일 방향 센서의 동상/역상은 모드 형상 단서(두 곳으로 모드 차수 확정 불가), 중앙 마디의 센서·가진 참여의 함정, 감쇠·가까운 모드의 AF 해석 한계, 냉간/열간과 bow의 등가 모드 변위·slow roll 보상 편향, 승인된 통과/보호 절차·자료 비교 | 모드 형상(P1-5), 1모드 Bode/Polar·AF·개념SM(P4-1), 위상·slow roll(P3-3), 과도 수집·보호(P3-5), 강체/유연 로터(P4-2), 반공진(P5-3), 필터 지연(P5-5), Waterfall·오빗·벡터 트렌드(P6-2~4), bow/러브(P7-2~3·미공개 위치만) |
 | P8-2 | 열 휨(thermal bow: 정지 중 상하 온도차 → 축이 휨 → 기동 시 큰 1X), 터닝 기어(정지 중 천천히 돌려 온도를 고르게)·eccentricity(slow roll 런아웃 p-p)로 기동 판단, bow 벡터 + 불평형 응답 벡터, Morton effect(저널 원주의 고르지 않은 가열·hot spot → 열 bow → 1X 벡터가 수 분 ~ 수 시간 주기로 선회·나선, 부하·오일 온도 영향), Newkirk effect와의 구별(접촉 마찰열 vs 유막 전단열) | slow roll 보상(P3-3), heavy/high spot(P4-1), 오빗·hot spot 자리(P6-3), APHT·Acceptance region(P6-4), 여러 모드 통과(P8-1), bow(P7-2), 러브·Newkirk(P7-3) |
 | P8-3 | Steam whirl/whip(부하가 오르면 서브싱크로너스가 생기는 threshold load), 노즐 분사력 비대칭·씰 교차연성, partial arc admission(밸브 순서 → 증기력 방향 → 베어링 하중 → Shaft centerline 이동·편심률 저하 → 안정성 저하), 차열팽창(differential expansion)·축방향 위치(thrust)·eccentricity 감시의 의미와 한계, 다축 ST의 catenary·cold-hot alignment·베어링 하중 분배 | 교차연성·whirl/whip·안정 한계(P4-4), 유막·편심률·Shaft centerline(P4-3), 보호 채널(P3-5), 캐스케이드 판독(P6-2), 서브싱크로너스 감별(P7-4), 미스얼라인(P7-3) |
 | P8-4 | Alford force(터빈 팁 간극 변화 → 교차연성), GT 압축기 stall/surge와 동압 신호, 연소 동역학(동압 센서, 종방향/원주방향 음향 모드, 연소 튜닝과의 관계), 액세서리 기어박스 진단(구름베어링·기어 + TSA), 이물질 손상(FOD) → 1X 벡터 급변 | 교차연성(P4-4), 벡터 트렌드(P6-4), 구름베어링(P7-5), 기어·TSA(P7-6), stall/surge(P7-8), 블레이드·Campbell(P7-9) |
@@ -216,6 +216,7 @@
 - Log decrement: `\delta = -\dfrac{2\pi\sigma}{\omega_d} \approx 2\pi\zeta`
 - 지지 강성 직렬 예제(P1-6): `\dfrac{1}{k_{eq}} = \dfrac{1}{k_{sh}} + \dfrac{1}{k_{br}} + \dfrac{1}{k_{sup}}`, `f_n = \dfrac{1}{2\pi}\sqrt{\dfrac{k_{eq}}{m}}` (연결부 질량 무시, 같은 힘, 각 변형 합의 가정)
 - 1X 벡터와 Slow roll 보상: `\vec V = A\,e^{-j\phi}`, `\vec V_c = \vec V - \vec V_{sr}`
+- 여러 모드 1X (P8-1): X_j=Σ_m Φ_jm [e_m r_m² exp(−iθ_m)+b_m exp(−iβ_m)]/[1−r_m²+i2ζ_m r_m], r_m=N/N_m. Φ_jm는 고정된 실수 모드 형상·e_m/b_m는 같은 정규화의 등가 변위 Peak [m]. 표시 2|X_j|=p-p·φ_j=−arg X_j. i=√(−1), j는 센서 첨자. 고정 모드·대각 모드 감쇠·속도별 정상상태 가정.
 - 벡터 트렌드 (P6-4): `\Delta\vec V = \vec V(t)-\vec V_{\rm ref}`, 동일 진폭이면 `\lvert\Delta\vec V\rvert = 2A\lvert\sin(\Delta\varphi/2)\rvert`. 진폭차와 구별하며 단위·Peak/Pk-Pk·기준을 명시한다.
 - 학습용 허용 영역 (P6-4): `\lvert A/A_{\rm ref}-1\rvert\le\epsilon_A`, `\lvert\operatorname{wrap}_{[-\pi,\pi]}(\varphi-\varphi_{\rm ref})\rvert\le\epsilon_\varphi`. 두 조건·경계 포함, 작은 진폭이면 위상·판정 보류. 임의 학습값이며 보호 설정이 아니다.
 - **위상 관례 (P3-3·P4-1·P8-1 공통, D-034)**: 위상 φ는 **지연각**(0° ≤ φ < 360°) — 키페이저 펄스에서 1X 신호의 다음 양의 피크까지의 회전각. 1X 벡터 = A∠φ (A의 단위·Peak/Pk-Pk를 함께 적는다), 복소수로는 `A\,e^{-j\phi}`. Polar 플롯은 0°를 위쪽(센서 방향)에 두고 지연이 커지는 쪽을 **회전 반대 방향**으로 그린다(기본 회전은 반시계 → 지연은 시계 방향). 시간에서 각도로: `arphi = 360^circ 	imes Delta t / T`. 장비마다 다른 관례(P3-3 §3): 앞섬각(cos 기준, FFT 위상) `psi = -arphi`, 영점 기준 `arphi - 90^circ`. Polar 플롯 랩은 `components/ui/PolarPlot`(D-035)
@@ -298,7 +299,7 @@
 | P7-7 | 전기적 원인 | (LAB-MOD-01 프리셋) | M7.6 | 계획 |
 | P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
-| P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 계획 |
+| P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 검토 |
 | P8-2 | Thermal bow · Turning gear · Morton | (LAB-TRND-01 프리셋) | M8.5 (D-043) | 계획 |
 | P8-3 | ST 특화 | (시나리오 프리셋) | M8.2 | 계획 |
 | P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
@@ -383,20 +384,11 @@
 | LAB-BRG-02 | 결함 위치와 고장 단계: 어디에 먼저 보이나 | P7-5 | `BearingStageLab` (/lab/brg-02/) · lib/faults/bearing.ts |
 | LAB-GEAR-01 | 기어 결함의 스펙트럼 지문 (GMF 하모닉·측대역 간격과 개수·공진 대역·부하·헌팅 투스) | P7-6 | `GearSpectrumLab` (/lab/gear-01/) · lib/faults/gear.ts |
 | LAB-GEAR-02 | TSA와 켑스트럼: 어느 축의 몇 번 이빨인가 | P7-6 | `GearTsaLab` (/lab/gear-02/) · lib/faults/gear.ts |
+| LAB-BODE-01 | 여러 모드 Bode/Polar·센서 마디·열간 bow·slow roll | P8-1 | `MultiModeBodeLab` (/lab/bode-01/) · lib/rotor/multimode.ts |
 
 ### 5-1b. 상세 사양 — 아직 구현하지 않은 랩
 
 새 랩은 여기에 사양을 먼저 쓰고 구현한다 (템플릿 §2). 구현이 끝나면 사양을 `archive/LabSpecs.md`로 옮기고 위 표에 한 줄을 더한다.
-
-#### LAB-BODE-01 여러 모드의 Bode / Polar: 피크와 위상으로 모드 읽기
-- P8-1 · M8.1 · **사양 초안** (Claude, 2026-10-08, D-043). 트랙 B가 시작할 때 숫자·조작을 확정하고 이 줄을 고친다. 예시 숫자는 테스트로 고정하기 전까지 제안값이다
-- 목적: 임계속도가 둘인 유연 로터의 런업에서 베어링마다 피크와 위상 변화가 어떻게 나오는지 보고, "피크 + 위상 변화 = 공진", 두 베어링의 동상/역상 → 모드 형상, 모드 마디의 센서는 그 모드를 못 본다는 것을 체감한다.
-- 신호 (1X 벡터만, 시드 고정 잡음 선택): 모드 중첩 2모드. 예시 — 운전 3600 rpm, 1차 N₁ 1500 rpm·ζ₁ 0.06, 2차 N₂ 4300 rpm·ζ₂ 0.04 (과속 시험 구간 안에 2차 꼬리, 또는 N₂를 운전 아래로 내려 두 봉우리를 모두 보이게 — 시작 때 결정). 모드 형상 φ (센서 3곳: 베어링 1 · 베어링 2 · 중앙): 1차 [1, 1, 1.5], 2차 [1, −1, 0] (중앙 = 2차 마디). 모드 불평형 e₁·e₂ [µm]와 각 θ₁·θ₂ (1차 = 정적, 2차 = 커플 불평형), 선택: 열 bow b∠β (코스트다운 = 열간), 런아웃 벡터
-- 조작: N₁·N₂ [rpm], ζ₁·ζ₂, e₁·θ₁, e₂·θ₂, 센서(베어링 1 / 베어링 2 / 중앙, 여러 개 겹쳐 보기), 런업(냉간, bow 0) ↔ 코스트다운(열간, bow), slow roll 보상 on/off, 운전 회전수 표시
-- 출력: Bode(진폭·위상 지연 vs rpm, 센서별 색), Polar(`PolarPlot`, D-035 — 0° 위, 지연은 회전 반대), 읽음값 — 봉우리 회전수·진폭(센서별), 봉우리 앞뒤(0.7 ~ 1.4 N_m) 위상 변화, 1차 AF(Half-power, P4-1의 `halfPowerAF` 재사용), 봉우리에서 두 베어링 위상차(≈ 0° 동상 / ≈ 180° 역상), 운전 회전수와의 SM
-- 수식: 센서 j의 1X 벡터 X_j(Ω) = Σ_m φ_jm (e_m r_m² e^{−jθ_m} + b_m)/(1 − r_m² + j2ζ_m r_m), r_m = N/N_m, b_m = 열 bow의 모드 성분. 위상 지연 φ = −arg X_j (Contents §3 위상 관례, P3-3). 1X 벡터 A∠φ
-- 실험 과제: ① 기본값에서 베어링 두 곳의 봉우리 2개와 위상 변화 약 180°씩, 2차에서 두 베어링이 역상 ② 중앙 센서 → 2차 봉우리가 사라짐(마디), "피크가 없다 ≠ 모드가 없다" ③ ζ₂를 키우면 봉우리는 낮아지지만 위상 변화는 남음 → 피크만으로 판단하지 않는다 ④ N₂를 N₁ 쪽으로 → 두 모드가 겹쳐 위상 변화가 180°에서 벗어나고 Polar 루프가 섞임 ⑤ 코스트다운(bow) → 저속 벡터가 0이 아니고 Bode가 런업과 다름, slow roll 보상의 효과와 한계 ⑥ 런아웃과 응답이 반대 방향일 때 공진 아닌 골·봉우리
-- 검증: φ의 2차 성분 0·bow 0이면 P4-1 `simulateRunUp`(N₁, ζ₁, e₁)과 같음(상대 오차 1e-12) / 모드가 잘 떨어지면 봉우리 회전수 ≈ N_m/√(1 − 2ζ_m²)(P4-1 `theoreticalPeakRpm`)·위상 변화 ≈ 180° / 마디 센서에 2차 봉우리 없음 / N → 0에서 X_j → Σ φ_jm b_m (bow = slow roll 벡터) / AF ≈ 1/(2ζ₁)
 
 ### 5-2. 그 밖의 랩 (개요 — 해당 마일스톤 시작 시 상세화)
 
@@ -637,6 +629,14 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | TSA (깨진 기어 18번) | 기어 축 15바퀴: 102°·18번·FM4 약 100 / 피니언 축 1 · 5 · 15 · 40바퀴 FM4 33 · 17 · 5.3 · 3.5 (건전 3.6) / 깨진 피니언 6번: 피니언 축 40바퀴 84°·FM4 35 / 편심(기어) Difference FM4 3.7 (건전 3.2) |
 | 켑스트럼 | 깨진 피니언 1/f₁(40.27 ms) 0.11 (건전 0.0092), 깨진 기어 1/f₂(106.8 ms) 0.17 (건전 0.0064) |
 
+### P8-1 여러 모드 Bode/Polar (M8.1)
+- 교육용 N₁/N₂=1500/3000 rpm·ζ=.06/.04·e=5/3 µm Peak·형상 [1,1,1.5]/[1,−1,0]·20 rpm 표본·운전3600 rpm.
+- 베어링1 피크: 1500 rpm·83.4635277 µm pp, 3020 rpm·78.7255436 µm pp. 3000 rpm 베어링1/2/중앙=77.2051148/75.1176725/19.9363056 µm pp.
+- 동일 방향 베어링 위상차: 1500 rpm 2.7418779°, 3000 rpm159.9606078°. 중앙2차성분0. 분리2차N₂응답은ζ .04/.20→75/15 µm pp.
+- 분리1차AF(2 rpm)=8.2153257 (근사8.3333333), 개념SM=58.3333333/16.1111111% (규격판정 아님).
+- 1차bow2 µm Peak·60°: 0rpm한계4 µm pp, 200rpm4.1793629 µm pp, 1500rpm103.6506260 µm pp; 200rpm보상뒤100.8227437 µm pp, 기준점0. 보상으로동적bow가모두사라지지않음.
+- 검증: src/lib/rotor/multimode.test.ts·src/figures/figures-p8-1.test.ts, P4-1 simulateRunUp 복소극한 상대오차1e−12. SI Peak 내부·UI에서pp변환.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -663,6 +663,8 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-19 | K. R. Fyfe, E. D. S. Munck, "Analysis of computed order tracking", *Mechanical Systems and Signal Processing* 11(2), 1997 | 계산형 차수추적, 키페이저 시각의 2차 보간 (P5-4) | |
 | R-20 | R. B. Randall, J. Antoni, "Rolling element bearing diagnostics — A tutorial", *Mechanical Systems and Signal Processing* 25 (2011) | 베어링 결함 주파수 식·미끄럼·위치마다의 변조 (P7-5) | |
 | R-21 | P. D. McFadden, "Examination of a technique for the early detection of failure in gears by signal processing of the time domain average of the meshing vibration", *Mechanical Systems and Signal Processing* 1(2), 1987 | 축마다의 TSA, 규칙 성분을 뺀 신호(Residual·Difference)로 이빨 결함 찾기 (P7-6) | |
+| R-22 | [COMSOL, Mode Superposition](https://www.comsol.com/multiphysics/mode-superposition) | 선형 모드 중첩·형상 정규화·모드 감쇠 가정 (P8-1) | 제조사 공개 이론, 2026-10-08 확인 |
+| R-23 | [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data) | 기동·정지의 열 상태·접촉 영향 비교 (P8-1) | 공개 사례, 수치/그림 전재 없음 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 

@@ -31,6 +31,7 @@ const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
+const bodeSmoke = flag('bode-smoke');
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -104,6 +105,39 @@ for (const p of paths) {
   await sleep(2000);
   const labs = await ev(`[...document.querySelectorAll('.lab-frame')].map(f => ({ id: f.querySelector('.lab-id')?.textContent ?? '?', plots: f.querySelectorAll('.js-plotly-plot').length, svgs: f.querySelectorAll('svg').length }))`);
   const unhydrated = (labs ?? []).filter((l) => l.plots === 0 && l.svgs === 0).map((l) => l.id);
+  if (bodeSmoke) {
+    const smoke=await ev(`(async()=>{
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-BODE-01');
+      if(!labs.length)return {skipped:true};
+      const wait=(ms=350)=>new Promise(r=>setTimeout(r,ms));let checks=0;
+      const require=(ok,m)=>{if(!ok)throw Error(m);checks++;};
+      try { for(const lab of labs){
+        const sliders=lab.querySelectorAll('input[type="range"]'), selects=lab.querySelectorAll('select'),toggles=lab.querySelectorAll('input[type="checkbox"]');
+        const set=async(i,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(sliders[i],String(v));sliders[i].dispatchEvent(new Event('input',{bubbles:true}));sliders[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const choose=async(i,v)=>{selects[i].value=String(v);selects[i].dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+        const reset=async()=>{[...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();};
+        await reset();await choose(1,0);
+        require(lab.querySelectorAll('.js-plotly-plot').length===2&&lab.querySelectorAll('svg[role="img"]').length===1,'Bode + Polar render');
+        require(Math.abs(read('1차 창 피크 진폭 · 베어링 1')-83.46)<.02&&read('2차 창 국소 피크 · 베어링 1')===3020,'cold sampled peaks');
+        await choose(0,3);require(Number.isNaN(read('2차 창 국소 피크 · 중앙'))&&Math.abs(read('운전 1X · 중앙')-18.118)<.01,'node has no second peak');
+        toggles[2].click();await wait();require(lab.querySelectorAll('.js-plotly-plot')[0].data[2].y.every(v=>v===0),'node modal component exactly zero');
+        await choose(0,0);await set(3,.2);require(read('2차 불평형 성분 AF · 베어링 1')<3,'damping AF drops');
+        await set(1,1900);require(lab.querySelector('.lab-note').textContent.includes('모드가 가까워'),'close modes notice');
+        await reset();await choose(1,1);require(Math.abs(read('200 rpm · 베어링 1')-4.179)<.01,'hot low-speed bow');
+        toggles[1].click();await wait();require(read('200 rpm · 베어링 1')===0&&read('1차 창 피크 진폭 · 베어링 1')>99,'compensation retains bow resonance');
+        toggles[0].click();await wait();require(read('200 rpm · 베어링 1')===0,'runout compensated');
+        await set(8,4);await set(9,120);require(Number(sliders[8].value)===4&&Number(sliders[9].value)===120,'bow controls');
+        await reset();await choose(1,0);await set(4,0);await set(5,0);require(read('운전 1X · 베어링 1')===0&&Number.isNaN(read('1차 불평형 성분 AF · 베어링 1')),'zero excitation');
+        await set(6,90);await set(7,180);await set(0,1000);await set(2,.1);await set(10,4000);require(Number(sliders[0].value)===1000&&Number(sliders[10].value)===4000,'rpm and angular controls');
+        await choose(2,2);require(read('운전 1X · 베어링 1')>0,'seeded noise renders');
+        await choose(0,4);require(lab.querySelectorAll('.js-plotly-plot')[0].data.length===6,'all three sensors + modal/speed markers');
+        await reset();require(![...toggles].some(t=>t.checked)&&Number(sliders[0].value)===1500,'reset controls and toggles');
+      } return {ok:true,checks};}catch(e){return {ok:false,error:e.message,checks};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('Bode 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     Bode 조작 '+smoke.checks+'항목 OK (센서·마디·감쇠·중첩·bow·보상·잡음·초기화)');
+  }
   if (jeffcottSmoke) {
     const smoke = await ev(`(async () => {
       const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-JEF-01');

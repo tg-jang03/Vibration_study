@@ -131,7 +131,7 @@ export const PARTS: Part[] = [
     title: 'GT/ST 특화 현상',
     question: '우리 기계의 기동·운전 중 현상을 어떻게 해석하나?',
     sections: [
-      { id: 'P8-1', title: '기동·정지와 임계속도 통과', status: 'planned' },
+      { id: 'P8-1', title: '기동·정지와 임계속도 통과', status: 'review', href: '/p8-1/' },
       { id: 'P8-2', title: 'Thermal bow · Turning gear · Morton effect', status: 'planned' },
       { id: 'P8-3', title: 'ST 특화', status: 'planned' },
       { id: 'P8-4', title: 'GT 특화', status: 'planned' },
