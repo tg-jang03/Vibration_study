@@ -94,7 +94,7 @@ export default function FullSpectrumLab() {
           rows={[
             { label: '+1X (+50 Hz) 정방향 반지름', value: r.af, unit: 'µm', sig: 3 },
             { label: '−1X (−50 Hz) 역방향 반지름', value: r.ab, unit: 'µm', sig: 3 },
-            ...(whirl ? [{ label: '+0.45X / −0.45X', value: r.wf, theory: 20, unit: 'µm', sig: 3 }] : []),
+            ...(whirl ? [{ label: '+0.45X (정방향)', value: r.wf, theory: 20, unit: 'µm', sig: 3 }, { label: '−0.45X (역방향)', value: r.wb, theory: 0, unit: 'µm', sig: 3 }] : []),
           ]}
         />
       }

@@ -48,9 +48,13 @@ export const P52_VALUES = (() => {
     for (let q = Math.max(0, k - Math.round(6 / S.df)); q <= Math.min(row.length - 1, k + Math.round(6 / S.df)); q++) if (row[q] > row[k]) k = q;
     let lo = k;
     let hi = k;
-    while (lo > 0 && row[lo] > row[k] / 2) lo--;
-    while (hi < row.length - 1 && row[hi] > row[k] / 2) hi++;
-    return { n, T: S.frameSeconds, df: S.df, move: RAMP_RATE * S.frameSeconds, peak: row[k] * um, width: (hi - lo) * S.df };
+    const half = row[k] / 2;
+    while (lo > 0 && row[lo] > half) lo--;
+    while (hi < row.length - 1 && row[hi] > half) hi++;
+    // 반값을 지나는 자리를 이웃 칸 사이 직선으로 보간한 반값 폭(FWHM)
+    const left = lo + (half - row[lo]) / (row[lo + 1] - row[lo]);
+    const right = hi - (half - row[hi]) / (row[hi - 1] - row[hi]);
+    return { n, T: S.frameSeconds, df: S.df, move: RAMP_RATE * S.frameSeconds, peak: row[k] * um, width: (right - left) * S.df };
   });
   return {
     rate: RAMP_RATE,
@@ -72,7 +76,8 @@ const V = P52_VALUES;
 
 // ── 그림 1: 짧은 프레임을 밀면서 FFT ──
 const env = (() => {
-  const step = RUN.fs / 10;
+  // 정수 칸 수여야 한다 (512/10 = 51.2면 인덱스가 소수가 되어 값이 NaN)
+  const step = Math.round(RUN.fs / 10);
   const t: number[] = [];
   const y: number[] = [];
   for (let i = 0; i + step <= SIG.x.length; i += step) {
@@ -151,7 +156,7 @@ const TO = [128, 512, 4096].map((n) => stft(SIG.x, RUN.fs, { n, overlap: n === 1
 
 export const tradeoff: FigureSpec = {
   id: 'fig-p5-2-3',
-  caption: `그림 3. 같은 기동(0 ~ 40 s, 1X가 1초에 ${fmt(V.rate, 3)} Hz씩 오름)을 프레임 길이만 바꿔 본 스펙트로그램. 위: N = 128(T = 0.25 s)은 시각은 촘촘하지만 Δf = 4 Hz라 줄이 굵다(20 s에서 1X 봉우리 폭 약 ${fmt(V.tradeoff[0].width, 2)} Hz). 가운데: N = 512(T = 1 s)는 줄이 가장 가늘다(${fmt(V.tradeoff[1].width, 2)} Hz). 아래: N = 4096(T = 8 s)은 Δf = 0.125 Hz지만 한 프레임 동안 1X가 ${fmt(V.tradeoff[2].move, 2)} Hz 움직여 번지고, 봉우리도 ${fmt(V.tradeoff[1].peak, 3)} → ${fmt(V.tradeoff[2].peak, 2)} µm로 낮아진다. 세로 칸(시각)도 8초로 굵다.`,
+  caption: `그림 3. 같은 기동(0 ~ 40 s, 1X가 1초에 ${fmt(V.rate, 3)} Hz씩 오름)을 프레임 길이만 바꿔 본 스펙트로그램. 위: N = 128(T = 0.25 s)은 시각은 촘촘하지만 Δf = 4 Hz라 줄이 굵다(20 s에서 1X 봉우리 폭 약 ${fmt(V.tradeoff[0].width, 2)} Hz). 가운데: N = 512(T = 1 s)는 줄이 가장 가늘다(${fmt(V.tradeoff[1].width, 2)} Hz). 아래: N = 4096(T = 8 s)은 Δf = 0.125 Hz지만 한 프레임 동안 1X가 ${fmt(V.tradeoff[2].move, 2)} Hz 움직여 번지고, 봉우리도 ${fmt(V.tradeoff[1].peak, 3)} → ${fmt(V.tradeoff[2].peak, 3)} µm로 낮아진다. 한 장이 8초를 뭉뚱그린다(칸 간격은 hop = 2초). 위 N = 128의 줄은 4 Hz 칸에 몇 장씩 머물러 계단처럼 보인다. 봉우리 폭은 반값 폭이다.`,
   panels: TO.map((S, i) => ({
     title: [`N = 128 (T = 0.25 s, Δf = 4 Hz)`, `N = 512 (T = 1 s, Δf = 1 Hz)`, `N = 4096 (T = 8 s, Δf = 0.125 Hz)`][i],
     series: [],
@@ -201,7 +206,7 @@ const whirlPts = rpmG.filter((r) => r >= RUN.whirlStartRpm);
 
 export const lineReading: FigureSpec = {
   id: 'fig-p5-2-5',
-  caption: `그림 5. 회전수–주파수 평면에서 줄의 모양 읽기. 원점에서 나오는 곧은 줄은 회전을 따라가는 성분이고, 기울기가 차수다(1X, 2X, 0.45X). 세로줄은 회전수와 상관없이 제자리인 성분이다(구조 공진, 전원 주파수의 2배 같은 전기 성분). 비스듬히 따라가던 줄이 어느 회전수부터 세로로 꺾이면(0.45X → 25 Hz) 무언가에 "잠긴" 것이다. 회전 줄이 세로줄과 만나는 곳(1X × 25 Hz = 1500 rpm, 2X × 95 Hz = 2850 rpm)이 커질 수 있는 자리다.`,
+  caption: `그림 5. 회전수–주파수 평면에서 줄의 모양 읽기. 원점에서 나오는 곧은 줄은 회전을 따라가는 성분이고, 주파수 ÷ 회전수(Hz) 비가 차수다(1X, 2X, 0.45X). 세로가 회전수인 이 그림에서는 차수가 높을수록 줄이 눕는다. 세로줄은 회전수와 상관없이 제자리인 성분이다(구조 공진, 전원 주파수의 2배 같은 전기 성분). 비스듬히 따라가던 줄이 어느 회전수부터 세로로 꺾이면(0.45X → 25 Hz) 무언가에 "잠긴" 것이다. 회전 줄이 세로줄과 만나는 곳(1X × 25 Hz = 1500 rpm, 2X × 95 Hz = 2850 rpm)이 커질 수 있는 자리다.`,
   panels: [
     {
       series: [
@@ -229,7 +234,7 @@ const tiles: FigAnnotation[] = [];
 for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) tiles.push({ type: 'rect', x1: i * 1 + 0.05, x2: i * 1 + 0.95, y1: j * 2 + 0.1, y2: j * 2 + 1.9, color: 'c1' });
 const wtiles: FigAnnotation[] = [];
 [
-  { y1: 0, y2: 1, w: 4 },
+  { y1: 0, y2: 1, w: 2 },
   { y1: 1, y2: 2, w: 2 },
   { y1: 2, y2: 4, w: 1 },
   { y1: 4, y2: 8, w: 0.5 },

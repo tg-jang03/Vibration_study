@@ -32,7 +32,7 @@ const CUTOFFS: { value: number; label: string }[] = [
   { value: 20, label: '20 Hz' },
 ];
 const PROBLEMS: { value: Problem; label: string }[] = [
-  { value: 'lf', label: '켠 직후의 낮은 주파수 흔들림 (0.01 g)' },
+  { value: 'lf', label: '켠 직후 저주파 흔들림 (0.01 g)' },
   { value: 'offset', label: '직류 오프셋 (0.0005 g)' },
   { value: 'both', label: '둘 다' },
   { value: 'none', label: '없음 (기계 성분만)' },
@@ -143,7 +143,7 @@ export default function IntegrationLab({ initialMethod = 'spectral', initialProb
         },
         {
           question: '센서 쪽 문제를 "직류 오프셋", 방식을 "시간 영역", 컷오프 없음으로 두고 속도와 변위를 차례로 보세요. 그다음 컷오프 5 Hz를 걸어 보세요.',
-          answer: '속도는 1초에 4.9 mm/s씩 떠내려가 2초에 9.8 mm/s, 변위는 mm 단위까지 벌어집니다(실제 변위는 30 µm 남짓). 5 Hz 고역 통과를 먼저 걸면 둘 다 실제 값 근처에 머뭅니다. 주파수 영역 적분은 DC bin을 0으로 두므로 오프셋에 끌려가지 않습니다.',
+          answer: '속도는 1초에 4.9 mm/s씩 떠내려가 2초에 9.8 mm/s, 변위는 mm 단위까지 벌어집니다(실제 변위는 30 µm Peak 남짓, 약 61 µm p-p). 5 Hz 고역 통과를 먼저 걸면 둘 다 실제 값 근처에 머뭅니다. 주파수 영역 적분은 DC bin을 0으로 두므로 오프셋에 끌려가지 않습니다.',
         },
       ]}
     >

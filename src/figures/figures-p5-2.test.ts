@@ -23,8 +23,9 @@ describe('P5-2 그림 숫자 (본문·캡션이 인용)', () => {
 
   it('그림 3: 프레임 길이별 20 s 1X 봉우리 폭·높이', () => {
     const [a, b, c] = V.tradeoff;
-    expect(a.width).toBeCloseTo(12, 6);
-    expect(b.width).toBeCloseTo(4, 6);
+    // 반값 폭(FWHM, 반값 교차점 보간): N = 128 약 8.3 Hz, 512 약 2.1 Hz (Hann 봉우리 폭 ≈ 2Δf 언저리)
+    expect(a.width).toBeCloseTo(8.3, 1);
+    expect(b.width).toBeCloseTo(2.06, 1);
     expect(c.move).toBeCloseTo(10, 10);
     expect(b.peak).toBeCloseTo(16.1, 1);
     expect(c.peak).toBeCloseTo(3.65, 2);

@@ -40,9 +40,11 @@ export default function FrfLab() {
     { x: F, y: Array.from(r.m1, db), name: 'H1', color: 'var(--plot-1)', width: 1.8 },
     { x: F, y: Array.from(r.m2, db), name: 'H2', color: 'var(--plot-2)', width: 1.6 },
   ];
+  // 위상은 −270 ~ 90°로 감아 두 공진(−180°까지 늦어짐) 사이에서 ±180° 감김 스파이크가 생기지 않게 한다 (그림 3과 같음)
+  const wrapDeg = (r: number) => ((((deg(r) + 270) % 360) + 360) % 360) - 270;
   const phaseSeries: PlotSeries[] = [
-    { x: F, y: Array.from(cxArg(TRUE_H), deg), name: '참 FRF', color: 'var(--text-muted)', dash: 'dash', width: 1.6 },
-    { x: F, y: Array.from(cxArg(r.h1), deg), name: 'H1 위상', color: 'var(--plot-1)', width: 1.6 },
+    { x: F, y: Array.from(cxArg(TRUE_H), wrapDeg), name: '참 FRF', color: 'var(--text-muted)', dash: 'dash', width: 1.6 },
+    { x: F, y: Array.from(cxArg(r.h1), wrapDeg), name: 'H1 위상', color: 'var(--plot-1)', width: 1.6 },
   ];
   const cohSeries: PlotSeries[] = [{ x: F, y: Array.from(r.coh), name: 'γ²', color: 'var(--plot-3)', width: 1.8 }];
 
@@ -78,7 +80,7 @@ export default function FrfLab() {
       tasks={[
         {
           question: '응답 쪽 잡음 10 %에서 M을 16 → 256으로 늘리면 반공진의 H1과 H2는 각각 참값(0.177)에 가까워지나요?',
-          answer: 'H1은 0.275 → 0.153으로 참값 쪽으로 모입니다(평균할수록 흔들림이 줄어듦). H2는 1.23 → 1.90으로 오히려 더 멀어집니다. 응답 쪽 잡음이 G_yy에 쌓이는 쏠림이라 평균으로 줄지 않기 때문입니다.',
+          answer: 'H1은 0.275 → 0.153으로 참값 쪽으로 모입니다(평균할수록 흔들림이 줄어듦). H2는 1.23 → 1.90으로 참값에 가까워지지 않습니다. 응답 쪽 잡음이 G_yy에 쌓이는 쏠림이라, 평균을 아무리 늘려도 H2는 참값이 아니라 |H|/γ² ≈ 1.6(참값의 약 9배) 근처로 모이고, 평균이 적으면 그 둘레에서 크게 흔들립니다.',
         },
         {
           question: '힘 쪽 잡음만 30 %로 두면 80 Hz의 H1은 참값(16.7)의 몇 배가 되나요? 평균 수를 바꾸면?',
@@ -87,7 +89,7 @@ export default function FrfLab() {
       ]}
     >
       <Plot series={magSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: '크기 [dB]', range: [-30, 40] }} height={240} ariaLabel="FRF 크기: 참값, H1, H2" />
-      <Plot series={phaseSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: '위상 [°]', range: [-190, 190] }} height={170} ariaLabel="FRF 위상" />
+      <Plot series={phaseSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: '위상 [°]', range: [-280, 100] }} height={170} ariaLabel="FRF 위상" />
       <Plot series={cohSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: 'γ²', range: [0, 1.05] }} height={170} ariaLabel="코히어런스" />
     </LabFrame>
   );

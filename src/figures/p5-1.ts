@@ -96,7 +96,7 @@ export const filterSpec: FigureSpec = {
         { type: 'band', x1: Math.log10(100), x2: Math.log10(450), color: 'muted', label: '전이 대역' },
         { type: 'band', x1: Math.log10(450), x2: Math.log10(3000), color: 'warn', label: '차단 대역' },
         { type: 'hline', y: -3, color: 'muted', dash: true },
-        { type: 'point', x: Math.log10(fc), y: -3, color: 'text', label: '−3 dB: f_c = 150 Hz', dx: 16, dy: 20 },
+        { type: 'point', x: Math.log10(fc), y: -3, color: 'text', label: '−3 dB: f_c = 150 Hz', dx: -150, dy: 18 },
         ...[25, 50, 75].map((f): FigAnnotation => ({ type: 'point', x: Math.log10(f), y: db(at('butterworth', f).mag[0]), color: 'c3' })),
         { type: 'text', x: Math.log10(50), y: -12, text: '1X ~ 3X: 그대로', color: 'c3', anchor: 'middle' },
         { type: 'point', x: Math.log10(300), y: V.lp.db300, color: 'c1', label: `300 Hz: ${fmt(V.lp.db300, 3)} dB`, dx: 8, dy: -6 },
@@ -133,7 +133,7 @@ const fam = V.fam;
 
 export const familyMagnitude: FigureSpec = {
   id: 'fig-p5-1-2',
-  caption: `그림 2. 같은 4차, 같은 f_c = 150 Hz라도 종류에 따라 모양이 다르다. 위(통과 대역 확대): Butterworth(파랑)는 f_c 직전까지 평평하고, Chebyshev(주황)는 1 dB 안에서 오르내리며(리플, 25 Hz에서 ${fmt(fam.chebyshev1.db25, 2)} dB), Bessel(초록)은 일찍부터 천천히 내려간다(75 Hz에서 이미 ${fmt(fam.bessel.db75, 2)} dB). 아래(차단 대역): 맞물림 500 Hz를 Chebyshev는 ${fmt(fam.chebyshev1.db500, 3)} dB, Butterworth는 ${fmt(fam.butterworth.db500, 3)} dB, Bessel은 ${fmt(fam.bessel.db500, 3)} dB만 깎는다. 가파르게 깎을수록 통과 대역이 덜 평평하다.`,
+  caption: `그림 2. 같은 4차, 같은 f_c = 150 Hz라도 종류에 따라 모양이 다르다. 위(통과 대역 확대): Butterworth(파랑)는 f_c 직전까지 평평하고, Chebyshev(주황)는 1 dB 안에서 오르내리며(리플, 25 Hz에서 ${fmt(fam.chebyshev1.db25, 2)} dB), Bessel(초록)은 일찍부터 천천히 내려간다(75 Hz에서 이미 ${fmt(fam.bessel.db75, 2)} dB). 아래(차단 대역): 맞물림 500 Hz를 Chebyshev는 ${fmt(fam.chebyshev1.db500, 3)} dB, Butterworth는 ${fmt(fam.butterworth.db500, 3)} dB, Bessel은 ${fmt(fam.bessel.db500, 3)} dB만 깎는다. Chebyshev는 가파름 대신 통과 대역의 리플을, Bessel은 고른 늦음 대신 일찍 처지는 통과 대역과 완만한 기울기를 내준다(Chebyshev의 f_c는 리플 끝인 −1 dB 점이고, −3 dB 점은 158 Hz다).`,
   panels: [
     {
       title: '통과 대역 가까이 (세로 확대)',
@@ -152,7 +152,9 @@ export const familyMagnitude: FigureSpec = {
       series: FAMS.map((f, i) => ({ x: fWide.map(Math.log10), y: respWide[i].mag.map(db), color: f.color, width: 2, label: f.label })),
       annotations: [
         { type: 'vline', x: Math.log10(500), color: 'warn', dash: true, label: '맞물림 500 Hz' },
-        ...FAMS.map((f): FigAnnotation => ({ type: 'point', x: Math.log10(500), y: fam[f.type].db500, color: f.color, label: `${fmt(fam[f.type].db500, 3)} dB`, dx: 8, dy: 4 })),
+        // 500 Hz 점의 값은 선이 지나지 않는 오른쪽 위(1.4 kHz 둘레)에 같은 색 글자로 모아 적는다
+        ...FAMS.map((f): FigAnnotation => ({ type: 'point', x: Math.log10(500), y: fam[f.type].db500, color: f.color })),
+        ...FAMS.map((f, i): FigAnnotation => ({ type: 'text', x: Math.log10(1050), y: -8 - 9 * i, text: `500 Hz: ${fmt(fam[f.type].db500, 3)} dB`, anchor: 'start', color: f.color })),
       ],
       x: { range: [Math.log10(50), Math.log10(2000)], ...logTicks([50, 100, 150, 300, 500, 1000, 2000]), label: '주파수 [Hz] (로그 눈금)' },
       y: { range: [-80, 6], ticks: [-80, -60, -40, -20, 0], label: '크기 [dB]' },
@@ -168,7 +170,7 @@ const respPh = FAMS.map((f) => demoResponse(choice(f.type), fPh));
 
 export const familyPhase: FigureSpec = {
   id: 'fig-p5-1-3',
-  caption: `그림 3. 같은 세 필터의 위상(위)과 군지연(아래). 위상은 주파수가 오를수록 더 늦어진다: Butterworth는 1X(25 Hz)에서 ${fmt(-fam.butterworth.ph25, 3)}°, 3X(75 Hz)에서 ${fmt(-fam.butterworth.ph75, 3)}° 늦다. 군지연은 그 늦음을 시간으로 바꾼 것으로, 성분마다 몇 ms 늦게 나오는지다. Bessel(초록)은 통과 대역에서 ${fmt(fam.bessel.gd25, 3)} ms로 거의 평평해 모든 성분이 같이 늦고, Butterworth(파랑)는 ${fmt(fam.butterworth.gd25, 3)} → ${fmt(fam.butterworth.gdFc, 3)} ms, Chebyshev(주황)는 f_c 근처에서 ${fmt(fam.chebyshev1.gdFc, 2)} ms까지 솟는다.`,
+  caption: `그림 3. 같은 세 필터의 위상(위)과 군지연(아래). 위상은 주파수가 오를수록 더 늦어진다: Butterworth는 1X(25 Hz)에서 ${fmt(-fam.butterworth.ph25, 3)}°, 3X(75 Hz)에서 ${fmt(-fam.butterworth.ph75, 3)}° 늦다. 군지연은 위상이 주파수에 따라 늦어지는 기울기로, 이웃 성분들의 묶음(파형의 덩어리)이 몇 ms 늦게 나오는지다(성분 하나의 늦음은 위상 지연). Bessel(초록)은 통과 대역에서 ${fmt(fam.bessel.gd25, 3)} ms로 거의 평평해 모든 성분이 같이 늦고, Butterworth(파랑)는 ${fmt(fam.butterworth.gd25, 3)} ms에서 f_c의 ${fmt(fam.butterworth.gdFc, 3)} ms로(최대 4.16 ms), Chebyshev(주황)는 f_c에서 ${fmt(fam.chebyshev1.gdFc, 2)} ms(최대 약 8.7 ms)로 솟는다.`,
   panels: [
     {
       title: '위상 (늦은 쪽이 아래)',
@@ -183,7 +185,7 @@ export const familyPhase: FigureSpec = {
       height: 190,
     },
     {
-      title: '군지연: 그 주파수의 성분이 몇 ms 늦게 나오나',
+      title: '군지연: 이웃 성분들의 묶음이 몇 ms 늦게 나오나',
       series: FAMS.map((f, i) => ({ x: fPh, y: respPh[i].groupDelay.map((g) => g * 1e3), color: f.color, width: 2, label: f.label })),
       annotations: [
         { type: 'vline', x: 25, color: 'muted', dash: true },
@@ -218,7 +220,7 @@ const edgeLine = (type: DemoFilter) => edge.lines.find((l) => l.type === type)!.
 
 export const squareEdgeFig: FigureSpec = {
   id: 'fig-p5-1-4',
-  caption: `그림 4. 사각파(10 Hz)의 모서리를 같은 4차, f_c = 150 Hz 필터에 통과시킨 결과. 회색이 입력이다. 위: Butterworth(파랑)는 모서리 뒤에서 ${fmt(V.overshoot.butterworth, 3)} % 넘쳤다가 출렁이며 자리 잡고, Bessel(초록)은 ${fmt(V.overshoot.bessel, 2)} %로 거의 넘치지 않는다. 아래: Chebyshev(주황)는 ${fmt(V.overshoot.chebyshev1, 3)} %로 더 크게 출렁이고, 짝수 차수라 리플만큼 낮은 0.89(−1 dB)에 자리 잡는다. FIR(보라, 탭 ${FLT_DEMO.firTaps}개)은 출렁임이 모서리 앞뒤로 대칭이고, 전체가 정확히 ${fmt(V.firDelay, 3)} ms 늦다. 넘침과 출렁임은 성분마다 늦는 시간이 달라서(그림 3) 생긴다.`,
+  caption: `그림 4. 사각파(10 Hz)의 모서리를 같은 4차, f_c = 150 Hz 필터에 통과시킨 결과. 회색이 입력이다. 위: Butterworth(파랑)는 모서리 뒤에서 ${fmt(V.overshoot.butterworth, 3)} % 넘쳤다가 출렁이며 자리 잡고, Bessel(초록)은 ${fmt(V.overshoot.bessel, 2)} %로 거의 넘치지 않는다. 아래: Chebyshev(주황)는 ${fmt(V.overshoot.chebyshev1, 3)} %로 더 크게 출렁이고, 짝수 차수라 리플만큼 낮은 0.89(−1 dB)에 자리 잡는다. FIR(보라, 탭 ${FLT_DEMO.firTaps}개)은 출렁임이 모서리 앞뒤로 대칭이고, 전체가 정확히 ${fmt(V.firDelay, 3)} ms 늦다. 넘침과 출렁임은 f_c 근처를 가파르게 자를수록(크기), 늦음이 성분마다 다를수록(위상, 그림 3) 커진다. FIR은 늦음이 고르지만 가파르게 잘라 약 5.9 % 넘친다.`,
   panels: [
     {
       title: 'Butterworth vs Bessel',
@@ -445,7 +447,7 @@ const thin = (y: ArrayLike<number>, k: number) => Array.from({ length: Math.ceil
 
 export const driftFig: FigureSpec = {
   id: 'fig-p5-1-9',
-  caption: `그림 9. 같은 기계 가속도에 직류 오프셋 ${INT_DEMO.offsetG} g(${fmt(INT_DEMO.offsetG * INT_DEMO.g * 1e3, 3)} mm/s²)만 있을 때, 샘플을 차례로 더해(누적합) 적분했다. 위: 오프셋이 속도를 1초에 ${fmt(V.offsetV2 / 2, 3)} mm/s씩 끌고 가서 2초 동안 ${fmt(V.drift0.v2, 3)} mm/s 떠내려간다(주황). 누적합은 처음 속도를 모르므로 곡선 전체가 약 ${fmt(V.vStart, 2)} mm/s 아래로 밀려 있기도 하다. 5 Hz 고역 통과를 먼저 걸면(파랑) 실제 속도 범위(±${fmt(INT_DEMO.lines.reduce((s, l) => s + l.v, 0) * 1e3, 2)} mm/s) 근처에 머문다. 아래: 한 번 더 적분한 변위는 두 오차가 다시 쌓여 2초 안에 ${fmt(V.drift0.dMax, 2)} mm까지 벗어나지만(실제 변위는 30 µm 남짓), 고역 통과를 먼저 건 쪽은 1초 뒤부터 ${fmt(V.drift5.dLate, 2)} µm 안이다.`,
+  caption: `그림 9. 같은 기계 가속도에 직류 오프셋 ${INT_DEMO.offsetG} g(${fmt(INT_DEMO.offsetG * INT_DEMO.g * 1e3, 3)} mm/s²)만 있을 때, 샘플을 차례로 더해(누적합) 적분했다. 위: 오프셋이 속도를 1초에 ${fmt(V.offsetV2 / 2, 3)} mm/s씩 끌고 가서 2초 동안 ${fmt(V.drift0.v2, 3)} mm/s 떠내려간다(주황). 누적합은 처음 속도를 모르므로 곡선 전체가 약 ${fmt(V.vStart, 2)} mm/s 아래로 밀려 있기도 하다. 5 Hz 고역 통과를 먼저 걸면(파랑) 실제 속도 범위(±${fmt(INT_DEMO.lines.reduce((s, l) => s + l.v, 0) * 1e3, 2)} mm/s) 근처에 머문다. 아래: 한 번 더 적분한 변위는 두 오차가 다시 쌓여 2초 안에 ${fmt(V.drift0.dMax, 3)} mm까지 벗어나지만(실제 변위는 30 µm Peak 남짓, 약 61 µm p-p), 고역 통과를 먼저 건 쪽은 1초 뒤부터 ${fmt(V.drift5.dLate, 2)} µm 안이다.`,
   panels: [
     {
       title: '속도 (가속도를 한 번 누적합)',

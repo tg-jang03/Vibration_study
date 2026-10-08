@@ -1,7 +1,38 @@
 import { describe, expect, it } from 'vitest';
 import * as F from './p5-1';
+import { designIir, iirResponse } from '../lib/dsp/filter';
+import { FLT_DEMO } from '../lib/filterDemo';
 
 const V = F.P51_VALUES;
+
+describe('P5-1 본문 보충 숫자 (재검토 2026-10-08)', () => {
+  const fs = FLT_DEMO.fs;
+  const freqs = Array.from({ length: 2401 }, (_, i) => 1 + i * 0.1); // 1 ~ 241 Hz
+  const resp = (family: 'butterworth' | 'chebyshev1') => iirResponse(designIir({ family, order: 4, fc: 150, fs }), freqs);
+  it('Chebyshev의 f_c는 −1 dB(리플 끝), −3 dB 점은 약 158 Hz', () => {
+    const r = resp('chebyshev1');
+    const k = r.mag.findIndex((m, i) => freqs[i] > 150 && 20 * Math.log10(m) < -3);
+    expect(Math.round(freqs[k])).toBe(158);
+  });
+  it('군지연: Butterworth f_c 3.94 ms·최대 4.16 ms, Chebyshev 최대 약 8.7 ms, f_c의 위상 지연 3.33 ms', () => {
+    const b = resp('butterworth');
+    const c = resp('chebyshev1');
+    const kfc = freqs.findIndex((f) => Math.abs(f - 150) < 1e-9);
+    expect(b.groupDelay[kfc] * 1000).toBeCloseTo(3.94, 2);
+    expect(Math.max(...b.groupDelay) * 1000).toBeCloseTo(4.16, 1);
+    expect(Math.max(...c.groupDelay) * 1000).toBeGreaterThan(8.5);
+    expect(Math.max(...c.groupDelay) * 1000).toBeLessThan(8.8);
+    expect((-b.phase[kfc] / (2 * Math.PI * 150)) * 1000).toBeCloseTo(3.33, 2);
+  });
+  it('두 번 거르기: 설계 f_c에서 −6 dB, −3 dB 점은 약 0.90 f_c(134 Hz)', () => {
+    const b = resp('butterworth');
+    const k = b.mag.findIndex((m) => 40 * Math.log10(m) < -3);
+    expect(Math.round(freqs[k])).toBe(134);
+  });
+  it('FIR(101탭)도 사각파 모서리에서 약 5.9 % 넘친다', () => {
+    expect(V.overshoot.fir).toBeCloseTo(5.9, 0);
+  });
+});
 
 describe('P5-1 그림 숫자 (본문·캡션이 인용)', () => {
   it('그림 1: 4차 Butterworth f_c = 150 Hz, 2차 고역 통과 5 Hz', () => {

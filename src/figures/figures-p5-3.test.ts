@@ -5,6 +5,23 @@ import { ANTI_F, FREQS, frfFrames } from '../lib/xchDemo';
 
 const V = F.P53_VALUES;
 
+describe('P5-3 본문 해석: 평균을 많이 해도 H2는 참값이 아니라 약 1.6, 코히어런스는 약 0.11로 모인다', () => {
+  it('응답 쪽 잡음 10 %, 1024장: 반공진 H2 약 1.6(참값의 약 9배), γ² 약 0.11', () => {
+    const { x, y } = frfFrames({ frames: 1024, inputNoise: 0, outputNoise: 0.1 });
+    const g = averageCross(x, y);
+    const k = FREQS.indexOf(ANTI_F);
+    const h2 = cxAbs(frfH2(g))[k];
+    const h1 = cxAbs(frfH1(g))[k];
+    expect(h2).toBeGreaterThan(1.4);
+    expect(h2).toBeLessThan(1.9);
+    expect(h2 / V.trueAnti).toBeGreaterThan(8);
+    expect(h2 / V.trueAnti).toBeLessThan(11);
+    // γ² = |H1| / |H2|
+    expect(h1 / h2).toBeGreaterThan(0.08);
+    expect(h1 / h2).toBeLessThan(0.14);
+  });
+});
+
 describe('P5-3 그림 숫자 (본문·캡션이 인용)', () => {
   it('받침대 예시: 반공진 106 Hz, 참 FRF 16.7 / 0.177 / 25.0', () => {
     expect(V.anti).toBe(106);

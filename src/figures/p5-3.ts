@@ -104,15 +104,16 @@ const YR2 = (() => {
 
 export const crossArrows: FigureSpec = {
   id: 'fig-p5-3-2',
-  caption: `그림 2. 프레임 16장 각각의 "응답 ÷ 힘"을 화살표로 그렸다(회색, 가로 = 실수부, 세로 = 허수부). 위(80 Hz 공진): 화살표가 한 방향(약 −90°)으로 모여 평균(주황)이 참값(초록 점)과 겹친다. 아래(${V.anti} Hz 반공진): 응답이 작아 잡음이 대부분이라 화살표가 사방으로 흩어진다(그림 밖으로 나가는 화살표는 끝을 잘랐다). 교차 스펙트럼은 힘을 위상 기준으로 삼아 이 화살표들을 평균하는 것이다 — P2-6의 벡터 평균과 같고, 트리거가 필요 없다.`,
+  caption: `그림 2. 프레임 16장 각각의 "응답 ÷ 힘"을 화살표로 그렸다(회색, 가로 = 실수부, 세로 = 허수부). 위(80 Hz 공진): 화살표가 한 방향(약 −90°)으로 모여 평균(주황)이 참값(초록 점)과 겹친다. 아래(${V.anti} Hz 반공진): 응답이 작아 잡음이 대부분이라 화살표가 사방으로 흩어진다(그림 밖으로 나가는 화살표는 끝을 잘랐다). 교차 스펙트럼은 힘을 위상 기준으로 삼아 이 화살표들을 (힘이 큰 프레임에 더 큰 무게 |X|²를 주어) 평균하는 것이다 — P2-6의 벡터 평균과 같고, 트리거가 필요 없다.`,
   panels: [
     {
       title: '80 Hz (공진)',
       series: [],
       annotations: [
         ...arrows(K80, 'muted', XR1, YR1),
-        { type: 'arrow', x1: 0, y1: 0, x2: h1_16.re[K80], y2: h1_16.im[K80], color: 'warn', double: false, label: `평균 ${fmt(Math.hypot(h1_16.re[K80], h1_16.im[K80]), 3)}` },
-        { type: 'point', x: TRUE_H.re[K80], y: TRUE_H.im[K80], color: 'c3', label: `참값 ${fmt(V.true80, 3)}`, dx: 10, dy: 4 },
+        // 평균 화살표 끝과 참값 점이 거의 겹치므로 글자 하나로 오른쪽에 둔다
+        { type: 'arrow', x1: 0, y1: 0, x2: h1_16.re[K80], y2: h1_16.im[K80], color: 'warn', double: false },
+        { type: 'point', x: TRUE_H.re[K80], y: TRUE_H.im[K80], color: 'c3', label: `평균 ${fmt(Math.hypot(h1_16.re[K80], h1_16.im[K80]), 3)} · 참값 ${fmt(V.true80, 3)}`, dx: 48, dy: 4 },
       ],
       x: { range: XR1, ticks: [-30, -20, -10, 0, 10, 20, 30], label: '실수부' },
       y: { range: YR1, ticks: [-15, -10, -5, 0], label: '허수부' },
@@ -124,7 +125,8 @@ export const crossArrows: FigureSpec = {
       annotations: [
         ...arrows(KA, 'muted', XR2, YR2),
         { type: 'arrow', x1: 0, y1: 0, x2: h1_16.re[KA], y2: h1_16.im[KA], color: 'warn', double: false },
-        { type: 'point', x: TRUE_H.re[KA], y: TRUE_H.im[KA], color: 'c3', label: `참값 ${fmt(V.trueAnti, 2)}`, dx: 10, dy: 4 },
+        { type: 'point', x: TRUE_H.re[KA], y: TRUE_H.im[KA], color: 'c3' },
+        { type: 'text', x: XR2[1] * 0.95, y: YR2[0] * 0.85, text: `초록 점 = 참값 ${fmt(V.trueAnti, 2)}, 주황 = 평균`, anchor: 'end', color: 'c3' },
       ],
       x: { range: XR2, ticks: [-3, -2, -1, 0, 1, 2, 3], label: '실수부' },
       y: { range: YR2, ticks: [-0.5, 0, 0.5], label: '허수부' },
@@ -137,7 +139,7 @@ export const crossArrows: FigureSpec = {
 const dbs = (a: { re: Float64Array; im: Float64Array }) => Array.from(cxAbs(a), db);
 export const h1h2: FigureSpec = {
   id: 'fig-p5-3-3',
-  caption: `그림 3. 같은 받침대를 64장 평균해 H1(파랑)과 H2(주황)로 추정했다. 위(응답 쪽 잡음 10 %): H1은 참 FRF(회색 점선)를 따라가고(반공진 근처는 흔들리지만 한쪽으로 쏠리지 않는다), H2는 응답이 작은 반공진에서 ${fmt(V.out.h2Anti, 3)}(참값 ${fmt(V.trueAnti, 3)})로 크게 부푼다. 가운데(힘 쪽 잡음 30 %): 이번에는 H2가 맞고, H1이 모든 주파수에서 1/(1 + 0.3²) = 0.92배로 낮다(80 Hz: ${fmt(V.inp.h1_80, 3)}, 참값 ${fmt(V.true80, 3)}). 아래: H1의 위상(응답 쪽 잡음 경우). 공진마다 위상이 180°씩 늦어지고(P1-4), 반공진에서 다시 돌아오며, 잡음이 큰 반공진 근처만 흔들린다.`,
+  caption: `그림 3. 같은 받침대를 64장 평균해 H1(파랑)과 H2(주황)로 추정했다. 위(응답 쪽 잡음 10 %): H1은 참 FRF(회색 점선)를 따라가고(반공진 근처는 흔들리지만 한쪽으로 쏠리지 않는다), H2는 응답이 작은 반공진에서 ${fmt(V.out.h2Anti, 3)}(참값 ${fmt(V.trueAnti, 3)})로 크게 부푼다(평균을 늘려도 참값이 아니라 약 1.6 둘레로 모인다). 가운데(힘 쪽 잡음 30 %): 이번에는 H2가 맞고, H1이 모든 주파수에서 1/(1 + 0.3²) = 0.92배로 낮다(80 Hz: ${fmt(V.inp.h1_80, 3)}, 참값 ${fmt(V.true80, 3)}). 아래: H1의 위상(응답 쪽 잡음 경우). 공진마다 위상이 180°씩 늦어지고(P1-4), 반공진에서 다시 돌아오며, 잡음이 큰 반공진 근처만 흔들린다.`,
   panels: [
     {
       title: '응답 쪽 잡음 10 %',
@@ -187,7 +189,7 @@ const C256 = Array.from(est(256, 0, 0.1).coh);
 
 export const coherenceFig: FigureSpec = {
   id: 'fig-p5-3-4',
-  caption: `그림 4. 같은 측정(응답 쪽 잡음 10 %)의 코히어런스 γ². 한 장(M = 1, 회색)은 모든 주파수에서 정확히 1이라 아무것도 알려 주지 않는다. 16장(주황)과 256장(파랑)으로 평균하면 공진 근처는 1에 가깝고(80 Hz: ${fmt(V.coh.m256_80, 3)}), 응답이 작은 반공진에서는 ${fmt(V.coh.m16, 2)} → ${fmt(V.coh.m256, 2)}로 떨어진다. 그 주파수의 응답은 힘으로 설명되지 않는 몫(잡음)이 크다는 뜻이다.`,
+  caption: `그림 4. 같은 측정(응답 쪽 잡음 10 %)의 코히어런스 γ². 한 장(M = 1, 회색)은 모든 주파수에서 정확히 1이라 아무것도 알려 주지 않는다. 16장(주황)과 256장(파랑)으로 평균하면 공진 근처는 1에 가깝고(80 Hz: ${fmt(V.coh.m256_80, 3)}), 응답이 작은 반공진에서는 16장 ${fmt(V.coh.m16, 2)}, 256장 ${fmt(V.coh.m256, 2)}로 낮다(이론값 약 0.11). 그 주파수의 응답은 힘으로 설명되지 않는 몫(잡음)이 크다는 뜻이다. 평균이 적으면 코히어런스는 실제보다 높게, 크게 흔들려 나온다.`,
   panels: [
     {
       series: [
@@ -247,7 +249,10 @@ const fullPanel = (o: OrbitOptions, title: string, last = false, note?: string) 
         { type: 'vline', x: 0, color: 'muted' },
         { type: 'text', x: -FMAX + 4, y: 56, text: '← 역방향 (시계)', anchor: 'start', color: 'muted' },
         { type: 'text', x: 4, y: 56, text: '정방향 (반시계) →', anchor: 'start', color: 'muted' },
-        ...(note ? [{ type: 'text', x: -FMAX + 4, y: 44, text: note, anchor: 'start', color: 'warn', bold: true } as FigAnnotation] : []),
+        // 오빗이 도는 방향: 시작점에서 한 바퀴의 1/10만큼 나아간 곳까지
+        { type: 'arrow', x1: ox[0], y1: oy[0], x2: ox[Math.round(per / 10)], y2: oy[Math.round(per / 10)], color: 'c3', double: false },
+        // 가짜 역방향 글자는 −1X(−50 Hz)의 작은 막대 바로 위에
+        ...(note ? [{ type: 'text', x: -ORBIT_DEMO.f1, y: 12, text: note, anchor: 'middle', color: 'warn', bold: true } as FigAnnotation] : []),
       ] as FigAnnotation[],
       x: { range: [-FMAX, FMAX] as [number, number], ticks: [-100, -50, 0, 50, 100], ...(last ? { label: '주파수 [Hz] (− = 역방향)' } : {}) },
       y: { range: yr, ticks: [0, 25, 50], label: '[µm]' },
@@ -266,7 +271,7 @@ export const FULL_VALUES = CASES.map((c) => ({ af: c.af, ab: c.ab }));
 
 export const fullIdea: FigureSpec = {
   id: 'fig-p5-3-5',
-  caption: `그림 5. X·Y 센서가 모두 1X(50 Hz)를 진폭 50 µm로 읽는 네 경우. 둘의 반쪽 스펙트럼은 네 경우 모두 50 Hz에 50 µm 막대 하나씩으로 똑같다. 다른 것은 X와 Y의 위상차뿐이다. z = x + jy를 FFT한 Full spectrum은 오른쪽(+)에 반시계로 도는 원, 왼쪽(−)에 시계로 도는 원의 반지름을 보인다(오빗은 초록, 점은 시작). 원은 한쪽에만(${fmt(FULL_VALUES[0].af, 3)} µm), 타원은 양쪽에 다른 크기(${fmt(FULL_VALUES[1].af, 3)}·${fmt(FULL_VALUES[1].ab, 3)} µm), 직선은 양쪽이 같은 크기(${fmt(FULL_VALUES[2].af, 3)} µm)로 선다 — P4-2의 A_f·A_b를 데이터에서 계산한 것이다.`,
+  caption: `그림 5. X·Y 센서가 모두 1X(50 Hz)를 진폭 50 µm로 읽는 네 경우. 둘의 반쪽 스펙트럼은 네 경우 모두 50 Hz에 50 µm 막대 하나씩으로 똑같다. 다른 것은 X와 Y의 위상차뿐이다. z = x + jy를 FFT한 Full spectrum은 오른쪽(+)에 반시계로 도는 원, 왼쪽(−)에 시계로 도는 원의 반지름을 보인다(오빗은 초록, 점은 시작, 화살표는 도는 방향). 원은 한쪽에만(${fmt(FULL_VALUES[0].af, 3)} µm), 타원은 양쪽에 다른 크기(${fmt(FULL_VALUES[1].af, 3)}·${fmt(FULL_VALUES[1].ab, 3)} µm), 직선은 양쪽이 같은 크기(${fmt(FULL_VALUES[2].af, 3)} µm)로 선다 — P4-2의 정방향·역방향 반지름 Af·Ab를 데이터에서 계산한 것이다.`,
   panels: CASES.map((c) => c.panel),
 };
 
