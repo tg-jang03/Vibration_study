@@ -18,12 +18,26 @@ describe('P5-7 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(f(ms(V.base.topQuefrency), 3)).toBe('40');
   });
 
-  it('리프터링: 피니언 무리 → 625 Hz 15.0 dB 낮아짐, 616.2 Hz는 2 dB 안', () => {
+  it('라모닉: 200·240 ms가 40 ms와 거의 같은 높이 (±5 %)', () => {
+    const r = V.rahmonics;
+    expect(Math.abs(r[4] / r[0] - 1)).toBeLessThan(0.05);
+    expect(Math.abs(r[5] / r[0] - 1)).toBeLessThan(0.05);
+  });
+
+  it('리프터링: 피니언 무리 → 625 Hz 15.0 dB 낮아짐, 616.2 Hz는 2 dB 안. 기어 무리 → 616.2 Hz 약 7 dB, 625 Hz 그대로', () => {
     expect(f(dB(V.pinionCut.sb1[0]) - dB(V.pinionCut.sb1[1]), 3)).toBe('15');
     expect(Math.abs(dB(V.pinionCut.sb2[1]) - dB(V.pinionCut.sb2[0]))).toBeLessThan(2);
     const g = analyzeGear(D, 'gear');
-    expect(dB(g.sb2[0]) - dB(g.sb2[1])).toBeGreaterThan(5);
-    expect(Math.abs(dB(g.sb1[1]) - dB(g.sb1[0]))).toBeLessThan(1);
+    expect(Math.round(dB(g.sb2[0]) - dB(g.sb2[1]))).toBe(7);
+    expect(Math.abs(dB(g.sb1[1]) - dB(g.sb1[0]))).toBeLessThan(0.2);
+  });
+
+  it('잡음 0.2 g: 가장 큰 봉우리가 41.7 ms 같은 엉뚱한 자리로', () => {
+    expect(f(ms(analyzeGear({ ...D, noise: 0.2 * G }).topQuefrency), 3)).toBe('41.7');
+  });
+
+  it('추세: 첨도 최대는 약 15 (진행 55 % 근처)', () => {
+    expect(f(V.kPeak, 2)).toBe('15');
   });
 
   it('랩: 피니언 0이면 40 ms 봉우리가 사라지고 가장 큰 봉우리는 185 ms(기어 3배), 잡음 0.2 g → 0.024, 0.01 g → 0.14', () => {
@@ -34,15 +48,20 @@ describe('P5-7 본문·그림·랩 해석 숫자 (PageGuide §5-5)', () => {
     expect(f(analyzeGear({ ...D, noise: 0.01 * G }).peak1, 2)).toBe('0.14');
   });
 
-  it('그림 3: 기어 신호 자기상관 R(1.67 ms) 0.966, R(20 ms) 0.974, R(40 ms) 0.952', () => {
+  it('그림 5: 기어 신호 자기상관 R(1.67 ms) 0.966, R(20 ms) 0.974, R(40 ms) 0.952', () => {
     expect(f(V.base.acf[Math.round(GEAR.fs / 600)], 3)).toBe('0.966');
     expect(f(V.base.acf[Math.round(0.02 * GEAR.fs)], 3)).toBe('0.974');
     expect(f(V.base.acf[Math.round(0.04 * GEAR.fs)], 3)).toBe('0.952');
   });
 
-  it('그림 5: 포락선 자기상관 첫 봉우리 5.55 ms → 약 180 Hz', () => {
+  it('그림 4: 포락선 자기상관 첫 봉우리 5.55 ms → 약 180 Hz', () => {
     expect(f(V.envAcf.firstPeakMs, 3)).toBe('5.55');
     expect(Math.round(1000 / V.envAcf.firstPeakMs)).toBe(180);
+    // 다섯째 봉우리 27.89 ms ÷ 5 → 179.3 Hz (표본 간격 오차가 1/5)
+    let i5 = -1;
+    V.envAcf.lags.forEach((l, i) => { if (l > 27 && l < 29 && (i5 < 0 || V.envAcf.r[i] > V.envAcf.r[i5])) i5 = i; });
+    expect(f(V.envAcf.lags[i5], 4)).toBe('27.89');
+    expect(f(5000 / V.envAcf.lags[i5], 4)).toBe('179.3');
   });
 
   it('그림 6: 정현파 CF 1.41 K 1.5, 잡음 3.39·3.02, 충격 6.42·17.9 S 0.83, 눌린 정현파 1.62·1.51 S −0.42', () => {

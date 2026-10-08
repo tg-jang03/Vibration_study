@@ -39,7 +39,7 @@ export default function FeatureLab({ initial = 0.3 }: { initial?: number }) {
         <Formula display tex={`\\mathrm{CF} = \\frac{\\text{Peak}}{\\text{RMS}} = \\frac{${texNumber(f.peak / G, 3)}}{${texNumber(f.rms / G, 3)}} = ${texNumber(f.crest, 3)},\\qquad K = \\frac{E[(x-\\mu)^4]}{\\sigma^4} = ${texNumber(f.kurtosis, 3)}`} />
         <p>지금 모델: 결함 충격 {texNumber(m.impact / G, 2)} g(BPFO 박자), 여기저기 생기는 충격 초당 {Math.round(m.spreadRate)}번, 넓은 대역 잡음 σ {texNumber(m.noise / G, 2)} g.</p>
       </>}
-      readouts={<ReadoutTable caption="읽음값 (이론 열 = 건전할 때)" rows={[
+      readouts={<ReadoutTable caption="읽음값 (건전할 때와 비교)" theoryLabel="건전할 때" errorLabel="건전 대비 변화" rows={[
         { label: 'RMS', value: f.rms / G, theory: healthy.rms / G, unit: 'g', sig: 3 },
         { label: 'Peak', value: f.peak / G, theory: healthy.peak / G, unit: 'g', sig: 3 },
         { label: 'Crest factor', value: f.crest, theory: healthy.crest, sig: 3 },
@@ -50,7 +50,7 @@ export default function FeatureLab({ initial = 0.3 }: { initial?: number }) {
         { question: '진행 0 → 30 %로 옮기면 RMS와 첨도는 각각 몇 배가 되나요?',
           answer: 'RMS는 0.087 → 0.17 g로 약 2배, 첨도는 2.36 → 10.7로 약 4.5배입니다. 초기에는 드문 충격이 커지므로 첨도와 CF가 RMS보다 먼저, 크게 반응합니다.' },
         { question: '진행 55 %와 100 %의 첨도를 비교하세요. 100 %의 첨도만 보고 "좋아졌다"고 해도 되나요?',
-          answer: '55 %에서 약 14.8, 100 %에서 약 3.4로 내려옵니다. 손상이 넓어져 충격이 자주 겹치면 신호가 정규 잡음처럼 되기 때문입니다. 같은 동안 RMS는 0.31 → 0.82 g로 계속 올랐으므로 좋아진 것이 아닙니다 — 특징량 하나가 아니라 여러 개의 추세를 함께 봅니다.' },
+          answer: '55 %에서 약 14.8(이 근처가 가장 큼), 100 %에서 약 3.4로 내려옵니다. 손상이 넓어져 충격이 자주 겹치면 신호가 정규 잡음처럼 되기 때문입니다. 같은 동안 RMS는 0.31 → 0.82 g로 계속 올랐으므로 좋아진 것이 아닙니다 — 특징량 하나가 아니라 여러 개의 추세를 함께 봅니다.' },
         { question: '진행 100 % 근처에서 슬라이더를 조금씩 움직이면 CF가 들쭉날쭉합니다. 왜일까요?',
           answer: 'Peak는 표본 하나(가장 큰 값)로 정해지므로 잡음의 우연한 봉우리에 흔들립니다. RMS와 첨도는 모든 표본을 평균하므로 더 안정적입니다.' },
       ]}
