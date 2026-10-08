@@ -29,6 +29,7 @@ const centerlineSmoke = flag('centerline-smoke');
 const stabilitySmoke = flag('stability-smoke');
 const waveformSmoke = flag('waveform-smoke');
 const trendSmoke = flag('trend-smoke');
+const thermalSmoke = flag('thermal-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
@@ -257,6 +258,45 @@ for (const p of paths) {
     if (smoke?.ok === false || !smoke) errors.push('시간파형 조작 검사: ' + (smoke?.error ?? '평가 실패'));
     if (smoke?.ok) console.log('     시간파형 조작 ' + smoke.checks + '항목 OK (7패턴·사건·잡음·퀴즈)');
   }
+  if (thermalSmoke) {
+    const smoke = await ev(`(async () => {
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-TRND-01');
+      if(!labs.length)return {skipped:true};
+      let checks=0;const require=(v,m)=>{if(!v)throw Error(m);checks++;};
+      const wait=()=>new Promise(r=>setTimeout(r,260));
+      try {
+        for(const lab of labs){
+          const select=lab.querySelector('select'),initial=select.value;
+          const choose=async v=>{select.value=String(v);select.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+          const set=async(label,v)=>{const param=[...lab.querySelectorAll('.param')].find(p=>p.querySelector('label span')?.textContent===label);const input=param?.querySelector('input[type="range"]');if(!input)throw Error('조절 없음: '+label);Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,String(v));input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+          const read=label=>{const r=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return r?parseFloat(r.cells[1].textContent.replace(/,/g,'').replaceAll('−','-')):NaN;};
+          require(lab.querySelectorAll('.js-plotly-plot').length===3&&lab.querySelector('svg[role="img"]'),'3추세·Polar');
+          await choose(3);await set('선택 시각',60);await set('기준 시각',0);
+          require(Math.abs(read('열 기여 진폭 |Q|')-.5974)<.001&&Math.abs(read('1X 진폭')-20.01)<.01&&Math.abs(read('벡터 변화량 |ΔV|')-11.4)<.01,'열 휨 초기값');
+          await set('감소 시간상수 τ',60);require(Math.abs(read('열 기여 진폭 |Q|')-4.415)<.001&&Math.abs(read('1X 진폭')-20.48)<.01,'시간상수 변경');await set('감소 시간상수 τ',20);
+          await set('초기 열 기여 진폭',20);await set('초기 열 기여 지연각',170);await set('선택 시각',0);
+          require(read('1X 진폭')===0&&!Number.isFinite(read('1X 지연각 (0~360°)'))&&lab.querySelector('[role="status"]').textContent.includes('보류'),'상쇄·위상 보류');
+          require(lab.querySelectorAll('.js-plotly-plot')[2].data[0].y.some(v=>v===null||Number.isNaN(v)),'작은 진폭 위상 공백');
+          await set('초기 열 기여 진폭',0);require(read('1X 진폭')===20&&read('열 기여 진폭 |Q|')===0,'열 기여0');
+          await set('초기 열 기여 진폭',30);await set('초기 열 기여 지연각',350);require(read('1X 진폭')===50&&lab.querySelectorAll('.js-plotly-plot')[1].layout.yaxis.range[1]>50,'큰 값 축 확장');
+          await set('초기 열 기여 진폭',12);await set('초기 열 기여 지연각',80);await set('선택 시각',60);
+          await choose(4);require(Math.abs(read('열 기여 진폭 |Q|')-10)<.001&&Math.abs(read('1X 진폭')-22.36)<.01&&Math.abs(read('1X 지연각 (0~360°)')-16.57)<.01&&read('벡터 변화량 |ΔV|')===5,'Morton 기본값');
+          const phase=lab.querySelectorAll('.js-plotly-plot')[2].data[0].y.filter(Number.isFinite);require(Math.max(...phase)-Math.min(...phase)<180,'합 위상은 두 바퀴 돌지 않음');
+          await set('60분간 열 기여 증가율',0);require(read('벡터 변화량 |ΔV|')===0,'닫힌 원 끝점');
+          await set('선택 시각',15);require(read('벡터 변화량 |ΔV|')===10,'닫힌 원 중간 변화');
+          await set('선택 시각',30);require(read('벡터 변화량 |ΔV|')===0,'30분 복귀');
+          await set('열 기여 선회 주기 P',60);require(read('벡터 변화량 |ΔV|')===10,'주기60분 반대편');await set('열 기여 선회 주기 P',30);
+          await set('초기 열 기여 진폭',30);await set('60분간 열 기여 증가율',200);await set('선택 시각',60);
+          require(lab.querySelectorAll('.js-plotly-plot')[1].layout.yaxis.range[1]>read('1X 진폭')&&lab.querySelectorAll('.js-plotly-plot')[0].layout.yaxis.range[1]>read('Overall RMS'),'Morton 큰 값 축 확장');
+          await set('초기 열 기여 진폭',5);await set('60분간 열 기여 증가율',100);await choose(initial);
+        }
+        return {ok:true,checks};
+      }catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('열 벡터 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     열 벡터 조작 '+smoke.checks+'항목 OK (감소·상쇄·위상·루프·주기·범위)');
+  }
+
   if (trendSmoke) {
     const smoke = await ev(`(async () => {
       const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-TRND-01');

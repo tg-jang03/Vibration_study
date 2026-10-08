@@ -75,7 +75,7 @@ export const LABS: LabEntry[] = [
   { slug: 'full-01', id: 'LAB-FULL-01', component: 'FullSpectrumLab', part: 5, title: 'Full spectrum: 오빗과 정방향·역방향', summary: 'X·Y 진폭·위상차와 센서 오차를 바꿔 오빗 방향과 ±1X 막대를 본다.' },
   // Part 6
   { slug: 'twf-01', id: 'LAB-TWF-01', component: 'TimeWaveformLab', part: 6, title: '시간파형: 패턴을 읽고 맞히기', summary: '정현·맥놀이·AM·충격·절단·클리핑·비대칭을 비교하고, 키페이저로 사건 수를 센 뒤 패턴 퀴즈를 푼다.' },
-  { slug: 'trnd-01', id: 'LAB-TRND-01', component: 'TrendLab', part: 6, title: '같은 크기, 다른 벡터: 트렌드·APHT', summary: '위상 이동·진폭 증가·잔여 성분 증가를 Overall·APHT·Polar로 비교하고 기준과 학습용 허용 영역을 조절한다.' },
+  { slug: 'trnd-01', id: 'LAB-TRND-01', component: 'TrendLab', part: 6, title: '같은 크기, 다른 벡터: 트렌드·APHT', summary: '위상 이동·진폭/잔여 증가·열 휨 감소·Morton형 루프를 Overall·APHT·Polar로 비교하고 기준과 학습용 허용 영역을 조절한다.' },
   { slug: 'wf-01', id: 'LAB-WF-01', component: 'WaterfallLab', part: 6, title: '줄의 이동을 읽기: Waterfall·Cascade', summary: '차수 추종·잠김·고정 주파수와 회전수 유지 기록을 비교하고, X/Y의 정·역 성분을 여러 축으로 읽는다.' },
   { slug: 'orb-01', id: 'LAB-ORB-01', component: 'OrbitLab', part: 6, title: '오빗: 모양·방향·점의 시간 순서', summary: '직접·1X 오빗과 키페이저 시간 순서를 비교하고, 형태·선회 부호·비교 차수·시간 창을 바꿔 고정 점과 이동 점을 구별한다.' },
   // Part 7

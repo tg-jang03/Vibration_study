@@ -1,20 +1,32 @@
 /** P6-4 / LAB-TRND-01 정속 운전의 설명용 추세. SI(m,s,rad), 성분 진폭은 Peak. */
+import { thermalResponse, type ThermalOptions } from './thermal';
 import { phasor, subtractVectors, toRad, wrap2pi, wrapPi, type AmpLag } from '../phase';
-export type TrendScenario = 'rotate' | 'grow' | 'residual';
+export type TrendScenario = 'rotate' | 'grow' | 'residual' | 'thermal' | 'morton';
 export const TREND_LABELS: Record<TrendScenario, string> = {
   rotate: '1X 위상만 이동', grow: '1X 진폭 증가', residual: '1X 그대로·2X 증가',
+  thermal: '열 휨 기여 감소', morton: 'Morton형 열 벡터 선회',
 };
 export const PHASE_FLOOR = 1e-6; // 위상 사용 최소 진폭 예시. 규격·장비 공통값이 아님.
-export interface TrendOptions { scenario?: TrendScenario; phaseChange?: number; amplitudeGrowth?: number }
-export interface TrendSample { time: number; oneX: AmpLag; continuousLag: number; twoX: number; overall: number; oneXRms: number; notOneXRms: number }
+export interface TrendOptions { scenario?: TrendScenario; phaseChange?: number; amplitudeGrowth?: number; thermal?: ThermalOptions }
+export interface TrendSample { time: number; oneX: AmpLag; continuousLag: number; twoX: number; overall: number; oneXRms: number; notOneXRms: number; contribution?: AmpLag; baseline?: AmpLag }
 export interface Acceptance { amplitudeFraction: number; phaseHalfWidth: number; phaseFloor?: number }
 const clean = (v: number) => Math.abs(v) < 1e-12 ? 0 : v;
 const validateVector = (v: AmpLag) => {
   if (!Number.isFinite(v.amp) || v.amp < 0 || !Number.isFinite(v.lag)) throw new RangeError('invalid vector');
 };
 
-export function trendSeries({ scenario = 'rotate', phaseChange = toRad(120), amplitudeGrowth = 0.5 }: TrendOptions = {}): TrendSample[] {
-  if (!['rotate', 'grow', 'residual'].includes(scenario) || !Number.isFinite(phaseChange) || !Number.isFinite(amplitudeGrowth) || amplitudeGrowth < 0 || amplitudeGrowth > 1) throw new RangeError('invalid trend options');
+export function trendSeries({ scenario = 'rotate', phaseChange = toRad(120), amplitudeGrowth = 0.5, thermal = {} }: TrendOptions = {}): TrendSample[] {
+  if (!['rotate', 'grow', 'residual', 'thermal', 'morton'].includes(scenario) || !Number.isFinite(phaseChange) || !Number.isFinite(amplitudeGrowth) || amplitudeGrowth < 0 || amplitudeGrowth > 1) throw new RangeError('invalid trend options');
+  if (scenario === 'thermal' || scenario === 'morton') {
+    let previous = toRad(350);
+    return Array.from({ length: 61 }, (_, i) => {
+      const state = thermalResponse(i * 60, { ...thermal, scenario });
+      const continuousLag = state.oneX.amp > PHASE_FLOOR ? previous + wrapPi(state.oneX.lag - previous) : NaN;
+      if (Number.isFinite(continuousLag)) previous = continuousLag;
+      const amp = state.oneX.amp, twoX = 2e-6;
+      return { time: i * 60, ...state, continuousLag, twoX, overall: Math.hypot(amp, twoX) / Math.sqrt(2), oneXRms: amp / Math.sqrt(2), notOneXRms: twoX / Math.sqrt(2) };
+    });
+  }
   return Array.from({ length: 61 }, (_, i) => {
     const s = i / 60;
     const amp = 20e-6 * (scenario === 'grow' ? 1 + amplitudeGrowth * s : 1);
@@ -53,7 +65,7 @@ export function phaseTrace(samples: TrendSample[], continuous: boolean) {
   const time: number[] = [], lag: number[] = [];
   samples.forEach((s, i) => {
     if (!continuous && i > 0 && Math.abs(s.oneX.lag - samples[i - 1].oneX.lag) > Math.PI) { time.push(s.time); lag.push(NaN); }
-    time.push(s.time); lag.push(continuous ? s.continuousLag : s.oneX.lag);
+    time.push(s.time); lag.push(s.oneX.amp <= PHASE_FLOOR ? NaN : continuous ? s.continuousLag : s.oneX.lag);
   });
   return { time, lag };
 }

@@ -44,6 +44,7 @@ import * as F61 from '../../figures/p6-1';
 import * as F62 from '../../figures/p6-2';
 import * as F63 from '../../figures/p6-3';
 import * as F81 from '../../figures/p8-1';
+import * as F82 from '../../figures/p8-2';
 import * as F64 from '../../figures/p6-4';
 import * as F71 from '../../figures/p7-1';
 import * as F72 from '../../figures/p7-2';
@@ -238,6 +239,10 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 ## P8-1
 
 {byId(F81).map((f) => <Figure {...f} />)}
+
+## P8-2
+
+{byId(F82).map((f) => <Figure {...f} />)}
 
 ## 도식 견본 (Part 1용)
 

@@ -235,6 +235,8 @@
 - 응답 합성 (P1-9): `x(t) = \sum_i A_i\cos(2\pi f_i t + \phi_i) + n(t)` (정현파 + 잡음). φ_i는 시간 원점의 **시작 위상**, 키페이저 지연각과 구분한다. 감쇠 울림은 고정 A_i 정현파 하나가 아니라 별도 시간 응답으로 더한다.
 - 베어링 결함 주파수: 원본 4-2 식 사용 (BSF 관례는 I-008). 위 요소 주파수 식과 같다
 
+- P8-2 열 기여: V=U+Q, Q=B₀ exp(−t/τ) exp(−iβ) 또는 B₀(1+g t/t_end) exp[−i(β+2πt/P)]. U·Q는 센서의1X 복소 응답[m Peak], B₀[m Peak], β[rad], τ·P·t_end[s], g[—]. t_end=3600 s, Q는 Q factor와 구별. α_T[K⁻¹]는 열팽창계수. 저속 eccentricity 기하 예제는 고속 응답과 별개.
+
 ### 3-1. 공통 DSP 코어 구현 사양
 
 코드와 테스트가 기준이다. 랩·그림을 만들 때 알아야 할 규약만 적는다 (끝난 코어의 설계 메모는 `archive/Milestones.md`, D-030).
@@ -301,7 +303,7 @@
 | P7-8 | 유체 · 공력 원인 | (LAB-FAULT-01 프리셋) | M7.6 | 계획 |
 | P7-9 | 비틀림 · 블레이드 진동 | LAB-CAMP-01 | M7.7 | 계획 |
 | P8-1 | 기동·정지와 임계속도 통과 (여러 모드 Bode/Polar 판독) | LAB-BODE-01 | M8.1 | 검토 |
-| P8-2 | Thermal bow · Turning gear · Morton | (LAB-TRND-01 프리셋) | M8.5 (D-043) | 계획 |
+| P8-2 | 열 휨 · 터닝 기어 · Morton | LAB-TRND-01 프리셋 | M8.5 (D-043) | 검토 |
 | P8-3 | ST 특화 | (시나리오 프리셋) | M8.2 | 계획 |
 | P8-4 | GT 특화 | (시나리오 프리셋) | M8.3 | 계획 |
 | P8-5 | 발전기와 축계 | (시나리오 프리셋) | M8.4 | 계획 |
@@ -375,7 +377,7 @@
 | LAB-CEP-01 | 켑스트럼: 줄 무리의 간격 → quefrency 봉우리, 리프터링 | P5-7 | `CepstrumLab` (/lab/cep-01/) · lib/dsp/cepstrum.ts, lib/cepstrumDemo.ts |
 | LAB-FEAT-01 | 시간영역 특징량: 결함이 진행하는 동안의 추세 | P5-7 | `FeatureLab` (/lab/feat-01/) · lib/dsp/stats.ts, lib/cepstrumDemo.ts |
 | LAB-TWF-01 | 시간파형 패턴 갤러리·퀴즈·회전당 사건 수 | P6-1 | `TimeWaveformLab` (/lab/twf-01/) · lib/plots/waveform.ts |
-| LAB-TRND-01 | 스칼라·APHT·벡터 변화·학습용 허용 영역 | P6-4 | `TrendLab` (/lab/trnd-01/) · lib/plots/trend.ts |
+| LAB-TRND-01 | 스칼라·APHT·벡터 변화·허용 영역·열 휨/Morton형 | P6-4·P8-2 | `TrendLab` (/lab/trnd-01/) · lib/plots/trend.ts·thermal.ts |
 | LAB-WF-01 | 스펙트럼 판독·추종/잠김·정속 유지·정/역 cascade | P6-2 | `WaterfallLab` (/lab/wf-01/) · lib/plots/cascade.ts |
 | LAB-ORB-01 | 직접/실제1X 오빗·blank/dot 시간 순서·고정/이동 점 | P6-3 | `OrbitLab` (/lab/orb-01/) · lib/plots/orbit.ts |
 | LAB-MAP-01 | 진단 주파수 지도: 주파수 → 원인 후보 | P7-1 | `FaultMapLab` (/lab/map-01/) · lib/faults/catalog.ts |
@@ -653,6 +655,14 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 - 1차bow2 µm Peak·60°: 0rpm한계4 µm pp, 200rpm4.1793629 µm pp, 1500rpm103.6506260 µm pp; 200rpm보상뒤100.8227437 µm pp, 기준점0. 보상으로동적bow가모두사라지지않음.
 - 검증: src/lib/rotor/multimode.test.ts·src/figures/figures-p8-1.test.ts, P4-1 simulateRunUp 복소극한 상대오차1e−12. SI Peak 내부·UI에서pp변환.
 
+### P8-2 열 휨·Morton형 트렌드 (M8.5)
+- 지정 곡선, 고정U=20 µm Peak@350°·2X=2 µm Peak·1분표본60분. 열전달/유막 피드백 해석·기동 허용 모델 아님.
+- 열 휨 Q=12 exp(−t/1200) µm Peak@80°: 합0분23.32380758·60분20.00892152, 열 기여60분0.5974448204·벡터 변화11.40255518 µm Peak. τ60분이면 기여4.414553294·합20.48141306.
+- 저속 별도 기하 예제 bow12·runout4 µm Peak@80°: 0분32·60분9.194889641·극한8 µm pp.
+- Morton형 B₀5 µm Peak·P1800 s·g1: 60분Q10@80°·합22.36067977@16.56505118°·변화5 µm Peak. g0은30/60분 복귀, 15분 변화10.
+- B₀20@170°·열 휨0분에서 합0. 합1X≤1 µm Peak의 위상/영역 보류는 학습 예제의 표시 조건.
+- 검증: lib/plots/thermal.test.ts·figures/figures-p8-2.test.ts. 복소합·지수·닫힌 원·RMS/DFT·위상 공백·그림 범위.
+
 ## 7. 참고자료
 
 | ID | 자료 | 용도 | 비고 |
@@ -682,6 +692,10 @@ P1-6 직렬 예제의 기준: m = 100 kg, k_sh = 1 MN/m, k_br = 2 MN/m, k_sup = 
 | R-22 | [COMSOL, Mode Superposition](https://www.comsol.com/multiphysics/mode-superposition) | 선형 모드 중첩·형상 정규화·모드 감쇠 가정 (P8-1) | 제조사 공개 이론, 2026-10-08 확인 |
 | R-23 | [Bently Nevada, Rub Diagnostics based on Vibration Data](https://www.bakerhughes.com/bently-nevada/orbit-home/orbit-article/rub-diagnostics-based-vibration-data) | 기동·정지의 열 상태·접촉 영향 비교 (P8-1) | 공개 사례, 수치/그림 전재 없음 |
 | R-24 | J. C. Nicholas, E. J. Gunter, P. E. Allaire, "Effect of residual shaft bow on unbalance response and balancing of a single mass flexible rotor", *Journal of Engineering for Power* 98(2), 1976 | 휨의 응답 b/(1 − r² + j2ζr), 휨과 평형추 (P7-2) | |
+| R-25 | [Zhuo 외, A new computational method for predicting the thermal bow of a rotor](https://doi.org/10.1177/0954406218815722) | 정지 중 열 휨·터닝 목적 (P8-2) | 공개 초록 개념, 기계별 수치 미사용 |
+| R-26 | [Bently Nevada, Centrifugal Compressor Application Note](https://www.bakerhughes.com/sites/bakerhughes/files/2022-01/GEA31971A%20Centrifugal%20Compress%20App%20Note_R4.pdf) | Morton·Newkirk의 열원 구별 (P8-2) | 개념 요약, 표/사례 그림 전재 없음 |
+| R-27 | [Marscher·Illis, Journal Bearing “Morton Effect” Cause of Cyclic Vibration in Compressors](https://doi.org/10.1080/10402000601147781) | 순환 진동·열 전달 지연 (P8-2) | 공개 초록, 사례 조치를 일반화하지 않음 |
+| R-28 | [Bently Nevada, Vibration and Dynamic Measurements](https://www.bakerhughes.com/cordant/blog/vibration-and-dynamic-measurements) | Eccentricity 측정 목적 (P8-2) | 공개 개념 요약 |
 
 그 밖의 데이터셋(IMS/NASA, MFPT, PRONOSTIA/FEMTO, Paderborn, PHM09)은 M11.2에서 라이선스와 용량을 확인한 뒤 추가한다.
 
