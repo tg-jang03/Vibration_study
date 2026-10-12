@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-90
+ * 다음 번호: R-91
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -46,7 +46,7 @@ export const REFERENCES: Reference[] = [
   { id: 'R-04', kind: 'book', authors: 'J. M. Vance, F. Y. Zeidan, B. Murphy', title: 'Machinery Vibration and Rotordynamics', source: 'Wiley', year: '2010', about: '임계속도·불평형 응답, 유체력 선회·씰 교차연성, 틸팅 패드 베어링' },
   { id: 'R-05', kind: 'paper', authors: 'G. Heinzel, A. Rüdiger, R. Schilling', title: 'Spectrum and spectral density estimation by the Discrete Fourier transform (DFT), including a comprehensive list of window functions and some new flat-top windows', source: 'Max-Planck-Institut für Gravitationsphysik', year: '2002', about: '스펙트럼·PSD 정규화, 윈도우 계수(S₁·S₂·ENBW), 평균과 오버랩 — 사이트 DSP 코어의 검증 기준' },
   { id: 'R-06', kind: 'paper', authors: 'F. J. Harris', title: 'On the use of windows for harmonic analysis with the discrete Fourier transform', source: 'Proceedings of the IEEE 66(1)', year: '1978', url: 'https://doi.org/10.1109/PROC.1978.10837', about: '윈도우 특성(메인로브·사이드로브·가리비 손실) 비교표' },
-  { id: 'R-07', kind: 'standard', authors: 'American Petroleum Institute', title: 'API RP 684 — Rotordynamic Tutorial: Lateral Critical Speeds, Unbalance Response, Stability, Train Torsionals, and Rotor Balancing', source: 'API', about: '증폭계수(AF)·분리여유(SM)·불평형 응답 해석의 개념', note: STD_NOTE },
+  { id: 'R-07', kind: 'standard', authors: 'American Petroleum Institute', title: 'API RP 684 — Rotordynamic Tutorial: Lateral Critical Speeds, Unbalance Response, Stability, Train Torsionals, and Rotor Balancing', source: 'API', year: '2005 (RP 2판) · 2019 (TR 684-1)', about: '증폭계수(AF)·분리여유(SM)·불평형 응답 해석의 개념', note: STD_NOTE },
   { id: 'R-08', kind: 'standard', authors: 'ISO', title: 'ISO 20816-1 — Mechanical vibration: Measurement and evaluation of machine vibration, Part 1: General guidelines', source: 'ISO', year: '2016', url: 'https://www.iso.org/standard/63180.html', about: '진동 크기와 변화에 따른 평가의 일반 취지', note: STD_NOTE },
   { id: 'R-09', kind: 'web', authors: 'Bently Nevada (Baker Hughes)', title: 'ORBIT Magazine 아카이브', source: 'Baker Hughes', about: '프로브 설치·위상·런아웃 보상·보호 시스템 사례' },
   { id: 'R-10', kind: 'dataset', authors: 'Case Western Reserve University', title: 'Bearing Data Center', source: 'CWRU', url: 'https://engineering.case.edu/bearingdatacenter', about: '6205 시험 베어링 치수와 결함 데이터 (Part 11 실습 예정)' },
@@ -92,7 +92,7 @@ export const REFERENCES: Reference[] = [
   { id: 'R-50', kind: 'web', authors: 'SKF', title: 'Damping in a rolling bearing arrangement', source: 'SKF Evolution', url: 'https://evolution.skf.com/damping-in-a-rolling-bearing-arrangement/', about: '축·베어링 위치와 강성·하우징 변형이 동특성에 관여한다는 설명' },
   { id: 'R-51', kind: 'book', authors: 'D. J. Inman', title: 'Engineering Vibration', source: 'Pearson', about: '질량-스프링·감쇠·강제진동·다자유도계의 기본 모델' },
   { id: 'R-52', kind: 'book', authors: 'S. S. Rao', title: 'Mechanical Vibrations', source: 'Pearson', about: '고유진동수·감쇠비·대수감쇠율, 진폭비·위상, 모드' },
-  { id: 'R-53', kind: 'standard', authors: 'American Petroleum Institute', title: 'API 670 — Machinery Protection Systems', source: 'API', about: '센서 설치·채널 구성·알람과 트립의 기본 틀', note: STD_NOTE },
+  { id: 'R-53', kind: 'standard', authors: 'American Petroleum Institute', title: 'API 670 — Machinery Protection Systems', source: 'API', year: '2025 (6판)', about: '센서 설치·채널 구성·알람과 트립의 기본 틀', note: STD_NOTE },
   { id: 'R-54', kind: 'standard', authors: 'ISO', title: 'ISO 1683 — Acoustics: Preferred reference values for acoustical and vibratory levels', source: 'ISO', about: '진동 레벨(dB)의 기준값', note: STD_NOTE },
   { id: 'R-55', kind: 'web', authors: 'NPTEL (IIT Guwahati)', title: 'Theory & Practice of Rotor Dynamics', source: 'NPTEL 공개 강의', url: 'https://nptel.ac.in/courses/112103024', about: 'Jeffcott 로터, 유막 베어링과 동적 계수, 안정성·자기여진, steam whirl' },
   { id: 'R-56', kind: 'paper', authors: 'F. W. Ocvirk', title: 'Short-bearing approximation for full journal bearings (NACA TN-2808)', source: 'NACA', year: '1952', url: 'https://ntrs.nasa.gov/citations/19930083541', about: '짧은 베어링의 정적 하중·자세각 관계' },
@@ -124,11 +124,12 @@ export const REFERENCES: Reference[] = [
   { id: 'R-82', kind: 'standard', authors: 'ISO', title: 'ISO 17359:2018 — Condition monitoring and diagnostics of machines: General guidelines', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/71194.html', about: '상태감시 프로그램의 일반 지침', note: STD_NOTE },
   { id: 'R-83', kind: 'standard', authors: 'ISO', title: 'ISO 18436-2:2014 — Requirements for qualification and assessment of personnel: Vibration condition monitoring and diagnostics', source: 'ISO', year: '2014', url: 'https://www.iso.org/standard/50447.html', about: '진동 분석 인력의 교육·경험·평가 네 범주', note: STD_NOTE },
   { id: 'R-84', kind: 'web', authors: 'Vibration Institute', title: 'Vibration Analyst Categories', source: 'Vibration Institute', url: 'https://vi-institute.org/analyst-categories/', about: 'CAT I~IV 인력 인증 범주별 역할의 공개 안내' },
-  { id: 'R-85', kind: 'paper', authors: 'Rasish Khatri, Larry Hawkins', title: 'Applicability of API 617 8th ed. and ISO 14839-3 in evaluating the dynamic stability of AMB-supported compressors', source: 'Calnetix Technologies · 저자 공개 논문', url: 'https://www.calnetix.com/sites/default/files/2023-03/Applicability%20of%20API%20617%208th%20ed.%20and%20ISO%2014839-3%20in%20evaluating%20the%20dynamic%20stability%20of%20AMB-supported%20compressors.pdf', about: '안정성 설계 해석과 AF·SM 응답 검토의 목적을 구별', note: '과거 8판의 주제 설명 근거. 규격 요구식·경계값·도표는 전재하지 않으며 현행 요구는 적용 판본에서 대조' },
+  { id: 'R-85', kind: 'paper', authors: 'Rasish Khatri, Larry Hawkins', title: 'Applicability of API 617 8th ed. and ISO 14839-3 in Evaluating the Dynamics Stability of AMB-Supported Compressors', source: 'Proc. 16th International Symposium on Magnetic Bearings (ISMB16) · 저자 공개 논문', year: '2018', url: 'https://www.calnetix.com/sites/default/files/2023-03/Applicability%20of%20API%20617%208th%20ed.%20and%20ISO%2014839-3%20in%20evaluating%20the%20dynamic%20stability%20of%20AMB-supported%20compressors.pdf', about: '안정성 설계 해석과 AF·SM 응답 검토의 목적을 구별', note: '과거 8판의 주제 설명 근거. 규격 요구식·경계값·도표는 전재하지 않으며 현행 요구는 적용 판본에서 대조' },
   { id: 'R-86', kind: 'standard', authors: 'ISO', title: 'ISO 21940-11 — Mechanical vibration: Rotor balancing, Part 11: Procedures and tolerances for rotors with rigid behaviour', source: 'ISO', year: '2016', about: '밸런스 등급 G와 허용 잔류 불평형의 정의(e_per = G/Ω), 강성 로터의 허용값 배분 (옛 ISO 1940-1)', note: STD_NOTE },
   { id: 'R-87', kind: 'paper', authors: 'W. C. Foiles, P. E. Allaire, E. J. Gunter', title: 'Review: Rotor Balancing', source: 'Shock and Vibration 5(5–6)', year: '1998', about: '영향계수법과 모달 밸런싱의 원리, 2면·다면 해법의 정리' },
   { id: 'R-88', kind: 'book', authors: 'V. Wowk', title: 'Machinery Vibration: Balancing', source: 'McGraw-Hill', year: '1995', about: '현장 밸런싱 절차 — 시험추 크기, 1면·2면, 위상 없는 방법, 분할추' },
   { id: 'R-89', kind: 'book', authors: 'J. Piotrowski', title: 'Shaft Alignment Handbook', source: 'CRC Press', year: '2006', about: '오정렬의 표기(offset·angularity), rim-face·reverse·레이저 측정, 브래킷 처짐, 소프트 풋, 열성장과 냉간 목표·열간 확인' },
+  { id: 'R-90', kind: 'paper', authors: 'J. C. Nicholas, J. A. Kocur', title: 'Rotordynamic Design of Centrifugal Compressors in Accordance with the New API Stability Specifications', source: 'Proc. 34th Turbomachinery Symposium (Texas A&M)', year: '2005', url: 'https://dyrobes.com/wp-content/uploads/2015/09/Rotordynamic-Design-of-Centrifugal-Compressors-in-Accordance-with-the-New-API-Stability-Specifications_linked.pdf', about: 'API 617(7판부터)의 Level I 간이 안정성 해석(추정 공력 교차연성·로그 감쇠)과 Level II 상세 해석의 흐름' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));

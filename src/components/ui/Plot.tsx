@@ -43,8 +43,21 @@ export interface PlotHeatmap {
   name?: string;
 }
 
+/** y 구간 띠 (판정 구간 등, P10-1). 계열 아래에 그린다. color는 CSS 색 또는 var(--…) */
+export interface PlotBand {
+  y0: number;
+  y1: number;
+  color: string;
+  /** 띠 안 오른쪽 위에 쓸 글자 */
+  label?: string;
+  /** 0~1, 기본 0.14 */
+  opacity?: number;
+}
+
 interface PlotProps {
   series: PlotSeries[];
+  /** 계열 아래에 깔리는 y 구간 띠 (선택) */
+  bands?: PlotBand[];
   /** 계열 아래에 깔리는 색 지도 (선택) */
   heatmap?: PlotHeatmap;
   x?: PlotAxis;
@@ -107,7 +120,7 @@ const CONFIG: Partial<Config> = {
   modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
 };
 
-export default function Plot({ series, heatmap, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
+export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [themeVersion, setThemeVersion] = useState(0);
@@ -118,6 +131,7 @@ export default function Plot({ series, heatmap, x, y, height = 320, ariaLabel, o
   // 축 설정은 보통 매 렌더 새 객체로 넘어오므로 내용으로 비교한다
   const xKey = JSON.stringify(x ?? {});
   const yKey = JSON.stringify(y ?? {});
+  const bandsKey = JSON.stringify(bands ?? []);
 
   // 라이트/다크 전환 시 다시 그린다
   useEffect(() => {
@@ -185,6 +199,16 @@ export default function Plot({ series, heatmap, x, y, height = 320, ariaLabel, o
         yaxis: axisLayout(y, theme),
         hovermode: 'closest',
       };
+      if (bands?.length) {
+        layout.shapes = bands.map((b) => ({
+          type: 'rect' as const, xref: 'paper' as const, yref: 'y' as const, x0: 0, x1: 1, y0: b.y0, y1: b.y1,
+          fillcolor: theme.resolve(b.color), opacity: b.opacity ?? 0.14, line: { width: 0 }, layer: 'below' as const,
+        }));
+        layout.annotations = bands.filter((b) => b.label).map((b) => ({
+          xref: 'paper' as const, yref: 'y' as const, x: 1, y: Math.min(b.y1, y?.range?.[1] ?? b.y1), xanchor: 'right' as const, yanchor: 'top' as const,
+          text: b.label!, showarrow: false, font: { color: theme.resolve(b.color), size: 12 },
+        }));
+      }
       const start = performance.now();
       void Plotly.react(el, data, layout, CONFIG).then(() => {
         if (!cancelled) onRenderedRef.current?.(performance.now() - start);
@@ -198,7 +222,7 @@ export default function Plot({ series, heatmap, x, y, height = 320, ariaLabel, o
       cancelled = true;
     };
     // x, y는 xKey, yKey(내용)로 비교한다
-  }, [series, heatmap, xKey, yKey, height, themeVersion]);
+  }, [series, heatmap, bandsKey, xKey, yKey, height, themeVersion]);
 
   // 언마운트 시 Plotly 정리
   useEffect(() => {

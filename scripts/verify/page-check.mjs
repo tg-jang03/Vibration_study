@@ -132,37 +132,30 @@ for (const p of paths) {
         const slider=async(i,v)=>input(lab.querySelectorAll('input[type="range"]')[i],v);
         const number=async(i,v)=>input(lab.querySelectorAll('input[type="number"]')[i],v);
         const choose=async(i,v)=>{const node=lab.querySelectorAll('select')[i];node.value=String(v);node.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
-        const source=async()=>input(lab.querySelector('input[type="text"]'),'가상 검증 문서 · 사용자 시험 분류');
-        const confirm=async()=>{lab.querySelector('input[type="checkbox"]').click();await wait();};
         const status=()=>lab.querySelector('[role="status"]').textContent;
         const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replaceAll(',','').replaceAll('−','-')):NaN;};
-        const near=(label,value)=>Math.abs(read(label)-value)<.0001;
-        require(status().includes('구간 B')&&near('절대 변화 / B/C 경계',30),'가상 B·30%');
-        await slider(0,1.8);require(status().includes('구간 A')&&near('절대 변화 / B/C 경계',6),'A·6%');
-        await slider(0,5);require(status().includes('구간 C')&&near('절대 변화 / B/C 경계',70),'예제 등호 C·70%');
-        await slider(1,3);await slider(0,1.5);require(near('부호 있는 변화 Δx',-1.5)&&near('절대 변화 / B/C 경계',30),'감소 부호·절대 변화');
+        const near=(label,value,tol=.051)=>Math.abs(read(label)-value)<tol;
+        require(status().includes('구간 B')&&near('절대 변화 / B/C 경계',30.8)&&read('변화 띠를 처음 벗어난 날')===30&&!Number.isFinite(read('구간이 처음 올라간 날')),'기본: B 유지·30일째 변화 30.8%');
+        await choose(1,1);await slider(1,6);require(read('변화 띠를 처음 벗어난 날')===39&&read('구간이 처음 올라간 날')===51,'서서히: 변화 39일·구간 51일');
+        await choose(1,2);await slider(0,3);await slider(1,1.5);require(status().includes('구간 A')&&near('부호 있는 변화 Δx',-1.49,.011),'감소도 변화');
+        await choose(1,0);await slider(0,2.5);await slider(1,4);await slider(2,2);require(read('변화 띠를 처음 벗어난 날')===1,'비교율 2%: 헛경보');
+        await slider(2,50);require(!Number.isFinite(read('변화 띠를 처음 벗어난 날')),'비교율 50%: 놓침');
         await choose(0,1);require(status().includes('판정 보류')&&[...lab.querySelectorAll('input[type="number"]')].every(n=>n.value===''),'사용자 입력 전 빈값 보류');
         for(const [i,v] of [2,5,9,3,1.5,20].entries())await number(i,v);
-        require(status().includes('판정 보류')&&lab.querySelectorAll('.readout-table tbody tr').length===0,'조건 미대조 보류');
-        await source();await confirm();require(status().includes('구간 B')&&near('현재 크기',3)&&near('절대 변화 / B/C 경계',30),'사용자 SI 환산');
+        require(status().includes('구간 B')&&near('현재 크기',3,1e-6)&&near('절대 변화 / B/C 경계',30,1e-6)&&lab.textContent.includes('출처 미기재'),'사용자 SI 환산·출처 표시');
         await number(3,5);require(status().includes('경계 B/C'),'사용자 등호 확인');
-        await number(3,3);await number(4,'');require(status().includes('구간 B')&&!Number.isFinite(read('부호 있는 변화 Δx')),'기준선 누락은 크기와 별도');
-        await number(4,0);require(near('절대 변화 / B/C 경계',60),'기준선0 유효');
-        await number(5,0);require(lab.textContent.includes('비교율은 양수'),'비교율0 보류');
-        await number(1,1);require(status().includes('판정 보류')&&!lab.querySelector('input[type="checkbox"]').checked,'역순 경계 보류·대조 해제');
-        await number(1,5);await confirm();require(status().includes('구간 B'),'경계 수정 후 재대조');
-        await choose(2,1);require(status().includes('판정 보류')&&lab.querySelector('input[type="text"]').value===''&&!lab.querySelector('input[type="checkbox"]').checked,'기계 후보 변경은 대조·출처 해제');
+        await number(3,3);await number(5,0);require(lab.textContent.includes('비교율은 양수'),'비교율0 보류');
+        await number(1,1);require(status().includes('판정 보류'),'역순 경계 보류');
         await choose(1,1);require([...lab.querySelectorAll('input[type="number"]')].every(n=>n.value==='')&&status().includes('판정 보류'),'측정량 변경은 전 수치 초기화');
         for(const [i,v] of [20,50,90,30,15,20].entries())await number(i,v);
-        await source();await confirm();require(status().includes('구간 B')&&near('현재 크기',30)&&near('절대 변화 / B/C 경계',30),'변위 SI 환산');
-        await number(5,'');require(lab.textContent.includes('비교율 미입력'),'빈 비교율은 자동 기준 없음');
+        require(status().includes('구간 B')&&near('현재 크기',30,1e-6)&&near('절대 변화 / B/C 경계',30,1e-6),'변위 SI 환산');
         [...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();
-        require(status().includes('가상 예제')&&near('절대 변화 / B/C 경계',30),'초기화');
+        require(status().includes('가상 예제')&&near('절대 변화 / B/C 경계',30.8),'초기화');
         require(!lab.querySelector('.katex-error'),'수식 렌더');
       }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
     })()`);
     if(smoke?.ok===false||!smoke)errors.push('크기·변화 판정 조작 검사: '+(smoke?.error??'평가 실패'));
-    if(smoke?.ok)console.log('     판정 랩 조작 '+smoke.checks+'항목 OK (빈값·경계·SI·변화·조건·측정량·초기화)');
+    if(smoke?.ok)console.log('     판정 랩 조작 '+smoke.checks+'항목 OK (추세·변화 띠·비교율·빈값·경계·SI·측정량·초기화)');
   }
 
   if (bodeSmoke) {

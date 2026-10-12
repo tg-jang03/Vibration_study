@@ -102,7 +102,9 @@ export const LABS: LabEntry[] = [
   { slug: 'bal-01', id: 'LAB-BAL-01', component: 'BalanceLab', part: 9, title: '영향계수 밸런싱', summary: '숨은 불평형이 있는 로터에 시험추를 달아 영향계수를 재고, 1면·2면 보정추와 분할추·측정 흔들림·slow roll 보상의 영향을 본다.' },
   { slug: 'aln-01', id: 'LAB-ALN-01', component: 'AlignmentLab', part: 9, title: '정렬 계산기', summary: 'rim-face·reverse 읽음값에서 어긋남·기울기와 앞발·뒷발 이동량을 구하고, 브래킷 처짐·열성장(냉간 목표)의 영향을 본다.' },
   // Part 10
-  { slug: 'iso-01', id: 'LAB-ISO-01', component: 'SeverityLab', part: 10, title: '크기와 변화의 별도 판정', summary: '가상 무차원 예제 또는 사용자가 입력한 경계·기준선으로 크기 구간과 변화 비율을 따로 확인한다.' },
+  { slug: 'iso-01', id: 'LAB-ISO-01', component: 'SeverityLab', part: 10, title: '크기 구간과 변화를 따로 판정하기', summary: '구간 색 띠 위의 가상 60일 추세(계단·서서히·감소)에서 크기 구간과 기준선 대비 변화 판정이 언제 서는지 비교하고, 보유 규격의 경계를 직접 넣어 본다.' },
+  { slug: 'sm-01', id: 'LAB-SM-01', component: 'SeparationMarginLab', part: 10, title: 'AF가 크면 왜 분리여유를 더 두나', summary: 'AF·분리여유·임계속도 예측 오차를 바꿔, 실제 임계속도가 옮겨 갔을 때 운전점 응답이 몇 배가 되는지 본다.' },
+  { slug: 'diag-01', id: 'LAB-DIAG-01', component: 'DiagnosisLab', part: 10, title: '무엇이 변했나: 가설을 가르는 자료', summary: '1X가 두 배가 된 가상 사례에서 가진 증가와 고유진동수 이동 가설을 3000 rpm 한 점·코스트다운 진폭·위상으로 차례로 가려 본다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);
