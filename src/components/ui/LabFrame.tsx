@@ -24,6 +24,10 @@ interface LabFrameProps {
   /** 실험 과제: 예측 → 조작 → 확인 */
   tasks?: readonly LabTask[];
   footer?: ReactNode;
+  /** 대표 UI 시안처럼 조작부와 주 그래프를 나란히 놓을 때 선택 적용 */
+  layout?: 'stacked' | 'sidebar';
+  /** 주 그래프 뒤에 전폭으로 놓을 설명 그림·애니메이션 */
+  illustration?: ReactNode;
 }
 
 /**
@@ -38,10 +42,10 @@ function standaloneHref(id: string | undefined, title: string): string | undefin
   return lab ? withBase(`/lab/${lab.slug}/`) : undefined;
 }
 
-export default function LabFrame({ id, title, controls, children, formulas, readouts, tasks, footer }: LabFrameProps) {
+export default function LabFrame({ id, title, controls, children, formulas, readouts, tasks, footer, layout = 'stacked', illustration }: LabFrameProps) {
   const open = standaloneHref(id, title);
   return (
-    <section className="lab-frame" aria-label={id ? `${id} ${title}` : title}>
+    <section className={layout === 'sidebar' ? 'lab-frame lab-frame-sidebar' : 'lab-frame'} aria-label={id ? `${id} ${title}` : title}>
       <header className="lab-header">
         {id && <span className="lab-id">{id}</span>}
         <h3>{title}</h3>
@@ -51,6 +55,8 @@ export default function LabFrame({ id, title, controls, children, formulas, read
       {controls && <div className="lab-controls">{controls}</div>}
 
       <div className="lab-plots">{children}</div>
+
+      {illustration && <div className="lab-illustration">{illustration}</div>}
 
       {(formulas || readouts) && (
         <div className="lab-results">

@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SineBasicsLab from '../../../components/labs/SineBasicsLab';
+import { withBase } from '../../../lib/site';
+---
+<BaseLayout title="정현파의 세 숫자 UI 시안">
+  <div class="preview-lab-page lab-standalone">
+    <header class="preview-lab-heading">
+      <p class="preview-eyebrow">Signal Lab · LAB-BAS-01</p>
+      <h1>정현파의 세 숫자</h1>
+      <p>진폭은 높이, 주파수는 반복 속도, 위상은 시작 각도를 정합니다. 값을 바꾸며 파형과 화살표를 함께 살펴보세요.</p>
+      <a class="preview-reading-link" href={withBase('/ui-preview/p1-2/')}>설명 읽기 · P1-2 고유진동수 →</a>
+    </header>
+    <SineBasicsLab sidebar client:load />
+  </div>
+</BaseLayout>

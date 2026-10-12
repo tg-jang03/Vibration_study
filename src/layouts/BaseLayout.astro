@@ -1,6 +1,8 @@
 ---
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
+import '../styles/ui-preview.css';
+import UiPreviewBar from '../components/ui/UiPreviewBar.astro';
 import { REPO_URL, SITE_NAME, withBase } from '../lib/site';
 
 interface Props {
@@ -18,23 +20,26 @@ const {
 
 const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
 const path = Astro.url.pathname.replace(/\/+$/, '');
+const previewPrefix = withBase('/ui-preview/').replace(/\/+$/, '');
+const isPreview = path === previewPrefix || path.startsWith(previewPrefix + '/');
 const isHome = path === withBase('/').replace(/\/+$/, '');
 const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
 const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang="ko" class:list={{ 'ui-preview': isPreview }}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <title>{fullTitle}</title>
+    {isPreview && <meta name="robots" content="noindex, follow" />}
     {/* 방문 통계 (D-045): GoatCounter — 쿠키 없음, 배포 빌드에서만 넣고 localhost 방문은 스크립트가 스스로 세지 않는다 */}
     {import.meta.env.PROD && <script is:inline data-goatcounter="https://vibstudy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>}
   </head>
-  <body>
+  <body class:list={{ 'ui-preview': isPreview }}>
     <header class="site-header">
       <div class="container header-inner">
         <a class="brand" href={withBase('/')}>{SITE_NAME}</a>
@@ -45,6 +50,7 @@ const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
         </nav>
       </div>
     </header>
+    {isPreview && <UiPreviewBar />}
     <main class:list={['container', { 'container-wide': wide }]}>
       <slot />
     </main>

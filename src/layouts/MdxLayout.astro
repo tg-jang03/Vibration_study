@@ -15,6 +15,7 @@ interface Props {
 }
 
 const { frontmatter, headings = [] } = Astro.props;
+const isPreview = Astro.url.pathname.startsWith(withBase('/ui-preview/'));
 
 const sections = PARTS.flatMap((part) => part.sections.map((section) => ({ ...section, part })));
 const index = frontmatter.sectionId ? sections.findIndex((s) => s.id === frontmatter.sectionId) : -1;
@@ -121,7 +122,7 @@ const last = current ? JSON.stringify({ id: current.id, title: current.title, hr
     </div>
   </div>
   {
-    current && (
+    current && !isPreview && (
       <script is:inline define:vars={{ last }}>
         try {
           localStorage.setItem('vs-last-section-v3', last);
