@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { keyphasorThreshold, keyphasorVoltage, KEY_NOTCH, shaftDisplacement, toRad, wrapPi } from '../../lib/phase';
@@ -127,7 +128,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
         status={`θ = ${Math.round(((theta * 180) / Math.PI) % 360)}° · t = ${(clock.t * 1e3).toFixed(1)} ms`} />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,314,270],[314,-4,406,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`축이 ${rpm} rpm으로 반시계로 돈다. 홈이 키페이저 앞을 지날 때 펄스, high spot이 진동 센서 앞에 올 때 봉우리. 그 사이 ${formatNumber(dtMs, 3)} ms = 위상 ${lagDeg}°.`}>
         <text x={A.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">키페이저 자리</text>
         <text x={B.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">진동 센서 자리</text>
@@ -182,7 +183,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
         <text x={X0} y={H - 6} fontSize="12" fill="var(--text-muted)">0</text>
         <text x={xAt(TWO_PI)} y={H - 6} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{formatNumber(T * 1e3, 3)} ms</text>
         <text x={X1} y={H - 6} textAnchor="end" fontSize="12" fill="var(--text-muted)">{formatNumber(2 * T * 1e3, 3)} ms</text>
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">
         같은 축의 두 단면입니다. 왼쪽 단면의 홈이 키페이저 프로브 앞을 지나는 순간 펄스가 뜨고(0°), 오른쪽 단면의 <strong>high spot</strong>(주황 점 — 축이 센서 쪽으로 가장 많이 나온 쪽,
         움직임은 확대)이 진동 센서 앞에 오면 신호가 봉우리입니다. 그 사이 축이 돈 각도가 위상 φ = {lagDeg}°이고, 축 위에 그린 주황 호(점선 = 홈 방향)와 같습니다.

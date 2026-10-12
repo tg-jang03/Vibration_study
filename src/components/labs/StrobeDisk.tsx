@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useRef, useState, type ReactNode } from 'react';
 import { formatNumber } from '../../lib/format';
 import { strobeApparentFreq } from '../../lib/dsp/phasor';
@@ -106,7 +107,7 @@ export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
         onSpeed={setSpeed}
         status={`플래시 n = ${n} · 실제의 1/${formatNumber(fs / flashesPerSec, 3)}`}
       />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobileLayout="disks" mobilePanels={[[0,-4,235,258],[235,-4,241,258],[476,-4,244,258]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`1초에 ${freq}바퀴 도는 원판을 1초에 ${fs}번 플래시로 보면 ${verdict}. 플래시마다 ${formatNumber(step, 3)}바퀴.`}>
         <text x={REAL.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">실제 원판 · 1초에 {formatNumber(freq, 4)}바퀴</text>
         <text x={STROBE.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">플래시로 본 원판 · 1초에 {formatNumber(fs, 4)}번</text>
@@ -146,7 +147,7 @@ export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
         <line x1={cx} y1={cy} x2={sx(n)} y2={cy} stroke="var(--text-muted)" strokeWidth="1.1" strokeDasharray="3 4" />
         <text x={SX0} y={H - 6} fontSize="12" fill="var(--text-muted)">n = {first}</text>
         <text x={SX1} y={H - 6} textAnchor="end" fontSize="12" fill="var(--text-muted)">{first + K - 1}</text>
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">
         플래시 사이(1/f_s = {formatNumber(1000 / fs, 3)} ms)에 원판은 {formatNumber(freq / fs, 4)}바퀴 돕니다. 정수 바퀴를 빼면
         플래시마다 <strong>{step > 0 ? '+' : ''}{formatNumber(step, 3)}바퀴</strong> → 겉보기로 <strong>{verdict}</strong>. 흐린 점은 앞선 플래시 5번의 자리입니다.

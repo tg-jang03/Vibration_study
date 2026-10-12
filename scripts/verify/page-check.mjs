@@ -4,10 +4,13 @@
 // 사용: 먼저 `npm run build` → `npx astro preview` (기본 http://localhost:4321)
 //   npm run verify:page -- /p3-5/ /lab/            (여러 경로)
 //   옵션: --base <URL>  --out <폴더(기본 dist/qa)>  --width <px(기본 1100)>  --no-shots  --edge <msedge 경로>
-//         --anim-smoke (움직이는 그림을 재생해 바뀌는지 보고 움직이는 중을 캡처)
+//         --anim-smoke (움직이는 그림 재생 확인·캡처)
+//         --visuals --mobile-widths 360,390,430 --compare-desktop <수정 전 캡처 폴더>
+//         --mobile-smoke (모바일 그림 잘림·확대/닫기·세로 분할·재생/멈춤)
 // 결과: 경로마다 한 줄 요약 + JSON(<out>/report.json). 오류가 있으면 종료 코드 1.
 import { spawn } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -27,6 +30,12 @@ const figurePart = Number(opt('figure-part', '0')); // 갤러리에서 이번 Pa
 if (!Number.isInteger(figurePart) || figurePart < 0 || figurePart > 11) throw new Error('--figure-part는 1~11');
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
+const desktopOnly = flag('desktop-only'); // PC 비교용: 모바일·복귀 캡처 생략
+const mobileSmoke = flag('mobile-smoke'); // 모바일 확대·세로 분할·재생 검사
+const visuals = flag('visuals'); // 그림만 캡처하고 폭·높이·최소 글자 크기를 기록
+const compareDesktop = opt('compare-desktop', ''); // --visuals 수정 전 폴더와 PC 픽셀 비교
+const mobileWidths = opt('mobile-widths', '390').split(',').map(Number);
+if (mobileWidths.some(w => !Number.isInteger(w) || w < 320 || w > 640)) throw Error('--mobile-widths는 320~640');
 const jeffcottSmoke = flag('jeffcott-smoke');
 const centerlineSmoke = flag('centerline-smoke');
 const stabilitySmoke = flag('stability-smoke');
@@ -100,6 +109,66 @@ await send('Runtime.enable');
 await send('Network.enable');
 await send('Page.enable');
 await mkdir(outDir, { recursive: true });
+
+async function captureVisuals(p, label) {
+  const slug = p.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
+  const boxes = await ev(`(() => {
+    const selector='.fig, .plot, .anim-panel, .polar-plot, .lab-frame svg[role="img"]';
+    return [...document.querySelectorAll(selector)].filter(el => {
+      const r=el.getBoundingClientRect();
+      return r.width>0 && r.height>0 && !el.parentElement.closest(selector);
+    }).map((el,i) => {
+      const r=el.getBoundingClientRect();
+      const texts=[...el.querySelectorAll('svg text')].filter(t=>t.getBoundingClientRect().width>0);
+      const sizes=texts.map(t=>{const m=t.getScreenCTM();return parseFloat(getComputedStyle(t).fontSize)*(m?Math.hypot(m.a,m.b):1);});
+      const plot=el.querySelector('.js-plotly-plot');
+      const layout=plot?._fullLayout;
+      const pathStyle=p=>{const c=getComputedStyle(p),m=p.getScreenCTM();return {
+        stroke:c.stroke,width:c.strokeWidth,opacity:c.opacity,
+        matrix:m?[m.a,m.b,m.c,m.d,m.e+scrollX,m.f+scrollY]:null,
+      };};
+      const plotGeometry=layout ? {
+        width:layout.width,height:layout.height,size:layout._size,
+        xRange:layout.xaxis.range,yRange:layout.yaxis.range,font:layout.font,
+        paths:[...plot.querySelectorAll('.scatterlayer path.js-line')].map(p=>p.getAttribute('d')),
+        pathStyles:[...plot.querySelectorAll('.scatterlayer path.js-line')].map(pathStyle),
+        points:plot.data.map(d=>({x:Array.from(d.x??[]),y:Array.from(d.y??[])})),
+      } : undefined;
+      return {plotGeometry,i,x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height,
+        id:el.id||el.closest('.lab-frame')?.querySelector('.lab-id')?.textContent||el.className,
+        minTextPx:sizes.length?Math.min(...sizes):null};
+    });
+  })()`);
+  let reference=[];
+  if(compareDesktop && label.startsWith('desktop')) {
+    try {reference=JSON.parse(await readFile(path.join(compareDesktop,slug+'-'+label+'.json'),'utf8'));} catch {}
+  }
+  const saved=[];
+  for (const box of boxes) {
+    const shot=await send('Page.captureScreenshot', {format:'png',captureBeyondViewport:true,
+      clip:{x:box.x,y:box.y,width:box.width,height:box.height,scale:1}});
+    const bytes=Buffer.from(shot.data,'base64');
+    const name=`${slug}-${label}-${String(box.i).padStart(2,'0')}.png`;
+    await writeFile(path.join(outDir,name),bytes);
+    const hash=createHash('sha256').update(bytes).digest('hex');
+    if (compareDesktop && label.startsWith('desktop')) {
+      try {
+        const before=await readFile(path.join(compareDesktop,name));
+        if(createHash('sha256').update(before).digest('hex')!==hash) {
+          // SVG 경로·화면 변환·선 스타일·축·데이터가 모두 같으면 브라우저 래스터화 차이로 기록한다.
+          const old=reference[box.i]?.plotGeometry;
+          if(old && box.plotGeometry && JSON.stringify(old)===JSON.stringify(box.plotGeometry)) {
+            console.log('     PC 그래프 데이터·축·좌표·선 스타일 동일 (캡처 픽셀 차이): '+name);
+            box.comparison='plotGeometry';
+          } else errors.push('PC 그림 픽셀 변경: '+name);
+        } else box.comparison='pixels';
+      } catch {errors.push('PC 기준 캡처 없음: '+name);}
+    }
+    saved.push({...box,file:name,sha256:hash});
+  }
+  await writeFile(path.join(outDir,`${slug}-${label}.json`),JSON.stringify(saved,null,2));
+  return saved;
+}
 
 const report = [];
 let failed = false;
@@ -664,6 +733,8 @@ for (const p of paths) {
     if(smoke?.ok===false||!smoke) errors.push('Orbit 조작 검사: '+(smoke?.error??'평가 실패'));
     if(smoke?.ok) console.log('     Orbit 조작 '+smoke.checks+'항목 OK (형태·필터·점·방향·재생·초기화)');
   }
+  const visualLayouts = {};
+  if (visuals) visualLayouts.desktop = await captureVisuals(p, 'desktop'+width);
   const shots = [];
   if (animSmoke) {
     // 움직이는 그림 (D-044): 패널마다 재생 → 1.5 s 뒤 SVG가 바뀌었는지 보고, 움직이는 중의 패널을 캡처한 뒤 멈춘다
@@ -699,13 +770,61 @@ for (const p of paths) {
       shots.push(file);
     }
   }
-  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
-  await sleep(800);
-  const overflow = await ev('document.documentElement.scrollWidth - window.innerWidth');
+  let overflow = 0;
+  for (const mobileWidth of desktopOnly ? [] : mobileWidths) {
+    await send('Emulation.setDeviceMetricsOverride', { width: mobileWidth, height: 844, deviceScaleFactor: 1, mobile: true });
+    await sleep(1000);
+    overflow = Math.max(overflow, await ev('document.documentElement.scrollWidth - window.innerWidth'));
+    if (visuals) visualLayouts[mobileWidth] = await captureVisuals(p, 'mobile'+mobileWidth);
+    if (mobileSmoke) {
+      const check=await ev(`(async()=>{
+        const wait=ms=>new Promise(r=>setTimeout(r,ms));let checks=0;
+        const require=(ok,message)=>{if(!ok)throw Error(message);checks++;};
+        try {
+          for(const f of document.querySelectorAll('.fig-scroll')) require(f.scrollWidth<=f.clientWidth+1,'본문 그림 가로 잘림');
+          const open=document.querySelector('.fig-open');
+          if(open){
+            open.click();await wait(100);
+            const d=document.querySelector('dialog.figure-zoom');
+            require(d?.open && d.querySelector('svg').getBoundingClientRect().width===900,'원본 그림 확대');
+            require(document.documentElement.scrollWidth<=innerWidth,'확대 시 페이지 넘침');
+            d.querySelector('button').click();await wait(100);
+            require(!document.querySelector('.figure-zoom') && document.activeElement===open,'닫기·초점 복귀');
+          }
+          for(const pane of document.querySelectorAll('.mobile-svg-panels')) {
+            require(pane.querySelectorAll(':scope > svg').length>=2,'애니메이션 세로 분할');
+            for(const use of pane.querySelectorAll('use')) {
+              const b=use.getBBox();require(b.width>0 && b.height>0,'분할 그림 도형 참조');
+            }
+          }
+          for(const panel of document.querySelectorAll('.anim-panel')){
+            const button=panel.querySelector('.anim-button');if(!button)continue;
+            panel.scrollIntoView({block:'center'});await wait(150);
+            const before=[...panel.querySelectorAll('svg')].map(s=>s.innerHTML).join('');
+            button.click();await wait(450);
+            const after=[...panel.querySelectorAll('svg')].map(s=>s.innerHTML).join('');
+            button.click();await wait(100);require(before!==after,'모바일 애니메이션 재생');
+            const paused=[...panel.querySelectorAll('svg')].map(s=>s.innerHTML).join('');
+            await wait(150);require(paused===[...panel.querySelectorAll('svg')].map(s=>s.innerHTML).join(''),'모바일 애니메이션 멈춤');
+          }
+          return {ok:true,checks};
+        }catch(e){return {ok:false,checks,error:e.message};}
+      })()`);
+      if(!check?.ok)errors.push('모바일 '+mobileWidth+'px 조작 검사: '+(check?.error??'평가 실패'));
+      else console.log('     모바일 '+mobileWidth+'px 그림·재생 '+check.checks+'항목 OK');
+    }
+  }
+  if (visuals && !desktopOnly) {
+    // 모바일에서 PC 폭으로 돌아온 뒤에도 같은 화면인지 확인한다.
+    await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
+    await sleep(1000);
+    const restored=await captureVisuals(p, 'restored'+width);
+    if (!animSmoke && !mobileSmoke && restored.some((v,i)=>v.width!==visualLayouts.desktop[i]?.width || v.height!==visualLayouts.desktop[i]?.height || (String(v.id).startsWith('fig-') && v.sha256!==visualLayouts.desktop[i]?.sha256))) errors.push('모바일에서 PC 폭으로 돌아온 뒤 그림이 바뀜');
+  }
   const ok = errors.length === 0 && unhydrated.length === 0 && overflow <= 0;
   if (!ok) failed = true;
-  report.push({ path: p, ok, labs: labs?.length ?? 0, unhydrated, mobileOverflow: overflow, errors, shots });
-  console.log(`${ok ? 'OK  ' : 'FAIL'} ${p}  랩 ${labs?.length ?? 0}${unhydrated.length ? ` (안 깨어남: ${unhydrated.join(', ')})` : ''} · 모바일 넘침 ${overflow}px · 오류 ${errors.length}${shots.length ? ` · 캡처 ${shots.length}장` : ''}`);
+  report.push({ path: p, ok, labs: labs?.length ?? 0, unhydrated, mobileOverflow: desktopOnly ? null : overflow, errors, shots, visualLayouts });
+  console.log(`${ok ? 'OK  ' : 'FAIL'} ${p}  랩 ${labs?.length ?? 0}${unhydrated.length ? ` (안 깨어남: ${unhydrated.join(', ')})` : ''} · 모바일 넘침 ${desktopOnly ? '미검사' : overflow+'px'} · 오류 ${errors.length}${shots.length ? ` · 캡처 ${shots.length}장` : ''}`);
   for (const e of errors) console.log(`     ${e}`);
 }
 await writeFile(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));

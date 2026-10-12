@@ -192,7 +192,7 @@ export default function MassSpringLab({ mode = 'basic' }: MassSpringLabProps) {
       footer={expanded ? '감쇠가 없는 선형 질량-스프링 모델. 모든 계산은 SI 단위의 해석해를 사용합니다.' : '기본값: m = 1 kg, k = 1000 N/m, 감쇠 없음. P1-2에서 m·k·초기 속도를 직접 바꿉니다.'}
     >
       <div role="img" aria-label={`벽에 연결된 스프링과 질량. 질량은 평형에서 ${currentMm.toFixed(2)} mm 떨어져 있다.`} style={{ background: 'var(--surface-2)', borderRadius: 'var(--radius)', padding: '0.35rem 0.5rem' }}>
-        <svg viewBox="0 0 700 185" width="100%" style={{ display: 'block', minHeight: 180 }}>
+        <svg className="mass-spring-svg" viewBox="0 0 700 185" width="100%" style={{ display: 'block', minHeight: 180 }}>
           <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--plot-2)" /></marker></defs>
           <line x1="52" y1="35" x2="52" y2="145" stroke="var(--text-muted)" strokeWidth="4" />
           {Array.from({ length: 9 }, (_, i) => <line key={i} x1="30" y1={42 + i * 13} x2="52" y2={30 + i * 13} stroke="var(--text-muted)" strokeWidth="1.5" />)}

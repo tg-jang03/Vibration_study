@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { BRG_DEMO, DEMO_CALC, DEMO_FR, FAULT_LABEL, RATE_LABEL, type BearingFault } from '../../lib/faults/bearing';
@@ -98,7 +99,7 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
         status={`축 ${turns.toFixed(2)}바퀴 · 케이지 ${(turns * (B.ftf / FR)).toFixed(2)}바퀴`} />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,300,278],[300,-4,420,278]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`볼 ${N}개 베어링이 돈다. ${healthy ? '결함 없음' : `${FAULT_LABEL[fault]} 결함, 충격이 1초에 ${formatNumber(fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf, 4)}번`}.`}>
         {/* 하중대 */}
         <path d={arcBand(-Math.PI / 3, Math.PI / 3, R_OUT + 2, R_OUT + 12)} fill="var(--status-wip)" opacity="0.35" />
@@ -154,7 +155,7 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
             {fault === 'ball' ? ' (주황 = 외륜에, 초록 = 내륜에)' : ''}
           </text>
         )}
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">
         {healthy ? `건전한 베어링: 축(파란 표시)이 1초에 ${formatNumber(FR, 4)}바퀴, 볼을 실은 케이지(보라)는 그보다 느린 ${formatNumber(B.ftf, 4)}바퀴(FTF) 돕니다. 결함 위치를 고르고 단계를 올리면 충격이 보입니다.` : EXPLAIN[fault]}
         {' '}숫자는 미끄럼 없는 계산값입니다(실제 신호는 미끄럼 1 %로 조금 다름).

@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { seismicMotion, sensorResponse } from '../../lib/sensor';
@@ -96,7 +97,7 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
           </select>
         </label>
       </PlayControls>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,330,270],[330,-4,390,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`${velocity ? '속도계' : '가속도계'} 케이스 안의 질량과 스프링. ${say}`}>
         {/* 공간에 고정된 기준 높이 */}
         <line x1={30} y1={M0} x2={290} y2={M0} stroke="var(--status-wip)" strokeDasharray="6 4" opacity="0.8" />
@@ -128,7 +129,7 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
         <path d={path(m.rel)} fill="none" stroke="var(--plot-2)" strokeWidth="1.2" opacity="0.2" />
         <path d={path(m.rel, upto)} fill="none" stroke="var(--plot-2)" strokeWidth="2.4" />
         <line x1={cursor} y1={26} x2={cursor} y2={H - 8} stroke="var(--text-muted)" opacity="0.5" />
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">{say} 그림은 상자 안에 들어가게 크기를 맞췄고 재생 속도는 위 선택(실제 대비 배율)대로입니다 (센서 고유진동수 {formatNumber(fn, 4)} Hz, ζ = {formatNumber(zeta, 2)}).</p>
     </div>
   );

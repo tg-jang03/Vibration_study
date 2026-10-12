@@ -1031,3 +1031,38 @@ main.container {
   color: var(--text-muted);
   margin-left: 0.35rem;
 }
+
+/* M0.15: 모바일 그림 배치. PC의 기존 규칙은 그대로 둔다. */
+@media (max-width: 640px) {
+  .lab-frame { padding: 0.85rem 0.6rem; }
+  .anim-panel { padding: 0.5rem 0.25rem 0.3rem; }
+  .lab-plots, .lab-plots > *, .lab-frame > * { min-width: 0; }
+  .lab-frame [style*="grid-template-columns"] { grid-template-columns: minmax(0, 1fr) !important; }
+  .lab-controls { grid-template-columns: minmax(0, 1fr); }
+  .mass-spring-svg { min-height: 0 !important; }
+  .mobile-svg-panels { display: grid; gap: 0.65rem; }
+  .mobile-svg-panels > svg { display: block; width: 100%; height: auto; }
+  .mobile-svg-panels[data-layout="disks"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mobile-svg-panels[data-layout="disks"] > svg:last-child { grid-column: 1 / -1; }
+}
+
+.figure-zoom {
+  width: calc(100vw - 1.5rem); max-width: 960px; max-height: calc(100dvh - 2rem);
+  padding: 0.6rem; border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text); background: var(--surface);
+}
+.figure-zoom::backdrop { background: rgb(0 0 0 / 55%); }
+.figure-zoom > button {
+  display: block; margin: 0 0 0.6rem auto; padding: 0.35rem 0.8rem; font: inherit;
+  color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px;
+}
+.figure-zoom-scroll { overflow: auto; max-height: calc(100dvh - 7rem); }
+.figure-zoom svg { display: block; width: 900px; height: auto; font-family: var(--font-sans); }
+.figure-zoom .fig-grid { stroke: var(--border); stroke-width: 1; }
+.figure-zoom .fig-axis { stroke: var(--text-muted); stroke-width: 1.2; }
+.figure-zoom .fig-zero { stroke: var(--text-muted); stroke-width: 1; opacity: 0.7; }
+.figure-zoom .fig-tick { font-size: 12.5px; fill: var(--text-muted); }
+.figure-zoom .fig-label, .figure-zoom .fig-legend { font-size: 13px; fill: var(--text-muted); }
+.figure-zoom .fig-title { font-size: 14px; font-weight: 700; fill: var(--text); }
+.figure-zoom .fig-note { font-size: 13px; }
+.figure-zoom .fig-bold { font-weight: 700; }

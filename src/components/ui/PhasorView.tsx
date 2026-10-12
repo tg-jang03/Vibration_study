@@ -1,3 +1,4 @@
+import ResponsiveSvg from './ResponsiveSvg';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatNumber } from '../../lib/format';
 import { phasorChain, phasorLength, phasorSignal, type Phasor } from '../../lib/dsp/phasor';
@@ -157,7 +158,7 @@ export default function PhasorView({
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed} status={status}>
         {children}
       </PlayControls>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={ariaLabel} style={{ display: 'block' }}>
+      <ResponsiveSvg mobilePanels={[[-8,-4,290,258],[282,-4,438,258]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={ariaLabel} style={{ display: 'block' }}>
         {/* 축: 위 = 신호 축(0°), 가로 = 0 */}
         <line x1={CX} y1={TOP - 4} x2={CX} y2={AXIS_Y} stroke="var(--border)" strokeDasharray="4 4" />
         <line x1={CX - 120} y1={CY} x2={X1} y2={CY} stroke="var(--border)" />
@@ -208,7 +209,7 @@ export default function PhasorView({
         <line x1={cursorX} y1={TOP} x2={cursorX} y2={AXIS_Y + 2} stroke="var(--text-muted)" strokeWidth="1" opacity="0.5" />
         <circle cx={tx} cy={ty} r={5} fill={traceColor} />
         <circle cx={cursorX} cy={valueY} r={5} fill={traceColor} />
-      </svg>
+      </ResponsiveSvg>
     </div>
   );
 }

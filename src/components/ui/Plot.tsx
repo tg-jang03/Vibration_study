@@ -1,3 +1,4 @@
+import { useMobileLayout } from './hooks';
 import { useEffect, useRef, useState } from 'react';
 import type { Config, Data, Layout } from 'plotly.js';
 
@@ -122,6 +123,8 @@ const CONFIG: Partial<Config> = {
 
 export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const mobile = useMobileLayout();
+  const plotHeight = mobile ? Math.min(height, Math.max(220, Math.round(height * 0.78))) : height;
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [themeVersion, setThemeVersion] = useState(0);
   const onRenderedRef = useRef(onRendered);
@@ -186,7 +189,7 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
         } as Data);
       }
       const layout: Partial<Layout> = {
-        height,
+        height: plotHeight,
         margin: { l: 56, r: 16, t: 16, b: 48 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
@@ -195,8 +198,8 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
         legend: { orientation: 'h', y: 1.12, x: 0 },
         bargap: 0.4,
         barmode: 'overlay',
-        xaxis: axisLayout(x, theme),
-        yaxis: axisLayout(y, theme),
+        xaxis: { ...axisLayout(x, theme), ...(mobile ? { nticks: 4 } : {}) },
+        yaxis: { ...axisLayout(y, theme), ...(mobile ? { nticks: 4 } : {}) },
         hovermode: 'closest',
       };
       if (bands?.length) {
@@ -222,7 +225,7 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
       cancelled = true;
     };
     // x, y는 xKey, yKey(내용)로 비교한다
-  }, [series, heatmap, bandsKey, xKey, yKey, height, themeVersion]);
+  }, [series, heatmap, bandsKey, xKey, yKey, plotHeight, mobile, themeVersion]);
 
   // 언마운트 시 Plotly 정리
   useEffect(() => {
@@ -233,7 +236,7 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
   }, []);
 
   return (
-    <div className="plot" style={{ minHeight: height }} role="img" aria-label={ariaLabel}>
+    <div className="plot" style={{ minHeight: plotHeight }} role="img" aria-label={ariaLabel}>
       {status === 'loading' && <p className="plot-loading">그래프 불러오는 중…</p>}
       {status === 'error' && <p className="plot-loading">그래프를 불러오지 못했습니다. 페이지를 새로고침해 주세요.</p>}
       <div ref={ref} />

@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { GEAR_DEMO, GEAR_PAIR, type GearFault, type GearSide } from '../../lib/faults/gear';
@@ -95,7 +96,7 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={Math.min(speed, speeds.length - 1)} onSpeed={setSpeed}
         status={`피니언 ${(t * f1).toFixed(2)}바퀴 · 기어 ${(t * f2).toFixed(2)}바퀴`} />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,320,278],[320,-4,400,278]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`${z1}이빨 피니언과 ${z2}이빨 기어가 맞물려 돈다. ${EXPLAIN[fault](side)}`}>
         {blur ? (
           <>
@@ -148,7 +149,7 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
             strokeWidth={e.damaged ? 2.4 : 1.1} opacity={e.t <= t ? 1 : 0.15} />
         ))}
         <line x1={xAt(t)} y1={30} x2={xAt(t)} y2={BASE + 5} stroke="var(--text-muted)" />
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">{EXPLAIN[fault](side)} 파랑·보라 선은 두 기어가 도는 것을 보이는 표시선입니다. 그림은 실제보다 느리게 재생합니다{hunting ? '(헌팅 투스는 주기를 보려고 더 빠르게 — 이빨이 너무 빨라 거꾸로 도는 것처럼 보이지 않게 피치원만 그림)' : ''}.</p>
     </div>
   );

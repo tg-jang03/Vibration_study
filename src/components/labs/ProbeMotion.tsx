@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { gapVoltage, runoutAt, shaftVibration, type ProbeCalibration, type ProbeSim, type RunoutKind } from '../../lib/proximity';
@@ -100,7 +101,7 @@ export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: P
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
         status={`gap ${formatNumber(gapNow * 1000, 4)} mm → ${vNow.toFixed(2)} V`} />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,300,270],[300,-4,420,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`근접 프로브 앞으로 축이 돈다. 지금 gap ${formatNumber(gapNow * 1000, 4)} mm, 출력 ${vNow.toFixed(2)} V. 오른쪽에 출력 전압이 그려진다.`}>
         {/* 프로브 */}
         <rect x={C.x - 11} y={TIP - 40} width={22} height={40} rx={4} fill="var(--surface)" stroke="var(--plot-1)" strokeWidth="2" />
@@ -138,7 +139,7 @@ export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: P
         <text x={X0} y={H - 4} fontSize="12" fill="var(--text-muted)">0</text>
         <text x={X0 + (X1 - X0) / 2} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">1바퀴</text>
         <text x={X1} y={H - 4} textAnchor="end" fontSize="12" fill="var(--text-muted)">2바퀴</text>
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">
         프로브는 바로 앞 축 표면까지의 거리(gap)를 전압으로 바꿉니다. 축이 센서 쪽으로 오면(진동) gap이 줄어 전압이 덜 음으로,
         {runout === 'none' ? ' 멀어지면 더 음으로 갑니다.' : ` 표면이 깎인 곳(흠집·타원 — 기계적 런아웃)이나 재질이 다른 곳(보라 무늬 — 전기적 런아웃)이 지나가면 축이 흔들리지 않아도 전압이 바뀝니다. 그래서 저속에서도 이 무늬가 남습니다.`}

@@ -1,3 +1,4 @@
+import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
 import { diskUnbalance, lagDiff, ROTOR_1X, vectorAt, type OneXOptions } from '../../lib/faults/oneX';
@@ -65,7 +66,7 @@ export default function OneXRotor({ o, reveal }: { o: OneXOptions; reveal: boole
   return (
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed} status={`축 ${(th / TWO_PI).toFixed(2)}바퀴 · ${ROTOR_1X.opRpm} rpm`} />
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
+      <ResponsiveSvg mobilePanels={[[0,-4,472,270],[472,-4,288,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
         aria-label={`원판 두 개 로터를 옆에서 본 모습. 두 베어링 수직 1X 위상차 ${Math.round(m.dphi)}°: ${shape}.`}>
         {/* 제자리 중심선 */}
         <line x1={30} y1={Y0} x2={460} y2={Y0} stroke="var(--border)" strokeDasharray="5 4" />
@@ -113,7 +114,7 @@ export default function OneXRotor({ o, reveal }: { o: OneXOptions; reveal: boole
         <line x1={cursor} y1={TY - TK - 8} x2={cursor} y2={TY + TK + 8} stroke="var(--text-muted)" opacity="0.6" />
         <text x={X0} y={H - 30} fontSize="12.5" fill="var(--text-muted)">위상차 (수직, 센서 2 − 센서 1) = <tspan fontWeight="700" fill="var(--text)">{Math.round(m.dphi)}°</tspan></text>
         <text x={X0} y={H - 12} fontSize="12.5" fill="var(--text-muted)">{shape}</text>
-      </svg>
+      </ResponsiveSvg>
       <p className="anim-caption">
         축의 위아래 움직임은 두 수직 센서가 읽은 1X를 직선으로 이은 것입니다(강성 로터, 움직임은 크게 그리되 축척은 고정이라 진폭 차이도 그대로 보입니다 — 센서 1 {formatNumber(2e6 * m.v1.amp, 3)} µm p-p, 센서 2 {formatNumber(2e6 * m.v2.amp, 3)} µm p-p).
         {unbalance ? ' 주황 점은 원판의 불평형(무거운 쪽)입니다. 두 원판에서 같은 각이면 축 전체가 같이 들리고(정적), 반대 각이면 한쪽이 들릴 때 다른 쪽이 내려갑니다(커플).' : ''}
