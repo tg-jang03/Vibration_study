@@ -17,5 +17,5 @@ export const SITE_TAGLINE = '진동·신호처리·회전기계 진단 인터랙
  * 검색엔진 소유 확인 코드 (D-054). 사용자가 Google Search Console(URL 접두어 속성)·네이버 서치어드바이저·
  * Bing 웹마스터 도구에서 "HTML 태그" 방식을 고르면 나오는 content 값만 넣는다. 빈 값이면 태그를 넣지 않는다.
  */
-export const SITE_VERIFICATION = { google: '', naver: '', bing: '' };
+export const SITE_VERIFICATION = { google: '-5U1wI8_T2onMVncxroPF8viemxlGrfQNcxIoP_NOm0', naver: '', bing: '' };
 export const REPO_URL = 'https://github.com/tg-jang03/Vibration_study';

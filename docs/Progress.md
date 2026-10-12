@@ -24,7 +24,7 @@
 
 - **M12 (D-054)**: 계획·완료 기준은 Roadmap §6-3. M12에서는 트랙 B 파일도 Claude가 고친다. 한국어가 원본, 영어는 `/en/`에 번역이 끝난 페이지만.
 - **M12.1 완료 (2026-10-12)**: `@astrojs/sitemap`(`/sitemap-index.xml`, `/dev/` 제외 158개), `BaseLayout`에 canonical·OG/Twitter·`public/og.png`(1200×630)·JSON-LD(홈 WebSite, 안쪽 BreadcrumbList, 절·랩 LearningResource)·`/dev/` noindex, props `crumbs`·`jsonLd`·`ogType`·`noindex`(하위 호환). 순수 함수 `lib/seo.ts`(+ 테스트). 제목: 절 "주제 (P2-3) | 사이트", 랩 "이름 · 인터랙티브 랩 (ID)", Part 설명 = 질문 + 절 제목들.
-- **사용자 할 일**: Search Console(URL 접두어 `https://tg-jang03.github.io/Vibration_study/`)·네이버 서치어드바이저·Bing에서 "HTML 태그" 소유 확인 → content 값을 받으면 `lib/site.ts`의 `SITE_VERIFICATION`에 넣고 push → 각 도구에 `sitemap-index.xml` 제출. 네이버가 하위 경로를 거부하면 `tg-jang03.github.io` 저장소로 루트 페이지를 만드는 방법(D-054).
+- **사용자 할 일**: Search Console(**소유 확인 태그 넣음 2026-10-12** → 확인·sitemap 제출 남음, URL 접두어 `https://tg-jang03.github.io/Vibration_study/`)·네이버 서치어드바이저·Bing에서 "HTML 태그" 소유 확인 → content 값을 받으면 `lib/site.ts`의 `SITE_VERIFICATION`에 넣고 push → 각 도구에 `sitemap-index.xml` 제출. 네이버가 하위 경로를 거부하면 `tg-jang03.github.io` 저장소로 루트 페이지를 만드는 방법(D-054).
 - **다음 M12.2**: Astro i18n(`/en/`, 기본 언어 접두어 없음) → 화면 문구 사전 → `curriculum.ts`·`labs.ts` 영어 → 언어 전환·hreflang(sitemap `i18n` 옵션) → 그림 대응표·랩 `t`·한글 누락 검사.
 
 ## 핸드오프 — 트랙 B (Codex)
