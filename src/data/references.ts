@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-79
+ * 다음 번호: R-86
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -118,6 +118,13 @@ export const REFERENCES: Reference[] = [
   { id: 'R-76', kind: 'book', authors: 'D. J. Ewins', title: 'Modal Testing: Theory, Practice and Application', source: 'Research Studies Press', year: '2000', about: '임팩트 시험(해머 팁·트리거·윈도우·평균), 측정 FRF에서 고유진동수·감쇠비 읽기' },
   { id: 'R-77', kind: 'book', authors: 'P. Avitabile', title: 'Modal Testing: A Practitioner’s Guide', source: 'Wiley', year: '2017', about: '임팩트 시험 실무 — 더블 히트·지수 윈도우 보정·코히어런스 확인, ODS와 모드 형상의 차이' },
   { id: 'R-78', kind: 'paper', authors: 'A. G. A. Rahman, Z. C. Ong, Z. Ismail', title: 'Effectiveness of Impact-Synchronous Time Averaging in determination of dynamic characteristics of a rotor dynamic system', source: 'Measurement 44(1)', year: '2011', about: '운전 중 임팩트 시험 — 타격에 맞춘 시간 평균으로 운전 성분을 줄이는 방법' },
+{ id: 'R-79', kind: 'web', authors: 'American Petroleum Institute', title: 'API Digital Catalog — Standards and Publications', source: 'API', url: 'https://www.api.org/products-and-services/standards/digital-catalog', about: 'API 612·616·617·670·684 계열의 공식 문서 종류·제목·판본 확인', note: '공개 문서 목록의 역할만 요약, 규격 본문·표·경계값은 전재하지 않는다. 2026-10-12 확인' },
+  { id: 'R-80', kind: 'standard', authors: 'ISO', title: 'ISO 13373-1:2002 — Vibration condition monitoring: General procedures', source: 'ISO', year: '2002', url: 'https://www.iso.org/standard/21831.html', about: '측정·자료 수집·운전 조건의 상태감시 절차', note: STD_NOTE },
+  { id: 'R-81', kind: 'standard', authors: 'ISO', title: 'ISO 13373-3:2015 — Guidelines for vibration diagnosis', source: 'ISO', year: '2015', url: 'https://www.iso.org/standard/40840.html', about: '진동 원인 진단의 구조적인 접근', note: STD_NOTE },
+  { id: 'R-82', kind: 'standard', authors: 'ISO', title: 'ISO 17359:2018 — Condition monitoring and diagnostics of machines: General guidelines', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/71194.html', about: '상태감시 프로그램의 일반 지침', note: STD_NOTE },
+  { id: 'R-83', kind: 'standard', authors: 'ISO', title: 'ISO 18436-2:2014 — Requirements for qualification and assessment of personnel: Vibration condition monitoring and diagnostics', source: 'ISO', year: '2014', url: 'https://www.iso.org/standard/50447.html', about: '진동 분석 인력의 교육·경험·평가 네 범주', note: STD_NOTE },
+  { id: 'R-84', kind: 'web', authors: 'Vibration Institute', title: 'Vibration Analyst Categories', source: 'Vibration Institute', url: 'https://vi-institute.org/analyst-categories/', about: 'CAT I~IV 인력 인증 범주별 역할의 공개 안내' },
+  { id: 'R-85', kind: 'paper', authors: 'Rasish Khatri, Larry Hawkins', title: 'Applicability of API 617 8th ed. and ISO 14839-3 in evaluating the dynamic stability of AMB-supported compressors', source: 'Calnetix Technologies · 저자 공개 논문', url: 'https://www.calnetix.com/sites/default/files/2023-03/Applicability%20of%20API%20617%208th%20ed.%20and%20ISO%2014839-3%20in%20evaluating%20the%20dynamic%20stability%20of%20AMB-supported%20compressors.pdf', about: '안정성 설계 해석과 AF·SM 응답 검토의 목적을 구별', note: '과거 8판의 주제 설명 근거. 규격 요구식·경계값·도표는 전재하지 않으며 현행 요구는 적용 판본에서 대조' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));

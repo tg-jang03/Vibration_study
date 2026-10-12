@@ -23,6 +23,8 @@ const flag = (name) => {
 const base = opt('base', 'http://localhost:4321/Vibration_study').replace(/\/+$/, '');
 const outDir = opt('out', 'dist/qa');
 const width = Number(opt('width', '1100'));
+const figurePart = Number(opt('figure-part', '0')); // 갤러리에서 이번 Part 그림만 검사
+if (!Number.isInteger(figurePart) || figurePart < 0 || figurePart > 11) throw new Error('--figure-part는 1~11');
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
 const jeffcottSmoke = flag('jeffcott-smoke');
@@ -107,6 +109,10 @@ for (const p of paths) {
   await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
   await send('Page.navigate', { url });
   await sleep(2000);
+  if (figurePart && p.replace(/\/$/, '') === '/dev/figures') {
+    // Only the verifier's temporary DOM changes; the built gallery remains complete.
+    await ev(`document.querySelectorAll('figure').forEach(f => { if (!f.id.startsWith('fig-p${figurePart}-')) f.remove(); }); document.querySelectorAll('h2').forEach(h => { if (!h.textContent.trim().startsWith('P${figurePart}-')) h.remove(); });`);
+  }
   const height = await ev('document.documentElement.scrollHeight');
   for (let y = 0; y < height; y += 700) {
     await ev(`window.scrollTo(0, ${y})`);
