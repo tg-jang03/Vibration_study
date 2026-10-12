@@ -1,0 +1,567 @@
+---
+/**
+ * 홈 (D-037 학습 지도). 한국어 /와 영어 /en/이 같은 틀을 쓴다 (D-054).
+ * 영어 홈의 칸: 영어판이 있는 절은 색이 차고, 아직 한국어뿐인 절은 테두리만 — 누르면 한국어 페이지로 간다.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STAGES, partProgress } from '../../data/curriculum';
+import { LABS } from '../../data/labs';
+import { withBase } from '../../lib/site';
+import { localizePath, type Lang } from '../../i18n';
+import { partQuestion, partTitle, sectionTitle, shortTitle, stageText, statusLabel } from '../../i18n/content';
+import { hasEnglishSection, sectionPath } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = UI[lang];
+const en = lang === 'en';
+/** 이 언어로 읽을 수 있는 절인가 (한국어: 페이지가 있으면, 영어: 영어판이 있으면) */
+const readable = (s: { id: string; href?: string }) => !!s.href && (!en || hasEnglishSection(s.id));
+const cellStatus = (s: { id: string; href?: string; status: 'planned' | 'review' | 'done' }) =>
+  !s.href ? 'planned' : en && !hasEnglishSection(s.id) ? 'ko' : s.status;
+const progress = (part: (typeof PARTS)[number]) =>
+  en ? { ready: part.sections.filter(readable).length, total: part.sections.length } : partProgress(part);
+
+const allSections = PARTS.flatMap((p) => p.sections);
+const published = allSections.filter(readable).length;
+const first = allSections.find(readable) ?? allSections.find((s) => s.href);
+const lastKey = en ? 'vs-last-section-en-v1' : 'vs-last-section-v3';
+
+// 히어로 그림: 정현파 셋을 더한 파형 → 스펙트럼 막대 (장식, 계산은 빌드 때)
+const COMPS = [
+  { f: 3, a: 1, color: 'var(--plot-1)' },
+  { f: 7, a: 0.5, color: 'var(--plot-3)' },
+  { f: 13, a: 0.28, color: 'var(--plot-2)' },
+];
+const wave = Array.from({ length: 241 }, (_, i) => {
+  const t = i / 240;
+  const y = COMPS.reduce((sum, c, k) => sum + c.a * Math.sin(2 * Math.PI * c.f * t + k), 0);
+  return `${i === 0 ? 'M' : 'L'}${(16 + t * 308).toFixed(1)},${(62 - y * 24).toFixed(1)}`;
+}).join('');
+const fx = (f: number) => 26 + (f / 16) * 288;
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="hero-text">
+    <p class="hero-kicker">{t.heroKicker}</p>
+    <h1>{t.heroTitle}</h1>
+    <p class="lead">
+      {t.heroLead}
+    </p>
+    <div class="hero-actions">
+      {first && <a class="btn btn-primary" href={withBase(sectionPath(first, lang) ?? '/')}>{t.startHere} · {first.id} {shortTitle(sectionTitle(first, lang))}</a>}
+      <a class="btn" id="resume" href={withBase(localizePath('/', lang))} hidden>{t.resume}</a>
+      <a class="btn" href={withBase(localizePath('/lab/', lang))}>{t.labGallery}</a>
+    </div>
+    <dl class="hero-stats">
+      <div><dt>{t.statSections}</dt><dd>{published}<small> / {allSections.length}</small></dd></div>
+      <div><dt>{t.statLabs}</dt><dd>{LABS.length}</dd></div>
+      <div><dt>Part</dt><dd>{PARTS.length}</dd></div>
+    </dl>
+    </div>
+    <svg class="hero-art" viewBox="0 0 340 236" aria-hidden="true">
+      <rect x="1" y="1" width="338" height="234" rx="14" class="art-bg" />
+      <text x="16" y="22" class="art-label">{t.artWave}</text>
+      <line x1="16" y1="62" x2="324" y2="62" class="art-axis" />
+      <path d={wave} class="art-wave" />
+      <text x="170" y="122" text-anchor="middle" class="art-fft">FFT ↓</text>
+      <text x="16" y="146" class="art-label">{t.artSpectrum}</text>
+      <line x1="16" y1="214" x2="324" y2="214" class="art-axis" />
+      {Array.from({ length: 17 }, (_, f) => f).map((f) => {
+        const c = COMPS.find((k) => k.f === f);
+        const h = c ? c.a * 58 : 2 + ((f * 7) % 5);
+        return <rect x={fx(f) - 5} y={214 - h} width="10" height={h} rx="2" style={`fill:${c ? c.color : 'var(--border)'}`} />;
+      })}
+      {COMPS.map((c) => (
+        <text x={fx(c.f)} y={214 - c.a * 58 - 6} text-anchor="middle" class="art-tick" style={`fill:${c.color}`}>{c.f}X</text>
+      ))}
+    </svg>
+  </section>
+  <section class="map" aria-labelledby="map-title">
+    <div class="map-head">
+      <h2 id="map-title">{t.mapTitle}</h2>
+      <p>{t.mapLead(PARTS.length)}</p>
+      <ul class="legend">
+        {!en && <li><span class="cell" data-status="done"></span>{statusLabel('done', lang)}</li>}
+        <li><span class="cell" data-status="review"></span>{en ? 'English' : `${statusLabel('review', lang)} ${t.legendReadable}`}</li>
+        {en && <li><span class="cell" data-status="ko"></span>Korean only</li>}
+        <li><span class="cell" data-status="planned"></span>{t.comingSoon}</li>
+      </ul>
+    </div>
+    <ol class="stages">
+      {
+        STAGES.map((stage) => (
+          <li class="stage" style={`--stage:${stage.color}`}>
+            <div class="stage-rail" aria-hidden="true">
+              <span class="stage-num">{stage.num}</span>
+            </div>
+            <div class="stage-body">
+              <header class="stage-head">
+                <span class="stage-label">{t.stage(stage.num)}</span>
+                <h3>{stageText(stage, lang).title}</h3>
+                <p>{stageText(stage, lang).summary}</p>
+              </header>
+              <div class="stage-parts">
+                {stage.parts.map((num) => {
+                  const part = PARTS.find((p) => p.num === num)!;
+                  const { ready, total } = progress(part);
+                  const labs = LABS.filter((l) => l.part === num).length;
+                  return (
+                    <article class="part-tile">
+                      <a class="part-head" href={withBase(localizePath(`/parts/${num}/`, lang))}>
+                        <span class="ring" style={`--p:${total ? Math.round((ready / total) * 100) : 0}`}>
+                          <span>{num}</span>
+                        </span>
+                        <span class="part-text">
+                          <span class="part-title">{shortTitle(partTitle(part, lang))}</span>
+                          <span class="part-q">{partQuestion(part, lang)}</span>
+                        </span>
+                      </a>
+                      <ol class="cells" aria-label={t.partCellsLabel(num)}>
+                        {part.sections.map((s) => (
+                          <li>
+                            {s.href ? (
+                              <a
+                                class="cell"
+                                data-status={cellStatus(s)}
+                                href={withBase(sectionPath(s, lang) ?? '/')}
+                                title={`${s.id} ${sectionTitle(s, lang)} · ${cellStatus(s) === 'ko' ? t.koreanOnlyTitle : statusLabel(s.status, lang)}`}
+                              >
+                                {s.id.split('-')[1]}
+                              </a>
+                            ) : (
+                              <span class="cell" data-status="planned" title={`${s.id} ${sectionTitle(s, lang)} · ${t.comingSoon}`}>
+                                {s.id.split('-')[1]}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                      <p class="part-meta">
+                        {t.readableCount(ready, total)}
+                        {labs > 0 && <span> · {t.labCount(labs)}</span>}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+  <script is:inline define:vars={{ lastKey, resumeLabel: t.resume }}>
+    try {
+      const last = JSON.parse(localStorage.getItem(lastKey) || 'null');
+      const a = document.getElementById('resume');
+      if (last && last.href && a) {
+        a.href = last.href;
+        a.textContent = resumeLabel + ' · ' + last.id + ' ' + String(last.title).split(':')[0];
+        a.hidden = false;
+      }
+    } catch (e) {}
+  </script>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+  }
+
+  .hero-art {
+    width: 100%;
+    max-width: 340px;
+    justify-self: center;
+  }
+
+  .art-bg {
+    fill: var(--surface);
+    stroke: var(--border);
+  }
+
+  .art-axis {
+    stroke: var(--border);
+    stroke-width: 1.2;
+  }
+
+  .art-wave {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.2;
+    stroke-linejoin: round;
+  }
+
+  .art-label {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--text-muted);
+  }
+
+  .art-fft {
+    font-size: 12px;
+    font-weight: 800;
+    fill: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .art-tick {
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .hero-kicker {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin: 0 0 0.6rem;
+  }
+
+  .hero .lead {
+    max-width: 46rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn:hover,
+  .btn:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--surface);
+  }
+
+  .btn[hidden] {
+    display: none;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  .hero-stats div {
+    min-width: 9rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .hero-stats dt {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .hero-stats dd {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .hero-stats small {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .map-head h2 {
+    margin: 0 0 0.3rem;
+  }
+
+  .map-head p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+
+  .legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0;
+    margin: 0.7rem 0 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    --stage: var(--accent);
+  }
+
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .legend .cell {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .stages {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .stage-rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .stage-rail::before {
+    content: '';
+    position: absolute;
+    top: 2.4rem;
+    bottom: -0.4rem;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(var(--stage), var(--border));
+  }
+
+  .stage:last-child .stage-rail::before {
+    display: none;
+  }
+
+  .stage-num {
+    position: relative;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: var(--surface);
+    background: var(--stage);
+    box-shadow: 0 0 0 4px var(--bg);
+  }
+
+  .stage-body {
+    padding-bottom: 2rem;
+    min-width: 0;
+  }
+
+  .stage-head {
+    margin-bottom: 0.9rem;
+  }
+
+  .stage-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--stage);
+    letter-spacing: 0.04em;
+  }
+
+  .stage-head h3 {
+    margin: 0.1rem 0 0.2rem;
+    font-size: 1.25rem;
+  }
+
+  .stage-head p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  .stage-parts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--gap);
+  }
+
+  .part-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--stage);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+
+  .part-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .part-head {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .part-head:hover .part-title,
+  .part-head:focus-visible .part-title {
+    color: var(--stage);
+  }
+
+  .ring {
+    flex: none;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--stage) calc(var(--p) * 1%), var(--surface-2) 0);
+  }
+
+  .ring span {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--surface);
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .part-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .part-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+    line-height: 1.35;
+  }
+
+  .part-q {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  .cells {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .cell {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid var(--stage);
+    transition: transform 0.1s ease;
+  }
+
+  .cell[data-status='done'] {
+    background: var(--stage);
+    color: var(--surface);
+  }
+
+  .cell[data-status='review'] {
+    background: color-mix(in srgb, var(--stage) 22%, var(--surface));
+    color: var(--text);
+  }
+
+  /* 영어 홈: 아직 한국어뿐인 절 (누르면 한국어 페이지) */
+  .cell[data-status='ko'] {
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .cell[data-status='planned'] {
+    border: 1.5px dashed var(--border);
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  a.cell:hover,
+  a.cell:focus-visible {
+    transform: scale(1.12);
+  }
+
+  .part-meta {
+    margin: 0;
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 560px) {
+    .stage {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.6rem;
+    }
+
+    .stage-num {
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .stage-rail::before {
+      top: 2rem;
+    }
+  }
+</style>

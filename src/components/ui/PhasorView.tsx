@@ -3,6 +3,7 @@ import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatNumber } from '../../lib/format';
 import { phasorChain, phasorLength, phasorSignal, type Phasor } from '../../lib/dsp/phasor';
 import { usePlayClock } from './hooks';
+import { useUi } from './lang';
 import PlayControls, { type PlaySpeed } from './PlayControls';
 
 /**
@@ -103,6 +104,7 @@ export default function PhasorView({
   ariaLabel,
   children,
 }: PhasorViewProps) {
+  const ui = useUi();
   const box = useRef<HTMLDivElement>(null);
   const [speed, setSpeed] = useState(Math.min(defaultSpeed, speeds.length - 1));
   const clock = usePlayClock(speeds[speed]?.rate ?? speeds[0].rate, span, box);
@@ -163,7 +165,7 @@ export default function PhasorView({
         <line x1={CX} y1={TOP - 4} x2={CX} y2={AXIS_Y} stroke="var(--border)" strokeDasharray="4 4" />
         <line x1={CX - 120} y1={CY} x2={X1} y2={CY} stroke="var(--border)" />
         <text x={CX + 6} y={14} fontSize="13" fill="var(--text-muted)">0°</text>
-        <text x={6} y={16} fontSize="13" fill="var(--text-muted)">회전 ↺</text>
+        <text x={6} y={16} fontSize="13" fill="var(--text-muted)">{ui.polarRotationCcw}</text>
         <line x1={X0} y1={TOP} x2={X0} y2={AXIS_Y + 2} stroke="var(--border)" />
         <text x={X0 + 6} y={16} fontSize="13" fill="var(--text-muted)">{traceLabel}</text>
         {ticks.map((v) => (

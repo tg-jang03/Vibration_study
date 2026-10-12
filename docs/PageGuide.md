@@ -390,3 +390,18 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 | "얻는 것과 잃는 것"을 표와 그림으로 정리 | P2-5 §2.2, §3 |
 | 같은 랩을 시작 상태만 바꿔 네 번 쓰기, `warn` 제목 쓰는 법 | P2-6 §2 ~ §5 |
 | 목적별 고르기 표 | P2-5 §3.3, P2-6 §6 |
+
+## 13. 영어판 만들기 (D-054, M12)
+
+한국어가 원본이고 영어는 `/en/` 아래 **번역이 끝난 페이지만** 낸다. 한국어 페이지를 고칠 때는 영어를 신경 쓰지 않아도 된다 — `npm run i18n:status`가 낡은 영어판을 알려 준다. 기준 예: P2-3 (`src/pages/en/p2-3.mdx`).
+
+| 할 일 | 어디·어떻게 |
+|---|---|
+| 남은 절·낡은 번역 보기 | `npm run i18n:status` (다시 옮긴 뒤 `-- --stamp p2-3`로 해시 갱신) |
+| 본문 | `src/pages/en/pX-Y.mdx`: 한국어 파일과 같은 뼈대, `layout: ../../layouts/MdxLayout.astro`, 같은 `sectionId`, `source`·`sourceHash`, import는 `../../`. 랩은 `<SamplingLab client:load lang="en" />` |
+| 그림 | 그림 코드는 그대로. 제목·라벨·캡션은 `src/i18n/en/figures/pX-Y.ts` 사전(키 = 한국어 원문). 빠진 키는 `npx vitest run src/i18n/figures.test.ts`가 그대로 보여 준다 |
+| 랩 | 화면 문자열을 `tr`로 감싼다 (`t`는 시간 변수라 피함): ``tr`…${x}…` ``, 모듈 맨 위 글은 `k('…')` → 렌더 때 `tr(o.label)`, KaTeX는 ``\\text{${tr`…`}}``. 하위 컴포넌트는 `useLang()`. 사전 `src/i18n/en/labs/<파일>.ts` — 뼈대는 `node scripts/i18n/scan-lab.mjs <랩>`. 다 되면 `src/i18n/labsReady.ts`와 `src/pages/en/lab/[slug].astro`에 한 줄씩 (테스트가 잡는다) |
+| 참고자료 | 쓴 곳 메모는 영어 MDX에 영어로. `references.ts`의 한국어 서지는 `src/i18n/en/references.ts` |
+| 화면 틀 문구 | `src/i18n/ui.ts` (한·영 같은 키, 타입이 잡는다). 목차·랩 모음 영어는 `src/i18n/en/curriculum.ts`·`labs.ts` |
+| 문체 | 뜻을 옮기고 말투는 질문에서 출발하는 설명조 그대로. 용어는 `Glossary.md`의 영문, 숫자·기호·단위는 손대지 않는다. "그림 3" → "Figure 3" |
+| 검사 | `npm test` → `npm run build` → `npm run verify:i18n`(영어 페이지에 남은 한글 0) → `npm run verify:page -- /en/pX-Y/`로 영어 라벨이 그림·랩에서 넘치지 않는지 본다 (영어가 대개 더 길다) |

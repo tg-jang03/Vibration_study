@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { niceTicks } from '../../lib/figure';
+import { useUi } from './lang';
 
 /**
  * Polar 플롯 (1X 벡터 A∠φ, D-035). Plot 래퍼(Plotly 카테시안 번들)에 극좌표가 없어 SVG로 직접 그린다.
@@ -47,6 +48,7 @@ const DEFAULT_COLORS = ['var(--plot-1)', 'var(--plot-2)', 'var(--plot-3)', 'var(
 const f1 = (v: number) => (Math.round(v * 10) / 10).toString();
 
 export default function PolarPlot({ series, rMax, unit, rotation = 'ccw', ariaLabel, maxWidth = 440 }: PolarPlotProps) {
+  const t = useUi();
   const clipId = `polar-clip-${useId().replace(/:/g, '')}`;
   const dir = rotation === 'ccw' ? 1 : -1;
   const s = R / rMax;
@@ -82,9 +84,9 @@ export default function PolarPlot({ series, rMax, unit, rotation = 'ccw', ariaLa
             <text x={C + 4} y={C - v * s + 13} fill="var(--text-muted)" fontSize={12}>{i === rings.length - 1 && unit ? `${f1(v)} ${unit}` : f1(v)}</text>
           </g>
         ))}
-        <text x={6} y={14} fill="var(--text-muted)">{rotation === 'ccw' ? '회전 ↺' : '회전 ↻'}</text>
-        <text x={SIZE - 6} y={14} textAnchor="end" fill="var(--text-muted)">{rotation === 'ccw' ? '지연 ↻' : '지연 ↺'}</text>
-        <text x={6} y={SIZE - 6} fill="var(--text-muted)" fontSize={12}>0° = 센서 방향</text>
+        <text x={6} y={14} fill="var(--text-muted)">{rotation === 'ccw' ? t.polarRotationCcw : t.polarRotationCw}</text>
+        <text x={SIZE - 6} y={14} textAnchor="end" fill="var(--text-muted)">{rotation === 'ccw' ? t.polarLagCcw : t.polarLagCw}</text>
+        <text x={6} y={SIZE - 6} fill="var(--text-muted)" fontSize={12}>{t.polarZero}</text>
         <g clipPath={`url(#${clipId})`}>
           {series.map((sr, i) => {
             const color = sr.color ?? DEFAULT_COLORS[i % DEFAULT_COLORS.length];

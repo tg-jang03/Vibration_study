@@ -1,0 +1,29 @@
+---
+/**
+ * 영어 랩 단독 페이지 (/en/lab/{slug}/, D-054). 영어 화면을 갖춘 랩만 만든다 — 목록은 src/i18n/routes.ts의 EN_LAB_COMPONENTS.
+ * 랩을 번역하면 EN_LAB_COMPONENTS와 아래 목록에 한 줄씩 더한다 (테스트가 빠진 줄을 잡는다).
+ */
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import LabPageShell from '../../../components/site/LabPageShell.astro';
+import { LABS } from '../../../data/labs';
+import { hasEnglishLab } from '../../../i18n/routes';
+
+import AafLab from '../../../components/labs/AafLab';
+import AdcLab from '../../../components/labs/AdcLab';
+import SamplingLab from '../../../components/labs/SamplingLab';
+
+export const getStaticPaths = (() =>
+  LABS.flatMap((lab, i) =>
+    hasEnglishLab(lab.component) ? [{ params: { slug: lab.slug }, props: { lab, prev: LABS[i - 1], next: LABS[i + 1] } }] : [],
+  )) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { lab, prev, next } = Astro.props as Props;
+const c = lab.component;
+---
+
+<LabPageShell lang="en" lab={lab} prev={prev} next={next}>
+  {c === 'SamplingLab' && <SamplingLab client:load lang="en" />}
+  {c === 'AafLab' && <AafLab client:load lang="en" />}
+  {c === 'AdcLab' && <AdcLab client:load lang="en" />}
+</LabPageShell>

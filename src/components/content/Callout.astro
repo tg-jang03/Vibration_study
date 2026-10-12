@@ -4,20 +4,17 @@
  * type: idea 핵심 / try 따라 하기 / warn 주의 / example 숫자 예 / term 용어 풀이 / field 현장에서는
  * 사용: <Callout type="warn" title="…">본문(마크다운)</Callout>
  */
+import { langOfUrl } from '../../i18n';
+import { UI } from '../../i18n/ui';
+
 interface Props {
   type?: 'idea' | 'try' | 'warn' | 'example' | 'term' | 'field';
   title?: string;
 }
 
 const { type = 'idea', title } = Astro.props;
-const LABEL: Record<NonNullable<Props['type']>, string> = {
-  idea: '핵심',
-  try: '따라 하기',
-  warn: '주의',
-  example: '숫자 예',
-  term: '용어 풀이',
-  field: '현장에서는',
-};
+/** 상자 이름 — 한국어·영어 (D-054, src/i18n/ui.ts의 callout) */
+const LABEL = UI[langOfUrl(Astro.url)].callout;
 ---
 
 <aside class={`callout callout-${type}`}>

@@ -1,8 +1,12 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import { PARTS, STATUS_LABEL, type Part } from '../data/curriculum';
-import { SITE_NAME, withBase } from '../lib/site';
-import { canonicalUrl, learningResourceLd, sectionTitle } from '../lib/seo';
+import { PARTS, type Part } from '../data/curriculum';
+import { withBase } from '../lib/site';
+import { canonicalUrl, learningResourceLd, sectionTitle as seoTitle } from '../lib/seo';
+import { langOfUrl, localizePath } from '../i18n';
+import { partTitle, sectionTitle, statusLabel } from '../i18n/content';
+import { hasEnglishSection, sectionPath } from '../i18n/routes';
+import { UI } from '../i18n/ui';
 
 interface Props {
   frontmatter: {
@@ -17,34 +21,42 @@ interface Props {
 
 const { frontmatter, headings = [] } = Astro.props;
 
+// 언어 (D-054): 영어 절 페이지는 src/pages/en/에 있고 같은 sectionId를 쓴다
+const lang = langOfUrl(Astro.url);
+const t = UI[lang];
+/** 영어 페이지에서 아직 번역 안 된 절은 한국어 페이지로 가고 KO 표시를 붙인다 */
+const koOnly = (id: string) => lang === 'en' && !hasEnglishSection(id);
+
 const sections = PARTS.flatMap((part) => part.sections.map((section) => ({ ...section, part })));
 const index = frontmatter.sectionId ? sections.findIndex((s) => s.id === frontmatter.sectionId) : -1;
 const current = index >= 0 ? sections[index] : undefined;
 const prev = index > 0 ? sections[index - 1] : undefined;
 const next = index >= 0 ? sections[index + 1] : undefined;
 const part: Part | undefined = current?.part;
+const href = (s: { id: string; href?: string }) => withBase(sectionPath(s, lang) ?? '/');
 /** 이 페이지의 ## 제목 (사이드바의 "이 페이지" 목록) */
 const toc = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text.replace(/\s+/g, ' ').trim() }));
-const last = current ? JSON.stringify({ id: current.id, title: current.title, href: withBase(current.href ?? '/') }) : '';
+const lastKey = lang === 'en' ? 'vs-last-section-en-v1' : 'vs-last-section-v3';
+const last = current ? JSON.stringify({ id: current.id, title: sectionTitle(current, lang), href: href(current) }) : '';
 
 // 검색 노출 (M12.1): 제목은 주제어 먼저, 경로 표시·학습 자료 구조화 데이터
 const site = Astro.site ?? new URL('https://tg-jang03.github.io');
-const docTitle = frontmatter.title ? sectionTitle(frontmatter.title, frontmatter.sectionId) : undefined;
+const docTitle = frontmatter.title ? seoTitle(frontmatter.title, frontmatter.sectionId) : undefined;
 const crumbs = current
   ? [
-      { name: `Part ${current.part.num}. ${current.part.title}`, path: `/parts/${current.part.num}/` },
-      { name: `${current.id} ${current.title}`, path: current.href ?? '/' },
+      { name: `Part ${current.part.num}. ${partTitle(current.part, lang)}`, path: localizePath(`/parts/${current.part.num}/`, lang) },
+      { name: `${current.id} ${sectionTitle(current, lang)}`, path: localizePath(current.href ?? '/', lang) },
     ]
   : undefined;
 const jsonLd = current
   ? [
       learningResourceLd({
-        name: current.title,
+        name: sectionTitle(current, lang),
         description: frontmatter.description,
         url: canonicalUrl(Astro.url.pathname, site),
-        lang: 'ko',
+        lang,
         kind: 'lesson',
-        site: { name: SITE_NAME, url: new URL(withBase('/'), site).href },
+        site: { name: t.siteName, url: new URL(withBase(localizePath('/', lang)), site).href },
       }),
     ]
   : [];
@@ -54,32 +66,36 @@ const jsonLd = current
   <div class="page-layout" data-has-nav={part ? '' : undefined}>
     {
       part && current && (
-        <aside class="part-nav" aria-label={`Part ${part.num} 절 목록`}>
+        <aside class="part-nav" aria-label={t.partSections(part.num)}>
           <details class="part-nav-box" open>
             <summary>
               <span class="part-nav-kicker">Part {part.num}</span>
-              <span class="part-nav-title">{part.title}</span>
+              <span class="part-nav-title">{partTitle(part, lang)}</span>
             </summary>
             <ol class="part-nav-list">
               {part.sections.map((s) => {
                 const here = s.id === current.id;
+                const ko = koOnly(s.id);
                 return (
-                  <li data-status={s.status} data-current={here ? '' : undefined}>
+                  <li data-status={ko ? 'planned' : s.status} data-current={here ? '' : undefined}>
                     {s.href ? (
-                      <a href={withBase(s.href)} aria-current={here ? 'page' : undefined} title={`${s.id} · ${STATUS_LABEL[s.status]}`}>
+                      <a href={href(s)} aria-current={here ? 'page' : undefined} title={ko ? t.koreanOnlyTitle : `${s.id} · ${statusLabel(s.status, lang)}`}>
                         <span class="nav-dot" aria-hidden="true" />
                         <span class="nav-id">{s.id}</span>
-                        <span class="nav-text">{s.title}</span>
+                        <span class="nav-text">
+                          {sectionTitle(s, lang)}
+                          {ko && <span class="ko-mark">{t.koreanOnly}</span>}
+                        </span>
                       </a>
                     ) : (
-                      <span class="nav-planned" title={`${s.id} · 준비 중`}>
+                      <span class="nav-planned" title={`${s.id} · ${t.comingSoon}`}>
                         <span class="nav-dot" aria-hidden="true" />
                         <span class="nav-id">{s.id}</span>
-                        <span class="nav-text">{s.title}</span>
+                        <span class="nav-text">{sectionTitle(s, lang)}</span>
                       </span>
                     )}
                     {here && toc.length > 0 && (
-                      <ul class="part-nav-toc" aria-label="이 페이지">
+                      <ul class="part-nav-toc" aria-label={t.onThisPage}>
                         {toc.map((h) => (
                           <li>
                             <a href={`#${h.slug}`}>{h.text}</a>
@@ -91,16 +107,16 @@ const jsonLd = current
                 );
               })}
             </ol>
-            <div class="part-nav-parts" aria-label="다른 Part">
+            <div class="part-nav-parts" aria-label={t.otherParts}>
               {PARTS.map((p) => (
-                <a href={withBase(`/parts/${p.num}/`)} aria-current={p.num === part.num ? 'true' : undefined} title={`Part ${p.num}. ${p.title}`}>
+                <a href={withBase(localizePath(`/parts/${p.num}/`, lang))} aria-current={p.num === part.num ? 'true' : undefined} title={`Part ${p.num}. ${partTitle(p, lang)}`}>
                   {p.num}
                 </a>
               ))}
             </div>
           </details>
+          {/* 좁은 화면에서는 절 목록을 접어 둔다 (넓은 화면은 늘 펼침). 목록 바로 뒤에서 실행해 깜빡임이 없다 */}
           <script is:inline>
-            // 좁은 화면에서는 절 목록을 접어 둔다 (넓은 화면은 늘 펼침). 목록 바로 뒤에서 실행해 깜빡임이 없다
             if (window.matchMedia('(max-width: 1199px)').matches) document.querySelector('.part-nav-box')?.removeAttribute('open');
           </script>
         </aside>
@@ -110,7 +126,11 @@ const jsonLd = current
       {
         current && (
           <div class="breadcrumb">
-            <a href={withBase('/')}>커리큘럼</a> › <a href={withBase(`/parts/${current.part.num}/`)}>Part {current.part.num}. {current.part.title}</a> › {current.id}
+            <a href={withBase(localizePath('/', lang))}>{t.navCurriculum}</a> ›{' '}
+            <a href={withBase(localizePath(`/parts/${current.part.num}/`, lang))}>
+              Part {current.part.num}. {partTitle(current.part, lang)}
+            </a>{' '}
+            › {current.id}
           </div>
         )
       }
@@ -119,21 +139,31 @@ const jsonLd = current
       </article>
       {
         current && (
-          <nav class="section-pager" aria-label="절 이동">
+          <nav class="section-pager" aria-label={t.sectionPager}>
             {prev ? (
               prev.href ? (
-                <a href={withBase(prev.href)}>← {prev.id} {prev.title}</a>
+                <a href={href(prev)}>
+                  ← {prev.id} {sectionTitle(prev, lang)}
+                  {koOnly(prev.id) && <span class="ko-mark">{t.koreanOnly}</span>}
+                </a>
               ) : (
-                <span class="pager-soon">← {prev.id} {prev.title} (준비 중)</span>
+                <span class="pager-soon">
+                  ← {prev.id} {sectionTitle(prev, lang)} ({t.comingSoon})
+                </span>
               )
             ) : (
               <span />
             )}
             {next ? (
               next.href ? (
-                <a href={withBase(next.href)}>{next.id} {next.title} →</a>
+                <a href={href(next)}>
+                  {next.id} {sectionTitle(next, lang)}
+                  {koOnly(next.id) && <span class="ko-mark">{t.koreanOnly}</span>} →
+                </a>
               ) : (
-                <span class="pager-soon">{next.id} {next.title} (준비 중) →</span>
+                <span class="pager-soon">
+                  {next.id} {sectionTitle(next, lang)} ({t.comingSoon}) →
+                </span>
               )
             ) : (
               <span />
@@ -145,9 +175,9 @@ const jsonLd = current
   </div>
   {
     current && (
-      <script is:inline define:vars={{ last }}>
+      <script is:inline define:vars={{ last, lastKey }}>
         try {
-          localStorage.setItem('vs-last-section-v3', last);
+          localStorage.setItem(lastKey, last);
         } catch (e) {}
       </script>
     )

@@ -1,16 +1,13 @@
 ---
 /**
- * 랩 단독 페이지 (/lab/{slug}/, D-037). 랩 하나와 그 랩이 나온 절(원문 설명)로 가는 링크.
+ * 랩 단독 페이지 (/lab/{slug}/, D-037). 틀(머리·원문 설명·이동)은 components/site/LabPageShell.astro.
  * Astro는 동적으로 고른 컴포넌트에 client: 지시어를 붙일 수 없으므로 랩마다 조건부로 적는다 —
  * 새 랩을 src/data/labs.ts에 더하면 아래 목록에도 한 줄을 더한다 (테스트가 빠진 줄을 잡는다).
+ * 영어 화면을 갖춘 랩은 src/pages/en/lab/[slug].astro에도 lang="en"으로 한 줄 (D-054).
  */
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { PARTS, STAGES } from '../../data/curriculum';
+import LabPageShell from '../../components/site/LabPageShell.astro';
 import { LABS } from '../../data/labs';
-import { labRefs } from '../../lib/labRefs';
-import { SITE_NAME, withBase } from '../../lib/site';
-import { canonicalUrl, learningResourceLd } from '../../lib/seo';
 
 import AafLab from '../../components/labs/AafLab';
 import AdcLab from '../../components/labs/AdcLab';
@@ -101,224 +98,88 @@ export const getStaticPaths = (() =>
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { lab, prev, next } = Astro.props as Props;
-const part = PARTS.find((p) => p.num === lab.part);
-const color = STAGES.find((s) => s.parts.includes(lab.part))?.color ?? 'var(--accent)';
-const refs = labRefs(lab);
 const c = lab.component;
-// 검색 노출 (M12.1): 제목은 랩 이름 먼저, 경로 표시 Signal Lab › 랩, 학습 자료(인터랙티브)
-const site = Astro.site ?? new URL('https://tg-jang03.github.io');
-const crumbs = [
-  { name: 'Signal Lab', path: '/lab/' },
-  { name: lab.title, path: `/lab/${lab.slug}/` },
-];
-const jsonLd = [
-  learningResourceLd({
-    name: lab.title,
-    description: lab.summary,
-    url: canonicalUrl(Astro.url.pathname, site),
-    lang: 'ko',
-    kind: 'interactive simulation',
-    site: { name: SITE_NAME, url: new URL(withBase('/'), site).href },
-  }),
-];
 ---
 
-<BaseLayout title={`${lab.title} · 인터랙티브 랩 (${lab.id})`} description={lab.summary} crumbs={crumbs} jsonLd={jsonLd}>
-  <div class="lab-page" style={`--c:${color}`}>
-    <div class="breadcrumb">
-      <a href={withBase('/lab/')}>Signal Lab</a> › Part {lab.part}{part ? ` ${part.title.split(':')[0]}` : ''} › {lab.id}
-    </div>
-    <header class="lab-page-head">
-      <span class="lab-tag">{lab.id}</span>
-      <h1>{lab.title}</h1>
-      <p class="lead">{lab.summary}</p>
-    </header>
-
-    {
-      refs.length > 0 && (
-        <nav class="ref-box" aria-label="원문 설명">
-          <span class="ref-label">원문 설명</span>
-          <ul>
-            {refs.map((r) => (
-              <li>
-                <a href={withBase(r.href)}>
-                  <span class="ref-id">{r.sectionId}</span> {r.pageTitle}
-                  {r.heading && <span class="ref-heading"> › {r.heading}</span>}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )
-    }
-
-    <div class="lab-standalone">
-      {c === 'MassSpringLab' && <MassSpringLab client:load mode="expanded" />}
-      {c === 'SineBasicsLab' && <SineBasicsLab client:load />}
-      {c === 'DampingLab' && <DampingLab client:load />}
-      {c === 'ForcedVibrationLab' && <ForcedVibrationLab client:load />}
-      {c === 'TwoDofModeLab' && <TwoDofModeLab client:load />}
-      {c === 'UnbalanceLab' && <UnbalanceLab client:load />}
-      {c === 'FrequencyMapLab' && <FrequencyMapLab client:load />}
-      {c === 'SourceSynthesisLab' && <SourceSynthesisLab client:load />}
-      {c === 'AmplitudeMeasuresLab' && <AmplitudeMeasuresLab client:load />}
-      {c === 'FourierHarmonicsLab' && <FourierHarmonicsLab client:load />}
-      {c === 'DftCorrelationLab' && <DftCorrelationLab client:load />}
-      {c === 'ZeroPaddingLab' && <ZeroPaddingLab client:load />}
-      {c === 'SamplingLab' && <SamplingLab client:load />}
-      {c === 'AafLab' && <AafLab client:load />}
-      {c === 'AdcLab' && <AdcLab client:load />}
-      {c === 'ResolutionLab' && <ResolutionLab client:load />}
-      {c === 'SmearingLab' && <SmearingLab client:load />}
-      {c === 'ZoomLab' && <ZoomLab client:load />}
-      {c === 'WindowLeakageLab' && <WindowLeakageLab client:load />}
-      {c === 'WindowComparisonLab' && <WindowComparisonLab client:load />}
-      {c === 'WindowCorrectionLab' && <WindowCorrectionLab client:load />}
-      {c === 'AveragingLab' && <AveragingLab client:load />}
-      {c === 'TsaLab' && <TsaLab client:load />}
-      {c === 'SpectrumScalingLab' && <SpectrumScalingLab client:load />}
-      {c === 'AmplitudeScaleLab' && <AmplitudeScaleLab client:load />}
-      {c === 'UnitConverterLab' && <UnitConverterLab client:load />}
-      {c === 'ModulationLab' && <ModulationLab client:load />}
-      {c === 'SandboxLab' && <SandboxLab client:load />}
-      {c === 'SensorLab' && <SensorLab client:load />}
-      {c === 'ProximityLab' && <ProximityLab client:load />}
-      {c === 'PhaseLab' && <PhaseLab client:load />}
-      {c === 'SlowRollLab' && <SlowRollLab client:load />}
-      {c === 'ChainQuizLab' && <ChainQuizLab client:load />}
-      {c === 'AlarmLab' && <AlarmLab client:load />}
-      {c === 'SupportStiffnessLab' && <SupportStiffnessLab client:load />}
-      {c === 'JeffcottLab' && <JeffcottLab client:load />}
-      {c === 'ShaftCenterlineLab' && <ShaftCenterlineLab client:load />}
-      {c === 'StabilityLab' && <StabilityLab client:load />}
-      {c === 'MultiModeBodeLab' && <MultiModeBodeLab client:load />}
-      {c === 'GasPressureLab' && <GasPressureLab client:load />}
-      {c === 'GeneratorFieldLab' && <GeneratorFieldLab client:load />}
-      {c === 'SteamLoadLab' && <SteamLoadLab client:load />}
-      {c === 'RunUpBodeLab' && <RunUpBodeLab client:load />}
-      {c === 'FilterLab' && <FilterLab client:load />}
-      {c === 'IntegrationLab' && <IntegrationLab client:load />}
-      {c === 'StftLab' && <StftLab client:load />}
-      {c === 'FrfLab' && <FrfLab client:load />}
-      {c === 'FullSpectrumLab' && <FullSpectrumLab client:load />}
-      {c === 'OrderTrackingLab' && <OrderTrackingLab client:load />}
-      {c === 'TrackingLab' && <TrackingLab client:load />}
-      {c === 'EnvelopeLab' && <EnvelopeLab client:load />}
-      {c === 'KurtogramLab' && <KurtogramLab client:load />}
-      {c === 'CepstrumLab' && <CepstrumLab client:load />}
-      {c === 'FeatureLab' && <FeatureLab client:load />}
-      {c === 'TimeWaveformLab' && <TimeWaveformLab client:load />}
-      {c === 'TrendLab' && <TrendLab client:load />}
-      {c === 'WaterfallLab' && <WaterfallLab client:load />}
-      {c === 'OrbitLab' && <OrbitLab client:load />}
-      {c === 'FaultMapLab' && <FaultMapLab client:load />}
-      {c === 'FaultSynthLab' && <FaultSynthLab client:load />}
-      {c === 'RpmLab' && <RpmLab client:load />}
-      {c === 'BearingCalcLab' && <BearingCalcLab client:load />}
-      {c === 'BearingStageLab' && <BearingStageLab client:load />}
-      {c === 'OneXLab' && <OneXLab client:load />}
-      {c === 'NonlinearLab' && <NonlinearLab client:load />}
-      {c === 'SubsyncLab' && <SubsyncLab client:load />}
-      {c === 'GearSpectrumLab' && <GearSpectrumLab client:load />}
-      {c === 'GearTsaLab' && <GearTsaLab client:load />}
-      {c === 'ElectricLab' && <ElectricLab client:load />}
-      {c === 'SeverityLab' && <SeverityLab client:load />}
-      {c === 'SeparationMarginLab' && <SeparationMarginLab client:load />}
-      {c === 'DiagnosisLab' && <DiagnosisLab client:load />}
-      {c === 'CaseLab' && <CaseLab client:load />}
-      {c === 'FileLab' && <FileLab client:load />}
-      {c === 'ReviewLab' && <ReviewLab client:load />}
-      {c === 'CampbellLab' && <CampbellLab client:load />}
-      {c === 'ImpactLab' && <ImpactLab client:load />}
-      {c === 'BalanceLab' && <BalanceLab client:load />}
-      {c === 'AlignmentLab' && <AlignmentLab client:load />}
-      {c === 'FlowLab' && <FlowLab client:load />}
-    </div>
-
-    <nav class="lab-pager" aria-label="랩 이동">
-      {prev ? <a href={withBase(`/lab/${prev.slug}/`)}>← {prev.id} {prev.title.split(':')[0]}</a> : <span />}
-      <a href={withBase('/lab/')}>랩 모음</a>
-      {next ? <a href={withBase(`/lab/${next.slug}/`)}>{next.id} {next.title.split(':')[0]} →</a> : <span />}
-    </nav>
-  </div>
-</BaseLayout>
-
-<style>
-  .lab-page {
-    max-width: var(--content-width);
-    margin: 0 auto;
-  }
-
-  .lab-page-head {
-    margin: 0.5rem 0 1rem;
-  }
-
-  .lab-page-head h1 {
-    margin: 0.2rem 0 0.4rem;
-    font-size: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  .lab-tag {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--c);
-  }
-
-  .ref-box {
-    display: flex;
-    gap: 0.8rem;
-    align-items: baseline;
-    flex-wrap: wrap;
-    padding: 0.7rem 1rem;
-    border-radius: var(--radius);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 4px solid var(--c);
-  }
-
-  .ref-label {
-    font-weight: 700;
-    font-size: 0.9rem;
-  }
-
-  .ref-box ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .ref-box a {
-    text-decoration: none;
-    font-size: 0.92rem;
-  }
-
-  .ref-box a:hover {
-    text-decoration: underline;
-  }
-
-  .ref-id {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-  }
-
-  .ref-heading {
-    color: var(--text-muted);
-  }
-
-  .lab-pager {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--gap);
-    flex-wrap: wrap;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.9rem;
-  }
-</style>
+<LabPageShell lang="ko" lab={lab} prev={prev} next={next}>
+  {c === 'MassSpringLab' && <MassSpringLab client:load mode="expanded" />}
+  {c === 'SineBasicsLab' && <SineBasicsLab client:load />}
+  {c === 'DampingLab' && <DampingLab client:load />}
+  {c === 'ForcedVibrationLab' && <ForcedVibrationLab client:load />}
+  {c === 'TwoDofModeLab' && <TwoDofModeLab client:load />}
+  {c === 'UnbalanceLab' && <UnbalanceLab client:load />}
+  {c === 'FrequencyMapLab' && <FrequencyMapLab client:load />}
+  {c === 'SourceSynthesisLab' && <SourceSynthesisLab client:load />}
+  {c === 'AmplitudeMeasuresLab' && <AmplitudeMeasuresLab client:load />}
+  {c === 'FourierHarmonicsLab' && <FourierHarmonicsLab client:load />}
+  {c === 'DftCorrelationLab' && <DftCorrelationLab client:load />}
+  {c === 'ZeroPaddingLab' && <ZeroPaddingLab client:load />}
+  {c === 'SamplingLab' && <SamplingLab client:load />}
+  {c === 'AafLab' && <AafLab client:load />}
+  {c === 'AdcLab' && <AdcLab client:load />}
+  {c === 'ResolutionLab' && <ResolutionLab client:load />}
+  {c === 'SmearingLab' && <SmearingLab client:load />}
+  {c === 'ZoomLab' && <ZoomLab client:load />}
+  {c === 'WindowLeakageLab' && <WindowLeakageLab client:load />}
+  {c === 'WindowComparisonLab' && <WindowComparisonLab client:load />}
+  {c === 'WindowCorrectionLab' && <WindowCorrectionLab client:load />}
+  {c === 'AveragingLab' && <AveragingLab client:load />}
+  {c === 'TsaLab' && <TsaLab client:load />}
+  {c === 'SpectrumScalingLab' && <SpectrumScalingLab client:load />}
+  {c === 'AmplitudeScaleLab' && <AmplitudeScaleLab client:load />}
+  {c === 'UnitConverterLab' && <UnitConverterLab client:load />}
+  {c === 'ModulationLab' && <ModulationLab client:load />}
+  {c === 'SandboxLab' && <SandboxLab client:load />}
+  {c === 'SensorLab' && <SensorLab client:load />}
+  {c === 'ProximityLab' && <ProximityLab client:load />}
+  {c === 'PhaseLab' && <PhaseLab client:load />}
+  {c === 'SlowRollLab' && <SlowRollLab client:load />}
+  {c === 'ChainQuizLab' && <ChainQuizLab client:load />}
+  {c === 'AlarmLab' && <AlarmLab client:load />}
+  {c === 'SupportStiffnessLab' && <SupportStiffnessLab client:load />}
+  {c === 'JeffcottLab' && <JeffcottLab client:load />}
+  {c === 'ShaftCenterlineLab' && <ShaftCenterlineLab client:load />}
+  {c === 'StabilityLab' && <StabilityLab client:load />}
+  {c === 'MultiModeBodeLab' && <MultiModeBodeLab client:load />}
+  {c === 'GasPressureLab' && <GasPressureLab client:load />}
+  {c === 'GeneratorFieldLab' && <GeneratorFieldLab client:load />}
+  {c === 'SteamLoadLab' && <SteamLoadLab client:load />}
+  {c === 'RunUpBodeLab' && <RunUpBodeLab client:load />}
+  {c === 'FilterLab' && <FilterLab client:load />}
+  {c === 'IntegrationLab' && <IntegrationLab client:load />}
+  {c === 'StftLab' && <StftLab client:load />}
+  {c === 'FrfLab' && <FrfLab client:load />}
+  {c === 'FullSpectrumLab' && <FullSpectrumLab client:load />}
+  {c === 'OrderTrackingLab' && <OrderTrackingLab client:load />}
+  {c === 'TrackingLab' && <TrackingLab client:load />}
+  {c === 'EnvelopeLab' && <EnvelopeLab client:load />}
+  {c === 'KurtogramLab' && <KurtogramLab client:load />}
+  {c === 'CepstrumLab' && <CepstrumLab client:load />}
+  {c === 'FeatureLab' && <FeatureLab client:load />}
+  {c === 'TimeWaveformLab' && <TimeWaveformLab client:load />}
+  {c === 'TrendLab' && <TrendLab client:load />}
+  {c === 'WaterfallLab' && <WaterfallLab client:load />}
+  {c === 'OrbitLab' && <OrbitLab client:load />}
+  {c === 'FaultMapLab' && <FaultMapLab client:load />}
+  {c === 'FaultSynthLab' && <FaultSynthLab client:load />}
+  {c === 'RpmLab' && <RpmLab client:load />}
+  {c === 'BearingCalcLab' && <BearingCalcLab client:load />}
+  {c === 'BearingStageLab' && <BearingStageLab client:load />}
+  {c === 'OneXLab' && <OneXLab client:load />}
+  {c === 'NonlinearLab' && <NonlinearLab client:load />}
+  {c === 'SubsyncLab' && <SubsyncLab client:load />}
+  {c === 'GearSpectrumLab' && <GearSpectrumLab client:load />}
+  {c === 'GearTsaLab' && <GearTsaLab client:load />}
+  {c === 'ElectricLab' && <ElectricLab client:load />}
+  {c === 'SeverityLab' && <SeverityLab client:load />}
+  {c === 'SeparationMarginLab' && <SeparationMarginLab client:load />}
+  {c === 'DiagnosisLab' && <DiagnosisLab client:load />}
+  {c === 'CaseLab' && <CaseLab client:load />}
+  {c === 'FileLab' && <FileLab client:load />}
+  {c === 'ReviewLab' && <ReviewLab client:load />}
+  {c === 'CampbellLab' && <CampbellLab client:load />}
+  {c === 'ImpactLab' && <ImpactLab client:load />}
+  {c === 'BalanceLab' && <BalanceLab client:load />}
+  {c === 'AlignmentLab' && <AlignmentLab client:load />}
+  {c === 'FlowLab' && <FlowLab client:load />}
+</LabPageShell>

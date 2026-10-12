@@ -13,8 +13,12 @@ import rehypeKatex from 'rehype-katex';
 export default defineConfig({
   site: 'https://tg-jang03.github.io',
   base: '/Vibration_study',
-  // sitemap: 검색엔진에 직접 제출한다 (루트 robots.txt를 둘 수 없음, D-054). 개발용 /dev/는 뺀다
-  integrations: [react(), mdx(), sitemap({ filter: (page) => !page.includes('/dev/') })],
+  // sitemap: 검색엔진에 직접 제출한다 (루트 robots.txt를 둘 수 없음, D-054). 개발용 /dev/는 뺀다.
+  // i18n: 한국어(접두어 없음)와 /en/이 둘 다 있는 주소끼리 xhtml:link로 잇는다
+  integrations: [react(), mdx(), sitemap({
+      filter: (page) => !page.includes('/dev/'),
+      i18n: { defaultLocale: 'ko', locales: { ko: 'ko', en: 'en' } },
+    })],
   vite: {
     // 개발 서버와 build/check가 같은 의존성 캐시를 덮어쓰지 않게 폴더를 나눈다 (I-017)
     cacheDir: process.argv.includes('dev') ? 'node_modules/.vite' : 'node_modules/.vite-tasks',

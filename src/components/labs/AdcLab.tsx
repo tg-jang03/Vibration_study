@@ -13,6 +13,9 @@ import {
   theoreticalSqnr,
 } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/AdcLab';
 
 /**
  * LAB-SMP-03 ADC 분해능 & 입력 레인지 (P2-3, Contents §5-1).
@@ -25,22 +28,23 @@ import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 type PresetKey = 'default16' | 'low8' | 'high24' | 'clipping' | 'headroom10' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default16', label: '16 bit (레인지 1.5 V, 작은 성분 −60 dBFS)' },
-  { value: 'low8', label: '8 bit (잡음 바닥이 높아 −60 dB 성분이 묻힘)' },
-  { value: 'high24', label: '24 bit (잡음 바닥 −140 dBFS 아래)' },
-  { value: 'clipping', label: '클리핑 (신호 1.0 V > 레인지 0.7 V → 홀수 하모닉)' },
-  { value: 'headroom10', label: '레인지가 너무 큼 (10 V → 20 dB 손해)' },
-  { value: 'custom', label: '직접 파라미터 조작' },
+  { value: 'default16', label: k('16 bit (레인지 1.5 V, 작은 성분 −60 dBFS)') },
+  { value: 'low8', label: k('8 bit (잡음 바닥이 높아 −60 dB 성분이 묻힘)') },
+  { value: 'high24', label: k('24 bit (잡음 바닥 −140 dBFS 아래)') },
+  { value: 'clipping', label: k('클리핑 (신호 1.0 V > 레인지 0.7 V → 홀수 하모닉)') },
+  { value: 'headroom10', label: k('레인지가 너무 큼 (10 V → 20 dB 손해)') },
+  { value: 'custom', label: k('직접 파라미터 조작') },
 ];
 
 const BIT_OPTIONS: ParamOption<number>[] = [
-  { value: 8, label: '8 bit (256 단계, SQNR ≈ 50 dB)' },
-  { value: 12, label: '12 bit (4,096 단계, SQNR ≈ 74 dB)' },
-  { value: 16, label: '16 bit (65,536 단계, SQNR ≈ 98 dB)' },
-  { value: 24, label: '24 bit (16,777,216 단계, SQNR ≈ 146 dB)' },
+  { value: 8, label: k('8 bit (256 단계, SQNR ≈ 50 dB)') },
+  { value: 12, label: k('12 bit (4,096 단계, SQNR ≈ 74 dB)') },
+  { value: 16, label: k('16 bit (65,536 단계, SQNR ≈ 98 dB)') },
+  { value: 24, label: k('24 bit (16,777,216 단계, SQNR ≈ 146 dB)') },
 ];
 
-export default function AdcLab() {
+export default function AdcLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [preset, setPreset] = useState<PresetKey>('default16');
   const [bits, setBits] = useState(16);
   const [range, setRange] = useState(1.5); // V_fs (풀스케일 피크)
@@ -154,7 +158,7 @@ export default function AdcLab() {
       {
         x: tSub,
         y: rawSub,
-        name: '원 신호 x(t)',
+        name: tr`원 신호 x(t)`,
         mode: 'lines',
         color: '#94a3b8', // slate gray
         dash: 'dot',
@@ -163,7 +167,7 @@ export default function AdcLab() {
       {
         x: tSub,
         y: qSub,
-        name: `양자화 신호 y[n] (${bits} bit)`,
+        name: tr`양자화 신호 y[n] (${bits} bit)`,
         mode: bits <= 8 ? 'lines+markers' : 'lines',
         color: simData.qRes.clipped ? '#dc2626' : '#2563eb',
         width: 2,
@@ -200,7 +204,7 @@ export default function AdcLab() {
       {
         x: simData.spec.frequency,
         y: simData.specDbfs,
-        name: `스펙트럼 (${bits} bit ADC)`,
+        name: tr`스펙트럼 (${bits} bit ADC)`,
         mode: 'lines',
         color: '#2563eb',
         width: 1.5,
@@ -209,7 +213,7 @@ export default function AdcLab() {
       {
         x: [0, fs / 2],
         y: [noiseFloorDbfs, noiseFloorDbfs],
-        name: `이론 잡음 바닥 (${formatNumber(noiseFloorDbfs, 4)} dBFS)`,
+        name: tr`이론 잡음 바닥 (${formatNumber(noiseFloorDbfs, 4)} dBFS)`,
         mode: 'lines',
         color: '#f59e0b',
         dash: 'dash',
@@ -219,7 +223,7 @@ export default function AdcLab() {
       {
         x: [0, fs / 2],
         y: [0, 0],
-        name: '0 dBFS (포화 클리핑 한계)',
+        name: tr`0 dBFS (포화 클리핑 한계)`,
         mode: 'lines',
         color: '#dc2626',
         dash: 'dot',
@@ -233,26 +237,27 @@ export default function AdcLab() {
   return (
     <LabFrame
       id="LAB-SMP-03"
-      title="ADC 분해능(bit)과 입력 레인지(Headroom)"
+      title={tr`ADC 분해능(bit)과 입력 레인지(Headroom)`}
+      lang={lang}
       controls={
         <>
           <ParamSelect
-            label="실험 프리셋"
+            label={tr`실험 프리셋`}
             value={preset}
-            options={PRESET_OPTIONS}
+            options={PRESET_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={applyPreset}
           />
           <ParamSelect
-            label="ADC 비트 수"
+            label={tr`ADC 비트 수`}
             value={bits}
-            options={BIT_OPTIONS}
+            options={BIT_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={(v) => {
               setBits(v);
               setPreset('custom');
             }}
           />
           <ParamSlider
-            label="입력 풀스케일 레인지 V_fs"
+            label={tr`입력 풀스케일 레인지 V_fs`}
             value={range}
             min={0.5}
             max={10.0}
@@ -264,7 +269,7 @@ export default function AdcLab() {
             }}
           />
           <ParamSlider
-            label="작은 성분 크기 (136 Hz, 큰 톤 대비 dB)"
+            label={tr`작은 성분 크기 (136 Hz, 큰 톤 대비 dB)`}
             value={smallToneDb}
             min={-120}
             max={-20}
@@ -277,7 +282,7 @@ export default function AdcLab() {
           />
           <div style={{ marginTop: '0.5rem' }}>
             <ParamToggle
-              label="시간 파형 확대 (계단 스텝 관찰)"
+              label={tr`시간 파형 확대 (계단 스텝 관찰)`}
               checked={zoomTime}
               onChange={setZoomTime}
             />
@@ -288,11 +293,11 @@ export default function AdcLab() {
         <>
           <Formula
             display
-            tex={`\\Delta = \\dfrac{2 V_{fs}}{2^b} = \\dfrac{2 \\times ${texNumber(range, 2)}}{2^{${bits}}} = ${texNumber(simData.qRes.lsb, 6)}\\ \\mathrm{V}\\quad (1\\ \\mathrm{LSB}\\ \\text{양자화 스텝})`}
+            tex={`\\Delta = \\dfrac{2 V_{fs}}{2^b} = \\dfrac{2 \\times ${texNumber(range, 2)}}{2^{${bits}}} = ${texNumber(simData.qRes.lsb, 6)}\\ \\mathrm{V}\\quad (1\\ \\mathrm{LSB}\\ \\text{${tr`양자화 스텝`}})`}
           />
           <Formula
             display
-            tex={`\\mathrm{SQNR}_{\\text{fs}} \\approx 6.02 \\times ${bits} + 1.76 = ${texNumber(baseSqnr, 4)}\\ \\mathrm{dB}\\quad (\\text{풀스케일 정현파 이론비})`}
+            tex={`\\mathrm{SQNR}_{\\text{fs}} \\approx 6.02 \\times ${bits} + 1.76 = ${texNumber(baseSqnr, 4)}\\ \\mathrm{dB}\\quad (\\text{${tr`풀스케일 정현파 이론비`}})`}
           />
           <Formula
             display
@@ -300,41 +305,41 @@ export default function AdcLab() {
           />
           <Formula
             display
-            tex={`\\text{bin 하나의 잡음 바닥} \\approx -\\mathrm{SQNR} - 10\\log_{10}(N/2) = -${texNumber(baseSqnr, 4)} - ${texNumber(fftGainDb, 4)} = ${texNumber(noiseFloorDbfs, 4)}\\ \\mathrm{dBFS}`}
+            tex={`\\text{${tr`bin 하나의 잡음 바닥`}} \\approx -\\mathrm{SQNR} - 10\\log_{10}(N/2) = -${texNumber(baseSqnr, 4)} - ${texNumber(fftGainDb, 4)} = ${texNumber(noiseFloorDbfs, 4)}\\ \\mathrm{dBFS}`}
           />
         </>
       }
       readouts={
         <ReadoutTable
           rows={[
-            { label: 'ADC 분해능', value: bits, unit: 'bit' },
-            { label: '풀스케일 레인지 V_fs', value: range, unit: 'V' },
-            { label: '1 LSB 전압 크기', value: simData.qRes.lsb, unit: 'V', sig: 4 },
-            { label: '풀스케일 SQNR (6.02b + 1.76)', value: baseSqnr, unit: 'dB', sig: 3 },
-            { label: '유효 SNR (레인지 여유 반영)', value: effSnr, unit: 'dB', sig: 3 },
+            { label: tr`ADC 분해능`, value: bits, unit: 'bit' },
+            { label: tr`풀스케일 레인지 V_fs`, value: range, unit: 'V' },
+            { label: tr`1 LSB 전압 크기`, value: simData.qRes.lsb, unit: 'V', sig: 4 },
+            { label: tr`풀스케일 SQNR (6.02b + 1.76)`, value: baseSqnr, unit: 'dB', sig: 3 },
+            { label: tr`유효 SNR (레인지 여유 반영)`, value: effSnr, unit: 'dB', sig: 3 },
             {
-              label: '잡음 바닥 (스펙트럼 평균)',
+              label: tr`잡음 바닥 (스펙트럼 평균)`,
               value: simData.measuredFloorDbfs,
               theory: noiseFloorDbfs,
               unit: 'dBFS',
               sig: 3,
             },
             {
-              label: '주 톤 레벨 (50 Hz)',
+              label: tr`주 톤 레벨 (50 Hz)`,
               value: simData.measuredMainDbfs,
               theory: mainToneDbfs,
               unit: 'dBFS',
               sig: 3,
             },
             {
-              label: '작은 톤 레벨 (136 Hz)',
+              label: tr`작은 톤 레벨 (136 Hz)`,
               value: simData.measuredSmallDbfs,
               theory: smallToneDbfs,
               unit: 'dBFS',
               sig: 3,
             },
             {
-              label: '클리핑 샘플 비율',
+              label: tr`클리핑 샘플 비율`,
               value: simData.qRes.clipRatio * 100,
               unit: '%',
               sig: 2,
@@ -345,43 +350,43 @@ export default function AdcLab() {
       tasks={[
         {
           question:
-            '16 bit에서 −60 dB, −100 dB의 작은 성분이 보이나요? 레인지를 신호보다 10배 크게(10 V) 잡으면 어떻게 되나요?',
+            tr`16 bit에서 −60 dB, −100 dB의 작은 성분이 보이나요? 레인지를 신호보다 10배 크게(10 V) 잡으면 어떻게 되나요?`,
           answer:
-            '16 bit, N = 1024이면 양자화 잡음이 512개 bin에 나뉘어 bin 하나의 잡음 바닥이 약 −125 dBFS까지 내려가므로 −100 dB 성분도 보입니다. 레인지를 10배 키우면 잡음 바닥은 −125 dBFS 그대로지만 신호가 칸을 1/10만 쓰게 되어 큰 톤이 −20 dBFS로 내려옵니다. 신호와 잡음 바닥의 간격이 20 dB 줄어, −100 dB 성분(−120 dBFS)이 잡음 바닥에 거의 붙어 버립니다.',
+            tr`16 bit, N = 1024이면 양자화 잡음이 512개 bin에 나뉘어 bin 하나의 잡음 바닥이 약 −125 dBFS까지 내려가므로 −100 dB 성분도 보입니다. 레인지를 10배 키우면 잡음 바닥은 −125 dBFS 그대로지만 신호가 칸을 1/10만 쓰게 되어 큰 톤이 −20 dBFS로 내려옵니다. 신호와 잡음 바닥의 간격이 20 dB 줄어, −100 dB 성분(−120 dBFS)이 잡음 바닥에 거의 붙어 버립니다.`,
         },
         {
           question:
-            '레인지를 신호 진폭보다 작은 0.7 V로 설정하면 파형과 스펙트럼에 어떤 현상이 발생하나요?',
+            tr`레인지를 신호 진폭보다 작은 0.7 V로 설정하면 파형과 스펙트럼에 어떤 현상이 발생하나요?`,
           answer:
-            '신호 꼭대기가 +0.7 V, −0.7 V에서 잘려 평평해집니다(클리핑). 잘린 파형은 사각파에 가까워지므로 스펙트럼에 150 Hz(3X), 250 Hz(5X), 350 Hz(7X) … 홀수 하모닉이 생깁니다. 기계와 상관없이 측정 과정이 만든 성분입니다.',
+            tr`신호 꼭대기가 +0.7 V, −0.7 V에서 잘려 평평해집니다(클리핑). 잘린 파형은 사각파에 가까워지므로 스펙트럼에 150 Hz(3X), 250 Hz(5X), 350 Hz(7X) … 홀수 하모닉이 생깁니다. 기계와 상관없이 측정 과정이 만든 성분입니다.`,
         },
         {
           question:
-            '8 bit ADC와 24 bit ADC의 잡음 바닥 차이는 얼마나 되나요?',
+            tr`8 bit ADC와 24 bit ADC의 잡음 바닥 차이는 얼마나 되나요?`,
           answer:
-            '1 bit마다 약 6 dB씩 차이가 나므로 16 bit 차이면 약 96 dB입니다. 8 bit에서는 잡음 바닥이 약 −77 dBFS라 −60 dB 성분이 잡음과 잘 구별되지 않고, 24 bit에서는 잡음 바닥이 −170 dBFS 아래로 내려가 아주 작은 성분도 보입니다.',
+            tr`1 bit마다 약 6 dB씩 차이가 나므로 16 bit 차이면 약 96 dB입니다. 8 bit에서는 잡음 바닥이 약 −77 dBFS라 −60 dB 성분이 잡음과 잘 구별되지 않고, 24 bit에서는 잡음 바닥이 −170 dBFS 아래로 내려가 아주 작은 성분도 보입니다.`,
         },
       ]}
     >
       <div style={{ marginBottom: '1rem' }}>
         <Plot
           series={timeSeries}
-          x={{ label: '시간 t [s]', range: [0, zoomTime ? 0.04 : 0.08] }}
+          x={{ label: tr`시간 t [s]`, range: [0, zoomTime ? 0.04 : 0.08] }}
           y={{
-            label: '전압 [V]',
+            label: tr`전압 [V]`,
             range: [-Math.max(1.4, range * 1.15), Math.max(1.4, range * 1.15)],
           }}
           height={260}
-          ariaLabel="ADC 양자화 및 클리핑 시간 파형"
+          ariaLabel={tr`ADC 양자화 및 클리핑 시간 파형`}
         />
       </div>
       <div>
         <Plot
           series={specSeries}
-          x={{ label: '주파수 [Hz]', range: [0, fs / 2] }}
-          y={{ label: '스펙트럼 진폭 [dBFS]', range: [-160, 5] }}
+          x={{ label: tr`주파수 [Hz]`, range: [0, fs / 2] }}
+          y={{ label: tr`스펙트럼 진폭 [dBFS]`, range: [-160, 5] }}
           height={260}
-          ariaLabel="dBFS 스펙트럼 및 양자화 잡음 바닥"
+          ariaLabel={tr`dBFS 스펙트럼 및 양자화 잡음 바닥`}
         />
       </div>
     </LabFrame>

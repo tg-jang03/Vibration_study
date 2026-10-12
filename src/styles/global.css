@@ -138,6 +138,33 @@ code {
   font-weight: 600;
 }
 
+/* 언어 전환 (D-054): 머리 메뉴 오른쪽 끝 */
+.site-nav .lang-switch {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.05rem 0.65rem;
+  color: var(--text);
+}
+
+.site-nav .lang-switch:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 영어 페이지에서 아직 한국어인 곳으로 가는 링크 표시 */
+.ko-mark {
+  display: inline-block;
+  margin-left: 0.3em;
+  padding: 0 0.3em;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.68em;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-muted);
+  vertical-align: 0.15em;
+}
+
 .nav-soon {
   color: var(--text-muted);
   opacity: 0.55;

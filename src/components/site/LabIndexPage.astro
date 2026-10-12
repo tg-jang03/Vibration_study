@@ -1,0 +1,316 @@
+---
+/**
+ * Signal Lab 랩 모음 (/lab/, /en/lab/). 영어 모음은 모든 랩을 영어 제목·설명으로 보이고,
+ * 아직 화면이 한국어인 랩은 한국어 단독 페이지로 가며 KO 표시를 붙인다 (D-054).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STAGES } from '../../data/curriculum';
+import { LABS, type LabEntry } from '../../data/labs';
+import { labRefs } from '../../lib/labRefs';
+import { withBase } from '../../lib/site';
+import { localizePath, type Lang } from '../../i18n';
+import { labText, partTitle, sectionTitle, shortTitle } from '../../i18n/content';
+import { availablePath, hasEnglish, hasEnglishSection, sectionPath } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = UI[lang];
+const en = lang === 'en';
+const sections = PARTS.flatMap((p) => p.sections);
+const sandbox = LABS.find((l) => l.id === 'LAB-SBX-01');
+const groups = PARTS.map((part) => ({
+  part,
+  color: STAGES.find((s) => s.parts.includes(part.num))?.color ?? 'var(--accent)',
+  labs: LABS.filter((l) => l.part === part.num && l !== sandbox),
+})).filter((g) => g.labs.length > 0);
+/** 원문 설명 링크 — 영어: 영어판이 있는 절은 그 절로(한국어 제목 앵커는 뺌), 없으면 한국어 절로 */
+const refsOf = (lab: LabEntry) =>
+  labRefs(lab).map((r) => {
+    if (!en) return { ...r, label: r.heading ?? r.pageTitle, title: r.pageTitle, ko: false };
+    const section = sections.find((s) => s.id === r.sectionId);
+    const base = r.href.split('#')[0];
+    const title = section ? sectionTitle(section, lang) : r.pageTitle;
+    return { ...r, href: sectionPath({ id: r.sectionId, href: base }, lang) ?? base, label: title, title, ko: !hasEnglishSection(r.sectionId) };
+  });
+const sandboxRef = sandbox ? refsOf(sandbox)[0] : undefined;
+const labHref = (l: LabEntry) => withBase(availablePath(`/lab/${l.slug}/`, lang));
+const labKo = (l: LabEntry) => en && !hasEnglish(`/lab/${l.slug}/`);
+---
+
+<BaseLayout title={t.labIndexTitle} crumbs={[{ name: 'Signal Lab', path: localizePath('/lab/', lang) }]} description={t.labIndexDescription}>
+  <section class="lab-hero">
+    <p class="kicker">Signal Lab</p>
+    <h1>{t.labHeroTitle}</h1>
+    <p class="lead">{t.labHeroLead(LABS.length)}</p>
+  </section>
+
+  {
+    sandbox && (
+      <a class="sandbox-card" href={labHref(sandbox)}>
+        <span class="lab-tag">{sandbox.id} · {t.sandboxTag}{labKo(sandbox) && <span class="ko-mark">{t.koreanOnly}</span>}</span>
+        <span class="sandbox-title">{labText(sandbox, lang).title}</span>
+        <span class="sandbox-text">{labText(sandbox, lang).summary}</span>
+        <span class="sandbox-go">{t.open}</span>
+      </a>
+    )
+  }
+
+  <div class="lab-toolbar" role="search">
+    <div class="chips" role="group" aria-label={t.filterLabel}>
+      <button type="button" class="chip" data-filter="all" aria-pressed="true">{t.filterAll}</button>
+      {groups.map((g) => (
+        <button type="button" class="chip" data-filter={String(g.part.num)} aria-pressed="false" style={`--c:${g.color}`}>
+          Part {g.part.num}
+        </button>
+      ))}
+    </div>
+    <input class="lab-search" type="search" placeholder={t.searchPlaceholder} aria-label={t.searchLabel} />
+  </div>
+
+  {
+    groups.map((g) => (
+      <section class="lab-group" data-part={String(g.part.num)} style={`--c:${g.color}`}>
+        <h2>
+          <span class="group-num">Part {g.part.num}</span> {shortTitle(partTitle(g.part, lang))}
+        </h2>
+        <div class="lab-grid">
+          {g.labs.map((lab) => {
+            const refs = refsOf(lab);
+            const text = labText(lab, lang);
+            return (
+              <article class="lab-card" data-search={`${lab.id} ${text.title} ${text.summary} ${refs.map((r) => r.sectionId).join(' ')}`.toLowerCase()}>
+                <span class="lab-tag">
+                  {lab.id}
+                  {labKo(lab) && <span class="ko-mark" title={t.labKoreanUi}>{t.koreanOnly}</span>}
+                </span>
+                <a class="lab-title" href={labHref(lab)}>
+                  {text.title}
+                </a>
+                <p class="lab-summary">{text.summary}</p>
+                {refs[0] && (
+                  <p class="lab-ref">
+                    {t.labRefPrefix} <a href={withBase(refs[0].href)}>{refs[0].sectionId} {refs[0].label}</a>
+                    {refs.length > 1 && <span>{t.moreRefs(refs.length - 1)}</span>}
+                  </p>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))
+  }
+  <p class="no-result" hidden>{t.noResult}</p>
+  {sandboxRef && <p class="lab-foot">{t.sandboxFoot[0]}<a href={withBase(sandboxRef.href)}>{sandboxRef.sectionId} {sandboxRef.title}</a>{t.sandboxFoot[1]}</p>}
+
+  <script is:inline>
+    (() => {
+      const chips = [...document.querySelectorAll('.chip')];
+      const input = document.querySelector('.lab-search');
+      const groups = [...document.querySelectorAll('.lab-group')];
+      const none = document.querySelector('.no-result');
+      let part = 'all';
+      const apply = () => {
+        const q = (input.value || '').trim().toLowerCase();
+        let shown = 0;
+        for (const g of groups) {
+          let n = 0;
+          const partOk = part === 'all' || g.dataset.part === part;
+          for (const c of g.querySelectorAll('.lab-card')) {
+            const ok = partOk && (!q || c.dataset.search.includes(q));
+            c.hidden = !ok;
+            if (ok) n++;
+          }
+          g.hidden = n === 0;
+          shown += n;
+        }
+        none.hidden = shown > 0;
+      };
+      for (const c of chips) {
+        c.addEventListener('click', () => {
+          part = c.dataset.filter;
+          for (const o of chips) o.setAttribute('aria-pressed', String(o === c));
+          apply();
+        });
+      }
+      input.addEventListener('input', apply);
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .lab-hero {
+    padding: 1rem 0 0.5rem;
+  }
+
+  .kicker {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+
+  .lab-hero h1 {
+    margin: 0.2rem 0 0.5rem;
+  }
+
+  .sandbox-card {
+    display: grid;
+    gap: 0.3rem;
+    margin: 1rem 0 1.5rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .sandbox-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .sandbox-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .sandbox-text {
+    color: var(--text-muted);
+  }
+
+  .sandbox-go {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .lab-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.6rem 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .chip {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--c, var(--accent));
+    border-color: var(--c, var(--accent));
+    color: var(--surface);
+  }
+
+  .lab-search {
+    flex: 1;
+    min-width: 14rem;
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .lab-group {
+    margin-top: 1.5rem;
+  }
+
+  .lab-group h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--c);
+  }
+
+  .group-num {
+    color: var(--c);
+  }
+
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: var(--gap);
+  }
+
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--c);
+    border-radius: var(--radius);
+  }
+
+  .lab-card[hidden],
+  .lab-group[hidden] {
+    display: none;
+  }
+
+  .lab-tag {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-muted);
+  }
+
+  .lab-title {
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    line-height: 1.4;
+  }
+
+  .lab-title:hover {
+    color: var(--c);
+    text-decoration: underline;
+  }
+
+  .lab-summary {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .lab-ref {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .no-result,
+  .lab-foot {
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+  }
+</style>

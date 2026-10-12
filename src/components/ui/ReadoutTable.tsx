@@ -1,4 +1,5 @@
 import { formatError, formatNumber } from '../../lib/format';
+import { useUi } from './lang';
 
 export interface Readout {
   label: string;
@@ -21,15 +22,19 @@ interface ReadoutTableProps {
 }
 
 /** 읽음값 vs 이론값 표 (Roadmap §5-4): 측정값·이론값·상대 오차 */
-export default function ReadoutTable({ rows, caption = '읽음값', theoryLabel = '이론', errorLabel = '오차' }: ReadoutTableProps) {
+export default function ReadoutTable({ rows, caption, theoryLabel, errorLabel }: ReadoutTableProps) {
+  const t = useUi();
+  caption ??= t.readouts;
+  theoryLabel ??= t.readoutTheory;
+  errorLabel ??= t.readoutError;
   const hasTheory = rows.some((r) => r.theory !== undefined);
   return (
     <table className="readout-table">
       <caption>{caption}</caption>
       <thead>
         <tr>
-          <th scope="col">항목</th>
-          <th scope="col">측정</th>
+          <th scope="col">{t.readoutItem}</th>
+          <th scope="col">{t.readoutMeasured}</th>
           {hasTheory && <th scope="col">{theoryLabel}</th>}
           {hasTheory && <th scope="col">{errorLabel}</th>}
         </tr>

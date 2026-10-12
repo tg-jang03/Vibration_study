@@ -1,4 +1,5 @@
 import { useMobileLayout } from './hooks';
+import { useUi } from './lang';
 import { useEffect, useRef, useState } from 'react';
 import type { Config, Data, Layout } from 'plotly.js';
 
@@ -122,6 +123,7 @@ const CONFIG: Partial<Config> = {
 };
 
 export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaLabel, onRendered }: PlotProps) {
+  const t = useUi();
   const ref = useRef<HTMLDivElement>(null);
   const mobile = useMobileLayout();
   const plotHeight = mobile ? Math.min(height, Math.max(220, Math.round(height * 0.78))) : height;
@@ -237,8 +239,8 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
 
   return (
     <div className="plot" style={{ minHeight: plotHeight }} role="img" aria-label={ariaLabel}>
-      {status === 'loading' && <p className="plot-loading">그래프 불러오는 중…</p>}
-      {status === 'error' && <p className="plot-loading">그래프를 불러오지 못했습니다. 페이지를 새로고침해 주세요.</p>}
+      {status === 'loading' && <p className="plot-loading">{t.plotLoading}</p>}
+      {status === 'error' && <p className="plot-loading">{t.plotError}</p>}
       <div ref={ref} />
     </div>
   );

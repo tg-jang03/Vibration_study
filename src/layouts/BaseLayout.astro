@@ -1,15 +1,18 @@
 ---
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
-import { REPO_URL, SITE_NAME, SITE_NAME_EN, SITE_TAGLINE, SITE_VERIFICATION, withBase } from '../lib/site';
+import { REPO_URL, SITE_VERIFICATION, withBase } from '../lib/site';
 import { breadcrumbLd, canonicalUrl, documentTitle, jsonLdText, websiteLd } from '../lib/seo';
+import { OG_LOCALE, langOfPath, localizePath, sitePath, stripLang } from '../i18n';
+import { hasEnglish } from '../i18n/routes';
+import { UI } from '../i18n/ui';
 
 interface Props {
   title?: string;
   description?: string;
   /** 사이드바가 있는 절 페이지처럼 넓은 틀이 필요할 때 (기본 false, D-037) */
   wide?: boolean;
-  /** 홈 다음의 경로 표시 (사이트 안 경로). 검색 결과의 "사이트 › Part 2 › 절" (M12.1) */
+  /** 홈 다음의 경로 표시 (사이트 안 경로, 그 언어의 경로). 검색 결과의 "사이트 › Part 2 › 절" (M12.1) */
   crumbs?: { name: string; path: string }[];
   /** 이 페이지에만 붙일 JSON-LD (예: LearningResource) */
   jsonLd?: object[];
@@ -19,38 +22,54 @@ interface Props {
   noindex?: boolean;
 }
 
+// 언어 (D-054): /en/ 아래면 영어. 한국어가 원본이고, 영어는 번역이 끝난 페이지만 있다
+const here = sitePath(Astro.url.pathname);
+const lang = langOfPath(here);
+const other = lang === 'ko' ? 'en' : 'ko';
+const t = UI[lang];
+const basePath = stripLang(here.endsWith('/') || here.includes('.') ? here : `${here}/`);
+const hasOther = lang === 'en' || hasEnglish(basePath);
+
 const {
   title,
   wide = false,
-  description = '진동의 물리와 신호처리부터 대형 회전기계(GT/ST) 상태 진단까지 연결하는 기계 진동 학습 아카이브',
+  description = t.defaultDescription,
   crumbs,
   jsonLd = [],
   ogType = 'website',
   noindex = false,
 } = Astro.props;
 
-const fullTitle = documentTitle(SITE_NAME, SITE_TAGLINE, title);
-const path = Astro.url.pathname.replace(/\/+$/, '');
-const isHome = path === withBase('/').replace(/\/+$/, '');
-const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
-const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
-const isDev = path.startsWith(withBase('/dev').replace(/\/+$/, ''));
+const fullTitle = documentTitle(t.siteName, t.tagline, title);
+const isHome = basePath === '/';
+const isLab = basePath.startsWith('/lab/');
+const isRef = basePath.startsWith('/reference/');
+const isDev = basePath.startsWith('/dev/');
 
-// 검색 노출 (M12.1, D-054): canonical·링크 미리보기 카드·구조화 데이터
+// 검색 노출 (M12.1, D-054): canonical·언어판 연결·링크 미리보기 카드·구조화 데이터
 const site = Astro.site ?? new URL('https://tg-jang03.github.io');
 const abs = (p: string) => new URL(withBase(p), site).href;
 const canonical = canonicalUrl(Astro.url.pathname, site);
-const homeUrl = abs('/');
+const homeUrl = abs(localizePath('/', lang));
 const ogImage = abs('/og.png');
+/** 두 언어가 다 있는 페이지끼리만 hreflang. x-default는 영어 (한국어도 영어도 아닌 방문자) */
+const alternates = hasOther && !isDev
+  ? [
+      { hreflang: 'ko', href: abs(basePath) },
+      { hreflang: 'en', href: abs(localizePath(basePath, 'en')) },
+      { hreflang: 'x-default', href: abs(localizePath(basePath, 'en')) },
+    ]
+  : [];
+const switchHref = withBase(hasOther ? localizePath(basePath, other) : localizePath('/', other));
 const ld: object[] = [
-  ...(isHome ? [websiteLd({ name: SITE_NAME, alternateName: SITE_NAME_EN, url: homeUrl, description, lang: 'ko' })] : []),
-  ...(crumbs?.length ? [breadcrumbLd([{ name: SITE_NAME, url: homeUrl }, ...crumbs.map((c) => ({ name: c.name, url: abs(c.path) }))])] : []),
+  ...(isHome ? [websiteLd({ name: t.siteName, alternateName: UI[other].siteName, url: homeUrl, description, lang })] : []),
+  ...(crumbs?.length ? [breadcrumbLd([{ name: t.siteName, url: homeUrl }, ...crumbs.map((c) => ({ name: c.name, url: abs(c.path) }))])] : []),
   ...jsonLd,
 ];
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -58,18 +77,20 @@ const ld: object[] = [
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <title>{fullTitle}</title>
     <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
     {(noindex || isDev) && <meta name="robots" content="noindex, nofollow" />}
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:site_name" content={t.siteName} />
     <meta property="og:title" content={title ?? fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    {hasOther && <meta property="og:locale:alternate" content={OG_LOCALE[other]} />}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${SITE_NAME} — ${SITE_NAME_EN}`} />
+    <meta property="og:image:alt" content={lang === 'en' ? UI.en.siteName : `${UI.ko.siteName} — ${UI.en.siteName}`} />
     <meta name="twitter:card" content="summary_large_image" />
     {SITE_VERIFICATION.google && <meta name="google-site-verification" content={SITE_VERIFICATION.google} />}
     {SITE_VERIFICATION.naver && <meta name="naver-site-verification" content={SITE_VERIFICATION.naver} />}
@@ -81,11 +102,16 @@ const ld: object[] = [
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a class="brand" href={withBase('/')}>{SITE_NAME}</a>
-        <nav class="site-nav" aria-label="주 메뉴">
-          <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>커리큘럼</a>
-          <a href={withBase('/lab/')} aria-current={isLab ? 'page' : undefined}>Signal Lab</a>
-          <a href={withBase('/reference/')} aria-current={isRef ? 'page' : undefined}>레퍼런스</a>
+        <a class="brand" href={withBase(localizePath('/', lang))}>{t.siteName}</a>
+        <nav class="site-nav" aria-label={t.navLabel}>
+          <a href={withBase(localizePath('/', lang))} aria-current={isHome ? 'page' : undefined}>{t.navCurriculum}</a>
+          <a href={withBase(localizePath('/lab/', lang))} aria-current={isLab ? 'page' : undefined}>{t.navLab}</a>
+          <a href={withBase('/reference/')} aria-current={isRef ? 'page' : undefined} hreflang={lang === 'en' ? 'ko' : undefined}>
+            {t.navReference}{lang === 'en' && <span class="ko-mark" title={t.koreanOnlyTitle}>{t.koreanOnly}</span>}
+          </a>
+          <a class="lang-switch" href={switchHref} hreflang={other} lang={other} title={hasOther ? t.switchTitle : t.switchTitleMissing}>
+            {t.switchLabel}
+          </a>
         </nav>
       </div>
     </header>
@@ -94,7 +120,7 @@ const ld: object[] = [
     </main>
     <footer class="site-footer">
       <div class="container">
-        기계 진동 학습 아카이브 · <a href={REPO_URL}>GitHub</a>
+        {t.footer} · <a href={REPO_URL}>GitHub</a>
       </div>
     </footer>
   </body>

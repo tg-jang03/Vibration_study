@@ -1,0 +1,319 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-3 Sampling · Aliasing · AAF · ADC
+description: The fake frequencies you get when you read a signal too rarely (aliasing), the filter and the f_s = 2.56 F_max rule that prevent them, and the bits, range and clipping of the ADC that writes voltages down as numbers
+sectionId: P2-3
+source: p2-3.mdx
+sourceHash: d722e110da
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SamplingLab from '../../components/labs/SamplingLab';
+import AafLab from '../../components/labs/AafLab';
+import AdcLab from '../../components/labs/AdcLab';
+import * as F from '../../figures/p2-3';
+
+# 2-3 Sampling · Aliasing · AAF · ADC
+
+You have probably seen a film where the spokes of a speeding wagon wheel seem to turn slowly backwards. The camera takes only 24 pictures a second, so if the wheel turns almost one spoke-gap between two pictures, it is captured as **having moved a little backwards**.
+
+An analyzer also reads a signal only at regular intervals (P2-1 §6), so the same illusion happens — a fast vibration shows up in the spectrum as a slow one. This page looks at three things in turn.
+
+1. What you see when you read too rarely — **aliasing**
+2. How an analyzer prevents it — **the filter (AAF) and $f_s = 2.56\,F_{max}$**
+3. What happens when the measured voltage is written down as a number — **the bits, range and clipping of the ADC**
+
+<Callout type="idea" title="After reading this page">
+
+1. You can calculate the frequency a component will fold to.
+2. You know why fake frequencies cannot be picked out from the samples alone, so they must be blocked by a filter **before** sampling.
+3. You know why analyzers use $f_s = 2.56\,F_{max}$ and where the numbers 400, 800 and 1600 lines come from.
+4. You know how the number of ADC bits and the input range set the noise floor, and what fake components clipping creates.
+
+</Callout>
+
+---
+
+## 1. Reading too rarely: aliasing
+
+### 1.1 Why 940 Hz looks like 60 Hz
+
+Suppose we read 1000 times a second ($f_s = 1000\ \mathrm{Hz}$), that is, every 1 ms. A 940 Hz signal turns 0.94 of a cycle in 1 ms. That is 0.06 cycle short of a full turn, so if you connect only the dots you get **a slow wave that slips back 0.06 cycle each time** — 60 cycles per second, which looks like 60 Hz. It is the same principle as the wagon wheel.
+
+<Figure {...F.aliasSamples} />
+
+Seeing a frequency different from the real one is called <strong>aliasing</strong>, and the fake frequency you see is called an <strong>alias</strong>.
+The dots in the two panels of Figure 1 are exactly the same. **Only the dots are left in the analyzer, so once the signal has been sampled there is no way to find out whether it was 940 Hz or 60 Hz.**
+
+### 1.2 Where does it fold to?
+
+The frequency at which a component $f$ appears is "its distance to the nearest integer multiple of $f_s$".
+
+$$
+f_a = \left| f - k f_s \right|,\qquad k = \operatorname{round}\!\left(\frac{f}{f_s}\right)
+$$
+
+Plot the real frequency on the horizontal axis and the frequency you see on the vertical axis, and you get a zigzag, as if a sheet of paper had been folded.
+
+<Figure {...F.foldingMap} />
+
+<Callout type="example" title="With f_s = 1000 Hz">
+
+- 60 Hz → $k = 0$, $\lvert 60 - 0 \rvert$ = **60 Hz** (unchanged)
+- 940 Hz → $k = 1$, $\lvert 940 - 1000 \rvert$ = **60 Hz**
+- 1060 Hz → $k = 1$, $\lvert 1060 - 1000 \rvert$ = **60 Hz**
+- 1940 Hz → $k = 2$, $\lvert 1940 - 2000 \rvert$ = **60 Hz**
+
+All four components land on the same 60 Hz bar. Components that fold in from **below** $k f_s$ (940 and 1940 Hz) come in mirrored, so the sign of their phase flips. The amplitude spectrum cannot tell them apart.
+
+</Callout>
+
+### 1.3 The boundary: the Nyquist frequency
+
+The first bend of the zigzag is the <strong>Nyquist frequency</strong> $f_N = f_s/2$ that we met in P2-1. Only components below it appear at their own frequency.
+It means you need more than two dots per cycle — and **exactly two (a signal exactly at $f_N$) is not safe either.**
+
+<Figure {...F.nyquistVanish} />
+
+So the condition is not "at or below $f_N$" but $f < f_N$, that is, **$f_s > 2f$**. This is called the <strong>sampling theorem</strong>.
+
+The disk animation at the top of the lab below is the wagon wheel of section 1.1. On the left is the **real disk**, turning $f$ times per second; in the middle is **the disk seen under a flash (strobe)** that fires $f_s$ times per second in a dark room. The disk is visible only when the flash fires, so the middle picture jumps one step per flash. The height of the arrow tip is the signal value (the same convention as the rotating arrow in P1-2), and the height at each flash is a sample. Those heights pile up one by one in the strip on the right. Real signals are hundreds of hertz and could not be followed by eye, so the animation is played **slowly**, with only a few flashes per second.
+
+<Callout type="try">
+
+1. From the starting state (signal 60 Hz, $f_s$ = 1000 Hz), slowly lower $f_s$. Once $f_s$ drops below 120 Hz (= 2 × 60), the bar in the spectrum moves somewhere unexpected.
+2. Pick the preset **"940 Hz → appears as 60 Hz"**. Check whether the samples (orange dots) lie on the 60 Hz dashed line.
+3. Pick the **"1060 Hz"** and **"1940 Hz"** presets in turn. Check that the spectral bar stands at 60 Hz every time.
+4. In the **"Vanishing at Nyquist"** preset, switch the phase between 0° and 90°.
+5. Press **play** on the disk animation and pick the **"Normal sampling"**, **"940 Hz"** and **"1060 Hz"** presets in turn. Watch which way the disk under the flash turns.
+
+</Callout>
+
+<SamplingLab client:load lang="en" />
+
+In step 5, at 60 Hz and 1060 Hz the disk seems to turn **counterclockwise** by 0.06 turn per flash, while at 940 Hz it seems to turn **backwards** by 0.06 turn. At 1060 Hz the disk turns 1.06 times between flashes, which is +0.06 after dropping the whole turn; at 940 Hz it turns 0.94 times, which is −0.06. In all three cases the dots in the right-hand strip trace the same slow 60 Hz wave. The backwards-turning 940 Hz is the case from section 1.2 where **the component folds in with its phase sign flipped**. The real disk on the left simply spins quickly counterclockwise, at 940 Hz or 1060 Hz alike — but an eye that looks only now and then is left with a disk that turns slowly, or backwards. That now-and-then view is also all the analyzer keeps.
+
+<Callout type="warn" title="Once mixed, they cannot be separated">
+
+At the moment of sampling, an alias becomes the same numbers as a real component. No software can filter it out afterwards. **The only time to stop it is before sampling.**
+
+</Callout>
+
+---
+
+## 2. How to prevent it: cut the high frequencies before sampling
+
+### 2.1 AAF: a filter in front of the sampler
+
+On an analyzer you set the highest frequency to show on screen, <strong>$F_{max}$ (the maximum analysis frequency)</strong>. The sensor signal then passes through a filter that removes components above $F_{max}$ **before** it is sampled. This is the <strong>anti-aliasing filter (AAF)</strong>.
+
+<Figure {...F.aafEffect} />
+
+### 2.2 A filter cannot cut straight down
+
+If a filter could cut off sharply at $F_{max}$, $f_s = 2F_{max}$ would be enough. Real filters, however, attenuate **gradually** beyond $F_{max}$. The amount of attenuation is expressed in dB.
+
+<Callout type="term" title="dB (decibel)">
+
+The ratio of two magnitudes on a logarithmic scale. For an amplitude ratio $r$, it is $20\log_{10} r$ dB.
+
+- −6 dB ≈ half, −20 dB = 1/10, −40 dB = 1/100, −60 dB = 1/1000
+- Multiplication becomes addition: cutting to 1/10 and then to 1/10 again gives −20 − 20 = −40 dB
+
+It is handy for drawing very large and very small values on one graph, so it is used constantly when talking about filters and noise.
+
+</Callout>
+
+<Figure {...F.aafRolloff} />
+
+With $f_s = 2.56\,F_{max}$ the numbers work out like this:
+
+- The Nyquist frequency is $f_N = f_s/2 = 1.28\,F_{max}$
+- Components that fold into the screen ($0 \sim F_{max}$) are those with $f > f_s - F_{max} = 1.56\,F_{max}$
+- So the filter only has to attenuate enough over **a $0.56\,F_{max}$ margin**, from $F_{max}$ to $1.56\,F_{max}$.
+
+The range from $F_{max}$ to $1.28\,F_{max}$ is computed too, but it is discarded rather than shown, because components the filter did not fully attenuate can mix there with folded ones.
+Real analyzers often combine a steeper analog filter with a digital filter, but the principle — "attenuate over the margin" — is the same.
+
+### 2.3 Where do 400 · 800 · 1600 lines come from?
+
+FFT lengths $N$ are powers of two (P2-2 §5). With $N$ samples you get $N/2$ bins between $0$ and $f_N$, and only those between $0$ and $F_{max}$ are shown on screen.
+
+<Figure {...F.lorLines} />
+
+The number of bins shown on screen is called the <strong>number of lines (LOR, lines of resolution)</strong>. Thanks to the factor 2.56, 1024, 2048 and 4096 points become the tidy numbers of 400, 800 and 1600 lines.
+
+$$
+N = 2.56\,\mathrm{LOR},\qquad \Delta f = \frac{F_{max}}{\mathrm{LOR}} = \frac{f_s}{N}
+$$
+
+<Callout type="example" title="Reading an analyzer setup: F_max 1000 Hz, 400 lines">
+
+- $f_s = 2.56 \times 1000 = 2560\ \mathrm{Hz}$
+- $N = 2.56 \times 400 = 1024$
+- $\Delta f = 1000/400 = 2.5\ \mathrm{Hz}$, measurement time $T = 1/\Delta f = 0.4\ \mathrm{s}$
+
+The example in P2-1 §6 ($f_s$ = 2560 Hz, $N$ = 1024) is exactly this setup. On an analyzer you usually choose $F_{max}$ and the number of lines, and the analyzer sets $f_s$ and $N$.
+
+</Callout>
+
+<Callout type="try">
+
+1. From the starting state (8th-order filter, $f_s = 2.56\,F_{max}$), see how much of the out-of-band component (1.8 $F_{max}$) is left on screen.
+2. Change the filter type to **"No filter"**. Does a fake bar appear at 0.76 $F_{max}$?
+3. Change the filter from 8th to 4th to 2nd order and compare the size of the fake bar.
+4. Lower the sampling ratio $f_s/F_{max}$ to 2.0, and move the out-of-band component to 1.1 $F_{max}$.
+
+</Callout>
+
+<AafLab client:load lang="en" />
+
+As step 4 shows, with $f_s = 2F_{max}$ a component just above $F_{max}$ folds in just below $F_{max}$ almost unattenuated. The filter has no room to work.
+
+<Callout type="field" title="How to check whether a bar is real">
+
+When you see a bar you cannot explain, **change $F_{max}$ (and with it $f_s$) slightly and measure again.**
+
+- If the bar stays where it was → it is a real component.
+- If the bar moves to another frequency → it is an alias whose fold position changed with $f_s$.
+
+</Callout>
+
+---
+
+## 3. Writing voltage down as numbers: the ADC
+
+### 3.1 Bits and steps
+
+After the filter, the voltage is turned into integers by the <strong>ADC (analog-to-digital converter)</strong>. A $b$-bit ADC divides the input range $\pm V_{fs}$ into $2^b$ steps and records which step each sample's voltage falls in. The height of one step is <strong>1 LSB</strong> (least significant bit).
+
+$$
+1\ \mathrm{LSB} = \frac{2V_{fs}}{2^b}
+$$
+
+<Figure {...F.quantSteps} />
+
+The difference between the real value and the recorded one (at most ±½ LSB) looks like a little noise riding on the signal; this is <strong>quantization noise</strong>. The ratio of a full-range sine to the quantization noise (SQNR) is set by the number of bits.
+
+$$
+\mathrm{SQNR} \approx 6.02\,b + 1.76\ \mathrm{dB}
+$$
+
+| Bits | Steps | SQNR |
+|---|---|---|
+| 8 bit | 256 | about 50 dB |
+| 12 bit | 4,096 | about 74 dB |
+| 16 bit | 65,536 | about 98 dB |
+| 24 bit | about 16.78 million | about 146 dB |
+
+Each extra bit doubles the number of steps and lowers the noise by about 6 dB.
+
+### 3.2 The noise floor of a spectrum
+
+In a spectrum the quantization noise is spread evenly over $N/2$ bins. The noise in one bin is therefore $10\log_{10}(N/2)$ dB below the total, and the height of the noise lying along the bottom of the spectrum — the <strong>noise floor</strong> — is
+
+$$
+\text{noise floor} \approx -\mathrm{SQNR} - 10\log_{10}\frac{N}{2}\quad [\mathrm{dBFS}]
+$$
+
+<strong>dBFS</strong> is dB referenced to "a full-range sine = 0 dB". With 16 bits and $N = 1024$ it is $-98 - 27 \approx -125\ \mathrm{dBFS}$. Only components above the noise floor show up in the spectrum.
+
+### 3.3 The range can be too large or too small
+
+- **If the range is too large**: the signal uses only part of the steps (bottom of Figure 7). The noise floor (in dBFS) stays where it is, but the signal comes down by $20\log_{10}(V_{fs}/A)$ dB, so **the gap between signal and noise floor shrinks by that much** and small components drown in the noise. A range ten times the signal costs 20 dB.
+- **If the range is too small**: the tops of the signal are cut off by the range — <strong>clipping</strong>.
+
+<Figure {...F.clippingFigure} />
+
+<Callout type="try">
+
+1. In the **"16 bit"** preset, check that the small −60 dB component (136 Hz) shows above the noise floor. Does the measured noise floor in the readout table match the theoretical value (about −125 dBFS)?
+2. Pick the **"Range too large"** preset. The noise floor stays put, but the large tone drops to −20 dBFS.
+3. Switch to the **"8 bit"** preset and see how far the noise floor rises.
+4. In the **"Clipping"** preset, look at the tops of the time waveform and at 150, 250 and 350 Hz in the spectrum.
+
+</Callout>
+
+<AdcLab client:load lang="en" />
+
+<Callout type="field" title="When to suspect clipping">
+
+When odd multiples of 1X line up in a spectrum, it is tempting to think of a machine fault. Before that, check **whether the tops of the time waveform are cut flat and whether the analyzer showed an overload indicator**. Clipped data cannot be recovered later, so raise the range and measure again.
+
+</Callout>
+
+---
+
+## 4. How to choose $F_{max}$
+
+Set $F_{max}$ **above the highest component you want to see**. But with the same number of lines, $\Delta f = F_{max}/\mathrm{LOR}$, so the higher $F_{max}$ is, the coarser the spectrum's grid and the harder it is to separate close components (P2-4). Keeping the same grid means more lines, and a correspondingly longer measurement.
+How to choose $F_{max}$, the number of lines and the averaging together for each type of machine and purpose is summarized in P2-9.
+
+---
+
+## 5. Summary
+
+| Topic | Remember |
+|---|---|
+| Aliasing | Components above $f_N$ fold to $f_a = \lvert f - k f_s \rvert$. After sampling they cannot be separated |
+| Sampling theorem | $f < f_N = f_s/2$. Exactly at $f_N$ the signal can vanish, depending on its phase |
+| AAF | A filter that cuts above $F_{max}$ **before** sampling. Real filters attenuate gradually |
+| 2.56 | $f_N = 1.28\,F_{max}$, danger line $1.56\,F_{max}$. The band from $F_{max}$ to $f_N$ is discarded |
+| Lines | $N = 2.56\,\mathrm{LOR}$, $\Delta f = F_{max}/\mathrm{LOR}$. 1024 points = 400 lines |
+| ADC | 1 LSB $= 2V_{fs}/2^b$, SQNR $\approx 6.02b + 1.76$ dB |
+| Noise floor | $\approx -\mathrm{SQNR} - 10\log_{10}(N/2)$ dBFS. 16 bit, 1024 points ≈ −125 dBFS |
+| Range | Too large: you lose gap between signal and noise floor. Too small: clipping (fake odd harmonics) |
+
+---
+
+## 6. Check yourself
+
+<details>
+<summary><strong>Q1. With a sampling frequency of 2000 Hz, a 1700 Hz component comes in. At what frequency does it appear in the spectrum?</strong></summary>
+
+$k = \operatorname{round}(1700/2000) = 1$, $f_a = \lvert 1700 - 2000 \rvert = 300\ \mathrm{Hz}$. A fake bar stands at 300 Hz, below 1000 Hz ($f_N$).
+</details>
+
+<details>
+<summary><strong>Q2. You set F_max to 1000 Hz with 800 lines. What are the sampling frequency, number of samples, frequency resolution and measurement time?</strong></summary>
+
+- $f_s = 2.56 \times 1000 = 2560\ \mathrm{Hz}$
+- $N = 2.56 \times 800 = 2048$
+- $\Delta f = 1000/800 = 1.25\ \mathrm{Hz}$
+- $T = 1/\Delta f = 0.8\ \mathrm{s}$ (= 2048/2560)
+</details>
+
+<details>
+<summary><strong>Q3. There is an unexplained bar at 820 Hz. When you change F_max from 1000 Hz to 1200 Hz, the bar moves somewhere else. What do you conclude?</strong></summary>
+
+Its position changed when $f_s$ changed, so it is not a real 820 Hz component but an alias. A high-frequency component that the filter did not attenuate enough has folded in, so check the filter settings and the high-frequency content of the sensor signal.
+</details>
+
+<details>
+<summary><strong>Q4. You saved data whose tops were cut off because the range was too small. Can you remove the fake harmonics later with a digital filter?</strong></summary>
+
+No. The information cut off by clipping cannot be recovered, and the harmonics it created can sit on the same frequencies as real components, so they cannot be told apart. You have to raise the range and measure again.
+</details>
+
+<details>
+<summary><strong>Q5. With a 16-bit ADC and a 1024-point FFT, the range was set ten times larger than the signal. Will a component 100 dB below the large tone be visible?</strong></summary>
+
+The noise floor stays at about −125 dBFS, but the large tone comes down to −20 dBFS, so a component 100 dB smaller sits at −120 dBFS, almost on the noise floor. It is barely visible or buried. Matching the range to the signal wins back 20 dB of margin.
+</details>
+
+<details>
+<summary><strong>Q6. You measured a 500 Hz signal with a sampling frequency of 1000 Hz and the spectrum shows nothing. How can that be?</strong></summary>
+
+500 Hz is exactly $f_N$. With only two dots per cycle, if the phase puts every sample at a zero crossing, all samples are 0 and the signal disappears (Figure 3). The signal frequency must be clearly below $f_N$.
+</details>
+
+The next page (P2-4) returns to $\Delta f = 1/T$, which kept coming up here: how long must you measure to separate two close components, and what happens to the spectrum when the speed changes during the measurement?
+
+## References
+
+<References items={[
+  ['R-16', 'Sampling theorem, anti-aliasing filters, quantization (Ch. 3, ADC and DAC)'],
+  ['R-01', 'Sampling and aliasing in FFT analyzers'],
+]} />

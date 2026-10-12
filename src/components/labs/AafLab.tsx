@@ -12,6 +12,9 @@ import {
   butterworthAttenuationDb,
   butterworthGain,
 } from '../../lib/dsp/sampling';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/AafLab';
 
 /**
  * LAB-SMP-02 AAF와 fs = 2.56 F_max (P2-3, Contents §5-1).
@@ -25,22 +28,23 @@ type AafType = 'none' | 'ideal' | 'butter2' | 'butter4' | 'butter8';
 type PresetKey = 'default8' | 'noAaf' | 'ideal' | 'ratio2' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default8', label: '일반적인 분석기 설정 (f_s = 2.56 F_max, 8차 필터)' },
-  { value: 'noAaf', label: '필터 없음 (1.8 F_max 성분이 0.76 F_max 가짜 막대로 보임)' },
-  { value: 'ideal', label: '이상적 필터 (F_max에서 수직으로 끊음 — 실제로는 불가능)' },
-  { value: 'ratio2', label: 'f_s = 2.0 F_max (필터가 깎을 여유 구간이 0)' },
-  { value: 'custom', label: '직접 파라미터 조작' },
+  { value: 'default8', label: k('일반적인 분석기 설정 (f_s = 2.56 F_max, 8차 필터)') },
+  { value: 'noAaf', label: k('필터 없음 (1.8 F_max 성분이 0.76 F_max 가짜 막대로 보임)') },
+  { value: 'ideal', label: k('이상적 필터 (F_max에서 수직으로 끊음 — 실제로는 불가능)') },
+  { value: 'ratio2', label: k('f_s = 2.0 F_max (필터가 깎을 여유 구간이 0)') },
+  { value: 'custom', label: k('직접 파라미터 조작') },
 ];
 
 const AAF_OPTIONS: ParamOption<AafType>[] = [
-  { value: 'butter8', label: 'Butterworth 8차 (주파수 2배마다 −48 dB)' },
-  { value: 'butter4', label: 'Butterworth 4차 (주파수 2배마다 −24 dB)' },
-  { value: 'butter2', label: 'Butterworth 2차 (주파수 2배마다 −12 dB)' },
-  { value: 'ideal', label: '이상적 필터 (F_max 초과 완벽 차단)' },
-  { value: 'none', label: '필터 없음' },
+  { value: 'butter8', label: k('Butterworth 8차 (주파수 2배마다 −48 dB)') },
+  { value: 'butter4', label: k('Butterworth 4차 (주파수 2배마다 −24 dB)') },
+  { value: 'butter2', label: k('Butterworth 2차 (주파수 2배마다 −12 dB)') },
+  { value: 'ideal', label: k('이상적 필터 (F_max 초과 완벽 차단)') },
+  { value: 'none', label: k('필터 없음') },
 ];
 
-export default function AafLab() {
+export default function AafLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [preset, setPreset] = useState<PresetKey>('default8');
   const [fmax, setFmax] = useState(1000); // F_max [Hz]
   const [ratio, setRatio] = useState(2.56); // fs / F_max ratio
@@ -137,7 +141,7 @@ export default function AafLab() {
       {
         x: filterCurveData.freqs,
         y: filterCurveData.gainsDb,
-        name: `AAF 응답 (${aafType})`,
+        name: tr`AAF 응답 (${aafType})`,
         mode: 'lines',
         color: '#2563eb', // blue
         width: 2.5,
@@ -176,7 +180,7 @@ export default function AafLab() {
       {
         x: [fOut],
         y: [Math.max(-80, -outAttDb)],
-        name: `입력 f_out (${formatNumber(fOut)} Hz, -${formatNumber(outAttDb, 4)} dB)`,
+        name: tr`입력 f_out (${formatNumber(fOut)} Hz, -${formatNumber(outAttDb, 4)} dB)`,
         mode: 'markers',
         color: '#ea580c', // orange
         markerSize: 9,
@@ -195,7 +199,7 @@ export default function AafLab() {
       {
         x: [fIn],
         y: [1.0],
-        name: `정상 톤 (0.3 F_max = ${formatNumber(fIn)} Hz)`,
+        name: tr`정상 톤 (0.3 F_max = ${formatNumber(fIn)} Hz)`,
         kind: 'bar',
         barWidth: Math.max(5, fmax * 0.02),
         color: '#16a34a',
@@ -205,8 +209,8 @@ export default function AafLab() {
         x: [aliasOutFreq],
         y: [effectiveOutAmp],
         name: entersDisplayedBand
-          ? `가짜 에일리어스 피크 (${formatNumber(aliasOutFreq)} Hz, Pk=${formatNumber(effectiveOutAmp, 3)})`
-          : `폐기 영역 에일리어스 (${formatNumber(aliasOutFreq)} Hz)`,
+          ? tr`가짜 에일리어스 피크 (${formatNumber(aliasOutFreq)} Hz, Pk=${formatNumber(effectiveOutAmp, 3)})`
+          : tr`폐기 영역 에일리어스 (${formatNumber(aliasOutFreq)} Hz)`,
         kind: 'bar',
         barWidth: Math.max(5, fmax * 0.02),
         color: entersDisplayedBand ? (effectiveOutAmp > 0.05 ? '#dc2626' : '#f97316') : '#94a3b8',
@@ -215,7 +219,7 @@ export default function AafLab() {
       {
         x: [fmax, fmax],
         y: [0, 1.2],
-        name: 'F_max 유효 표시 한계',
+        name: tr`F_max 유효 표시 한계`,
         mode: 'lines',
         color: '#16a34a',
         dash: 'dash',
@@ -229,17 +233,18 @@ export default function AafLab() {
   return (
     <LabFrame
       id="LAB-SMP-02"
-      title="AAF(안티에일리어싱 필터)와 f_s = 2.56 F_max"
+      title={tr`AAF(안티에일리어싱 필터)와 f_s = 2.56 F_max`}
+      lang={lang}
       controls={
         <>
           <ParamSelect
-            label="실험 프리셋"
+            label={tr`실험 프리셋`}
             value={preset}
-            options={PRESET_OPTIONS}
+            options={PRESET_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={applyPreset}
           />
           <ParamSlider
-            label="분석 최대 주파수 F_max"
+            label={tr`분석 최대 주파수 F_max`}
             value={fmax}
             min={500}
             max={2000}
@@ -251,28 +256,28 @@ export default function AafLab() {
             }}
           />
           <ParamSlider
-            label="샘플링 비율 fs / F_max"
+            label={tr`샘플링 비율 fs / F_max`}
             value={ratio}
             min={2.0}
             max={4.0}
             step={0.04}
-            unit=" 배"
+            unit={tr` 배`}
             onChange={(v) => {
               setRatio(v);
               setPreset('custom');
             }}
           />
           <ParamSelect
-            label="AAF 필터 종류 (fc = F_max)"
+            label={tr`AAF 필터 종류 (fc = F_max)`}
             value={aafType}
-            options={AAF_OPTIONS}
+            options={AAF_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={(v) => {
               setAafType(v);
               setPreset('custom');
             }}
           />
           <ParamSlider
-            label="대역 밖 고주파 배율 (f_out / F_max)"
+            label={tr`대역 밖 고주파 배율 (f_out / F_max)`}
             value={fOutMultiplier}
             min={1.1}
             max={3.0}
@@ -284,7 +289,7 @@ export default function AafLab() {
             }}
           />
           <ParamSlider
-            label="대역 밖 성분 원래 진폭 A_out"
+            label={tr`대역 밖 성분 원래 진폭 A_out`}
             value={outAmp}
             min={0}
             max={1.5}
@@ -297,7 +302,7 @@ export default function AafLab() {
           />
           <div style={{ marginTop: '0.5rem' }}>
             <ParamToggle
-              label="위험 경계선 (fs - F_max) 안내"
+              label={tr`위험 경계선 (fs - F_max) 안내`}
               checked={showDangerBand}
               onChange={setShowDangerBand}
             />
@@ -312,45 +317,45 @@ export default function AafLab() {
           />
           <Formula
             display
-            tex={`f_s - F_{\\max} = ${texNumber(fGuard, 4)}\\ \\mathrm{Hz}\\quad ${fOut >= fGuard ? '\\Rightarrow\\ f_{\\text{out}}\\text{이 이보다 높아 화면 안으로 접힌다}' : '\\Rightarrow\\ f_{\\text{out}}\\text{은 화면 밖(버리는 구간)으로 접힌다}'}`}
+            tex={`f_s - F_{\\max} = ${texNumber(fGuard, 4)}\\ \\mathrm{Hz}\\quad ${fOut >= fGuard ? `\\Rightarrow\\ f_{\\text{out}}\\text{${tr`이 이보다 높아 화면 안으로 접힌다`}}` : `\\Rightarrow\\ f_{\\text{out}}\\text{${tr`은 화면 밖(버리는 구간)으로 접힌다`}}`}`}
           />
           <Formula
             display
-            tex={`|H(f_{\\text{out}})| = ${texNumber(outGain, 4)}\\quad (\\text{감쇠 } ${texNumber(outAttDb, 4)}\\ \\mathrm{dB})\\implies A_{\\text{eff}} = A_{\\text{out}} \\times |H| = ${texNumber(effectiveOutAmp, 4)}\\ \\mathrm{Pk}`}
+            tex={`|H(f_{\\text{out}})| = ${texNumber(outGain, 4)}\\quad (\\text{${tr`감쇠`} } ${texNumber(outAttDb, 4)}\\ \\mathrm{dB})\\implies A_{\\text{eff}} = A_{\\text{out}} \\times |H| = ${texNumber(effectiveOutAmp, 4)}\\ \\mathrm{Pk}`}
           />
           <Formula
             display
-            tex={`\\dfrac{N}{2} = 1.28 \\times \\mathrm{LOR}\\quad (\\text{bin } N/2\\text{개 중 } 78\\,\\%\\text{만 화면에 표시})`}
+            tex={`\\dfrac{N}{2} = 1.28 \\times \\mathrm{LOR}\\quad (\\text{${tr`bin `}} N/2\\text{${tr`개 중 `}} 78\\,\\%\\text{${tr`만 화면에 표시`}})`}
           />
         </>
       }
       readouts={
         <ReadoutTable
           rows={[
-            { label: '분석 최대 주파수 F_max', value: fmax, unit: 'Hz' },
-            { label: '샘플링 주파수 fs', value: fs, unit: 'Hz' },
-            { label: '나이퀴스트 주파수 fN', value: fn, unit: 'Hz' },
+            { label: tr`분석 최대 주파수 F_max`, value: fmax, unit: 'Hz' },
+            { label: tr`샘플링 주파수 fs`, value: fs, unit: 'Hz' },
+            { label: tr`나이퀴스트 주파수 fN`, value: fn, unit: 'Hz' },
             {
-              label: '유효 대역 침투 한계선 fs - F_max',
+              label: tr`유효 대역 침투 한계선 fs - F_max`,
               value: fGuard,
               theory: (ratio - 1) * fmax,
               unit: 'Hz',
             },
-            { label: '대역 밖 성분 원래 주파수 f_out', value: fOut, unit: 'Hz' },
+            { label: tr`대역 밖 성분 원래 주파수 f_out`, value: fOut, unit: 'Hz' },
             {
-              label: '에일리어스 가짜 피크 위치 fa',
+              label: tr`에일리어스 가짜 피크 위치 fa`,
               value: aliasOutFreq,
               theory: aliasFrequency(fOut, fs),
               unit: 'Hz',
             },
             {
-              label: 'AAF 감쇠량',
+              label: tr`AAF 감쇠량`,
               value: outAttDb,
               unit: 'dB',
               sig: 3,
             },
             {
-              label: '잔류 피크 진폭 A_eff',
+              label: tr`잔류 피크 진폭 A_eff`,
               value: effectiveOutAmp,
               unit: 'Pk',
               sig: 4,
@@ -361,40 +366,40 @@ export default function AafLab() {
       tasks={[
         {
           question:
-            '필터를 끄고(필터 없음) 1.8 F_max 성분(1800 Hz)을 넣으면 스펙트럼의 어디에 가짜 막대가 설까요?',
+            tr`필터를 끄고(필터 없음) 1.8 F_max 성분(1800 Hz)을 넣으면 스펙트럼의 어디에 가짜 막대가 설까요?`,
           answer:
-            'f_a = |1800 − 2560| = 760 Hz(= 0.76 F_max)에 원래 진폭 그대로(1.0 Pk) 나타납니다. 필터 없이 재면 실제로는 없는 760 Hz 진동이 있다고 잘못 판단하게 됩니다.',
+            tr`f_a = |1800 − 2560| = 760 Hz(= 0.76 F_max)에 원래 진폭 그대로(1.0 Pk) 나타납니다. 필터 없이 재면 실제로는 없는 760 Hz 진동이 있다고 잘못 판단하게 됩니다.`,
         },
         {
           question:
-            '8차 필터를 켜면 1.8 F_max 성분의 진폭은 얼마나 줄어드나요?',
+            tr`8차 필터를 켜면 1.8 F_max 성분의 진폭은 얼마나 줄어드나요?`,
           answer:
-            '약 40.8 dB 깎여 진폭이 1.0에서 0.0091 Pk(1 % 미만)로 줄어듭니다. 가짜 막대가 거의 보이지 않게 됩니다.',
+            tr`약 40.8 dB 깎여 진폭이 1.0에서 0.0091 Pk(1 % 미만)로 줄어듭니다. 가짜 막대가 거의 보이지 않게 됩니다.`,
         },
         {
           question:
-            '샘플링 비율 f_s / F_max를 2.0으로 낮추면 어떤 문제가 생길까요?',
+            tr`샘플링 비율 f_s / F_max를 2.0으로 낮추면 어떤 문제가 생길까요?`,
           answer:
-            'f_s − F_max = F_max가 되어 필터가 깎을 여유 구간이 0이 됩니다. 실제 필터는 F_max에서 수직으로 끊지 못하므로, F_max 바로 위(예: 1.1 F_max)의 성분이 거의 깎이지 않은 채 0.9 F_max로 접혀 들어옵니다. 많은 분석기가 f_s = 2.56 F_max를 쓰는 이유입니다.',
+            tr`f_s − F_max = F_max가 되어 필터가 깎을 여유 구간이 0이 됩니다. 실제 필터는 F_max에서 수직으로 끊지 못하므로, F_max 바로 위(예: 1.1 F_max)의 성분이 거의 깎이지 않은 채 0.9 F_max로 접혀 들어옵니다. 많은 분석기가 f_s = 2.56 F_max를 쓰는 이유입니다.`,
         },
       ]}
     >
       <div style={{ marginBottom: '1rem' }}>
         <Plot
           series={responseSeries}
-          x={{ label: '주파수 [Hz]', range: [0, filterCurveData.maxPlotFreq] }}
-          y={{ label: 'AAF 응답 [dB]', range: [-80, 5] }}
+          x={{ label: tr`주파수 [Hz]`, range: [0, filterCurveData.maxPlotFreq] }}
+          y={{ label: tr`AAF 응답 [dB]`, range: [-80, 5] }}
           height={260}
-          ariaLabel="AAF 주파수 응답 및 위험 전이대역"
+          ariaLabel={tr`AAF 주파수 응답 및 위험 전이대역`}
         />
       </div>
       <div>
         <Plot
           series={specSeries}
-          x={{ label: '주파수 [Hz]', range: [0, fn] }}
-          y={{ label: '스펙트럼 진폭 [Pk]', range: [0, 1.2] }}
+          x={{ label: tr`주파수 [Hz]`, range: [0, fn] }}
+          y={{ label: tr`스펙트럼 진폭 [Pk]`, range: [0, 1.2] }}
           height={240}
-          ariaLabel="분석기 스펙트럼 (0~F_max 유효 대역 vs 버리는 대역)"
+          ariaLabel={tr`분석기 스펙트럼 (0~F_max 유효 대역 vs 버리는 대역)`}
         />
       </div>
     </LabFrame>

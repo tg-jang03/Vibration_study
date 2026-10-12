@@ -18,6 +18,10 @@ import {
   type FigSeries,
 } from '../../lib/figure';
 import { formatNumber } from '../../lib/format';
+import { langOfUrl } from '../../i18n';
+import { FIGURE_EN } from '../../i18n/figures';
+import { translateDeep } from '../../i18n/translate';
+import { UI } from '../../i18n/ui';
 
 interface Props {
   id: string;
@@ -25,7 +29,12 @@ interface Props {
   panels: FigPanel[];
 }
 
-const { id, caption, panels } = Astro.props;
+// 영어 페이지 (D-054): 그림 코드는 그대로 두고 라벨·제목·캡션을 사전(src/i18n/en/figures/*)으로 옮긴다.
+// 영어 MDX가 caption을 직접 넘기면 그것을 쓴다. 사전에 없는 한국어는 남고 verify:i18n이 잡는다.
+const lang = langOfUrl(Astro.url);
+const ui = UI[lang];
+const { id } = Astro.props;
+const { caption, panels } = lang === 'en' ? translateDeep({ caption: Astro.props.caption, panels: Astro.props.panels }, FIGURE_EN) : Astro.props;
 
 // 본문 폭(약 900px)에서 1:1로 보이도록 잡은 기준 폭. 패널 height는 680 폭 기준으로 적었으므로 HSCALE을 곱한다 (FIG_LAYOUT)
 const COLOR: Record<FigColor, string> = {
@@ -348,7 +357,7 @@ const figures = [layoutFigure(false), layoutFigure(true)];
               {p.heatmap?.legend && (
                 <g>
                   <text class="fig-legend" x={W - MR - 5 * 16 - 8} y={compact ? l.plotTop - 12 : 15} text-anchor="end">
-                    {p.heatmap.legend}: 작음
+                    {p.heatmap.legend}: {ui.heatmapLow}
                   </text>
                   {[1, 2, 3, 4, 5].map((k) => (
                     <rect x={W - MR - (6 - k) * 16} y={compact ? l.plotTop - 22 : 5} width="14" height="12" style={`fill:${COLOR[p.heatmap!.color ?? 'c1']};fill-opacity:${(k / 5).toFixed(2)}`} />
@@ -538,7 +547,7 @@ const figures = [layoutFigure(false), layoutFigure(true)];
     </svg>
     ))}
   </div>
-  <button class="fig-open" type="button" aria-label="그림을 크게 보기">크게 보기</button>
+  <button class="fig-open" type="button" aria-label={ui.figEnlargeLabel} data-dialog={ui.figDialogLabel} data-close={ui.figClose}>{ui.figEnlarge}</button>
   <figcaption>{caption}</figcaption>
 </figure>
 
@@ -633,15 +642,16 @@ const figures = [layoutFigure(false), layoutFigure(true)];
   // 공용 대화상자는 모바일에서 요청할 때만 만든다. 원본 SVG 좌표·데이터를 그대로 확대한다.
   document.addEventListener('click', (event) => {
     const target = event.target;
-    if (!(target instanceof Element) || !target.closest('.fig-open')) return;
-    const figure = target.closest('figure');
+    const opener = target instanceof Element ? target.closest<HTMLElement>('.fig-open') : null;
+    if (!opener) return;
+    const figure = opener.closest('figure');
     const original = figure?.querySelector('.fig-desktop');
     if (!original) return;
     const dialog = document.createElement('dialog');
     dialog.className = 'figure-zoom';
-    dialog.setAttribute('aria-label', '그림 크게 보기');
+    dialog.setAttribute('aria-label', opener.dataset.dialog ?? '');
     const close = document.createElement('button');
-    close.type = 'button'; close.textContent = '닫기'; close.autofocus = true;
+    close.type = 'button'; close.textContent = opener.dataset.close ?? '×'; close.autofocus = true;
     close.addEventListener('click', () => dialog.close());
     const scroll = document.createElement('div'); scroll.className = 'figure-zoom-scroll';
     const copy = original.cloneNode(true) as SVGSVGElement;
@@ -653,7 +663,7 @@ const figures = [layoutFigure(false), layoutFigure(true)];
       }
     }
     scroll.append(copy); dialog.append(close, scroll);
-    dialog.addEventListener('close', () => { dialog.remove(); (target.closest('.fig-open') as HTMLElement)?.focus(); });
+    dialog.addEventListener('close', () => { dialog.remove(); opener.focus(); });
     document.body.append(dialog); dialog.showModal();
   });
 </script>

@@ -1,0 +1,98 @@
+/**
+ * 랩 모음의 영어 제목·한 줄 설명 (D-054). 한국어 원본은 src/data/labs.ts — 랩을 더하면 여기도 한 줄 (테스트가 잡는다).
+ * 랩 화면 자체의 영어는 src/i18n/en/labs/<컴포넌트>.ts 사전 (번역이 끝난 랩만).
+ */
+
+export const LABS_EN: Record<string, { title: string; summary: string }> = {
+  // Part 1
+  'mck-01': { title: 'Free vibration of a mass-spring system', summary: 'Change mass, stiffness and initial displacement to see the motion around equilibrium, the period and the natural frequency.' },
+  'bas-01': { title: 'Three numbers of a sine: amplitude · frequency · phase', summary: 'Change amplitude, frequency and phase one at a time and watch how the waveform changes.' },
+  'damp-01': { title: 'Damping: how many cycles does the shaking last?', summary: 'Play the mass, spring, damper and waveform together to see how amplitude decays with the damping ratio, and step to the next positive peak to read the logarithmic decrement.' },
+  'frc-01': { title: 'Forced vibration and resonance', summary: 'Play the force arrow, mass and waveform together to compare the phase lag below, near and above resonance, pausing every T/4 to read it.' },
+  '2dof-01': { title: 'Two-DOF modes and energy exchange', summary: 'See the in-phase and out-of-phase modes of two masses and the beating of a weak coupling.' },
+  'sup-01': { title: 'How far does a stiffer support get you?', summary: 'Change support stiffness and mass to see how far the series equivalent stiffness and the natural frequency can move.' },
+  'unb-01': { title: 'Unbalance run-up and 1X', summary: 'Raise the speed and watch the centrifugal force, 1X amplitude and phase change as the rotor passes its critical speed.' },
+  'fmap-01': { title: 'Frequency map: where each element puts its lines', summary: 'See on a map where the frequencies of interest fall for each machine element (blades, gears, bearings, belts).' },
+  'src-01': { title: 'Synthesizing causes: responses mixed into one waveform', summary: 'Switch causes on and off and see whether you can pick them apart again in the combined waveform and line spectrum.' },
+  // Part 2
+  'bas-02': { title: 'Amplitude as one number: Peak · Pk-Pk · RMS · CF', summary: 'Change the waveform shape and see how Peak, Pk-Pk, RMS and crest factor differ.' },
+  'fou-01': { title: 'Stacking harmonics: a signal is a sum of sines', summary: 'Add harmonics one by one to build square and sawtooth waves, and see what phase does.' },
+  'fou-01-dft': { title: 'DFT = correlation with a template sine', summary: 'Change the template frequency and see when the sum of products grows and when it becomes zero.' },
+  'fou-01-zeropad': { title: 'Zero padding vs measurement time', summary: 'Compare padding with zeros and measuring longer: which one separates two components?' },
+  'smp-01': { title: 'Sampling and aliasing', summary: 'Change the signal frequency and f_s to see where components above Nyquist fold to.' },
+  'smp-02': { title: 'AAF and f_s = 2.56 F_max', summary: 'Change the order and cutoff of the anti-aliasing filter to see how much the folding components are attenuated.' },
+  'smp-03': { title: 'ADC resolution and input range', summary: 'Change the number of bits and the range to see quantization noise and clipping.' },
+  'res-01': { title: 'Resolution and separating two components', summary: 'Change the measurement time (number of lines) to see when two close components split apart.' },
+  'res-02': { title: 'Smearing: when speed changes during a measurement', summary: 'Change the rate of speed change and the measurement time to see how many bins 1X smears over.' },
+  'zoom-01': { title: 'Zoom FFT', summary: 'Separate components that sat together by looking closely at a narrow band with a zoom FFT.' },
+  'win-01': { title: 'Leakage and scalloping loss', summary: 'Move a component between bins and see how leakage and amplitude loss differ for each window.' },
+  'win-02': { title: 'Comparing windows: main lobe and side lobes', summary: 'Change the window to see whether a small component next to a large one shows up, and whether close components separate.' },
+  'win-03': { title: 'Amplitude (ACF) and energy (ECF) correction', summary: 'See how a window\'s correction factors and ENBW change the readings for sines and noise.' },
+  'avg-01': { title: 'Averaging: height and scatter of the noise floor', summary: 'Change the averaging type, count and overlap to see how the noise floor and small components look.' },
+  'avg-02': { title: 'TSA: cut one revolution at a time and average', summary: 'Change the number of averaged revolutions to see components of other shafts and noise disappear, leaving only the fault impacts.' },
+  'spc-01': { title: 'The vertical axis of a spectrum: amplitude · power · PSD', summary: 'Change the number of lines and the vertical scaling to see how the heights of a sine and of noise differ.' },
+  'spc-02': { title: 'Amplitude notation and dB', summary: 'See how the kind of peak (true or derived) and a linear or dB axis change the visibility of small components.' },
+  'unit-01': { title: 'Vibration unit converter', summary: 'Convert displacement, velocity and acceleration, pp, pk and rms, and mil, in/s and g for a single sine.' },
+  'mod-01': { title: 'Modulation · sidebands · beating', summary: 'Build AM, FM and beating signals and look at sideband spacing, sideband height and the envelope.' },
+  'sbx-01': { title: 'Signal Lab sandbox: what will my setup show?', summary: 'Set a machine signal, F_max, lines, window and averaging, and the sandbox judges whether each component is visible with that setup (Part 2 capstone).' },
+  // Part 3
+  'sns-01': { title: 'A sensor is a mass-spring system', summary: 'Change the sensor type, natural frequency, damping and mounting to see the flat band and how the measured spectrum gets distorted.' },
+  'prox-01': { title: 'Proximity probe: gap voltage and runout', summary: 'Change gap, vibration, speed and runout to see the DC and AC parts of the output voltage, the linear range and runout.' },
+  'phs-01': { title: 'Measuring phase: Keyphasor pulse and 1X phase', summary: 'Change phase, speed, 2X and convention, read the phase from Δt and plot it on a polar plot.' },
+  'sro-01': { title: 'Slow-roll compensation: subtracting runout as a vector', summary: 'Change runout, slow-roll speed and compensation method to see how the run-up Bode and polar plots change.' },
+  'chain-01': { title: 'Sensor problem or machine problem? (quiz)', summary: 'Try a check on seven measurement-chain pitfall cases, see what disappears, and make the call.' },
+  'alm-01': { title: 'Protection system alarm logic', summary: 'Change levels, time delays, voting and trip multipliers to see when alarms and trips fire.' },
+  // Part 4
+  'af-01': { title: 'Run-up Bode and amplification factor (AF)', summary: 'Change the natural speed, damping and measurement spacing and read the amplification factor by half-power from run-up Bode and polar plots.' },
+  'jef-01': { title: 'Jeffcott rotor: whirl and orbits', summary: 'Change speed, stiffness ratio and damping to compare circular and elliptical orbits and forward and reverse whirl.' },
+  'scl-01': { title: 'Fluid-film support and shaft centerline', summary: 'Find the average shaft position from speed, load and viscosity, and compare the cold reference, the DC voltages of two probes and drift.' },
+  'stb-01': { title: 'Cross-coupling and stability', summary: 'Change cross-coupled stiffness, damping and speed to compare the free response, complex eigenvalues, log decrement and the stability limit.' },
+  // Part 5
+  'flt-01': { title: 'Filter design: magnitude · group delay · waveform', summary: 'Change type, order and cutoff to see attenuation, delay, waveform shape and filtering twice.' },
+  'int-01': { title: 'Integration and the ski slope', summary: 'Integrate acceleration to velocity and displacement and see the low cutoff, the ski slope and drift from a DC offset.' },
+  'stft-01': { title: 'Spectrogram · waterfall · cascade', summary: 'Run an STFT of a startup signal with different frame lengths and overlaps, and read the lines on a spectrogram, waterfall and cascade.' },
+  'xch-01': { title: 'FRF estimation and coherence', summary: 'Change the number of averages and the noise on the force and response sides to see where H1 and H2 are biased and where coherence drops.' },
+  'ord-01': { title: 'Order tracking: time FFT vs order spectrum', summary: 'Resample an accelerating signal by Keyphasor angle (or the spectrogram ridge) and look at resolution, maximum order, aliasing and interpolation error.' },
+  'env-01': { title: 'Envelope analysis: choose a band → envelope → envelope spectrum', summary: 'Pick the band where bearing impacts ring, pull BPFO and BPFI out of the envelope spectrum, and see what a wrong band or width does.' },
+  'sk-01': { title: 'Spectral kurtosis · kurtogram: finding the impact band automatically', summary: 'Measure the kurtosis of the envelope for each frequency and bandwidth, pick the band with impacts, and look at its envelope spectrum.' },
+  'cep-01': { title: 'Cepstrum: line spacing → quefrency peaks, liftering', summary: 'Separate two sideband families of a gearbox into different quefrency peaks and remove one family by liftering.' },
+  'feat-01': { title: 'Time-domain features: trends while a fault grows', summary: 'Follow how RMS, crest factor and kurtosis rise and fall as a bearing fault develops.' },
+  'flt-02': { title: 'Tracking and notch filters: extracting the 1X vector during run-up', summary: 'Extract 1X amplitude and phase (Bode) from a run-up with a filter that follows the speed, and see delay and noise versus bandwidth and acceleration, plus the Not-1X left by a notch.' },
+  'full-01': { title: 'Full spectrum: orbits, forward and reverse', summary: 'Change X and Y amplitude, phase difference and sensor errors to see the orbit direction and the ±1X bars.' },
+  // Part 6
+  'twf-01': { title: 'Time waveforms: read the pattern and name it', summary: 'Compare sine, beating, AM, impacts, truncation, clipping and asymmetry, count events with the Keyphasor, and take the pattern quiz.' },
+  'trnd-01': { title: 'Same size, different vector: trends and APHT', summary: 'Compare phase shift, amplitude/residual growth, thermal-bow decrease and Morton-type loops on overall, APHT and polar plots, and adjust the baseline and a learning acceptance region.' },
+  'wf-01': { title: 'Reading line movement: waterfall and cascade', summary: 'Compare order-following, lock-in, fixed-frequency and constant-speed records, and read the forward and reverse parts of X/Y on several axes.' },
+  'orb-01': { title: 'Orbits: shape · direction · the time order of the dots', summary: 'Compare direct and 1X orbits with the Keyphasor time order, and change shape, whirl sign, comparison order and time window to tell fixed dots from moving ones.' },
+  // Part 7
+  'map-01': { title: 'Diagnostic frequency map: frequency → candidate causes', summary: 'Find candidate causes from the machine data and the frequency of a measured line, and see the five pieces of evidence (frequency, amplitude, phase, direction, operating condition) for each.' },
+  'fault-01': { title: 'Fault signal synthesizer: a fingerprint for each cause', summary: 'Pick a machine and up to two faults, look at three-direction velocity spectra, waveforms, envelopes, phase and kurtosis, and compare the fingerprint of each cause.' },
+  'rpm-01': { title: 'Speed estimation: finding 1X when the speed is unknown', summary: 'Find 1X with harmonic families, the cepstrum and autocorrelation, and see where each method goes wrong (picking half, being masked by a large component).' },
+  'brg-01': { title: 'Bearing fault frequency calculator', summary: 'Compute FTF, BSF (1× and 2×), BPFO and BPFI from the number of balls, ball and pitch diameters, contact angle, speed and slip, and compare them with the rules of thumb.' },
+  'brg-02': { title: 'Fault location and failure stage: where does it show first?', summary: 'Pick an outer-race, inner-race, ball or cage fault and one of four failure stages, and see where it shows first in acceleration (dB), velocity and envelope spectra.' },
+  '1x-01': { title: 'Telling 1X apart: what is a large 1X?', summary: 'Separate unbalance (static, couple, dynamic), bow, runout, crack, a directional force and structural resonance with coastdown Bode, slow-roll vectors, phase at two bearings and two directions, and 2X — then solve seven hidden-cause cases.' },
+  'nl-01': { title: 'Fingerprints of nonlinearity: misalignment · looseness · rub', summary: 'Add a misalignment force, bearing clearance or seal contact to the same rotor, vary speed and severity, and see bananas and figure eights, harmonic and ½X families and reverse whirl in orbits, waveforms and the full spectrum.' },
+  'sub-01': { title: 'Telling subsynchronous components apart', summary: 'Separate oil whirl and whip, fluid-induced whirl, rub, looseness, rotating stall and structural resonance with run-up cascades, the full spectrum, Keyphasor dots, onset and disappearance speeds, and oil temperature, bearing load and process load tests — then solve seven hidden-cause cases.' },
+  'gear-01': { title: 'Spectral fingerprints of gear faults', summary: 'Pick wear, eccentricity, a broken tooth, backlash or hunting tooth and a load, and compare GMF harmonics, sideband spacing and count, the mesh resonance band and the waveform.' },
+  'gear-02': { title: 'TSA and cepstrum: which shaft, which tooth?', summary: 'Find the faulty shaft and tooth number from per-shaft Keyphasor TSA residual and difference signals, FM4 and cepstrum peaks.' },
+  'elec-01': { title: 'Electrical or mechanical? 2×LF · pole-pass sidebands · power-off test', summary: 'Put stator, rotor-bar, air-gap eccentricity, unbalance and misalignment faults into induction motors (2- and 4-pole) and a 2-pole synchronous generator, vary load (slip) and record length to see PPF sidebands around 1X and 2×LF, separate electrical from mechanical with spectrograms before and after a power (field) trip — then solve seven hidden-cause cases.' },
+  'flow-01': { title: 'Moving the operating point to find the cause: vane pass · recirculation · cavitation · stall · surge', summary: 'Change flow and suction pressure of a centrifugal pump and flow and anti-surge of a centrifugal compressor, see how vane pass, low-flow recirculation, hydraulic unbalance, cavitation, rotating stall and surge respond in the spectrum, pressure and axial position — then solve seven hidden-cause cases.' },
+  'camp-01': { title: 'Spin stiffening and Campbell crossings', summary: 'Change natural frequency, stiffening, order and damping to tell crossing candidates apart from the response of each mode.' },
+  // Part 8
+  'gen-01': { title: 'Generator field current and the 1X vector', summary: 'Compare field current changes and returns, thermal lag, and vector direction and cancellation on 1X trends and polar plots.' },
+  'gt-01': { title: 'GT dynamic pressure: sensor location and spatial modes', summary: 'Compare given pressure waveforms for stall, surge and combustion, and read amplitude, phase and nodes versus circumferential and axial location.' },
+  'st-01': { title: 'ST load and partial arc: stability margin and center position', summary: 'Compare a virtual stability boundary versus load, damping and cross-coupling, and separately read the static center position versus the resultant admission force and viscosity.' },
+  'bode-01': { title: 'Bode / polar plots of several modes', summary: 'Change mode spacing, damping, sensor, thermal state and slow-roll compensation to compare 1X superposition and nodes, and the phase and polar plots at each bearing.' },
+  // Part 9
+  'hpb-01': { title: 'Impact testing and half-power', summary: 'Change hammer tip, frame length, window, averaging and double hits to see how the measured FRF and the half-power damping ratio go wrong.' },
+  'bal-01': { title: 'Influence-coefficient balancing', summary: 'Add trial weights to a rotor with hidden unbalance, measure influence coefficients, and see one- and two-plane correction weights and the effects of split weights, measurement scatter and slow-roll compensation.' },
+  'aln-01': { title: 'Alignment calculator', summary: 'Find offset and angularity and the front- and back-foot moves from rim-face or reverse readings, and see the effect of bracket sag and thermal growth (cold targets).' },
+  // Part 10
+  'iso-01': { title: 'Judging magnitude zones and change separately', summary: 'On a virtual 60-day trend (step, gradual, decrease) over colored zone bands, compare when the magnitude-zone and change-from-baseline judgments trip, and enter the boundaries from the standard you own.' },
+  'sm-01': { title: 'Why a large AF calls for a larger separation margin', summary: 'Change AF, separation margin and the prediction error of the critical speed to see how many times larger the response at the operating point gets when the real critical speed has moved.' },
+  'diag-01': { title: 'What changed? Data that separates hypotheses', summary: 'In a virtual case where 1X has doubled, separate the hypotheses of increased excitation and a shifted natural frequency step by step with a single 3000 rpm point and the coastdown amplitude and phase.' },
+  // Part 11
+  'case-01': { title: 'Virtual machine cases: find the hidden fault', summary: 'Pick measurement setups and data (spectra, envelopes, phase, Bode, cascades, trends, trip tests and more) on eleven virtual machines with hidden faults, submit a diagnosis, and see the decisive evidence and why the wrong answers fail.' },
+  'data-01': { title: 'My-file analyzer: finding bearing faults in measured signals', summary: 'Open downloaded public data (CWRU and Paderborn MAT, WAV, CSV) inside your browser only and judge it through waveform → averaged spectrum → kurtogram band → envelope → bearing fault frequency match, then compare with the label. Without a file, five synthetic examples (normal, outer race, inner race, ball, outer race with spikes).' },
+  'rev-01': { title: 'Reviewing startup/shutdown records: extract and redraw', summary: 'From a Keyphasor and two vibration records (a synthetic shutdown record or your own file, inside your browser only), redraw pulses → speed → per-revolution 1X vectors → Bode, polar and cascade, overlay them, and check past judgments with slow-roll compensation and pulse fixing.' },
+};

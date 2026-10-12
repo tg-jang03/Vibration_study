@@ -1,0 +1,257 @@
+---
+/**
+ * Part 목차 (/parts/{n}/, /en/parts/{n}/). 영어 목차에서 아직 번역 안 된 절은 한국어 페이지로 가고 KO 표시 (D-054).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { STAGES, partProgress, type Part } from '../../data/curriculum';
+import { labsInSection } from '../../lib/labRefs';
+import { withBase } from '../../lib/site';
+import { localizePath, type Lang } from '../../i18n';
+import { labText, partQuestion, partTitle, sectionTitle, shortTitle, stageText, statusLabel } from '../../i18n/content';
+import { availablePath, hasEnglishSection, sectionPath } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  part: Part;
+  prev?: Part;
+  next?: Part;
+}
+
+const { lang, part, prev, next } = Astro.props;
+const t = UI[lang];
+const en = lang === 'en';
+const koOnly = (id: string) => en && !hasEnglishSection(id);
+const stage = STAGES.find((s) => s.parts.includes(part.num));
+const { ready, total } = en
+  ? { ready: part.sections.filter((s) => s.href && hasEnglishSection(s.id)).length, total: part.sections.length }
+  : partProgress(part);
+const title = `Part ${part.num}. ${partTitle(part, lang)}`;
+const description = `${partQuestion(part, lang)} ${part.sections.map((s) => shortTitle(sectionTitle(s, lang))).join(' · ')}`;
+---
+
+<BaseLayout title={title} description={description} crumbs={[{ name: title, path: localizePath(`/parts/${part.num}/`, lang) }]}>
+  <div class="part-page" style={`--stage:${stage?.color ?? 'var(--accent)'}`}>
+    <div class="breadcrumb"><a href={withBase(localizePath('/', lang))}>{t.navCurriculum}</a> › Part {part.num}</div>
+    <header class="part-hero">
+      <span class="ring" style={`--p:${total ? Math.round((ready / total) * 100) : 0}`}><span>{part.num}</span></span>
+      <div>
+        {stage && <p class="stage-label">{t.stage(stage.num)} · {stageText(stage, lang).title}</p>}
+        <h1>Part {part.num}. {partTitle(part, lang)}</h1>
+        <p class="lead">{partQuestion(part, lang)}</p>
+        <p class="part-count">{t.readableCount(ready, total)}</p>
+      </div>
+    </header>
+
+    <ol class="section-list">
+      {
+        part.sections.map((section) => {
+          const labs = labsInSection(section.id);
+          const ko = koOnly(section.id);
+          return (
+            <li class="section-item" data-status={ko ? 'planned' : section.status}>
+              <span class="section-no">{section.id.split('-')[1]}</span>
+              <div class="section-body">
+                <div class="section-top">
+                  {section.href ? (
+                    <a class="section-title" href={withBase(sectionPath(section, lang) ?? '/')} title={ko ? t.koreanOnlyTitle : undefined}>
+                      {sectionTitle(section, lang)}
+                    </a>
+                  ) : (
+                    <span class="section-title">{sectionTitle(section, lang)}</span>
+                  )}
+                  <span class="badge" data-status={ko ? 'planned' : section.status}>
+                    {!section.href ? t.comingSoon : ko ? 'Korean only' : en ? 'English' : statusLabel(section.status, lang)}
+                  </span>
+                </div>
+                <span class="section-id">{section.id}</span>
+                {labs.length > 0 && (
+                  <ul class="lab-chips" aria-label={t.sectionLabs}>
+                    {labs.map((l) => (
+                      <li>
+                        <a href={withBase(availablePath(`/lab/${l.slug}/`, lang))} title={labText(l, lang).summary}>
+                          {l.id} {shortTitle(labText(l, lang).title)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+
+    <nav class="part-pager" aria-label={t.partPager}>
+      {prev ? <a href={withBase(localizePath(`/parts/${prev.num}/`, lang))}>← Part {prev.num}. {partTitle(prev, lang)}</a> : <span />}
+      {next ? <a href={withBase(localizePath(`/parts/${next.num}/`, lang))}>Part {next.num}. {partTitle(next, lang)} →</a> : <span />}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .part-page {
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .part-hero {
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+    padding: 1rem 0 1.5rem;
+  }
+
+  .part-hero h1 {
+    margin: 0.1rem 0 0.4rem;
+  }
+
+  .stage-label {
+    margin: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--stage);
+    letter-spacing: 0.03em;
+  }
+
+  .part-count {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .ring {
+    flex: none;
+    width: 4.2rem;
+    height: 4.2rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--stage) calc(var(--p) * 1%), var(--surface-2) 0);
+  }
+
+  .ring span {
+    width: 3.3rem;
+    height: 3.3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--bg);
+    font-weight: 800;
+    font-size: 1.4rem;
+  }
+
+  .section-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .section-item {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--stage);
+    border-radius: var(--radius);
+  }
+
+  .section-item[data-status='planned'] {
+    border-left-style: dashed;
+    border-left-color: var(--border);
+  }
+
+  .section-no {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    background: color-mix(in srgb, var(--stage) 18%, var(--surface));
+  }
+
+  .section-item[data-status='planned'] .section-no {
+    background: var(--surface-2);
+    color: var(--text-muted);
+  }
+
+  .section-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .section-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+
+  a.section-title {
+    text-decoration: none;
+  }
+
+  a.section-title:hover {
+    text-decoration: underline;
+  }
+
+  span.section-title {
+    color: var(--text-muted);
+  }
+
+  .section-id {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .lab-chips {
+    list-style: none;
+    padding: 0;
+    margin: 0.3rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .lab-chips a {
+    display: inline-block;
+    font-size: 0.78rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .lab-chips a:hover {
+    border-color: var(--stage);
+    color: var(--stage);
+  }
+
+  .part-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+</style>

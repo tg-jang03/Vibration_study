@@ -10,6 +10,9 @@ import { formatNumber, texNumber } from '../../lib/format';
 import { acquire, aliasComponent } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import StrobeDisk from './StrobeDisk';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/SamplingLab';
 
 /**
  * LAB-SMP-01 샘플링 & 에일리어싱 (P2-3, Contents §5-1).
@@ -29,16 +32,17 @@ type PresetKey =
   | 'nyquist90';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'normal', label: '정상 샘플링 (60 Hz, fs=1000)' },
-  { value: 'alias940', label: '940 Hz → 60 Hz로 보임 (f_s − f, 위상 반전)' },
-  { value: 'alias1060', label: '1060 Hz → 60 Hz로 보임 (f − f_s)' },
-  { value: 'alias1940', label: '1940 Hz → 60 Hz로 보임 (2f_s − f, 위상 반전)' },
-  { value: 'nyquist0', label: '나이퀴스트 한계 (500 Hz, 위상 0°)' },
-  { value: 'nyquist90', label: '나이퀴스트 소멸 (500 Hz, 위상 90° → 샘플 0)' },
-  { value: 'custom', label: '직접 조작 (슬라이더)' },
+  { value: 'normal', label: k('정상 샘플링 (60 Hz, fs=1000)') },
+  { value: 'alias940', label: k('940 Hz → 60 Hz로 보임 (f_s − f, 위상 반전)') },
+  { value: 'alias1060', label: k('1060 Hz → 60 Hz로 보임 (f − f_s)') },
+  { value: 'alias1940', label: k('1940 Hz → 60 Hz로 보임 (2f_s − f, 위상 반전)') },
+  { value: 'nyquist0', label: k('나이퀴스트 한계 (500 Hz, 위상 0°)') },
+  { value: 'nyquist90', label: k('나이퀴스트 소멸 (500 Hz, 위상 90° → 샘플 0)') },
+  { value: 'custom', label: k('직접 조작 (슬라이더)') },
 ];
 
-export default function SamplingLab() {
+export default function SamplingLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [preset, setPreset] = useState<PresetKey>('normal');
   const [freq, setFreq] = useState(60);
   const [fs, setFs] = useState(1000);
@@ -171,7 +175,7 @@ export default function SamplingLab() {
     timeSeries.push({
       x: viewData.tTrue,
       y: viewData.yTrue,
-      name: `참 신호 x(t) (${freq} Hz)`,
+      name: tr`참 신호 x(t) (${freq} Hz)`,
       color: '#3b82f6', // blue
       width: 1.8,
     });
@@ -180,7 +184,7 @@ export default function SamplingLab() {
     timeSeries.push({
       x: viewData.tTrue,
       y: viewData.yAlias,
-      name: `겉보기 신호 xa(t) (${formatNumber(alias.freq, 4)} Hz)`,
+      name: tr`겉보기 신호 xa(t) (${formatNumber(alias.freq, 4)} Hz)`,
       color: '#ef4444', // red
       dash: 'dash',
       width: 2.2,
@@ -190,7 +194,7 @@ export default function SamplingLab() {
     timeSeries.push({
       x: viewData.tSamples,
       y: viewData.ySamples,
-      name: `샘플 점 x[n] (fs=${fs} Hz)`,
+      name: tr`샘플 점 x[n] (fs=${fs} Hz)`,
       mode: 'markers',
       color: '#f97316', // orange
       markerSize: 7,
@@ -202,7 +206,7 @@ export default function SamplingLab() {
     {
       x: viewData.specFreq,
       y: viewData.specAmp,
-      name: '단일측 스펙트럼',
+      name: tr`단일측 스펙트럼`,
       kind: 'bar',
       color: isAliased ? '#ef4444' : '#3b82f6',
       barWidth: Math.max(1, fs / 1024),
@@ -212,17 +216,18 @@ export default function SamplingLab() {
   return (
     <LabFrame
       id="LAB-SMP-01"
-      title="샘플링 & 에일리어싱"
+      title={tr`샘플링 & 에일리어싱`}
+      lang={lang}
       controls={
         <>
           <ParamSelect
-            label="프리셋 시나리오"
+            label={tr`프리셋 시나리오`}
             value={preset}
-            options={PRESET_OPTIONS}
+            options={PRESET_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={applyPreset}
           />
           <ParamSlider
-            label="신호 주파수 f"
+            label={tr`신호 주파수 f`}
             value={freq}
             min={10}
             max={2000}
@@ -234,7 +239,7 @@ export default function SamplingLab() {
             }}
           />
           <ParamSlider
-            label="샘플링 주파수 fs"
+            label={tr`샘플링 주파수 fs`}
             value={fs}
             min={100}
             max={3000}
@@ -246,7 +251,7 @@ export default function SamplingLab() {
             }}
           />
           <ParamSlider
-            label="신호 위상 φ"
+            label={tr`신호 위상 φ`}
             value={phaseDeg}
             min={-180}
             max={180}
@@ -258,7 +263,7 @@ export default function SamplingLab() {
             }}
           />
           <ParamSlider
-            label="시간 표시 범위"
+            label={tr`시간 표시 범위`}
             value={durationMs}
             min={10}
             max={100}
@@ -267,9 +272,9 @@ export default function SamplingLab() {
             onChange={setDurationMs}
           />
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-            <ParamToggle label="참 신호 x(t)" checked={showTrue} onChange={setShowTrue} />
-            <ParamToggle label="샘플 점 x[n]" checked={showSamples} onChange={setShowSamples} />
-            <ParamToggle label="겉보기 신호 xa(t)" checked={showAlias} onChange={setShowAlias} />
+            <ParamToggle label={tr`참 신호 x(t)`} checked={showTrue} onChange={setShowTrue} />
+            <ParamToggle label={tr`샘플 점 x[n]`} checked={showSamples} onChange={setShowSamples} />
+            <ParamToggle label={tr`겉보기 신호 xa(t)`} checked={showAlias} onChange={setShowAlias} />
           </div>
         </>
       }
@@ -277,42 +282,42 @@ export default function SamplingLab() {
         <>
           <Formula
             display
-            tex={`f_N = \\dfrac{f_s}{2} = \\dfrac{${fs}}{2} = ${texNumber(fn)}\\ \\mathrm{Hz}\\quad \\text{(나이퀴스트 주파수)}`}
+            tex={`f_N = \\dfrac{f_s}{2} = \\dfrac{${fs}}{2} = ${texNumber(fn)}\\ \\mathrm{Hz}\\quad \\text{(${tr`나이퀴스트 주파수`})}`}
           />
           <Formula
             display
-            tex={`f_a = |f - k f_s| = |${freq} - ${alias.zone}\\times ${fs}| = ${texNumber(alias.freq)}\\ \\mathrm{Hz}\\quad (${alias.inverted ? '\\text{위상 반전 } -\\varphi' : '\\text{위상 유지 } +\\varphi'})`}
+            tex={`f_a = |f - k f_s| = |${freq} - ${alias.zone}\\times ${fs}| = ${texNumber(alias.freq)}\\ \\mathrm{Hz}\\quad (${alias.inverted ? `\\text{${tr`위상 반전`} } -\\varphi` : `\\text{${tr`위상 유지`} } +\\varphi`})`}
           />
           {isAliased ? (
             <Formula
               display
-              tex={`x_a(t) = \\cos(2\\pi \\cdot ${texNumber(alias.freq)} t ${alias.phase >= 0 ? '+' : ''}${texNumber(alias.phase, 2)})\\quad \\text{— 샘플 점들이 이 겉보기 정현파 위에 완벽히 놓임}`}
+              tex={`x_a(t) = \\cos(2\\pi \\cdot ${texNumber(alias.freq)} t ${alias.phase >= 0 ? '+' : ''}${texNumber(alias.phase, 2)})\\quad \\text{— ${tr`샘플 점들이 이 겉보기 정현파 위에 완벽히 놓임`}}`}
             />
           ) : (
-            <Formula display tex={`f \\le f_N\\quad \\text{— 에일리어싱 없음 (정상 수집)}`} />
+            <Formula display tex={`f \\le f_N\\quad \\text{— ${tr`에일리어싱 없음 (정상 수집)`}}`} />
           )}
         </>
       }
       readouts={
         <ReadoutTable
           rows={[
-            { label: '입력 신호 주파수 f', value: freq, unit: 'Hz' },
-            { label: '샘플링 주파수 fs', value: fs, unit: 'Hz' },
-            { label: '나이퀴스트 주파수 fN', value: fn, unit: 'Hz' },
+            { label: tr`입력 신호 주파수 f`, value: freq, unit: 'Hz' },
+            { label: tr`샘플링 주파수 fs`, value: fs, unit: 'Hz' },
+            { label: tr`나이퀴스트 주파수 fN`, value: fn, unit: 'Hz' },
             {
-              label: '이론 에일리어스 주파수 fa',
+              label: tr`이론 에일리어스 주파수 fa`,
               value: alias.freq,
               theory: alias.freq,
               unit: 'Hz',
             },
             {
-              label: '스펙트럼 측정 피크 주파수',
+              label: tr`스펙트럼 측정 피크 주파수`,
               value: viewData.peakFreq,
               theory: alias.freq,
               unit: 'Hz',
             },
             {
-              label: '스펙트럼 피크 진폭',
+              label: tr`스펙트럼 피크 진폭`,
               value: viewData.peakAmp,
               unit: 'Pk',
               sig: 3,
@@ -323,50 +328,50 @@ export default function SamplingLab() {
       tasks={[
         {
           question:
-            'fs = 1000 Hz에서 신호 주파수가 60 Hz일 때와 940 Hz, 1060 Hz일 때 스펙트럼 피크는 각각 어디에 나타날까요?',
+            tr`fs = 1000 Hz에서 신호 주파수가 60 Hz일 때와 940 Hz, 1060 Hz일 때 스펙트럼 피크는 각각 어디에 나타날까요?`,
           answer:
-            '세 경우 모두 60 Hz에 같은 크기로 나타납니다. 940 Hz = 1000 − 60, 1060 Hz = 1000 + 60이라 둘 다 f_s에서 60 Hz만큼 떨어져 있기 때문입니다. 시간 그래프에서 샘플 점들이 60 Hz 겉보기 정현파(점선) 위에 놓이는 것을 확인하세요.',
+            tr`세 경우 모두 60 Hz에 같은 크기로 나타납니다. 940 Hz = 1000 − 60, 1060 Hz = 1000 + 60이라 둘 다 f_s에서 60 Hz만큼 떨어져 있기 때문입니다. 시간 그래프에서 샘플 점들이 60 Hz 겉보기 정현파(점선) 위에 놓이는 것을 확인하세요.`,
         },
         {
           question:
-            '940 Hz와 1060 Hz의 샘플 점은 둘 다 60 Hz로 보이는데, 둘 사이에 어떤 차이가 있을까요?',
+            tr`940 Hz와 1060 Hz의 샘플 점은 둘 다 60 Hz로 보이는데, 둘 사이에 어떤 차이가 있을까요?`,
           answer:
-            '위상이 다릅니다. 1060 Hz(f_s보다 위)는 원래 위상 +φ 그대로 보이지만, 940 Hz(f_s보다 아래)는 거울처럼 뒤집혀 접히므로 위상 부호가 바뀐 −φ로 보입니다. 진폭 스펙트럼만 보면 둘은 같습니다.',
+            tr`위상이 다릅니다. 1060 Hz(f_s보다 위)는 원래 위상 +φ 그대로 보이지만, 940 Hz(f_s보다 아래)는 거울처럼 뒤집혀 접히므로 위상 부호가 바뀐 −φ로 보입니다. 진폭 스펙트럼만 보면 둘은 같습니다.`,
         },
         {
           question:
-            '신호 주파수를 정확히 나이퀴스트 한계인 f = fs/2 = 500 Hz에 놓고 위상 φ를 0°에서 90°로 바꾸면 샘플 점에 어떤 일이 생기나요?',
+            tr`신호 주파수를 정확히 나이퀴스트 한계인 f = fs/2 = 500 Hz에 놓고 위상 φ를 0°에서 90°로 바꾸면 샘플 점에 어떤 일이 생기나요?`,
           answer:
-            'φ = 0°이면 샘플 점이 +1, −1, +1, −1로 꼭대기와 바닥에 찍히지만, φ = 90°이면 모든 점이 0을 지나는 순간에 찍혀 신호가 사라집니다. 그래서 신호 주파수는 f_N과 "같아도" 안 되고 f_N보다 "작아야" 합니다.',
+            tr`φ = 0°이면 샘플 점이 +1, −1, +1, −1로 꼭대기와 바닥에 찍히지만, φ = 90°이면 모든 점이 0을 지나는 순간에 찍혀 신호가 사라집니다. 그래서 신호 주파수는 f_N과 "같아도" 안 되고 f_N보다 "작아야" 합니다.`,
         },
         {
           question:
-            '원판 그림에서 재생을 누르고 60 Hz, 940 Hz, 1060 Hz 프리셋을 차례로 고르세요. 플래시로 본 원판은 각각 어느 방향으로, 플래시마다 얼마나 돌까요?',
+            tr`원판 그림에서 재생을 누르고 60 Hz, 940 Hz, 1060 Hz 프리셋을 차례로 고르세요. 플래시로 본 원판은 각각 어느 방향으로, 플래시마다 얼마나 돌까요?`,
           answer:
-            '60 Hz와 1060 Hz는 플래시마다 +0.06바퀴, 반시계(실제와 같은 방향)로 천천히 돕니다. 940 Hz는 0.94바퀴를 돌지만 0.06바퀴 모자라 −0.06바퀴, 즉 거꾸로 도는 것처럼 보입니다. 이 "거꾸로"가 위상 부호가 뒤집혀 접히는 것(위상 반전)입니다. 오른쪽 띠의 샘플 점은 세 경우 모두 같은 느린 60 Hz 물결을 그립니다.',
+            tr`60 Hz와 1060 Hz는 플래시마다 +0.06바퀴, 반시계(실제와 같은 방향)로 천천히 돕니다. 940 Hz는 0.94바퀴를 돌지만 0.06바퀴 모자라 −0.06바퀴, 즉 거꾸로 도는 것처럼 보입니다. 이 "거꾸로"가 위상 부호가 뒤집혀 접히는 것(위상 반전)입니다. 오른쪽 띠의 샘플 점은 세 경우 모두 같은 느린 60 Hz 물결을 그립니다.`,
         },
         {
           question:
-            '1940 Hz 프리셋을 누르면 왜 여전히 60 Hz로 보일까요?',
+            tr`1940 Hz 프리셋을 누르면 왜 여전히 60 Hz로 보일까요?`,
           answer:
-            '1940 Hz = 2 × 1000 − 60이라 2f_s에서 60 Hz만큼 떨어져 있기 때문입니다. f_N을 넘는 주파수는 f_s, 2f_s, 3f_s … 근처마다 지그재그로 계속 0 ~ f_N 안에 접혀 들어옵니다. 샘플만으로는 진짜와 가짜를 구분할 수 없으므로, 샘플링하기 전에 필터(AAF)로 높은 주파수를 미리 깎아야 합니다.',
+            tr`1940 Hz = 2 × 1000 − 60이라 2f_s에서 60 Hz만큼 떨어져 있기 때문입니다. f_N을 넘는 주파수는 f_s, 2f_s, 3f_s … 근처마다 지그재그로 계속 0 ~ f_N 안에 접혀 들어옵니다. 샘플만으로는 진짜와 가짜를 구분할 수 없으므로, 샘플링하기 전에 필터(AAF)로 높은 주파수를 미리 깎아야 합니다.`,
         },
       ]}
     >
       <StrobeDisk freq={freq} fs={fs} phase={phaseRad} />
       <Plot
         series={timeSeries}
-        x={{ label: '시간 t [s]', range: [0, duration] }}
-        y={{ label: '진폭 x(t)', range: [-1.4, 1.4] }}
+        x={{ label: tr`시간 t [s]`, range: [0, duration] }}
+        y={{ label: tr`진폭 x(t)`, range: [-1.4, 1.4] }}
         height={280}
-        ariaLabel="샘플링 시간영역 파형"
+        ariaLabel={tr`샘플링 시간영역 파형`}
       />
       <Plot
         series={specSeries}
-        x={{ label: '주파수 [Hz]', range: [0, fn] }}
-        y={{ label: '스펙트럼 진폭 (Pk)', range: [0, 1.2] }}
+        x={{ label: tr`주파수 [Hz]`, range: [0, fn] }}
+        y={{ label: tr`스펙트럼 진폭 (Pk)`, range: [0, 1.2] }}
         height={220}
-        ariaLabel="단일측 진폭 스펙트럼 피크"
+        ariaLabel={tr`단일측 진폭 스펙트럼 피크`}
       />
     </LabFrame>
   );

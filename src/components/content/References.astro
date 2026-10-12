@@ -11,6 +11,10 @@
  */
 import { REF_BY_ID, refAnchor, refLink } from '../../data/references';
 import { withBase } from '../../lib/site';
+import { langOfUrl } from '../../i18n';
+import { REFERENCE_EN } from '../../i18n/figures';
+import { translateDeep } from '../../i18n/translate';
+import { UI } from '../../i18n/ui';
 
 type Cite = [string, string?, [string, string][]?];
 interface Props {
@@ -18,10 +22,14 @@ interface Props {
 }
 
 const { items } = Astro.props;
+const lang = langOfUrl(Astro.url);
+const ui = UI[lang];
 const rows = items.map(([id, note, links]) => {
   const r = REF_BY_ID[id];
   if (!r) throw new Error(`참고자료 ${id}가 data/references.ts에 없다`);
-  return { r, note, links: links ?? [], out: refLink(r) };
+  const row = { r, note, links: links ?? [], out: refLink(r) };
+  // 영어 페이지 (D-054): 서지·링크 이름의 한국어를 사전으로 (쓴 곳 메모는 영어 MDX가 영어로 넘긴다)
+  return lang === 'en' ? translateDeep(row, REFERENCE_EN) : row;
 });
 const hasExtra = Astro.slots.has('default');
 ---
@@ -31,7 +39,7 @@ const hasExtra = Astro.slots.has('default');
     {
       rows.map(({ r, note, links, out }) => (
         <li class="ref-item" id={`cite-${refAnchor(r.id)}`}>
-          <a class="ref-id" href={withBase(`/reference/sources/#${refAnchor(r.id)}`)} title="레퍼런스 > 참고 문헌에서 보기">
+          <a class="ref-id" href={withBase(`/reference/sources/#${refAnchor(r.id)}`)} title={ui.refSourceTitle}>
             {r.id}
           </a>
           <div class="ref-body">

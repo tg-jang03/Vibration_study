@@ -1,0 +1,185 @@
+---
+/**
+ * 랩 단독 페이지의 틀 (D-037): 머리·원문 설명 링크·랩 이동. 랩 자체는 slot으로 받는다.
+ * 한국어 /lab/{slug}/와 영어 /en/lab/{slug}/가 같이 쓴다 (D-054).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PARTS, STAGES } from '../../data/curriculum';
+import type { LabEntry } from '../../data/labs';
+import { labRefs } from '../../lib/labRefs';
+import { withBase } from '../../lib/site';
+import { canonicalUrl, learningResourceLd } from '../../lib/seo';
+import { localizePath, type Lang } from '../../i18n';
+import { labText, partTitle, sectionTitle, shortTitle } from '../../i18n/content';
+import { availablePath, hasEnglish, hasEnglishSection, sectionPath } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  lab: LabEntry;
+  prev?: LabEntry;
+  next?: LabEntry;
+}
+
+const { lang, lab, prev, next } = Astro.props;
+const t = UI[lang];
+const en = lang === 'en';
+const text = labText(lab, lang);
+const part = PARTS.find((p) => p.num === lab.part);
+const color = STAGES.find((s) => s.parts.includes(lab.part))?.color ?? 'var(--accent)';
+const sections = PARTS.flatMap((p) => p.sections);
+/** 원문 설명 링크. 영어: 영어판이 있는 절은 그 절로(제목 앵커는 한국어 제목이라 뺀다), 없으면 한국어 절로 + KO 표시 */
+const refs = labRefs(lab).map((r) => {
+  if (!en) return { ...r, title: r.pageTitle, ko: false };
+  const section = sections.find((s) => s.id === r.sectionId);
+  const base = r.href.split('#')[0];
+  return {
+    ...r,
+    href: sectionPath({ id: r.sectionId, href: base }, lang) ?? base,
+    title: section ? sectionTitle(section, lang) : r.pageTitle,
+    heading: undefined,
+    ko: !hasEnglishSection(r.sectionId),
+  };
+});
+const labHref = (l: LabEntry) => withBase(availablePath(`/lab/${l.slug}/`, lang));
+const labKo = (l: LabEntry) => en && !hasEnglish(`/lab/${l.slug}/`);
+
+// 검색 노출 (M12.1): 제목은 랩 이름 먼저, 경로 표시 Signal Lab › 랩, 학습 자료(인터랙티브)
+const site = Astro.site ?? new URL('https://tg-jang03.github.io');
+const crumbs = [
+  { name: 'Signal Lab', path: localizePath('/lab/', lang) },
+  { name: text.title, path: localizePath(`/lab/${lab.slug}/`, lang) },
+];
+const jsonLd = [
+  learningResourceLd({
+    name: text.title,
+    description: text.summary,
+    url: canonicalUrl(Astro.url.pathname, site),
+    lang,
+    kind: 'interactive simulation',
+    site: { name: t.siteName, url: new URL(withBase(localizePath('/', lang)), site).href },
+  }),
+];
+---
+
+<BaseLayout title={`${text.title} · ${t.labTitleSuffix} (${lab.id})`} description={text.summary} crumbs={crumbs} jsonLd={jsonLd}>
+  <div class="lab-page" style={`--c:${color}`}>
+    <div class="breadcrumb">
+      <a href={withBase(localizePath('/lab/', lang))}>Signal Lab</a> › Part {lab.part}{part ? ` ${shortTitle(partTitle(part, lang))}` : ''} › {lab.id}
+    </div>
+    <header class="lab-page-head">
+      <span class="lab-tag">{lab.id}</span>
+      <h1>{text.title}</h1>
+      <p class="lead">{text.summary}</p>
+    </header>
+
+    {
+      refs.length > 0 && (
+        <nav class="ref-box" aria-label={t.explainedIn}>
+          <span class="ref-label">{t.explainedIn}</span>
+          <ul>
+            {refs.map((r) => (
+              <li>
+                <a href={withBase(r.href)} title={r.ko ? t.koreanOnlyTitle : undefined}>
+                  <span class="ref-id">{r.sectionId}</span> {r.title}
+                  {r.heading && <span class="ref-heading"> › {r.heading}</span>}
+                  {r.ko && <span class="ko-mark">{t.koreanOnly}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <div class="lab-standalone">
+      <slot />
+    </div>
+
+    <nav class="lab-pager" aria-label={t.labPager}>
+      {prev ? <a href={labHref(prev)}>← {prev.id} {shortTitle(labText(prev, lang).title)}{labKo(prev) && <span class="ko-mark">{t.koreanOnly}</span>}</a> : <span />}
+      <a href={withBase(localizePath('/lab/', lang))}>{t.labIndex}</a>
+      {next ? <a href={labHref(next)}>{next.id} {shortTitle(labText(next, lang).title)}{labKo(next) && <span class="ko-mark">{t.koreanOnly}</span>} →</a> : <span />}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .lab-page {
+    max-width: var(--content-width);
+    margin: 0 auto;
+  }
+
+  .lab-page-head {
+    margin: 0.5rem 0 1rem;
+  }
+
+  .lab-page-head h1 {
+    margin: 0.2rem 0 0.4rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .lab-tag {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--c);
+  }
+
+  .ref-box {
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--c);
+  }
+
+  .ref-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .ref-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ref-box a {
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  .ref-box a:hover {
+    text-decoration: underline;
+  }
+
+  .ref-id {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+
+  .ref-heading {
+    color: var(--text-muted);
+  }
+
+  .lab-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap);
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+</style>

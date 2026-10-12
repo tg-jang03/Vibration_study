@@ -1,0 +1,16 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import PartPage from '../../../components/site/PartPage.astro';
+import { PARTS } from '../../../data/curriculum';
+
+export const getStaticPaths = (() =>
+  PARTS.map((part, index) => ({
+    params: { part: String(part.num) },
+    props: { part, prev: PARTS[index - 1], next: PARTS[index + 1] },
+  }))) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { part, prev, next } = Astro.props as Props;
+---
+
+<PartPage lang="en" part={part} prev={prev} next={next} />

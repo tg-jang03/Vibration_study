@@ -1,0 +1,6 @@
+/**
+ * 영어 화면을 갖춘 랩 컴포넌트 (D-054) — 화면 문자열을 t로 감싸고 영어 사전(src/i18n/en/labs/<이름>.ts)을 갖춘 랩.
+ * 랩을 번역하면 여기와 src/pages/en/lab/[slug].astro에 한 줄씩 더한다 (테스트가 빠진 줄을 잡는다).
+ * 브라우저 쪽(LabFrame)도 읽으므로 이 파일은 가볍게 둔다 (페이지 목록 glob은 routes.ts에).
+ */
+export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set(['SamplingLab', 'AafLab', 'AdcLab']);

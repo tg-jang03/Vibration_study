@@ -5,6 +5,9 @@ import { strobeApparentFreq } from '../../lib/dsp/phasor';
 import { usePlayClock } from '../ui/hooks';
 import PlayControls from '../ui/PlayControls';
 import { SvgArrow } from '../ui/PhasorView';
+import { useLang } from '../ui/lang';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/StrobeDisk';
 
 /**
  * LAB-SMP-01의 움직이는 그림 (D-044): 스트로브로 찍은 회전 원판 = 마차 바퀴 효과 = 에일리어싱.
@@ -30,9 +33,9 @@ const SX1 = W - 14;
 const K = 16; // 오른쪽 띠에 보이는 플래시 수
 const TWO_PI = 2 * Math.PI;
 const SPEEDS = [
-  { label: '플래시 1초에 2번', flashes: 2 },
-  { label: '플래시 1초에 5번', flashes: 5 },
-  { label: '플래시 1초에 12번', flashes: 12 },
+  { label: k('플래시 1초에 2번'), flashes: 2 },
+  { label: k('플래시 1초에 5번'), flashes: 5 },
+  { label: k('플래시 1초에 12번'), flashes: 12 },
 ];
 
 /** 0° = 위, 반시계 각 θ → 원 위의 점 */
@@ -62,6 +65,8 @@ function Disk({ c, theta, dim, children }: { c: { x: number; y: number }; theta:
 }
 
 export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
   const box = useRef<HTMLDivElement>(null);
   const [speed, setSpeed] = useState(1);
   const flashesPerSec = SPEEDS[speed].flashes;
@@ -83,12 +88,12 @@ export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
   const nyquist = Math.abs(Math.abs(app) - fs / 2) < 1e-9;
   const still = Math.abs(app) < 1e-9;
   const verdict = still
-    ? '멈춰 보임 (플래시마다 정확히 정수 바퀴)'
+    ? tr`멈춰 보임 (플래시마다 정확히 정수 바퀴)`
     : nyquist
-      ? '반 바퀴씩 건너뜀 — 방향을 알 수 없음 (f = f_N)'
+      ? tr`반 바퀴씩 건너뜀 — 방향을 알 수 없음 (f = f_N)`
       : app > 0
-        ? `반시계(실제와 같은 방향)로 1초에 ${formatNumber(app, 4)}바퀴`
-        : `시계 방향(거꾸로)으로 1초에 ${formatNumber(-app, 4)}바퀴`;
+        ? tr`반시계(실제와 같은 방향)로 1초에 ${formatNumber(app, 4)}바퀴`
+        : tr`시계 방향(거꾸로)으로 1초에 ${formatNumber(-app, 4)}바퀴`;
 
   // 오른쪽 띠: K개 플래시 창 안에서 지금까지 찍은 높이
   const first = Math.floor(n / K) * K;
@@ -102,16 +107,16 @@ export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
     <div className="anim-panel" ref={box}>
       <PlayControls
         clock={clock}
-        speeds={SPEEDS.map((s) => ({ label: s.label, rate: s.flashes / fs }))}
+        speeds={SPEEDS.map((s) => ({ label: tr(s.label), rate: s.flashes / fs }))}
         speed={speed}
         onSpeed={setSpeed}
-        status={`플래시 n = ${n} · 실제의 1/${formatNumber(fs / flashesPerSec, 3)}`}
+        status={tr`플래시 n = ${n} · 실제의 1/${formatNumber(fs / flashesPerSec, 3)}`}
       />
       <ResponsiveSvg mobileLayout="disks" mobilePanels={[[0,-4,235,258],[235,-4,241,258],[476,-4,244,258]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`1초에 ${freq}바퀴 도는 원판을 1초에 ${fs}번 플래시로 보면 ${verdict}. 플래시마다 ${formatNumber(step, 3)}바퀴.`}>
-        <text x={REAL.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">실제 원판 · 1초에 {formatNumber(freq, 4)}바퀴</text>
-        <text x={STROBE.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">플래시로 본 원판 · 1초에 {formatNumber(fs, 4)}번</text>
-        <text x={(SX0 + SX1) / 2} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">플래시 때의 높이 = 샘플 x[n]</text>
+        aria-label={tr`1초에 ${freq}바퀴 도는 원판을 1초에 ${fs}번 플래시로 보면 ${verdict}. 플래시마다 ${formatNumber(step, 3)}바퀴.`}>
+        <text x={REAL.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">{tr`실제 원판 · 1초에 ${formatNumber(freq, 4)}바퀴`}</text>
+        <text x={STROBE.x} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">{tr`플래시로 본 원판 · 1초에 ${formatNumber(fs, 4)}번`}</text>
+        <text x={(SX0 + SX1) / 2} y={18} textAnchor="middle" fontSize="13" fill="var(--text-muted)">{tr`플래시 때의 높이 = 샘플 x[n]`}</text>
 
         <Disk c={REAL} theta={theta(t)}>
           {blur && (blurSpan >= TWO_PI
@@ -149,8 +154,8 @@ export default function StrobeDisk({ freq, fs, phase }: StrobeDiskProps) {
         <text x={SX1} y={H - 6} textAnchor="end" fontSize="12" fill="var(--text-muted)">{first + K - 1}</text>
       </ResponsiveSvg>
       <p className="anim-caption">
-        플래시 사이(1/f_s = {formatNumber(1000 / fs, 3)} ms)에 원판은 {formatNumber(freq / fs, 4)}바퀴 돕니다. 정수 바퀴를 빼면
-        플래시마다 <strong>{step > 0 ? '+' : ''}{formatNumber(step, 3)}바퀴</strong> → 겉보기로 <strong>{verdict}</strong>. 흐린 점은 앞선 플래시 5번의 자리입니다.
+        {tr`플래시 사이(1/f_s = ${formatNumber(1000 / fs, 3)} ms)에 원판은 ${formatNumber(freq / fs, 4)}바퀴 돕니다. 정수 바퀴를 빼면 플래시마다`}{' '}
+        <strong>{tr`${step > 0 ? '+' : ''}${formatNumber(step, 3)}바퀴`}</strong> → {tr`겉보기로`} <strong>{verdict}</strong>. {tr`흐린 점은 앞선 플래시 5번의 자리입니다.`}
       </p>
     </div>
   );
