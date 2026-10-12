@@ -99,6 +99,7 @@ export const LABS: LabEntry[] = [
   { slug: 'bode-01', id: 'LAB-BODE-01', component: 'MultiModeBodeLab', part: 8, title: '여러 모드의 Bode / Polar', summary: '모드 간격·감쇠·센서·열 상태·slow roll 보상을 바꿔 1X 중첩과 마디, 베어링별 위상과 Polar를 비교한다.' },
   // Part 9
   { slug: 'hpb-01', id: 'LAB-HPB-01', component: 'ImpactLab', part: 9, title: '임팩트 시험과 Half-power', summary: '해머 팁·프레임 길이·윈도우·평균·더블 히트를 바꿔 측정 FRF와 Half-power 감쇠비가 어떻게 틀리는지 본다.' },
+  { slug: 'bal-01', id: 'LAB-BAL-01', component: 'BalanceLab', part: 9, title: '영향계수 밸런싱', summary: '숨은 불평형이 있는 로터에 시험추를 달아 영향계수를 재고, 1면·2면 보정추와 분할추·측정 흔들림·slow roll 보상의 영향을 본다.' },
   // Part 10
   { slug: 'iso-01', id: 'LAB-ISO-01', component: 'SeverityLab', part: 10, title: '크기와 변화의 별도 판정', summary: '가상 무차원 예제 또는 사용자가 입력한 경계·기준선으로 크기 구간과 변화 비율을 따로 확인한다.' },
 ];

@@ -144,7 +144,7 @@ export const PARTS: Part[] = [
     question: '원인을 어떻게 확인하고 어떻게 고치나?',
     sections: [
       { id: 'P9-1', title: '구조 공진 판별과 임팩트 시험', status: 'review', href: '/p9-1/' },
-      { id: 'P9-2', title: '밸런싱', status: 'planned' },
+      { id: 'P9-2', title: '밸런싱', status: 'review', href: '/p9-2/' },
       { id: 'P9-3', title: '정렬', status: 'planned' },
     ],
   },

@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-86
+ * 다음 번호: R-89
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -125,6 +125,9 @@ export const REFERENCES: Reference[] = [
   { id: 'R-83', kind: 'standard', authors: 'ISO', title: 'ISO 18436-2:2014 — Requirements for qualification and assessment of personnel: Vibration condition monitoring and diagnostics', source: 'ISO', year: '2014', url: 'https://www.iso.org/standard/50447.html', about: '진동 분석 인력의 교육·경험·평가 네 범주', note: STD_NOTE },
   { id: 'R-84', kind: 'web', authors: 'Vibration Institute', title: 'Vibration Analyst Categories', source: 'Vibration Institute', url: 'https://vi-institute.org/analyst-categories/', about: 'CAT I~IV 인력 인증 범주별 역할의 공개 안내' },
   { id: 'R-85', kind: 'paper', authors: 'Rasish Khatri, Larry Hawkins', title: 'Applicability of API 617 8th ed. and ISO 14839-3 in evaluating the dynamic stability of AMB-supported compressors', source: 'Calnetix Technologies · 저자 공개 논문', url: 'https://www.calnetix.com/sites/default/files/2023-03/Applicability%20of%20API%20617%208th%20ed.%20and%20ISO%2014839-3%20in%20evaluating%20the%20dynamic%20stability%20of%20AMB-supported%20compressors.pdf', about: '안정성 설계 해석과 AF·SM 응답 검토의 목적을 구별', note: '과거 8판의 주제 설명 근거. 규격 요구식·경계값·도표는 전재하지 않으며 현행 요구는 적용 판본에서 대조' },
+  { id: 'R-86', kind: 'standard', authors: 'ISO', title: 'ISO 21940-11 — Mechanical vibration: Rotor balancing, Part 11: Procedures and tolerances for rotors with rigid behaviour', source: 'ISO', year: '2016', about: '밸런스 등급 G와 허용 잔류 불평형의 정의(e_per = G/Ω), 강성 로터의 허용값 배분 (옛 ISO 1940-1)', note: STD_NOTE },
+  { id: 'R-87', kind: 'paper', authors: 'W. C. Foiles, P. E. Allaire, E. J. Gunter', title: 'Review: Rotor Balancing', source: 'Shock and Vibration 5(5–6)', year: '1998', about: '영향계수법과 모달 밸런싱의 원리, 2면·다면 해법의 정리' },
+  { id: 'R-88', kind: 'book', authors: 'V. Wowk', title: 'Machinery Vibration: Balancing', source: 'McGraw-Hill', year: '1995', about: '현장 밸런싱 절차 — 시험추 크기, 1면·2면, 위상 없는 방법, 분할추' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));
