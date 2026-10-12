@@ -105,6 +105,8 @@ export const LABS: LabEntry[] = [
   { slug: 'iso-01', id: 'LAB-ISO-01', component: 'SeverityLab', part: 10, title: '크기 구간과 변화를 따로 판정하기', summary: '구간 색 띠 위의 가상 60일 추세(계단·서서히·감소)에서 크기 구간과 기준선 대비 변화 판정이 언제 서는지 비교하고, 보유 규격의 경계를 직접 넣어 본다.' },
   { slug: 'sm-01', id: 'LAB-SM-01', component: 'SeparationMarginLab', part: 10, title: 'AF가 크면 왜 분리여유를 더 두나', summary: 'AF·분리여유·임계속도 예측 오차를 바꿔, 실제 임계속도가 옮겨 갔을 때 운전점 응답이 몇 배가 되는지 본다.' },
   { slug: 'diag-01', id: 'LAB-DIAG-01', component: 'DiagnosisLab', part: 10, title: '무엇이 변했나: 가설을 가르는 자료', summary: '1X가 두 배가 된 가상 사례에서 가진 증가와 고유진동수 이동 가설을 3000 rpm 한 점·코스트다운 진폭·위상으로 차례로 가려 본다.' },
+  // Part 11
+  { slug: 'case-01', id: 'LAB-CASE-01', component: 'CaseLab', part: 11, title: '가상 기계 케이스: 숨은 결함 찾기', summary: '숨은 결함이 있는 가상 기계 11대에서 측정 설정과 자료(스펙트럼·엔벨로프·위상·Bode·캐스케이드·추세·차단 시험 등)를 골라 보고, 진단을 제출해 결정적 증거와 오답의 반증을 확인한다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

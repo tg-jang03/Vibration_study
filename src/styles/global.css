@@ -837,3 +837,197 @@ main.container {
 .lab-standalone .lab-open {
   display: none;
 }
+
+/* 가상 기계 케이스 (LAB-CASE-01, P11-1, 2026-10-12 추가): 케이스 카드 · 자료 고르기 · 진단 보기 · 채점 */
+.case-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--plot-4);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-2);
+  padding: 0.7rem 0.9rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.case-card h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.case-level {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--plot-4);
+}
+
+.case-report {
+  margin: 0;
+}
+
+.case-spec {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.case-spec th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding: 0.2rem 0.8rem 0.2rem 0;
+  vertical-align: top;
+}
+
+.case-spec td {
+  padding: 0.2rem 0;
+  overflow-wrap: anywhere;
+}
+
+.case-acq {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.case-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.case-views button {
+  font: inherit;
+  font-size: 0.84rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.case-views button.seen {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.case-views button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+
+.case-view-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  align-items: end;
+}
+
+.case-msg {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.case-orbit {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
+.case-diag {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.6rem 0.9rem;
+}
+
+.case-diag fieldset {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.7rem 0.5rem;
+  margin: 0;
+  min-width: 0;
+}
+
+.case-diag legend {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0 0.3rem;
+}
+
+.case-diag label {
+  display: flex;
+  gap: 0.45rem;
+  align-items: baseline;
+  font-size: 0.88rem;
+  padding: 0.12rem 0;
+  cursor: pointer;
+}
+
+.case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.case-actions .lab-note {
+  margin: 0;
+}
+
+.lab-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.case-result {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--plot-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  font-size: 0.92rem;
+}
+
+.case-result[data-grade='exact'] {
+  border-left-color: var(--plot-3);
+}
+
+.case-result h5 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.case-result p {
+  margin: 0;
+}
+
+.case-result ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.case-result .lab-button {
+  font-size: 0.78rem;
+  padding: 0.1rem 0.5rem;
+}
+
+.case-seen {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 0.35rem;
+}
