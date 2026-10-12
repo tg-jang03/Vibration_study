@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-76
+ * 다음 번호: R-79
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -115,6 +115,9 @@ export const REFERENCES: Reference[] = [
   { id: 'R-73', kind: 'standard', authors: 'ISO', title: 'ISO 20816-3:2022 — Industrial machinery', source: 'ISO', year: '2022', url: 'https://www.iso.org/standard/78311.html', about: '산업용 기계 적용 범위·분류 확인', note: STD_NOTE },
   { id: 'R-74', kind: 'standard', authors: 'ISO', title: 'ISO 20816-4:2018 — Gas turbines with fluid-film bearings', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/74450.html', about: '유막 베어링 GT 적용 범위 확인', note: STD_NOTE },
   { id: 'R-75', kind: 'standard', authors: 'ISO', title: 'ISO 20816-5:2018 — Machine sets in hydraulic power generating and pump-storage plants', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/67919.html', about: '수력·양수 설비 적용 범위 확인', note: STD_NOTE },
+  { id: 'R-76', kind: 'book', authors: 'D. J. Ewins', title: 'Modal Testing: Theory, Practice and Application', source: 'Research Studies Press', year: '2000', about: '임팩트 시험(해머 팁·트리거·윈도우·평균), 측정 FRF에서 고유진동수·감쇠비 읽기' },
+  { id: 'R-77', kind: 'book', authors: 'P. Avitabile', title: 'Modal Testing: A Practitioner’s Guide', source: 'Wiley', year: '2017', about: '임팩트 시험 실무 — 더블 히트·지수 윈도우 보정·코히어런스 확인, ODS와 모드 형상의 차이' },
+  { id: 'R-78', kind: 'paper', authors: 'A. G. A. Rahman, Z. C. Ong, Z. Ismail', title: 'Effectiveness of Impact-Synchronous Time Averaging in determination of dynamic characteristics of a rotor dynamic system', source: 'Measurement 44(1)', year: '2011', about: '운전 중 임팩트 시험 — 타격에 맞춘 시간 평균으로 운전 성분을 줄이는 방법' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));
