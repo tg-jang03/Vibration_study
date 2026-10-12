@@ -94,6 +94,8 @@ function readTheme() {
     muted: v('--text-muted'),
     border: v('--border'),
     surface: v('--surface'),
+    /** 글꼴은 이름으로 넘긴다: 'inherit'이면 Plotly가 폭을 재는 글꼴과 그리는 글꼴(기본 Open Sans → Verdana)이 달라 범례 끝이 잘린다 */
+    font: v('--font-sans') || getComputedStyle(document.body).fontFamily,
     palette: Array.from({ length: PALETTE_SIZE }, (_, i) => v(`--plot-${i + 1}`)),
     /** 'var(--plot-2)'처럼 CSS 변수로 준 색을 실제 색으로 (Plotly는 var()를 모른다). 그 밖의 색은 그대로 */
     resolve: (color: string) => {
@@ -195,7 +197,7 @@ export default function Plot({ series, heatmap, bands, x, y, height = 320, ariaL
         margin: { l: 56, r: 16, t: 16, b: 48 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        font: { color: theme.text, family: 'inherit' },
+        font: { color: theme.text, family: theme.font },
         showlegend: series.filter((s) => !s.hideInLegend).length > 1,
         legend: { orientation: 'h', y: 1.12, x: 0 },
         bargap: 0.4,
