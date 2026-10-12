@@ -40,6 +40,7 @@ const dampingSmoke = flag('damping-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
+const severitySmoke = flag('severity-smoke'); // LAB-ISO-01 사용자 경계·변화·조건
 const animSmoke = flag('anim-smoke'); // 움직이는 그림 패널(.anim-panel)마다 재생 확인·캡처 (D-044)
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
@@ -114,6 +115,50 @@ for (const p of paths) {
   await sleep(2000);
   const labs = await ev(`[...document.querySelectorAll('.lab-frame')].map(f => ({ id: f.querySelector('.lab-id')?.textContent ?? '?', plots: f.querySelectorAll('.js-plotly-plot').length, svgs: f.querySelectorAll('svg').length }))`);
   const unhydrated = (labs ?? []).filter((l) => l.plots === 0 && l.svgs === 0).map((l) => l.id);
+  if (severitySmoke) {
+    const smoke = await ev(`(async () => {
+      const labs=[...document.querySelectorAll('.lab-frame')].filter(l=>l.querySelector('.lab-id')?.textContent==='LAB-ISO-01');
+      if(!labs.length)return {skipped:true};
+      const wait=()=>new Promise(r=>setTimeout(r,250));let checks=0;
+      const require=(ok,message)=>{if(!ok)throw Error(message);checks++;};
+      try {for(const lab of labs){
+        const input=async(node,value)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(node,String(value));node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const slider=async(i,v)=>input(lab.querySelectorAll('input[type="range"]')[i],v);
+        const number=async(i,v)=>input(lab.querySelectorAll('input[type="number"]')[i],v);
+        const choose=async(i,v)=>{const node=lab.querySelectorAll('select')[i];node.value=String(v);node.dispatchEvent(new Event('change',{bubbles:true}));await wait();};
+        const source=async()=>input(lab.querySelector('input[type="text"]'),'가상 검증 문서 · 사용자 시험 분류');
+        const confirm=async()=>{lab.querySelector('input[type="checkbox"]').click();await wait();};
+        const status=()=>lab.querySelector('[role="status"]').textContent;
+        const read=label=>{const row=[...lab.querySelectorAll('.readout-table tbody tr')].find(r=>r.cells[0].textContent===label);return row?parseFloat(row.cells[1].textContent.replaceAll(',','').replaceAll('−','-')):NaN;};
+        const near=(label,value)=>Math.abs(read(label)-value)<.0001;
+        require(status().includes('구간 B')&&near('절대 변화 / B/C 경계',30),'가상 B·30%');
+        await slider(0,1.8);require(status().includes('구간 A')&&near('절대 변화 / B/C 경계',6),'A·6%');
+        await slider(0,5);require(status().includes('구간 C')&&near('절대 변화 / B/C 경계',70),'예제 등호 C·70%');
+        await slider(1,3);await slider(0,1.5);require(near('부호 있는 변화 Δx',-1.5)&&near('절대 변화 / B/C 경계',30),'감소 부호·절대 변화');
+        await choose(0,1);require(status().includes('판정 보류')&&[...lab.querySelectorAll('input[type="number"]')].every(n=>n.value===''),'사용자 입력 전 빈값 보류');
+        for(const [i,v] of [2,5,9,3,1.5,20].entries())await number(i,v);
+        require(status().includes('판정 보류')&&lab.querySelectorAll('.readout-table tbody tr').length===0,'조건 미대조 보류');
+        await source();await confirm();require(status().includes('구간 B')&&near('현재 크기',3)&&near('절대 변화 / B/C 경계',30),'사용자 SI 환산');
+        await number(3,5);require(status().includes('경계 B/C'),'사용자 등호 확인');
+        await number(3,3);await number(4,'');require(status().includes('구간 B')&&!Number.isFinite(read('부호 있는 변화 Δx')),'기준선 누락은 크기와 별도');
+        await number(4,0);require(near('절대 변화 / B/C 경계',60),'기준선0 유효');
+        await number(5,0);require(lab.textContent.includes('비교율은 양수'),'비교율0 보류');
+        await number(1,1);require(status().includes('판정 보류')&&!lab.querySelector('input[type="checkbox"]').checked,'역순 경계 보류·대조 해제');
+        await number(1,5);await confirm();require(status().includes('구간 B'),'경계 수정 후 재대조');
+        await choose(2,1);require(status().includes('판정 보류')&&lab.querySelector('input[type="text"]').value===''&&!lab.querySelector('input[type="checkbox"]').checked,'기계 후보 변경은 대조·출처 해제');
+        await choose(1,1);require([...lab.querySelectorAll('input[type="number"]')].every(n=>n.value==='')&&status().includes('판정 보류'),'측정량 변경은 전 수치 초기화');
+        for(const [i,v] of [20,50,90,30,15,20].entries())await number(i,v);
+        await source();await confirm();require(status().includes('구간 B')&&near('현재 크기',30)&&near('절대 변화 / B/C 경계',30),'변위 SI 환산');
+        await number(5,'');require(lab.textContent.includes('비교율 미입력'),'빈 비교율은 자동 기준 없음');
+        [...lab.querySelectorAll('button')].find(b=>b.textContent==='초기화').click();await wait();
+        require(status().includes('가상 예제')&&near('절대 변화 / B/C 경계',30),'초기화');
+        require(!lab.querySelector('.katex-error'),'수식 렌더');
+      }return {ok:true,checks};}catch(e){return {ok:false,checks,error:e.message};}
+    })()`);
+    if(smoke?.ok===false||!smoke)errors.push('크기·변화 판정 조작 검사: '+(smoke?.error??'평가 실패'));
+    if(smoke?.ok)console.log('     판정 랩 조작 '+smoke.checks+'항목 OK (빈값·경계·SI·변화·조건·측정량·초기화)');
+  }
+
   if (bodeSmoke) {
     const smoke=await ev(`(async()=>{
       const labs=[...document.querySelectorAll('.lab-frame')].filter(f=>f.querySelector('.lab-id')?.textContent==='LAB-BODE-01');

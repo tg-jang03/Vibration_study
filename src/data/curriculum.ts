@@ -153,7 +153,7 @@ export const PARTS: Part[] = [
     title: '규격 · 판정 · 진단 절차',
     question: '얼마나 나쁜가, 어떻게 판단하고 보고하나?',
     sections: [
-      { id: 'P10-1', title: '진동 판정 규격 (ISO 20816 계열)', status: 'planned' },
+      { id: 'P10-1', title: '진동 판정 규격 (ISO 20816 계열)', status: 'review', href: '/p10-1/' },
       { id: 'P10-2', title: 'API 규격 요점', status: 'planned' },
       { id: 'P10-3', title: '진단 절차와 보고', status: 'planned' },
     ],

@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-72
+ * 다음 번호: R-76
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -111,6 +111,10 @@ export const REFERENCES: Reference[] = [
   { id: 'R-69', kind: 'paper', authors: 'Bernard Lacaze', title: 'A Blade Tip-Timing method based on Periodic Nonuniform Sampling of order 2', source: 'arXiv:1711.06135', year: '2017', url: 'https://arxiv.org/abs/1711.06135', about: 'BTT의 주기적 비균일 표본과 비동기 진동 추정의 가정' },
   { id: 'R-70', kind: 'web', authors: 'ABB', title: 'Twin benefits', source: 'ABB Review', url: 'https://new.abb.com/news/detail/106128/twin-benefits', about: '전기·제어·공정의 토크 변화와 드라이브 축계의 비틀림 응답' },
   { id: 'R-71', kind: 'paper', authors: 'Mark Woike, Ali Abdul-Aziz, Michelle Clem', title: 'Structural Health Monitoring on Turbine Engines Using Microwave Blade Tip Clearance Sensors', source: 'NASA GRC-E-DAA-TN13685', year: '2014', url: 'https://ntrs.nasa.gov/citations/20140009171', about: 'BTT·NSMS의 팁 변위와 해석 모드 추정, 회전 부품의 비접촉 측정' },
+  { id: 'R-72', kind: 'standard', authors: 'ISO', title: 'ISO 20816-2:2017 — Land-based gas turbines, steam turbines and generators', source: 'ISO', year: '2017 / Amd 1:2024', url: 'https://www.iso.org/standard/70047.html', about: '육상 GT/ST·발전기 적용 범위·평가량·제외 현상의 확인', note: STD_NOTE },
+  { id: 'R-73', kind: 'standard', authors: 'ISO', title: 'ISO 20816-3:2022 — Industrial machinery', source: 'ISO', year: '2022', url: 'https://www.iso.org/standard/78311.html', about: '산업용 기계 적용 범위·분류 확인', note: STD_NOTE },
+  { id: 'R-74', kind: 'standard', authors: 'ISO', title: 'ISO 20816-4:2018 — Gas turbines with fluid-film bearings', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/74450.html', about: '유막 베어링 GT 적용 범위 확인', note: STD_NOTE },
+  { id: 'R-75', kind: 'standard', authors: 'ISO', title: 'ISO 20816-5:2018 — Machine sets in hydraulic power generating and pump-storage plants', source: 'ISO', year: '2018', url: 'https://www.iso.org/standard/67919.html', about: '수력·양수 설비 적용 범위 확인', note: STD_NOTE },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));

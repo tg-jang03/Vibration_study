@@ -97,6 +97,8 @@ export const LABS: LabEntry[] = [
   { slug: 'gt-01', id: 'LAB-GT-01', component: 'GasPressureLab', part: 8, title: 'GT 동압: 센서 위치와 공간 모드', summary: '실속·서지·연소의 지정 압력 파형을 비교하고 원주/종방향 위치에 따른 진폭·위상·절점을 읽는다.' },
   { slug: 'st-01', id: 'LAB-ST-01', component: 'SteamLoadLab', part: 8, title: 'ST 부하·부분 분사: 경계와 중심 위치', summary: '부하·감쇠·교차연성으로 가상 안정 경계를 비교하고, 분사 합력·점성계수에 따른 정적 중심 위치를 별도로 읽는다.' },
   { slug: 'bode-01', id: 'LAB-BODE-01', component: 'MultiModeBodeLab', part: 8, title: '여러 모드의 Bode / Polar', summary: '모드 간격·감쇠·센서·열 상태·slow roll 보상을 바꿔 1X 중첩과 마디, 베어링별 위상과 Polar를 비교한다.' },
+  // Part 10
+  { slug: 'iso-01', id: 'LAB-ISO-01', component: 'SeverityLab', part: 10, title: '크기와 변화의 별도 판정', summary: '가상 무차원 예제 또는 사용자가 입력한 경계·기준선으로 크기 구간과 변화 비율을 따로 확인한다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);
