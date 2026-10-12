@@ -54,6 +54,11 @@ const pageCount = new Set([...citedBy.values()].flat().map((p) => p.id)).size;
         <h2>
           {KIND_LABEL[g.kind]} <span class="ref-count">{g.items.length}</span>
         </h2>
+        {g.kind === 'dataset' && (
+          <p class="src-note">
+            이 사이트는 데이터 파일을 담지 않습니다. 각 기관 페이지에서 이용 조건을 확인하고 내려받아, <a href={withBase('/lab/data-01/')}>내 파일 분석기(LAB-DATA-01)</a>나 <a href={withBase('/lab/rev-01/')}>기록 복기(LAB-REV-01)</a>에서 브라우저 안에서만 엽니다. 고르는 법은 <a href={withBase('/p11-2/')}>P11-2</a>.
+          </p>
+        )}
         <ol class="src-list">
           {g.items.map((r) => {
             const out = refLink(r);

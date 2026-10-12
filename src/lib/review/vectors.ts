@@ -45,12 +45,16 @@ export function perRevVectors(x: ArrayLike<number>, fs: number, pulses: ArrayLik
     const i1 = Math.min(x.length - 1, Math.floor(t1 * fs - 1e-9));
     const n = i1 - i0 + 1;
     if (n < 4) continue; // 한 바퀴에 샘플이 너무 적으면 버린다
+    // 그 바퀴의 평균(gap 전압 같은 DC)을 먼저 뺀다 — 한 바퀴의 샘플 수가 정수가 아니어서 큰 DC가 nX로 새는 것을 막는다
+    let mean = 0;
+    for (let i = i0; i <= i1; i++) mean += x[i];
+    mean /= n;
     let re = 0;
     let im = 0;
     for (let i = i0; i <= i1; i++) {
       const th = (order * TWO_PI * (i / fs - t0)) / T;
-      re += x[i] * Math.cos(th);
-      im -= x[i] * Math.sin(th);
+      re += (x[i] - mean) * Math.cos(th);
+      im -= (x[i] - mean) * Math.sin(th);
     }
     accRe += (2 * re) / n;
     accIm += (2 * im) / n;

@@ -35,7 +35,7 @@
 
   | 트랙 | 범위 | 담당 | 작업 폴더 | 최신 받기 → push |
   |---|---|---|---|---|
-  | A | M1 Part 2·M3 Part 3·M4 Part 5·M7 Part 7·M9 Part 9 (세부 완료, 확인 대기) → **M11 Part 11 (D-052)** | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | A | M1 Part 2·M3 Part 3·M4 Part 5·M7 Part 7·M9 Part 9·**M11 Part 11 (D-052)** (모두 세부 완료, 확인 대기) | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
   | B | M2 Part 1 → M5 Part 4 → M6 Part 6 → M8 Part 8 · M7.7 (세부 완료, 검토 대기) → **M10 Part 10 (D-051)** | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
 
 - **파일 소유** (D-029·D-031·D-034·D-040·D-041·D-042·D-043·D-047·D-049·D-051·D-052 — `p7-9`·LAB-CAMP-01과 그 계산 모듈은 B): A = `p2-2 ~ p2-9`·`p3-*`·`p5-*`·`p7-*`·`p9-*`·`p11-*`, 그 `figures/`, `lib/dsp`·`lib/faults`·`lib/fieldwork`·`lib/cases` 등 Part 2·3·5·7·9·11 계산 모듈, 그 랩, `index.astro` / B = `p1-*`(P1-6 포함)·`p4-*`·`p6-*`·`p8-*`·`p10-*`·`p2-1`, 그 `figures/`, `lib/mck`·`lib/rotor`·`lib/machine`·`lib/plots`·Part 8·10 계산 모듈, 그 랩, `SineBasicsLab`. **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, 갤러리의 자기 절, **랩 모음 `src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩을 만들면 두 곳에 한 줄씩 — `labs.test.ts`가 빠진 줄을 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.

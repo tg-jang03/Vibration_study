@@ -14,7 +14,7 @@ const formulaCount = (formulasMdx.match(/<Fx /g) ?? []).length;
 const CARDS = [
   { href: '/reference/sources/', title: '참고 문헌', count: `${REFERENCES.length}개`, text: `각 페이지가 인용한 책·논문·규격·온라인 자료. 원문 링크와 그 자료를 인용한 페이지를 함께 봅니다.` },
   { href: '/reference/glossary/', title: '용어집', count: `${glossaryCount}개`, text: '용어의 한 줄 뜻·기호·단위와 처음 설명하는 페이지. Part로 거르고 이름으로 찾습니다.' },
-  { href: '/reference/formulas/', title: '기호 · 공식', count: `${formulaCount}개`, text: '고유진동수·감쇠부터 분해능·윈도우·위상·결함 주파수까지 자주 다시 찾는 공식과 기호표.' },
+  { href: '/reference/formulas/', title: '기호 · 공식', count: `${formulaCount}개`, text: '고유진동수·감쇠부터 분해능·윈도우·위상·결함 주파수, 밸런싱·정렬·복기까지 자주 다시 찾는 공식과 기호표.' },
   { href: '/lab/', title: 'Signal Lab', count: `${LABS.length}개`, text: '페이지에 흩어진 인터랙티브 랩을 한곳에서 골라 크게 엽니다.' },
 ];
 
@@ -30,6 +30,9 @@ const TABLES = [
   { href: '/p7-4/#5-서브싱크로너스-감별표', id: 'P7-4', title: '서브싱크로너스 감별표', text: '오일 휠 · 휩 · 러브 · stall · 구조 공진' },
   { href: '/p7-7/#9-전기와-기계의-감별표', id: 'P7-7', title: '전기와 기계의 감별표', text: '2×LF · PPF 측대역 · 전원 차단' },
   { href: '/p7-8/#6-유체--공력-원인의-감별표', id: 'P7-8', title: '유체 · 공력 원인의 감별표', text: '날개 통과 · 캐비테이션 · stall · 서지' },
+  { href: '/p11-1/#4-자료-고르기-무엇을-가르려는가', id: 'P11-1', title: '자료 고르기 표', text: '가르려는 질문 → 열어 볼 자료' },
+  { href: '/p11-2/#1-공개-데이터셋-누가-무엇을-어떻게-쟀나', id: 'P11-2', title: '공개 데이터셋 고르기', text: 'CWRU · Paderborn · IMS의 조건과 이용 조건' },
+  { href: '/p11-3/#1-복기란-같은-방법으로-다시-그려-판단을-확인하기', id: 'P11-3', title: '복기에 남길 기록', text: '원파형 · 키페이저 · 운전 기록 · 당시 판단' },
 ];
 ---
 

@@ -108,6 +108,7 @@ export const LABS: LabEntry[] = [
   // Part 11
   { slug: 'case-01', id: 'LAB-CASE-01', component: 'CaseLab', part: 11, title: '가상 기계 케이스: 숨은 결함 찾기', summary: '숨은 결함이 있는 가상 기계 11대에서 측정 설정과 자료(스펙트럼·엔벨로프·위상·Bode·캐스케이드·추세·차단 시험 등)를 골라 보고, 진단을 제출해 결정적 증거와 오답의 반증을 확인한다.' },
   { slug: 'data-01', id: 'LAB-DATA-01', component: 'FileLab', part: 11, title: '내 파일 분석기: 실측 신호에서 베어링 결함 찾기', summary: '내려받은 공개 데이터(CWRU·Paderborn의 MAT, WAV, CSV)를 브라우저 안에서만 열어 파형 → 평균 스펙트럼 → Kurtogram 대역 → 엔벨로프 → 베어링 결함 주파수 대조로 판단하고 라벨과 비교한다. 파일이 없으면 합성 예시 다섯 개(정상·외륜·내륜·볼·튐 섞인 외륜).' },
+  { slug: 'rev-01', id: 'LAB-REV-01', component: 'ReviewLab', part: 11, title: '기동·정지 기록 복기: 다시 뽑고 다시 그리기', summary: '키페이저 + 진동 기록 두 개(합성 정지 기록 또는 내 파일, 브라우저 안에서만)에서 펄스 → 회전수 → 회전마다 1X 벡터 → Bode·Polar·캐스케이드를 다시 그려 겹쳐 보고, slow roll 보상·펄스 고치기로 당시 판단을 검증한다.' },
 ];
 
 export const labBySlug = (slug: string) => LABS.find((l) => l.slug === slug);

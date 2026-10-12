@@ -3,7 +3,7 @@ import { withBase } from '../../lib/site';
 
 {/* 레퍼런스 > 기호·공식 본문 (D-046). 페이지 틀은 pages/reference/formulas.astro */}
 
-**바로 가기**: <a href="#part-1-진동의-기초">Part 1</a> · <a href="#part-2-신호처리-기초">Part 2</a> · <a href="#part-3-센서와-측정-체인">Part 3</a> · <a href="#part-4-회전체-동역학-기초">Part 4</a> · <a href="#part-5-신호처리-확장">Part 5</a> · <a href="#part-6-현장-플롯-읽기">Part 6</a> · <a href="#part-7-결함별-진단">Part 7</a> · <a href="#part-8-gtst-특화-현상">Part 8</a> · <a href="#자주-쓰는-기호">기호표</a>
+**바로 가기**: <a href="#part-1-진동의-기초">Part 1</a> · <a href="#part-2-신호처리-기초">Part 2</a> · <a href="#part-3-센서와-측정-체인">Part 3</a> · <a href="#part-4-회전체-동역학-기초">Part 4</a> · <a href="#part-5-신호처리-확장">Part 5</a> · <a href="#part-6-현장-플롯-읽기">Part 6</a> · <a href="#part-7-결함별-진단">Part 7</a> · <a href="#part-8-gtst-특화-현상">Part 8</a> · <a href="#part-9-구조-시험--밸런싱--정렬">Part 9</a> · <a href="#part-10-규격--판정--진단-절차">Part 10</a> · <a href="#part-11-종합-진단-연습">Part 11</a> · <a href="#자주-쓰는-기호">기호표</a>
 
 ## Part 1 진동의 기초
 
@@ -404,6 +404,96 @@ f_t = \frac{1}{2\pi}\sqrt{K_t\left(\frac{1}{J_1} + \frac{1}{J_2}\right)}
 $$
 
 $J_1, J_2$ 관성 모멘트, $K_t$ 비틀림 강성. 축 하나로 이은 두 관성의 탄성 모드.
+
+</Fx>
+
+## Part 9 구조 시험 · 밸런싱 · 정렬
+
+<Fx name="임팩트 해머의 가진 대역과 지수 윈도우 보정" page="P9-1">
+
+$$
+f_{-10\,\text{dB}} \approx \frac{1.02}{t_c}, \qquad \zeta_{\text{실제}} \approx \zeta_{\text{측정}} - \frac{1}{\tau\,\omega_n}
+$$
+
+$t_c$ 해머 접촉 시간(팁이 단단할수록 짧다), $\tau$ 지수 윈도우의 시간 상수. 윈도우가 더한 감쇠만큼 빼서 고친다.
+
+</Fx>
+
+<Fx name="Half-power 감쇠비와 기록 길이" page="P9-1">
+
+$$
+\zeta \approx \frac{f_b - f_a}{2 f_{peak}}, \qquad Q = \frac{1}{2\zeta}, \qquad T \ge \frac{2}{\zeta f_n}
+$$
+
+$f_a$·$f_b$ 봉우리 높이의 $1/\sqrt{2}$ 지점. 봉우리 폭 $2\zeta f_n$ 안에 bin이 4개 이상 들도록 기록 길이 $T$를 잡는다.
+
+</Fx>
+
+<Fx name="영향계수 밸런싱 (1면 · 2면)" page="P9-2">
+
+$$
+H = \frac{V_1 - V_0}{W_t}, \qquad W_c = -\frac{V_0}{H}, \qquad W = -A^{-1} V_0
+$$
+
+$V_0$ 처음 1X 벡터, $V_1$ 시험추 $W_t$를 단 뒤의 벡터. 모두 복소수(크기와 각). 2면은 2 × 2 영향계수 행렬 $A$.
+
+</Fx>
+
+<Fx name="밸런스 등급" page="P9-2">
+
+$$
+e_{per} = \frac{G}{\Omega}, \qquad U_{per} = M\, e_{per}
+$$
+
+$G$ 등급 [mm/s], $\Omega$ 각속도 [rad/s], $M$ 로터 질량. 등급 표와 평면 배분은 규격을 따른다.
+
+</Fx>
+
+<Fx name="정렬: 읽음값 → 어긋남 → 발 이동" page="P9-3">
+
+$$
+y(z) = \delta + \alpha z, \qquad R_{rim} = -2\,y(z_{rim}), \qquad R_{face} = -\alpha D
+$$
+
+$$
+\Delta_{\text{앞}} = \text{목표} - (\delta + \alpha A), \qquad \Delta_{\text{뒤}} = \text{목표} - (\delta + \alpha B)
+$$
+
+$\delta$ 커플링 자리의 어긋남, $\alpha$ 기울기, $A$·$B$ 커플링에서 앞발·뒷발까지의 거리. 둘레 읽음값은 어긋남의 2배.
+
+</Fx>
+
+<Fx name="열성장과 냉간 목표" page="P9-3">
+
+$$
+\Delta H \approx \alpha_{th}\, H\, \Delta T, \qquad \text{냉간 목표} = \Delta H_S - \Delta H_M
+$$
+
+$\alpha_{th}$ 열팽창계수(강 약 $11.5 \times 10^{-6}$/K), $H$ 발에서 축 중심까지 높이. 운전 중에 한 줄이 되도록 정지 중에 미리 어긋나게 둔다.
+
+</Fx>
+
+## Part 10 규격 · 판정 · 진단 절차
+
+<Fx name="기준선 대비 변화" page="P10-1">
+
+$$
+\Delta x = x - x_0, \qquad p = 100\,\frac{\lvert \Delta x \rvert}{b_{BC}}\ \%
+$$
+
+$x_0$ 같은 조건의 건전한 기준선, $b_{BC}$ 기계군의 B/C 경계. 몇 %를 의미 있는 변화로 볼지는 적용 규격에서 확인한다.
+
+</Fx>
+
+## Part 11 종합 진단 연습
+
+<Fx name="회전마다 nX 벡터와 slow roll 보상" page="P11-3">
+
+$$
+X = \frac{2}{N} \sum_{i=1}^{N} x_i\, e^{-jn\theta_i}, \qquad \theta_i = 2\pi\,\frac{t_i - t_k}{t_{k+1} - t_k}, \qquad V_c = V - V_{sr}
+$$
+
+$t_k$·$t_{k+1}$ 한 바퀴를 여닫는 키페이저 펄스 시각, $N$ 그 사이 샘플 수(바퀴마다 평균을 먼저 뺀다). $V_{sr}$ 저속(slow roll)에서 잰 벡터 ≈ 런아웃.
 
 </Fx>
 

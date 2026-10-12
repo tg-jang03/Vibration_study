@@ -82,6 +82,19 @@ describe('합성 정지 기록', () => {
       expect(s.rpm90 / tr.criticalRpm).toBeCloseTo(1, 1);
     }
   });
+  it('큰 DC(gap 전압)와 V 단위·부호를 바꿔 넣어도 같은 1X 벡터 (바퀴마다 평균을 뺀다)', () => {
+    const rec = reviewRecord('A');
+    const pulses = repairPulses(detectPulses(rec.key, rec.fs).times).times;
+    const ref = perRevVectors(rec.x, rec.fs, pulses, 1, 1);
+    // 감도 7.87 V/mm, gap −9.5 V로 적은 기록을 다시 µm로 (1 V = 127 µm): 축이 다가오면 덜 음 → +
+    const volts = Float64Array.from(rec.x, (v) => -9.5 + 0.00787 * v);
+    const back = Float64Array.from(volts, (v) => v / 0.00787);
+    const got = perRevVectors(back, rec.fs, pulses, 1, 1);
+    for (const k of [100, 1000, 2500]) {
+      expect(got[k].re).toBeCloseTo(ref[k].re, 6);
+      expect(got[k].im).toBeCloseTo(ref[k].im, 6);
+    }
+  });
   it('캐스케이드: 회전수 순 정렬, 줄 위치가 1X를 따라간다', () => {
     const rec = reviewRecord('A');
     const pulses = repairPulses(detectPulses(rec.key, rec.fs).times).times;

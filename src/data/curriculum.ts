@@ -165,7 +165,7 @@ export const PARTS: Part[] = [
     sections: [
       { id: 'P11-1', title: '가상 기계 케이스', status: 'review', href: '/p11-1/' },
       { id: 'P11-2', title: '공개 데이터셋 실습', status: 'review', href: '/p11-2/' },
-      { id: 'P11-3', title: '현장 데이터 복기 가이드', status: 'planned' },
+      { id: 'P11-3', title: '현장 데이터 복기 가이드', status: 'review', href: '/p11-3/' },
     ],
   },
 ];

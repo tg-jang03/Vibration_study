@@ -1108,3 +1108,38 @@ main.container {
   margin: 0;
   padding-left: 1.1rem;
 }
+
+/* 기록 복기 (LAB-REV-01, P11-3, 2026-10-12 추가): 기록 두 개 · 메모 */
+.review-records {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.8rem;
+}
+
+.review-record {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--plot-1);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.review-record .lab-note {
+  margin: 0;
+}
+
+.review-memo {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  resize: vertical;
+}
