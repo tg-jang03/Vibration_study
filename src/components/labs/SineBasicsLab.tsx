@@ -21,14 +21,7 @@ const SPEEDS = [
   { label: '실제 속도', rate: 1 },
 ];
 
-interface Props {
-  /** 홈 대표 실험: 주 파형·입력만 남기고 기존 계산을 공유한다. */
-  compact?: boolean;
-  /** UI 시안의 조작부/주 그래프 배치. 기본값은 기존 배치를 유지한다. */
-  sidebar?: boolean;
-}
-
-export default function SineBasicsLab({ compact = false, sidebar = false }: Props) {
+export default function SineBasicsLab() {
   const [amp, setAmp] = useState(1);
   const [freq, setFreq] = useState(5);
   const [phiDeg, setPhiDeg] = useState(0);
@@ -54,32 +47,10 @@ export default function SineBasicsLab({ compact = false, sidebar = false }: Prop
   const shift = (phiDeg / 360) * period; // φ > 0 이면 앞섬(꼭대기가 먼저), φ < 0 이면 늦음
   const shiftText = phiDeg === 0 ? '어긋남 없음' : phiDeg > 0 ? `${texNumber(Math.abs(shift))} s 앞섬` : `${texNumber(Math.abs(shift))} s 늦음`;
 
-  const animation = compact ? undefined : (
-    <>
-      <PhasorView
-        arrows={arrows}
-        ghost={ghost}
-        span={Number.isInteger(freq) ? DURATION : 2 * DURATION}
-        rMax={2.2}
-        speeds={speeds}
-        defaultSpeed={1}
-        traceLabel="화살표 끝의 높이 = x(t)"
-        ariaLabel={`길이 ${amp}, 1초에 ${freq}바퀴 도는 화살표. t = 0에 위에서 반시계로 ${phiDeg}° 돌아간 곳에서 출발하고, 끝의 높이가 오른쪽에 정현파를 그린다.`}
-      />
-      <p className="anim-caption">
-        길이 A인 화살표가 1초에 f 바퀴씩 반시계로 돕니다. 화살표 끝의 <strong>높이</strong>가 그 순간의 x(t)이고, 오른쪽은 그 높이를 시간 순서로 옮겨 적은 것입니다.
-        t = 0에 화살표가 위(0°)에서 얼마나 돌아가 있는지가 위상 φ입니다 — 반시계로 돌아가 있으면 +, 시계 쪽이면 −.
-        {showRef && ' 회색 점선 화살표는 기준(A = 1, φ = 0°)입니다.'}
-      </p>
-    </>
-  );
-
   return (
     <LabFrame
       id="LAB-BAS-01"
       title="정현파의 세 숫자: 진폭 · 주파수 · 위상"
-      layout={sidebar ? 'sidebar' : 'stacked'}
-      illustration={sidebar ? animation : undefined}
       controls={
         <>
           <ParamSlider label="진폭 A" value={amp} min={0.2} max={2} step={0.1} format={(v) => v.toFixed(1)} onChange={setAmp} />
@@ -91,12 +62,10 @@ export default function SineBasicsLab({ compact = false, sidebar = false }: Prop
       formulas={
         <>
           <Formula display tex={`x(t) = A\\cos(2\\pi f t + \\varphi) = ${texNumber(amp, 2)}\\cos(2\\pi\\cdot ${texNumber(freq)}\\,t ${phiDeg >= 0 ? '+' : '-'} ${texNumber(Math.abs(phiRad), 4)})`} />
-          {!compact && <>
           <Formula display tex={`\\theta(t) = 2\\pi f t + \\varphi\\ \\text{(화살표 각도)},\\qquad x(t) = A\\cos\\theta(t)\\ \\text{(끝의 높이)}`} />
           <Formula display tex={`\\varphi = ${phiDeg}^\\circ = ${phiDeg}\\times\\dfrac{\\pi}{180} = ${texNumber(phiRad, 4)}\\ \\mathrm{rad}`} />
           <Formula display tex={`T = \\dfrac{1}{f} = \\dfrac{1}{${texNumber(freq)}} = ${texNumber(period)}\\ \\mathrm{s}`} />
           <Formula display tex={`\\Delta t = \\dfrac{\\varphi}{360^\\circ}\\times T = \\dfrac{${phiDeg}}{360}\\times ${texNumber(period)} = ${texNumber(shift)}\\ \\mathrm{s}`} />
-          </>}
         </>
       }
       readouts={
@@ -109,7 +78,7 @@ export default function SineBasicsLab({ compact = false, sidebar = false }: Prop
           caption={`읽음값 — 기준 대비 ${shiftText}`}
         />
       }
-      tasks={compact ? undefined : [
+      tasks={[
         {
           question: '주파수를 5 Hz에서 10 Hz로 올리면 주기 T와 화면 속 물결 개수는 어떻게 될까요?',
           answer: 'T는 0.2 s → 0.1 s로 절반이 되고, 1초 화면 안의 물결은 5개 → 10개로 두 배가 됩니다. f = 1/T.',
@@ -132,7 +101,21 @@ export default function SineBasicsLab({ compact = false, sidebar = false }: Prop
         },
       ]}
     >
-      {!sidebar && animation}
+      <PhasorView
+        arrows={arrows}
+        ghost={ghost}
+        span={Number.isInteger(freq) ? DURATION : 2 * DURATION}
+        rMax={2.2}
+        speeds={speeds}
+        defaultSpeed={1}
+        traceLabel="화살표 끝의 높이 = x(t)"
+        ariaLabel={`길이 ${amp}, 1초에 ${freq}바퀴 도는 화살표. t = 0에 위에서 반시계로 ${phiDeg}° 돌아간 곳에서 출발하고, 끝의 높이가 오른쪽에 정현파를 그린다.`}
+      />
+      <p className="anim-caption">
+        길이 A인 화살표가 1초에 f 바퀴씩 반시계로 돕니다. 화살표 끝의 <strong>높이</strong>가 그 순간의 x(t)이고, 오른쪽은 그 높이를 시간 순서로 옮겨 적은 것입니다.
+        t = 0에 화살표가 위(0°)에서 얼마나 돌아가 있는지가 위상 φ입니다 — 반시계로 돌아가 있으면 +, 시계 쪽이면 −.
+        {showRef && ' 회색 점선 화살표는 기준(A = 1, φ = 0°)입니다.'}
+      </p>
       <Plot series={series} x={{ label: '시간 t [s]', range: [0, DURATION] }} y={{ label: '진폭', range: [-2.2, 2.2] }} height={280} />
     </LabFrame>
   );

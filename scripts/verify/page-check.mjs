@@ -5,8 +5,6 @@
 //   npm run verify:page -- /p3-5/ /lab/            (여러 경로)
 //   옵션: --base <URL>  --out <폴더(기본 dist/qa)>  --width <px(기본 1100)>  --no-shots  --edge <msedge 경로>
 //         --anim-smoke (움직이는 그림을 재생해 바뀌는지 보고 움직이는 중을 캡처)
-//         --scheme <auto|light|dark>  --mobile-width <px(기본 390)>
-//         --sine-smoke (정현파의 진폭·주기·위상·기준 파형 조작 검사)
 // 결과: 경로마다 한 줄 요약 + JSON(<out>/report.json). 오류가 있으면 종료 코드 1.
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -25,9 +23,6 @@ const flag = (name) => {
 const base = opt('base', 'http://localhost:4321/Vibration_study').replace(/\/+$/, '');
 const outDir = opt('out', 'dist/qa');
 const width = Number(opt('width', '1100'));
-const mobileWidth = Number(opt('mobile-width', '390'));
-const scheme = opt('scheme', 'auto');
-if (!['auto', 'light', 'dark'].includes(scheme)) throw Error('--scheme은 auto/light/dark 중 하나여야 한다');
 const edgePath = opt('edge', process.env.EDGE_PATH || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe');
 const noShots = flag('no-shots');
 const jeffcottSmoke = flag('jeffcott-smoke');
@@ -45,7 +40,6 @@ const dampingSmoke = flag('damping-smoke');
 const cascadeSmoke = flag('cascade-smoke');
 const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
-const sineSmoke = flag('sine-smoke'); // LAB-BAS-01의 compact/일반 표시 공통 조작 검증
 const animSmoke = flag('anim-smoke'); // 움직이는 그림 패널(.anim-panel)마다 재생 확인·캡처 (D-044)
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
@@ -102,7 +96,6 @@ const ev = async (expression) => {
 await send('Runtime.enable');
 await send('Network.enable');
 await send('Page.enable');
-if (scheme !== 'auto') await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] });
 await mkdir(outDir, { recursive: true });
 
 const report = [];
@@ -628,50 +621,6 @@ for (const p of paths) {
     if(smoke?.ok) console.log('     Orbit 조작 '+smoke.checks+'항목 OK (형태·필터·점·방향·재생·초기화)');
   }
   const shots = [];
-  if (sineSmoke) {
-    const smoke = await ev(`(async () => {
-      const lab = [...document.querySelectorAll('.lab-frame')].find(f => f.querySelector('.lab-id')?.textContent === 'LAB-BAS-01');
-      if (!lab) return { skipped: true };
-      const wait = () => new Promise(r => setTimeout(r, 350));
-      const sliders = lab.querySelectorAll('.lab-controls input[type="range"]');
-      const toggle = lab.querySelector('.lab-controls input[type="checkbox"]');
-      const set = async (i,v) => {
-        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(sliders[i], String(v));
-        sliders[i].dispatchEvent(new Event('input', { bubbles: true }));
-        sliders[i].dispatchEvent(new Event('change', { bubbles: true }));
-        await wait();
-      };
-      const plot = () => lab.querySelector('.js-plotly-plot');
-      const wave = () => plot().data.find(trace => trace.name === '내가 만든 정현파');
-      const read = label => {
-        const row = [...lab.querySelectorAll('.readout-table tbody tr')].find(r => r.cells[0].textContent === label);
-        return row ? parseFloat(row.cells[1].textContent.replace(/,/g, '').replaceAll('−', '-')) : NaN;
-      };
-      let checks = 0;
-      const require = (ok, message) => { if (!ok) throw Error(message); checks++; };
-      try {
-        require(sliders.length === 3 && plot().data.length === 2, '초기 입력 세 개와 기준 파형');
-        require(Math.abs(read('주기 T [s]') - 0.2) < 1e-9, '초기 5 Hz 주기');
-        require([...lab.querySelectorAll('.anim-button[aria-pressed]')].every(b => b.getAttribute('aria-pressed') === 'false'), '초기 재생 정지');
-        await set(0, 2);
-        require(Math.abs(wave().y[0] - 2) < 1e-9 && read('꼭대기 높이 (Peak)') === 2, '진폭과 파형·읽음값');
-        await set(1, 10);
-        require(Math.abs(read('주기 T [s]') - 0.1) < 1e-9 && read('1초에 반복하는 횟수') === 10, '10 Hz 주기·횟수');
-        const nearHalfPeriod = wave().x.reduce((best, x, i, xs) => Math.abs(x - 0.05) < Math.abs(xs[best] - 0.05) ? i : best, 0);
-        require(wave().y[nearHalfPeriod] < -1.99, '10 Hz의 반 주기 위치');
-        await set(2, 90);
-        require(Math.abs(wave().y[0]) < 1e-9 && wave().y[1] < 0, '90도 위상의 시작 높이·진행 방향');
-        toggle.click(); await wait();
-        require(plot().data.length === 1, '기준 파형 숨기기');
-        toggle.click(); await wait();
-        await set(0, 1); await set(1, 5); await set(2, 0);
-        require(plot().data.length === 2 && Math.abs(read('주기 T [s]') - 0.2) < 1e-9, '초기 조건 복귀');
-        return { ok: true, checks };
-      } catch (e) { return { ok: false, error: e.message, checks }; }
-    })()`);
-    if (!smoke || smoke.ok === false) errors.push('정현파 조작 검사: ' + (smoke?.error ?? '평가 실패'));
-    if (smoke?.ok) console.log('     정현파 조작 ' + smoke.checks + '항목 OK (진폭·주기·위상·기준 파형)');
-  }
   if (animSmoke) {
     // 움직이는 그림 (D-044): 패널마다 재생 → 1.5 s 뒤 SVG가 바뀌었는지 보고, 움직이는 중의 패널을 캡처한 뒤 멈춘다
     const slug = p.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
@@ -694,7 +643,6 @@ for (const p of paths) {
       console.log(`     움직이는 그림 ${i} ${r.lab}: ${r.changed ? '움직임 OK' : '안 움직임'} · ${r.status}`);
     }
   }
-  const desktopOverflow = await ev('document.documentElement.scrollWidth - window.innerWidth');
   if (!noShots) {
     await ev('window.scrollTo(0, 0)');
     const full = await ev('document.documentElement.scrollHeight');
@@ -707,14 +655,13 @@ for (const p of paths) {
       shots.push(file);
     }
   }
-  await send('Emulation.setDeviceMetricsOverride', { width: mobileWidth, height: 844, deviceScaleFactor: 2, mobile: true });
+  await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
   await sleep(800);
   const overflow = await ev('document.documentElement.scrollWidth - window.innerWidth');
-  const ok = errors.length === 0 && unhydrated.length === 0 && desktopOverflow <= 0 && overflow <= 0;
+  const ok = errors.length === 0 && unhydrated.length === 0 && overflow <= 0;
   if (!ok) failed = true;
-  report.push({ path: p, ok, labs: labs?.length ?? 0, unhydrated, desktopOverflow, mobileWidth, scheme, mobileOverflow: overflow, errors, shots });
+  report.push({ path: p, ok, labs: labs?.length ?? 0, unhydrated, mobileOverflow: overflow, errors, shots });
   console.log(`${ok ? 'OK  ' : 'FAIL'} ${p}  랩 ${labs?.length ?? 0}${unhydrated.length ? ` (안 깨어남: ${unhydrated.join(', ')})` : ''} · 모바일 넘침 ${overflow}px · 오류 ${errors.length}${shots.length ? ` · 캡처 ${shots.length}장` : ''}`);
-  if (desktopOverflow > 0) console.log('     데스크톱 가로 넘침 ' + desktopOverflow + 'px');
   for (const e of errors) console.log(`     ${e}`);
 }
 await writeFile(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
