@@ -9,7 +9,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { PARTS, STAGES } from '../../data/curriculum';
 import { LABS } from '../../data/labs';
 import { labRefs } from '../../lib/labRefs';
-import { withBase } from '../../lib/site';
+import { SITE_NAME, withBase } from '../../lib/site';
+import { canonicalUrl, learningResourceLd } from '../../lib/seo';
 
 import AafLab from '../../components/labs/AafLab';
 import AdcLab from '../../components/labs/AdcLab';
@@ -104,9 +105,25 @@ const part = PARTS.find((p) => p.num === lab.part);
 const color = STAGES.find((s) => s.parts.includes(lab.part))?.color ?? 'var(--accent)';
 const refs = labRefs(lab);
 const c = lab.component;
+// 검색 노출 (M12.1): 제목은 랩 이름 먼저, 경로 표시 Signal Lab › 랩, 학습 자료(인터랙티브)
+const site = Astro.site ?? new URL('https://tg-jang03.github.io');
+const crumbs = [
+  { name: 'Signal Lab', path: '/lab/' },
+  { name: lab.title, path: `/lab/${lab.slug}/` },
+];
+const jsonLd = [
+  learningResourceLd({
+    name: lab.title,
+    description: lab.summary,
+    url: canonicalUrl(Astro.url.pathname, site),
+    lang: 'ko',
+    kind: 'interactive simulation',
+    site: { name: SITE_NAME, url: new URL(withBase('/'), site).href },
+  }),
+];
 ---
 
-<BaseLayout title={`${lab.id} ${lab.title}`} description={lab.summary}>
+<BaseLayout title={`${lab.title} · 인터랙티브 랩 (${lab.id})`} description={lab.summary} crumbs={crumbs} jsonLd={jsonLd}>
   <div class="lab-page" style={`--c:${color}`}>
     <div class="breadcrumb">
       <a href={withBase('/lab/')}>Signal Lab</a> › Part {lab.part}{part ? ` ${part.title.split(':')[0]}` : ''} › {lab.id}

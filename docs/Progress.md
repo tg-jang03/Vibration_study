@@ -7,7 +7,7 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.1 기본 검색 설정 | 진행 중 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.1 완료 → 다음 M12.2 영어판 뼈대 | 진행 중 |
 | **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
@@ -23,7 +23,9 @@
 ## 핸드오프 — 트랙 A (Claude)
 
 - **M12 (D-054)**: 계획·완료 기준은 Roadmap §6-3. M12에서는 트랙 B 파일도 Claude가 고친다. 한국어가 원본, 영어는 `/en/`에 번역이 끝난 페이지만.
-- **다음**: M12.1 기본 검색 설정.
+- **M12.1 완료 (2026-10-12)**: `@astrojs/sitemap`(`/sitemap-index.xml`, `/dev/` 제외 158개), `BaseLayout`에 canonical·OG/Twitter·`public/og.png`(1200×630)·JSON-LD(홈 WebSite, 안쪽 BreadcrumbList, 절·랩 LearningResource)·`/dev/` noindex, props `crumbs`·`jsonLd`·`ogType`·`noindex`(하위 호환). 순수 함수 `lib/seo.ts`(+ 테스트). 제목: 절 "주제 (P2-3) | 사이트", 랩 "이름 · 인터랙티브 랩 (ID)", Part 설명 = 질문 + 절 제목들.
+- **사용자 할 일**: Search Console(URL 접두어 `https://tg-jang03.github.io/Vibration_study/`)·네이버 서치어드바이저·Bing에서 "HTML 태그" 소유 확인 → content 값을 받으면 `lib/site.ts`의 `SITE_VERIFICATION`에 넣고 push → 각 도구에 `sitemap-index.xml` 제출. 네이버가 하위 경로를 거부하면 `tg-jang03.github.io` 저장소로 루트 페이지를 만드는 방법(D-054).
+- **다음 M12.2**: Astro i18n(`/en/`, 기본 언어 접두어 없음) → 화면 문구 사전 → `curriculum.ts`·`labs.ts` 영어 → 언어 전환·hreflang(sitemap `i18n` 옵션) → 그림 대응표·랩 `t`·한글 누락 검사.
 
 ## 핸드오프 — 트랙 B (Codex)
 
@@ -31,10 +33,12 @@
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 
-### 2026-10-12 · Claude · M12 계획(D-054) · M0.16 구축 단계 문서 보관(D-055)
+### 2026-10-12 · Claude · M12 계획(D-054) · M0.16 문서 보관(D-055) · M12.1 기본 검색 설정
 - 요청: 사용자 — "검색이 잘되도록 영어도 … 기획" → 도메인은 안 삼·단계적·영어 이름 OK·Claude 단독, "구축 문서는 토큰 절약을 위해 아카이브로"
 - 산출: D-054(영어판·검색 노출, I-031 종결)·D-055, Roadmap §6-3 M12 표. 문서 보관(위 공통 핸드오프), AGENTS 9.1 → 8.1 KB·Progress 25 → 약 5 KB, PageGuide·README·`curriculum.ts` 주석의 옛 경로 고침
-- 다음: M12.1
+- M12.1: sitemap·canonical·OG 카드·JSON-LD·/dev/ noindex·주제어 먼저 제목 (위 핸드오프)
+- 검증: check 0·test 1231·빌드 161쪽(sitemap 158)·링크 5404개 문제 0·빌드 결과 머리 태그 확인
+- 다음: 사용자 검색엔진 등록 → M12.2
 ### 2026-10-12 · Claude · M11.3 P11-3 복기 가이드 · 레퍼런스 정리 → M11 세부 완료
 - 요청: 사용자 — "M11.2 진행해"(리밋 뒤 다른 세션이 M11.2를 마침, CI 성공 확인) → "M11.3 진행해"
 - 산출: `lib/review/`(펄스·회전마다 nX·slow roll·캐스케이드, 합성 정지 기록 A·B), LAB-REV-01, P11-3(9절, 그림 6), 레퍼런스 허브(공식 Part 9 ~ 11·바로 가기·데이터셋 안내), M11 회고

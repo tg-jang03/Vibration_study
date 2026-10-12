@@ -18,7 +18,7 @@ const stage = STAGES.find((s) => s.parts.includes(part.num));
 const { ready, total } = partProgress(part);
 ---
 
-<BaseLayout title={`Part ${part.num} ${part.title}`} description={part.question}>
+<BaseLayout title={`Part ${part.num}. ${part.title}`} description={`${part.question} ${part.sections.map((s) => s.title.split(':')[0]).join(' · ')}`} crumbs={[{ name: `Part ${part.num}. ${part.title}`, path: `/parts/${part.num}/` }]}>
   <div class="part-page" style={`--stage:${stage?.color ?? 'var(--accent)'}`}>
     <div class="breadcrumb"><a href={withBase('/')}>커리큘럼</a> › Part {part.num}</div>
     <header class="part-hero">

@@ -21,7 +21,7 @@ const other = entries.filter((e) => !PARTS.some((p) => p.num === e.part));
 const groups = [...partGroups, { key: 'etc', label: '기타', title: '', color: 'var(--text-muted)', items: other }].filter((g) => g.items.length > 0);
 ---
 
-<BaseLayout title="용어집 · 레퍼런스" description="사이트에 나오는 진동·신호처리·진단 용어의 한 줄 뜻과 기호, 처음 설명하는 페이지를 Part별로 모았다.">
+<BaseLayout title="용어집 · 레퍼런스" crumbs={[{ name: '레퍼런스', path: '/reference/' }, { name: '용어집', path: '/reference/glossary/' }]} description="사이트에 나오는 진동·신호처리·진단 용어의 한 줄 뜻과 기호, 처음 설명하는 페이지를 Part별로 모았다.">
   <RefHeader
     current="glossary"
     title="용어집"

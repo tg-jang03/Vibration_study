@@ -14,7 +14,7 @@ const groups = PARTS.map((part) => ({
 const sandboxRef = sandbox ? labRefs(sandbox)[0] : undefined;
 ---
 
-<BaseLayout title="Signal Lab" description="사이트의 인터랙티브 랩을 한곳에 모았다. 랩 하나만 골라 크게 열고, 원문 설명으로 바로 돌아갈 수 있다.">
+<BaseLayout title="Signal Lab · 진동·신호처리 인터랙티브 랩 모음" crumbs={[{ name: 'Signal Lab', path: '/lab/' }]} description="사이트의 인터랙티브 랩을 한곳에 모았다. 랩 하나만 골라 크게 열고, 원문 설명으로 바로 돌아갈 수 있다.">
   <section class="lab-hero">
     <p class="kicker">Signal Lab</p>
     <h1>랩 모음: 골라서 만져 보기</h1>

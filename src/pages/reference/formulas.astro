@@ -4,7 +4,7 @@ import RefHeader from '../../components/content/RefHeader.astro';
 import FormulasBody from '../../components/reference/FormulasBody.mdx';
 ---
 
-<BaseLayout title="기호 · 공식 · 레퍼런스" description="사이트 전체에서 쓰는 핵심 공식(고유진동수·감쇠·공진, 요소 주파수, 샘플링·분해능·윈도우·스케일링, 위상·1X 벡터, 회전체 안정성, 결함 주파수)과 기호를 Part별로 모으고 설명하는 절로 이었다.">
+<BaseLayout title="기호 · 공식 · 레퍼런스" crumbs={[{ name: '레퍼런스', path: '/reference/' }, { name: '기호 · 공식', path: '/reference/formulas/' }]} description="사이트 전체에서 쓰는 핵심 공식(고유진동수·감쇠·공진, 요소 주파수, 샘플링·분해능·윈도우·스케일링, 위상·1X 벡터, 회전체 안정성, 결함 주파수)과 기호를 Part별로 모으고 설명하는 절로 이었다.">
   <RefHeader current="formulas" title="기호 · 공식" lead="자주 다시 찾게 되는 공식을 Part 순서로 모았습니다. 기호는 사이트 전체에서 같은 뜻으로 씁니다. 카드 오른쪽 위의 절 번호를 누르면 그 공식을 처음 설명한 곳으로 갑니다." />
   <div class="fx-wrap">
     <FormulasBody />

@@ -1,26 +1,52 @@
 ---
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
-import { REPO_URL, SITE_NAME, withBase } from '../lib/site';
+import { REPO_URL, SITE_NAME, SITE_NAME_EN, SITE_TAGLINE, SITE_VERIFICATION, withBase } from '../lib/site';
+import { breadcrumbLd, canonicalUrl, documentTitle, jsonLdText, websiteLd } from '../lib/seo';
 
 interface Props {
   title?: string;
   description?: string;
   /** 사이드바가 있는 절 페이지처럼 넓은 틀이 필요할 때 (기본 false, D-037) */
   wide?: boolean;
+  /** 홈 다음의 경로 표시 (사이트 안 경로). 검색 결과의 "사이트 › Part 2 › 절" (M12.1) */
+  crumbs?: { name: string; path: string }[];
+  /** 이 페이지에만 붙일 JSON-LD (예: LearningResource) */
+  jsonLd?: object[];
+  /** og:type — 절 페이지는 article */
+  ogType?: 'website' | 'article';
+  /** 검색에서 빼기 (/dev/는 자동) */
+  noindex?: boolean;
 }
 
 const {
   title,
   wide = false,
   description = '진동의 물리와 신호처리부터 대형 회전기계(GT/ST) 상태 진단까지 연결하는 기계 진동 학습 아카이브',
+  crumbs,
+  jsonLd = [],
+  ogType = 'website',
+  noindex = false,
 } = Astro.props;
 
-const fullTitle = title ? `${title} · ${SITE_NAME}` : SITE_NAME;
+const fullTitle = documentTitle(SITE_NAME, SITE_TAGLINE, title);
 const path = Astro.url.pathname.replace(/\/+$/, '');
 const isHome = path === withBase('/').replace(/\/+$/, '');
 const isLab = path.startsWith(withBase('/lab').replace(/\/+$/, ''));
 const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
+const isDev = path.startsWith(withBase('/dev').replace(/\/+$/, ''));
+
+// 검색 노출 (M12.1, D-054): canonical·링크 미리보기 카드·구조화 데이터
+const site = Astro.site ?? new URL('https://tg-jang03.github.io');
+const abs = (p: string) => new URL(withBase(p), site).href;
+const canonical = canonicalUrl(Astro.url.pathname, site);
+const homeUrl = abs('/');
+const ogImage = abs('/og.png');
+const ld: object[] = [
+  ...(isHome ? [websiteLd({ name: SITE_NAME, alternateName: SITE_NAME_EN, url: homeUrl, description, lang: 'ko' })] : []),
+  ...(crumbs?.length ? [breadcrumbLd([{ name: SITE_NAME, url: homeUrl }, ...crumbs.map((c) => ({ name: c.name, url: abs(c.path) }))])] : []),
+  ...jsonLd,
+];
 ---
 
 <!doctype html>
@@ -31,6 +57,24 @@ const isRef = path.startsWith(withBase('/reference').replace(/\/+$/, ''));
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <title>{fullTitle}</title>
+    <link rel="canonical" href={canonical} />
+    {(noindex || isDev) && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title ?? fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE_NAME} — ${SITE_NAME_EN}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {SITE_VERIFICATION.google && <meta name="google-site-verification" content={SITE_VERIFICATION.google} />}
+    {SITE_VERIFICATION.naver && <meta name="naver-site-verification" content={SITE_VERIFICATION.naver} />}
+    {SITE_VERIFICATION.bing && <meta name="msvalidate.01" content={SITE_VERIFICATION.bing} />}
+    {ld.map((d) => <script type="application/ld+json" set:html={jsonLdText(d)} />)}
     {/* 방문 통계 (D-045): GoatCounter — 쿠키 없음, 배포 빌드에서만 넣고 localhost 방문은 스크립트가 스스로 세지 않는다 */}
     {import.meta.env.PROD && <script is:inline data-goatcounter="https://vibstudy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>}
   </head>

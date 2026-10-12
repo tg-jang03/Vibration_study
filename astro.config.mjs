@@ -4,6 +4,7 @@ import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -12,7 +13,8 @@ import rehypeKatex from 'rehype-katex';
 export default defineConfig({
   site: 'https://tg-jang03.github.io',
   base: '/Vibration_study',
-  integrations: [react(), mdx()],
+  // sitemap: 검색엔진에 직접 제출한다 (루트 robots.txt를 둘 수 없음, D-054). 개발용 /dev/는 뺀다
+  integrations: [react(), mdx(), sitemap({ filter: (page) => !page.includes('/dev/') })],
   vite: {
     // 개발 서버와 build/check가 같은 의존성 캐시를 덮어쓰지 않게 폴더를 나눈다 (I-017)
     cacheDir: process.argv.includes('dev') ? 'node_modules/.vite' : 'node_modules/.vite-tasks',

@@ -27,7 +27,7 @@ const groups = KIND_ORDER.map((kind) => ({ kind, items: REFERENCES.filter((r) =>
 const pageCount = new Set([...citedBy.values()].flat().map((p) => p.id)).size;
 ---
 
-<BaseLayout title="참고 문헌 · 레퍼런스" description="사이트의 모든 페이지가 인용한 책·논문·규격·온라인 자료를 한곳에 모았다. 자료마다 원문 링크와 그 자료를 인용한 페이지를 붙였다.">
+<BaseLayout title="참고 문헌 · 레퍼런스" crumbs={[{ name: '레퍼런스', path: '/reference/' }, { name: '참고 문헌', path: '/reference/sources/' }]} description="사이트의 모든 페이지가 인용한 책·논문·규격·온라인 자료를 한곳에 모았다. 자료마다 원문 링크와 그 자료를 인용한 페이지를 붙였다.">
   <RefHeader
     current="sources"
     title="참고 문헌"
