@@ -1,6 +1,6 @@
 /**
  * 사이트 목차 데이터.
- * 기준 문서: docs/Curriculum.md(절 구성), docs/Contents.md §4(페이지 상태).
+ * 기준 문서: docs/Contents.md §4(페이지 상태). 구축 때의 절 구성은 docs/archive/Curriculum.md.
  * 절을 추가·변경하거나 페이지 상태가 바뀌면 이 파일도 함께 고친다.
  */
 
@@ -24,7 +24,7 @@ export interface Section {
 export interface Part {
   num: number;
   title: string;
-  /** 이 Part가 답하려는 핵심 질문 (Curriculum.md §1) */
+  /** 이 Part가 답하려는 핵심 질문 (docs/archive/Curriculum.md §1) */
   question: string;
   sections: Section[];
 }

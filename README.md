@@ -17,7 +17,7 @@
 <h3 align="center">
   <a href="https://tg-jang03.github.io/Vibration_study/">사이트 열기</a> &nbsp;·&nbsp;
   <a href="https://tg-jang03.github.io/Vibration_study/lab/">Signal Lab</a> &nbsp;·&nbsp;
-  <a href="docs/Curriculum.md">커리큘럼</a>
+  <a href="docs/archive/Curriculum.md">커리큘럼</a>
 </h3>
 
 <br>
@@ -48,7 +48,7 @@
   <img src="docs/assets/readme/roadmap-ko.svg" alt="학습 경로: 4단계 11개 Part와 진행 현황" width="100%">
 </p>
 
-<p align="center"><sub>2026-10 기준 · 61절 중 50절 공개 · 자세한 목차는 <a href="docs/Curriculum.md">docs/Curriculum.md</a></sub></p>
+<p align="center"><sub>2026-10 기준 · 61절 모두 공개 · 자세한 목차는 <a href="docs/archive/Curriculum.md">docs/archive/Curriculum.md</a></sub></p>
 
 ## Signal Lab — 직접 움직여 보는 랩
 
@@ -147,7 +147,7 @@ Node.js 22.12 이상이 필요합니다. 그 밖의 명령은 `npm run check`(�
 <summary><b>문서</b></summary>
 <br>
 
-[커리큘럼](docs/Curriculum.md) · [로드맵](docs/Roadmap.md) · [진행 상황](docs/Progress.md) · [페이지 작성 지침](docs/PageGuide.md) · [용어집](docs/Glossary.md) · [작업 규칙](AGENTS.md) · 끝난 기록은 [docs/archive/](docs/archive/)
+[커리큘럼](docs/archive/Curriculum.md) · [로드맵](docs/Roadmap.md) · [진행 상황](docs/Progress.md) · [페이지 작성 지침](docs/PageGuide.md) · [용어집](docs/Glossary.md) · [작업 규칙](AGENTS.md) · 끝난 기록은 [docs/archive/](docs/archive/)
 
 </details>
 
