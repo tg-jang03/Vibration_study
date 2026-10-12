@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-91
+ * 다음 번호: R-96
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -49,7 +49,7 @@ export const REFERENCES: Reference[] = [
   { id: 'R-07', kind: 'standard', authors: 'American Petroleum Institute', title: 'API RP 684 — Rotordynamic Tutorial: Lateral Critical Speeds, Unbalance Response, Stability, Train Torsionals, and Rotor Balancing', source: 'API', year: '2005 (RP 2판) · 2019 (TR 684-1)', about: '증폭계수(AF)·분리여유(SM)·불평형 응답 해석의 개념', note: STD_NOTE },
   { id: 'R-08', kind: 'standard', authors: 'ISO', title: 'ISO 20816-1 — Mechanical vibration: Measurement and evaluation of machine vibration, Part 1: General guidelines', source: 'ISO', year: '2016', url: 'https://www.iso.org/standard/63180.html', about: '진동 크기와 변화에 따른 평가의 일반 취지', note: STD_NOTE },
   { id: 'R-09', kind: 'web', authors: 'Bently Nevada (Baker Hughes)', title: 'ORBIT Magazine 아카이브', source: 'Baker Hughes', about: '프로브 설치·위상·런아웃 보상·보호 시스템 사례' },
-  { id: 'R-10', kind: 'dataset', authors: 'Case Western Reserve University', title: 'Bearing Data Center', source: 'CWRU', url: 'https://engineering.case.edu/bearingdatacenter', about: '6205 시험 베어링 치수와 결함 데이터 (Part 11 실습 예정)' },
+  { id: 'R-10', kind: 'dataset', authors: 'Case Western Reserve University', title: 'Bearing Data Center', source: 'CWRU', url: 'https://engineering.case.edu/bearingdatacenter', about: '6205·6203 시험 베어링 치수와 결함 주파수 배수, 방전 가공(EDM) 결함 기록 — 12 · 48 kHz MAT 파일 (P11-2 실습)', note: '다운로드 페이지에 이용 조건 표기 없음 — 이 사이트는 파일을 다시 배포하지 않고 출처만 밝힌다. 정상 기록의 f_s는 페이지에 없다(P11-2: 48 kHz로 확인)' },
   { id: 'R-11', kind: 'paper', authors: 'J. Antoni', title: 'Fast computation of the kurtogram for the detection of transient faults', source: 'Mechanical Systems and Signal Processing 21(1)', year: '2007', about: 'Kurtogram으로 엔벨로프 대역 고르기' },
   { id: 'R-12', kind: 'web', authors: 'NumPy', title: 'Discrete Fourier Transform (numpy.fft)', source: 'NumPy 공식 문서', url: 'https://numpy.org/doc/stable/reference/routines.fft.html', about: 'DFT의 부호·bin 순서·정규화 — FFT 코어의 대조 기준' },
   { id: 'R-13', kind: 'web', authors: 'National Instruments', title: 'Spectrum Averaging Mode (NI-RFSA)', source: 'NI 공식 문서', url: 'https://www.ni.com/docs/en-US/bundle/rfsacref/page/rfsacref/nirfsa_attr_spectrum_averaging_mode.html', about: 'RMS·피크 홀드·벡터 평균과 트리거 조건' },
@@ -130,6 +130,11 @@ export const REFERENCES: Reference[] = [
   { id: 'R-88', kind: 'book', authors: 'V. Wowk', title: 'Machinery Vibration: Balancing', source: 'McGraw-Hill', year: '1995', about: '현장 밸런싱 절차 — 시험추 크기, 1면·2면, 위상 없는 방법, 분할추' },
   { id: 'R-89', kind: 'book', authors: 'J. Piotrowski', title: 'Shaft Alignment Handbook', source: 'CRC Press', year: '2006', about: '오정렬의 표기(offset·angularity), rim-face·reverse·레이저 측정, 브래킷 처짐, 소프트 풋, 열성장과 냉간 목표·열간 확인' },
   { id: 'R-90', kind: 'paper', authors: 'J. C. Nicholas, J. A. Kocur', title: 'Rotordynamic Design of Centrifugal Compressors in Accordance with the New API Stability Specifications', source: 'Proc. 34th Turbomachinery Symposium (Texas A&M)', year: '2005', url: 'https://dyrobes.com/wp-content/uploads/2015/09/Rotordynamic-Design-of-Centrifugal-Compressors-in-Accordance-with-the-New-API-Stability-Specifications_linked.pdf', about: 'API 617(7판부터)의 Level I 간이 안정성 해석(추정 공력 교차연성·로그 감쇠)과 Level II 상세 해석의 흐름' },
+  { id: 'R-91', kind: 'paper', authors: 'W. A. Smith, R. B. Randall', title: 'Rolling element bearing diagnostics using the Case Western Reserve University data: A benchmark study', source: 'Mechanical Systems and Signal Processing 64–65', year: '2015', url: 'https://doi.org/10.1016/j.ymssp.2015.04.021', about: 'CWRU 기록 전체를 엔벨로프·SK·켑스트럼으로 진단한 벤치마크 — 볼 결함 기록 상당수는 볼 결함의 표시가 뚜렷하지 않음, 데이터를 쓸 때의 권고' },
+  { id: 'R-92', kind: 'dataset', authors: 'C. Lessmeier 외, Chair of Design and Drive Technology (KAt), Paderborn University', title: 'Bearing DataCenter (KAt-DataCenter)', source: 'Paderborn University', url: 'https://mb.uni-paderborn.de/kat/forschung/bearing-datacenter/', about: '6203 베어링 32개(정상 6 · 인공 손상 12 · 가속 수명 시험의 실제 손상 14)의 진동·모터 전류, 운전 조건 4가지 × 4초 기록 20개, MAT 구조체 파일', note: 'CC BY-NC 4.0 — 비상업 학술 이용 가능, 출처(R-93 논문 · 저자 · 기관 · 링크) 표기 필수. 이 사이트는 파일을 다시 배포하지 않는다' },
+  { id: 'R-93', kind: 'paper', authors: 'C. Lessmeier, J. K. Kimotho, D. Zimmer, W. Sextro', title: 'Condition Monitoring of Bearing Damage in Electromechanical Drive Systems by Using Motor Current Signals of Electric Motors: A Benchmark Data Set for Data-Driven Classification', source: 'Proc. European Conference of the PHM Society (Bilbao)', year: '2016', url: 'https://mb.uni-paderborn.de/fileadmin-mb/kat/PDF/Veroeffentlichungen/20160703_PHME16_CM_bearing.pdf', about: 'Paderborn 데이터셋(R-92)의 시험대·운전 조건·손상 분류 — 데이터를 쓸 때 인용하라고 요구하는 논문' },
+  { id: 'R-94', kind: 'dataset', authors: 'NSF I/UCR Center for Intelligent Maintenance Systems (University of Cincinnati) · NASA PCoE', title: 'IMS Bearings', source: 'NASA PCoE 데이터 저장소 (data.gov)', url: 'https://catalog.data.gov/dataset/ims-bearings', about: '한 축의 베어링 4개를 고장까지 돌린 시험 3번(2000 rpm, 반경 하중 6000 lb), 10분마다 1초 기록(20 kHz, 20,480점) — 자연히 자라는 손상의 추세', note: 'data.gov 표기: 미국 정부 저작물, 공개. 이용할 때 원 논문(R-95) 인용. 이 사이트는 파일을 다시 배포하지 않는다' },
+  { id: 'R-95', kind: 'paper', authors: 'H. Qiu, J. Lee, J. Lin, G. Yu', title: 'Wavelet filter-based weak signature detection method and its application on rolling element bearing prognostics', source: 'Journal of Sound and Vibration 289(4–5)', year: '2006', about: 'IMS 베어링 수명 시험(R-94)의 시험대와 약한 결함 신호 찾기' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));

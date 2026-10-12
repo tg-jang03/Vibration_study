@@ -38,7 +38,7 @@ export function parseCsv(text: string, maxRows = 2_000_000): CsvData {
   const split = splitter(lines.slice(0, Math.min(lines.length, 20)));
   const semicolon = lines[0].includes(';');
   const cell = (s: string) => (semicolon ? s.replace(',', '.') : s).trim().replace(/^"|"$/g, '');
-  let first = split(lines[0]).map(cell);
+  const first = split(lines[0]).map(cell);
   let names: string[];
   let start = 0;
   if (first.some((s) => !isNum(s))) {

@@ -164,7 +164,7 @@ export const PARTS: Part[] = [
     question: '처음 보는 데이터에서 결함을 찾을 수 있나?',
     sections: [
       { id: 'P11-1', title: '가상 기계 케이스', status: 'review', href: '/p11-1/' },
-      { id: 'P11-2', title: '공개 데이터셋 실습', status: 'planned' },
+      { id: 'P11-2', title: '공개 데이터셋 실습', status: 'review', href: '/p11-2/' },
       { id: 'P11-3', title: '현장 데이터 복기 가이드', status: 'planned' },
     ],
   },

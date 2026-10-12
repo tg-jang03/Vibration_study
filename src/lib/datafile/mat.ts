@@ -1,8 +1,9 @@
 /**
  * MATLAB MAT 파일 읽기 (P11-2 · LAB-DATA-01, D-052). 순수 함수 — 파일 바이트만 받아 숫자 배열을 돌려준다(서버 전송 없음).
- * - Level 5 (MATLAB 5.0 ~ v7, `save -v6`·`-v7`): 숫자 행렬(실수부)만 꺼낸다. 압축된 원소(miCOMPRESSED)는 zlib을 풀어 읽는다.
+ * - Level 5 (MATLAB 5.0 ~ v7, `save -v6`·`-v7`): 숫자 행렬(실수부)을 꺼낸다. 구조체·셀 안의 숫자 행렬은 이름을 붙여 펼친다.
+ *   압축된 원소(miCOMPRESSED)는 zlib을 풀어 읽는다.
  * - Level 4 (옛 형식): 숫자 행렬만.
- * - v7.3(HDF5)·문자·셀·구조체·희소 행렬은 건너뛴다 (v7.3은 오류로 알린다).
+ * - v7.3(HDF5)·객체·희소 행렬은 건너뛴다 (v7.3은 오류로 알린다). 문자 배열은 구조체 원소의 이름(Name 필드)으로만 쓴다.
  * 형식: MathWorks "MAT-File Format" 문서(Level 5 data element·tag·array flags 구조).
  */
 
@@ -113,22 +114,72 @@ function readName(v: DataView, t: Tag): string {
   return s;
 }
 
-/** miMATRIX 하나를 읽는다. 숫자 행렬이 아니면 null */
-function readMatrix(v: DataView, start: number, end: number, le: boolean): MatArray | null {
+/** 문자 배열의 글자 (miUTF8은 그대로, 나머지는 글자 코드) */
+function readText(v: DataView, t: Tag, le: boolean): string {
+  if (t.type === MI.UTF8) return new TextDecoder('utf-8').decode(new Uint8Array(v.buffer, v.byteOffset + t.data, t.nbytes)).replace(/\0+$/, '');
+  if (!BYTES[t.type]) return '';
+  return String.fromCharCode(...readNumbers(v, t.data, t.nbytes, t.type, le)).replace(/\0+$/, '');
+}
+
+interface Read {
+  arrays: MatArray[];
+  /** 문자 배열이면 그 글자 */
+  text?: string;
+}
+
+/** 구조체·셀 안으로 들어가는 깊이 한도 (이상한 파일에서 멈추지 않게) */
+const MAX_DEPTH = 6;
+
+/**
+ * miMATRIX 하나를 읽는다. 숫자 행렬은 그대로, 구조체·셀은 안의 숫자 행렬을 `이름.필드`·`이름(k).필드`·`이름{k}`로 펼친다.
+ * 구조체 원소에 문자 필드 Name이 있으면 그 원소의 숫자 필드 이름 앞에 붙인다 (예: Paderborn의 `vibration_1 (…Y(7).Data)`).
+ * 구조체·셀 안의 원소는 이름이 비어 있으므로 부모가 이름을 준다.
+ */
+function readMatrix(v: DataView, start: number, end: number, le: boolean, given?: string, depth = 0): Read {
   const flagsTag = readTag(v, start, le);
   const flags = v.getUint32(flagsTag.data, le);
   const cls = flags & 0xff;
   const dimsTag = readTag(v, flagsTag.next, le);
   const dims = Array.from(readNumbers(v, dimsTag.data, dimsTag.nbytes, dimsTag.type, le));
   const nameTag = readTag(v, dimsTag.next, le);
-  const name = readName(v, nameTag);
-  if (!NUMERIC_CLASS.has(cls)) return null;
+  const name = given ?? readName(v, nameTag);
   const n = dims.reduce((a, b) => a * b, 1);
-  if (n === 0) return { name, className: CLASS_NAME[cls], dims, data: new Float64Array(0) };
-  if (nameTag.next >= end) return null;
+  if (cls === 4) return { arrays: [], text: n > 0 && nameTag.next < end ? readText(v, readTag(v, nameTag.next, le), le) : '' };
+  if (cls === 1 || cls === 2) {
+    if (depth >= MAX_DEPTH) return { arrays: [] };
+    let off = nameTag.next;
+    let fields = [''];
+    if (cls === 2) {
+      const lenTag = readTag(v, off, le);
+      const fl = v.getInt32(lenTag.data, le);
+      const namesTag = readTag(v, lenTag.next, le);
+      fields = Array.from({ length: fl > 0 ? Math.floor(namesTag.nbytes / fl) : 0 }, (_, i) => readName(v, { ...namesTag, data: namesTag.data + i * fl, nbytes: fl }));
+      off = namesTag.next;
+    }
+    const arrays: MatArray[] = [];
+    for (let e = 0; e < n; e++) {
+      const own: MatArray[] = [];
+      let label = '';
+      for (const f of fields) {
+        if (off + 8 > end) break;
+        const t = readTag(v, off, le);
+        off = t.next;
+        if (t.type !== MI.MATRIX || t.nbytes === 0) continue;
+        const sub = cls === 1 ? `${name}{${e + 1}}` : n === 1 ? `${name}.${f}` : `${name}(${e + 1}).${f}`;
+        const r = readMatrix(v, t.data, t.data + t.nbytes, le, sub, depth + 1);
+        if (r.text !== undefined && /^name$/i.test(f)) label = r.text.trim();
+        own.push(...r.arrays);
+      }
+      arrays.push(...(label ? own.map((a) => ({ ...a, name: `${label} (${a.name})` })) : own));
+    }
+    return { arrays };
+  }
+  if (!NUMERIC_CLASS.has(cls)) return { arrays: [] };
+  if (n === 0) return { arrays: [{ name, className: CLASS_NAME[cls], dims, data: new Float64Array(0) }] };
+  if (nameTag.next >= end) return { arrays: [] };
   const realTag = readTag(v, nameTag.next, le);
   const data = readNumbers(v, realTag.data, realTag.nbytes, realTag.type, le);
-  return { name, className: CLASS_NAME[cls], dims, data: data.length === n ? data : data.slice(0, n) };
+  return { arrays: [{ name, className: CLASS_NAME[cls], dims, data: data.length === n ? data : data.slice(0, n) }] };
 }
 
 async function readElements(buf: Uint8Array, start: number, le: boolean, inflate: Inflate, out: MatArray[]) {
@@ -142,10 +193,7 @@ async function readElements(buf: Uint8Array, start: number, le: boolean, inflate
       off = t.data + t.nbytes; // 압축 원소는 8바이트 경계로 맞추지 않는다
       continue;
     }
-    if (t.type === MI.MATRIX && t.nbytes > 0) {
-      const m = readMatrix(v, t.data, t.data + t.nbytes, le);
-      if (m) out.push(m);
-    }
+    if (t.type === MI.MATRIX && t.nbytes > 0) out.push(...readMatrix(v, t.data, t.data + t.nbytes, le).arrays);
     off = t.next;
   }
 }

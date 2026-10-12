@@ -1,9 +1,11 @@
 import { deflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { averagedSpectrum, bestBand, defectLines, envelope, recordLength, scoreDefects, takeRecord } from './analysis';
+import { averagedSpectrum, bestBand, defectLines, envelope, floorOf, QUIET_RATIO, recordLength, runPipeline, scoreDefects, takeRecord } from './analysis';
 import { parseCsv } from './csv';
 import { EXAMPLE, exampleRates, exampleSignal, type ExampleKind } from './example';
-import { CWRU_DE, cwruLabel, readDataFile } from './index';
+import { CWRU_DE, cwruLabel, cwruSetup, datasetLabel, datasetSetup, paderbornLabel, readDataFile } from './index';
+import { fft } from '../dsp/fft';
+import { createRng } from '../dsp/random';
 import { parseMat } from './mat';
 import { parseWav } from './wav';
 
@@ -44,6 +46,22 @@ function matrix(name: string, rows: number, cols: number, data: Uint8Array, data
   })() : element(1, ascii(name));
   const body = cat(element(6, u32(cls, 0)), element(5, i32(rows, cols)), nameEl, element(dataType, data));
   return element(14, body);
+}
+/** 구조체(1×n): 원소마다 필드 순서대로 이름 없는 miMATRIX */
+function structMatrix(name: string, fields: string[], elements: Uint8Array[][]): Uint8Array {
+  const fl = 32;
+  const lenEl = new Uint8Array(8);
+  const lv = new DataView(lenEl.buffer);
+  lv.setUint32(0, (4 << 16) | 5, true);
+  lv.setInt32(4, fl, true);
+  const names = new Uint8Array(fields.length * fl);
+  fields.forEach((f, i) => names.set(ascii(f), i * fl));
+  const body = cat(element(6, u32(2, 0)), element(5, i32(1, elements.length)), element(1, ascii(name)), lenEl, element(1, names), ...elements.flat());
+  return element(14, body);
+}
+const charMatrix = (text: string) => matrix('', 1, text.length, new Uint8Array(Uint16Array.from(text, (c) => c.charCodeAt(0)).buffer), 4, 4);
+function cellMatrix(name: string, items: Uint8Array[]): Uint8Array {
+  return element(14, cat(element(6, u32(1, 0)), element(5, i32(1, items.length)), element(1, ascii(name)), ...items));
 }
 function matFile(elements: Uint8Array[], compress = false): Uint8Array {
   const head = new Uint8Array(128).fill(32);
@@ -118,6 +136,18 @@ describe('MAT Level 5', () => {
     v73.set(ascii('MATLAB 7.3 MAT-file'), 0);
     await expect(parseMat(v73, inflate)).rejects.toThrow(/v7.3/);
   });
+  it('구조체 · 셀 안의 숫자 행렬을 이름을 붙여 펼치고, 원소의 Name 필드를 앞에 붙인다', async () => {
+    const y = structMatrix('', ['Name', 'Data'], [
+      [charMatrix('force'), matrix('', 1, 300, f64(sine(300, 3, 100)))],
+      [charMatrix('vibration_1'), matrix('', 1, 1024, f64(sine(1024, 50, 1000)))],
+    ]);
+    const top = structMatrix('N15_M07_F10_KA04_1', ['Info', 'Y'], [[charMatrix('test rig'), y]]);
+    const cell = cellMatrix('c', [matrix('', 3, 1, f64([7, 8, 9]))]);
+    const arrs = await parseMat(matFile([top, cell], true), inflate);
+    expect(arrs.map((a) => a.name)).toEqual(['force (N15_M07_F10_KA04_1.Y(1).Data)', 'vibration_1 (N15_M07_F10_KA04_1.Y(2).Data)', 'c{1}']);
+    expect(arrs[1].data[7]).toBeCloseTo(Math.sin((2 * Math.PI * 50 * 7) / 1000), 12);
+    expect(Array.from(arrs[2].data)).toEqual([7, 8, 9]);
+  });
   it('Level 4 double 행렬', async () => {
     const head = i32(0, 3, 1, 0, 2);
     const bytes = cat(head, ascii('a\0'), f64([1.5, 2.5, 3.5]));
@@ -128,12 +158,21 @@ describe('MAT Level 5', () => {
 });
 
 describe('readDataFile', () => {
-  it('MAT: 벡터 채널 · RPM, f_s 없음 안내', async () => {
-    const ds = await readDataFile('105.mat', matFile([matrix('X105_DE_time', 2048, 1, f64(sine(2048, 30, 12000))), matrix('X105_FE_time', 2048, 1, f64(sine(2048, 30, 12000))), matrix('X105RPM', 1, 1, f64([1797]))]), inflate);
+  it('MAT: 벡터 채널 · RPM, f_s 없음 안내 (CWRU 번호면 cwruSetup이 f_s · 채널 · 베어링을 정한다)', async () => {
+    const mat = (tag: string) => matFile([matrix(`X${tag}_DE_time`, 2048, 1, f64(sine(2048, 30, 12000))), matrix(`X${tag}_FE_time`, 2048, 1, f64(sine(2048, 30, 12000))), matrix(`X${tag}RPM`, 1, 1, f64([1797]))]);
+    const ds = await readDataFile('105.mat', mat('105'), inflate);
     expect(ds.channels.map((c) => c.name)).toEqual(['X105_DE_time', 'X105_FE_time']);
     expect(ds.rpm).toBe(1797);
     expect(ds.fs).toBeNull();
-    expect(ds.notes.join(' ')).toMatch(/12 kHz/);
+    expect(ds.notes).toHaveLength(0);
+    expect(cwruSetup(ds)).toMatchObject({ fs: 12000, channel: 0, bearing: 'de' });
+    const fe = await readDataFile('283.mat', mat('283'), inflate);
+    expect(cwruSetup(fe)).toMatchObject({ fs: 12000, channel: 1, bearing: 'fe' });
+    const normal = await readDataFile('97.mat', mat('097'), inflate);
+    expect(cwruSetup(normal)?.fs).toBe(48000);
+    const other = await readDataFile('my_record.mat', mat('1'), inflate);
+    expect(cwruSetup(other)).toBeNull();
+    expect(other.notes.join(' ')).toMatch(/12 kHz 또는 48 kHz/);
   });
   it('WAV 16비트 두 채널', async () => {
     const ds = await readDataFile('rec.wav', wavFile(8000, [sine(400, 100, 8000, 0.5), sine(400, 200, 8000, 0.25)]));
@@ -154,14 +193,32 @@ describe('readDataFile', () => {
     const plain = parseCsv('1 2\n3 4\n5 6');
     expect(plain.timeColumn).toBe(0);
   });
-  it('CWRU 파일 번호 → 라벨 (12 kHz 구동측 · 정상 목록)', () => {
-    expect(cwruLabel('105.mat')?.label).toBe('내륜 결함 0.007″, 하중 0 hp, 약 1797 rpm');
-    expect(cwruLabel('C:/data/133.mat')?.fault).toBe('outer');
-    expect(cwruLabel('133.mat')?.load).toBe(3);
-    expect(cwruLabel('99.mat')?.label).toBe('정상, 하중 2 hp, 약 1750 rpm');
+  it('CWRU 파일 번호 → 라벨 (12 kHz 구동측 · 48 kHz 구동측 · 12 kHz 팬측 · 정상 목록)', () => {
+    expect(cwruLabel('105.mat')?.label).toBe('구동측 내륜 결함 0.007″, 하중 0 hp, 약 1797 rpm · 12 kHz 구동측 결함 목록 (12 kHz)');
+    expect(cwruLabel('C:/data/133.mat')).toMatchObject({ fault: 'outer', position: 6, load: 3, fs: 12000 });
+    expect(cwruLabel('99.mat')).toMatchObject({ set: 'normal', load: 2, rpm: 1750, fs: 48000 });
     expect(cwruLabel('224.mat')?.fault).toBe('ball');
-    expect(cwruLabel('109.mat')).toBeNull();
+    expect(cwruLabel('3005.mat')).toMatchObject({ fault: 'ball', size: 0.028, load: 0 });
+    expect(cwruLabel('109.mat')).toMatchObject({ set: 'de48', fault: 'inner', fs: 48000 });
+    expect(cwruLabel('217.mat')).toMatchObject({ set: 'de48', size: 0.021, load: 3 });
+    expect(cwruLabel('313.mat')).toMatchObject({ set: 'fe12', side: 'fe', position: 6, load: 0 });
+    expect(cwruLabel('316.mat')).toMatchObject({ position: 3, load: 1 });
+    expect(cwruLabel('157.mat')).toBeNull();
     expect(cwruLabel('rec.wav')).toBeNull();
+  });
+  it('Paderborn 파일 이름 → 설정(64 kHz · 진동 채널 · 회전수 · 6203)과 라벨', async () => {
+    const y = structMatrix('', ['Name', 'Data'], [
+      [charMatrix('phase_current_1'), matrix('', 1, 1024, f64(sine(1024, 50, 1000)))],
+      [charMatrix('vibration_1'), matrix('', 1, 1024, f64(sine(1024, 50, 1000)))],
+    ]);
+    const ds = await readDataFile('N09_M07_F04_KI21_3.mat', matFile([structMatrix('N09_M07_F04_KI21_3', ['Y'], [[y]])]), inflate);
+    expect(ds.notes).toHaveLength(0);
+    expect(datasetSetup(ds)).toMatchObject({ fs: 64000, channel: 1, bearing: 'pb', rpm: 900 });
+    expect(datasetLabel('C:/x/N09_M07_F04_KI21_3.mat')).toMatch(/KI21: 내륜 손상.*900 rpm · 부하 토크 0.7 Nm · 반경 하중 400 N · 측정 3/);
+    expect(paderbornLabel('N15_M01_F10_K002_20.mat')?.label).toMatch(/K002: 손상 없음/);
+    expect(paderbornLabel('N15_M07_F10_KB23_1.mat')?.label).toMatch(/외륜·내륜 손상/);
+    expect(datasetLabel('105.mat')).toMatch(/내륜 결함/);
+    expect(datasetLabel('rec.mat')).toBeNull();
   });
 });
 
@@ -204,11 +261,109 @@ describe('합성 예시와 분석 순서', () => {
     expect(sk).toBeLessThan(0.3);
     for (const s of scores) expect(s.ratio).toBeLessThan(4);
   });
+  it('빈 대역 빼기: AAF 위(신호 없음)에 튀는 값 몇 개만 있는 칸은 SK가 커도 고르지 않는다', () => {
+    // 2.5 kHz 위를 완전히 잘라 낸 잡음 + 아주 작은 튀는 값 3개 (f_s 12 kHz)
+    const fs = 12000;
+    const n = 1 << 15;
+    const rng = createRng(7);
+    const X = fft(Float64Array.from({ length: n }, () => rng.normal()));
+    const cut = Math.round((2500 / fs) * n);
+    for (let k = cut; k <= n - cut; k++) X.real[k] = X.imag[k] = 0;
+    const back = fft(X.real, X.imag.map((v) => -v));
+    const x = back.real.map((v) => v / n);
+    for (const i of [5000, 15000, 25000]) x[i] += 0.4;
+    const raw = bestBand(x, fs, 500, 7, Infinity);
+    expect(raw.kg.best.f1).toBeGreaterThan(2500);
+    expect(raw.kg.best.sk).toBeGreaterThan(50);
+    const { kg, empty } = bestBand(x, fs, 500);
+    expect(empty).toBeGreaterThan(0);
+    expect(kg.best.f2).toBeLessThanOrEqual(3000);
+    expect(kg.best.sk).toBeLessThan(1);
+  });
   it('평균 스펙트럼: 진폭 1 g 사인 → 0.707 g rms (Hann, bin 중앙)', () => {
     const fs = 1024;
     const x = Float64Array.from({ length: 8192 }, (_, i) => Math.sin((2 * Math.PI * 64 * i) / fs));
     const s = averagedSpectrum(x, fs, 1024);
     expect(s.amp[64]).toBeCloseTo(Math.SQRT1_2, 6);
     expect(s.frames).toBe(15);
+  });
+});
+
+// LAB-DATA-01 과제 답과 P11-2 본문이 인용하는 숫자 (랩과 같은 runPipeline)
+describe('LAB-DATA-01 과제 숫자', () => {
+  const rpm = EXAMPLE.rpm;
+  const run = (kind: ExampleKind, ch: 'de' | 'fe' = 'de', band?: [number, number]) => runPipeline(exampleSignal(kind)[ch], EXAMPLE.fs, rpm, CWRU_DE, { band });
+  const score = (p: ReturnType<typeof run>, key: string) => p.scores.find((s) => s.key === key)!;
+  const near = (p: ReturnType<typeof run>, f: number, tol: number) => {
+    let a = 0;
+    for (let k = 0; k < p.spectrum.freq.length; k++) if (Math.abs(p.spectrum.freq[k] - f) < tol) a = Math.max(a, p.spectrum.amp[k]);
+    return a;
+  };
+  it('예시 B(외륜): 스펙트럼의 BPFO 줄은 바닥의 약 3배 · 1X보다 낮고, 엔벨로프에서는 106.3 Hz가 약 200배', () => {
+    const p = run('outer');
+    expect(p.n).toBe(131072);
+    expect(p.autoBand).toEqual([1500, 4500]);
+    expect(p.kg.best.sk).toBeCloseTo(3.83, 2);
+    const floor = floorOf(p.spectrum.freq, p.spectrum.amp, 50, 1000);
+    expect(near(p, 107.4, 3) / floor).toBeGreaterThan(2.8);
+    expect(near(p, 107.4, 3) / floor).toBeLessThan(3.8);
+    expect(near(p, 107.4, 3)).toBeLessThan(near(p, 29.95, 1));
+    const b = score(p, 'bpfo');
+    expect(b.harmonics[0].f).toBeCloseTo(106.29, 1);
+    expect(b.ratio).toBeGreaterThan(190);
+    expect(b.ratio).toBeLessThan(215);
+    expect(b.harmonics[1].ratio).toBeGreaterThan(100);
+    expect(b.harmonics[2].ratio).toBeGreaterThan(80);
+  });
+  it('대역을 직접: 300 ~ 900 Hz는 약 25배, 2500 ~ 4500 Hz는 약 210배', () => {
+    const lo = score(run('outer', 'de', [300, 900]), 'bpfo').ratio;
+    expect(lo).toBeGreaterThan(22);
+    expect(lo).toBeLessThan(28);
+    const hi = score(run('outer', 'de', [2500, 4500]), 'bpfo').ratio;
+    expect(hi).toBeGreaterThan(195);
+    expect(hi).toBeLessThan(220);
+  });
+  it('예시 A · C · D: 정상 SK 0.04 · 모든 자리 4배 아래, 내륜 163.2 Hz와 ±1X 측대역, 볼 140.4 Hz와 FTF 11.8 Hz', () => {
+    const a = run('normal');
+    expect(a.kg.best.sk).toBeCloseTo(0.04, 2);
+    for (const s of a.scores) for (const h of s.harmonics) expect(h.ratio).toBeLessThan(4);
+    const c = score(run('inner'), 'bpfi');
+    expect(c.harmonics[0].f).toBeCloseTo(163.2, 0);
+    expect(c.ratio).toBeGreaterThan(100);
+    expect(c.sideband).toBeGreaterThan(30);
+    const d = run('ball');
+    expect(score(d, 'ball').harmonics[0].f).toBeCloseTo(140.4, 0);
+    expect(score(d, 'ball').ratio).toBeGreaterThan(80);
+    expect(score(d, 'ftf').harmonics[0].f).toBeCloseTo(11.8, 0);
+    expect(score(d, 'ftf').ratio).toBeGreaterThan(40);
+  });
+  it('예시 E: Kurtogram은 튐 대역(5.25 ~ 6 kHz, SK 약 33)을 고르고 거기서는 어느 줄도 6배를 넘지 않는다, 2.5 ~ 4.5 kHz에서는 BPFO 약 200배', () => {
+    const p = run('spiky');
+    expect(p.autoBand).toEqual([5250, 6000]);
+    expect(p.kg.best.sk).toBeGreaterThan(30);
+    expect(p.kg.best.sk).toBeLessThan(36);
+    for (const s of p.scores) expect(s.ratio).toBeLessThan(QUIET_RATIO);
+    const m = score(run('spiky', 'de', [2500, 4500]), 'bpfo');
+    expect(m.harmonics[0].f).toBeCloseTo(106.29, 1);
+    expect(m.ratio).toBeGreaterThan(190);
+    expect(m.ratio).toBeLessThan(220);
+  });
+  it('f_s를 잘못 넣으면(12 kHz 기록을 48 kHz로): 1X가 4배 자리(약 120 Hz)에, 표에서는 볼 3배 칸만 우연히 선다', () => {
+    const w = runPipeline(exampleSignal('outer').de, 48000, rpm, CWRU_DE);
+    let best = { f: 0, a: 0 };
+    for (let k = 2; k < w.spectrum.freq.length && w.spectrum.freq[k] < 200; k++) if (w.spectrum.amp[k] > best.a) best = { f: w.spectrum.freq[k], a: w.spectrum.amp[k] };
+    expect(Math.abs(best.f - 4 * (rpm / 60))).toBeLessThan(w.spectrum.df);
+    const ball = score(w, 'ball');
+    expect(ball.ratio).toBeLessThan(QUIET_RATIO);
+    expect(ball.harmonics[2].f).toBeCloseTo(425.2, 0);
+    expect(ball.harmonics[2].ratio).toBeGreaterThan(100);
+    for (const k of ['bpfo', 'bpfi', 'ftf']) expect(score(w, k).ratio).toBeLessThan(QUIET_RATIO);
+  });
+  it('예시 B 팬측: 대역이 2.2 kHz 쪽(1.5 ~ 3 kHz)으로, BPFO 바닥 대비는 구동측의 절반 아래', () => {
+    const p = run('outer', 'fe');
+    expect(p.autoBand).toEqual([1500, 3000]);
+    const r = score(p, 'bpfo').ratio;
+    expect(r).toBeGreaterThan(80);
+    expect(r).toBeLessThan(100);
   });
 });

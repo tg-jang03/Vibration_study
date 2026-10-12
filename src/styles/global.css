@@ -430,6 +430,17 @@ main.container {
   height: 1.05rem;
 }
 
+.param-number input {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .param-hint {
   color: var(--text-muted);
   font-size: 0.78rem;
@@ -1066,3 +1077,34 @@ main.container {
 .figure-zoom .fig-title { font-size: 14px; font-weight: 700; fill: var(--text); }
 .figure-zoom .fig-note { font-size: 13px; }
 .figure-zoom .fig-bold { font-weight: 700; }
+
+/* 내 파일 분석기 (LAB-DATA-01, P11-2, 2026-10-12 추가): 파일 열기 단추 · 안내 */
+.file-open {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.file-open .lab-note {
+  margin: 0;
+}
+
+.file-open-button {
+  position: relative;
+  overflow: hidden;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.9rem;
+}
+
+.file-open-button input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-notes {
+  margin: 0;
+  padding-left: 1.1rem;
+}
