@@ -5,7 +5,7 @@
  * 새 자료를 더할 때: 다음 번호(맨 아래 + 1, 한 번 쓴 ID는 다시 쓰지 않는다)로 한 줄 추가 → 페이지에서 `['R-xx', '이 페이지에서 쓴 곳']`.
  * - url은 원문(공식 페이지·DOI·공개 PDF)만 넣는다. 확인하지 못한 주소는 넣지 않는다 — 없으면 화면에 "찾아보기"(검색) 링크가 붙는다.
  * - 유료 규격은 개념만 요약하고 본문·표·경계값은 옮기지 않는다 (I-009) — note에 적는다.
- * 다음 번호: R-89
+ * 다음 번호: R-90
  */
 
 export type RefKind = 'book' | 'paper' | 'standard' | 'web' | 'dataset';
@@ -128,6 +128,7 @@ export const REFERENCES: Reference[] = [
   { id: 'R-86', kind: 'standard', authors: 'ISO', title: 'ISO 21940-11 — Mechanical vibration: Rotor balancing, Part 11: Procedures and tolerances for rotors with rigid behaviour', source: 'ISO', year: '2016', about: '밸런스 등급 G와 허용 잔류 불평형의 정의(e_per = G/Ω), 강성 로터의 허용값 배분 (옛 ISO 1940-1)', note: STD_NOTE },
   { id: 'R-87', kind: 'paper', authors: 'W. C. Foiles, P. E. Allaire, E. J. Gunter', title: 'Review: Rotor Balancing', source: 'Shock and Vibration 5(5–6)', year: '1998', about: '영향계수법과 모달 밸런싱의 원리, 2면·다면 해법의 정리' },
   { id: 'R-88', kind: 'book', authors: 'V. Wowk', title: 'Machinery Vibration: Balancing', source: 'McGraw-Hill', year: '1995', about: '현장 밸런싱 절차 — 시험추 크기, 1면·2면, 위상 없는 방법, 분할추' },
+  { id: 'R-89', kind: 'book', authors: 'J. Piotrowski', title: 'Shaft Alignment Handbook', source: 'CRC Press', year: '2006', about: '오정렬의 표기(offset·angularity), rim-face·reverse·레이저 측정, 브래킷 처짐, 소프트 풋, 열성장과 냉간 목표·열간 확인' },
 ];
 
 export const REF_BY_ID: Record<string, Reference> = Object.fromEntries(REFERENCES.map((r) => [r.id, r]));
