@@ -5,6 +5,9 @@ import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
 import { createWindow, windowProperties, type WindowType } from '../../lib/dsp/window';
 import { fft, zeroPad } from '../../lib/dsp/fft';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/WindowComparisonLab';
 
 /**
  * LAB-WIN-02 윈도우 비교: 메인로브 폭과 사이드로브 높이 (P2-5, Contents §5-1).
@@ -16,15 +19,15 @@ import { fft, zeroPad } from '../../lib/dsp/fft';
 
 type Win = 'uniform' | 'hann' | 'flatTop' | 'blackmanHarris' | 'hamming';
 const WINDOW_OPTIONS: ParamOption<Win>[] = [
-  { value: 'hann', label: 'Hann (분석기 기본값)' },
-  { value: 'uniform', label: '윈도우 없음 (Uniform)' },
-  { value: 'flatTop', label: 'Flat top (진폭 측정용)' },
-  { value: 'blackmanHarris', label: 'Blackman-Harris (작은 성분 찾기용)' },
-  { value: 'hamming', label: 'Hamming (Hann과 비슷, 첫 사이드로브가 더 낮음)' },
+  { value: 'hann', label: k('Hann (분석기 기본값)') },
+  { value: 'uniform', label: k('윈도우 없음 (Uniform)') },
+  { value: 'flatTop', label: k('Flat top (진폭 측정용)') },
+  { value: 'blackmanHarris', label: k('Blackman-Harris (작은 성분 찾기용)') },
+  { value: 'hamming', label: k('Hamming (Hann과 비슷, 첫 사이드로브가 더 낮음)') },
 ];
 const NAME: Record<Win, string> = {
   hann: 'Hann',
-  uniform: '윈도우 없음',
+  uniform: k('윈도우 없음'),
   flatTop: 'Flat top',
   blackmanHarris: 'Blackman-Harris',
   hamming: 'Hamming',
@@ -63,62 +66,78 @@ function analyze(type: WindowType) {
   };
 }
 
-export default function WindowComparisonLab() {
+export default function WindowComparisonLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [winA, setWinA] = useState<Win>('hann');
   const [winB, setWinB] = useState<Win>('uniform');
   const a = useMemo(() => analyze(winA), [winA]);
   const b = useMemo(() => analyze(winB), [winB]);
+  const nameA = tr(NAME[winA]);
+  const nameB = tr(NAME[winB]);
+  const options = WINDOW_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }));
 
   const timeSeries: PlotSeries[] = [
-    { x: a.time, y: a.shape, name: `A: ${NAME[winA]}`, color: '#38bdf8', width: 2 },
-    { x: b.time, y: b.shape, name: `B: ${NAME[winB]}`, color: '#f59e0b', width: 2 },
+    { x: a.time, y: a.shape, name: `A: ${nameA}`, color: '#38bdf8', width: 2 },
+    { x: b.time, y: b.shape, name: `B: ${nameB}`, color: '#f59e0b', width: 2 },
   ];
   const freqSeries: PlotSeries[] = [
-    { x: a.offset, y: a.db, name: `A: ${NAME[winA]}`, color: '#38bdf8', width: 1.6 },
-    { x: b.offset, y: b.db, name: `B: ${NAME[winB]}`, color: '#f59e0b', width: 1.6 },
+    { x: a.offset, y: a.db, name: `A: ${nameA}`, color: '#38bdf8', width: 1.6 },
+    { x: b.offset, y: b.db, name: `B: ${nameB}`, color: '#f59e0b', width: 1.6 },
   ];
 
   const controls = (
     <>
-      <ParamSelect label="윈도우 A" value={winA} options={WINDOW_OPTIONS} onChange={setWinA} />
-      <ParamSelect label="윈도우 B" value={winB} options={WINDOW_OPTIONS} onChange={setWinB} />
+      <ParamSelect label={tr`윈도우 A`} value={winA} options={options} onChange={setWinA} />
+      <ParamSelect label={tr`윈도우 B`} value={winB} options={options} onChange={setWinB} />
     </>
   );
 
   const readouts = (
     <ReadoutTable
       rows={[
-        { label: `A ${NAME[winA]}: 메인로브 반폭 (첫 0까지)`, value: a.halfWidth, unit: 'bin', sig: 3 },
-        { label: `A ${NAME[winA]}: 가장 높은 사이드로브`, value: a.side, unit: 'dB', sig: 3 },
-        { label: `A ${NAME[winA]}: 최대 가리비 손실`, value: a.scallop, unit: 'dB', sig: 3 },
-        { label: `B ${NAME[winB]}: 메인로브 반폭 (첫 0까지)`, value: b.halfWidth, unit: 'bin', sig: 3 },
-        { label: `B ${NAME[winB]}: 가장 높은 사이드로브`, value: b.side, unit: 'dB', sig: 3 },
-        { label: `B ${NAME[winB]}: 최대 가리비 손실`, value: b.scallop, unit: 'dB', sig: 3 },
+        { label: tr`A ${nameA}: 메인로브 반폭 (첫 0까지)`, value: a.halfWidth, unit: 'bin', sig: 3 },
+        { label: tr`A ${nameA}: 가장 높은 사이드로브`, value: a.side, unit: 'dB', sig: 3 },
+        { label: tr`A ${nameA}: 최대 가리비 손실`, value: a.scallop, unit: 'dB', sig: 3 },
+        { label: tr`B ${nameB}: 메인로브 반폭 (첫 0까지)`, value: b.halfWidth, unit: 'bin', sig: 3 },
+        { label: tr`B ${nameB}: 가장 높은 사이드로브`, value: b.side, unit: 'dB', sig: 3 },
+        { label: tr`B ${nameB}: 최대 가리비 손실`, value: b.scallop, unit: 'dB', sig: 3 },
       ]}
     />
   );
 
   const tasks: LabTask[] = [
     {
-      question: 'A를 Hann, B를 윈도우 없음으로 두고 아래 그래프를 보세요. 메인로브 폭과 사이드로브 높이는 각각 어느 쪽이 유리한가요?',
-      answer: '메인로브는 윈도우 없음이 좁고(±1 bin, Hann ±2 bin), 사이드로브는 Hann이 훨씬 낮습니다(−31.5 dB vs −13.3 dB). 가까운 두 성분 가르기에는 좁은 쪽이, 큰 성분 옆 작은 성분 찾기에는 낮은 쪽이 유리합니다.',
+      question: tr`A를 Hann, B를 윈도우 없음으로 두고 아래 그래프를 보세요. 메인로브 폭과 사이드로브 높이는 각각 어느 쪽이 유리한가요?`,
+      answer: tr`메인로브는 윈도우 없음이 좁고(±1 bin, Hann ±2 bin), 사이드로브는 Hann이 훨씬 낮습니다(−31.5 dB vs −13.3 dB). 가까운 두 성분 가르기에는 좁은 쪽이, 큰 성분 옆 작은 성분 찾기에는 낮은 쪽이 유리합니다.`,
     },
     {
-      question: 'B를 Flat top으로 바꾸세요. 가리비 손실과 메인로브 폭은 어떤가요?',
-      answer: '가리비 손실은 약 0.01 dB로 거의 없지만, 메인로브가 ±5 bin으로 가장 넓습니다. 진폭을 정확히 읽을 때 쓰고, 가까운 성분을 가를 때는 쓰지 않습니다.',
+      question: tr`B를 Flat top으로 바꾸세요. 가리비 손실과 메인로브 폭은 어떤가요?`,
+      answer: tr`가리비 손실은 약 0.01 dB로 거의 없지만, 메인로브가 ±5 bin으로 가장 넓습니다. 진폭을 정확히 읽을 때 쓰고, 가까운 성분을 가를 때는 쓰지 않습니다.`,
     },
     {
-      question: 'B를 Blackman-Harris로 바꾸세요. Hann과 비교해 얻는 것과 잃는 것은?',
-      answer: '사이드로브가 −92 dB까지 내려가 큰 성분 옆의 아주 작은 성분이 보이지만(본문 그림 7), 메인로브가 ±4 bin으로 Hann의 두 배입니다.',
+      question: tr`B를 Blackman-Harris로 바꾸세요. Hann과 비교해 얻는 것과 잃는 것은?`,
+      answer: tr`사이드로브가 −92 dB까지 내려가 큰 성분 옆의 아주 작은 성분이 보이지만(본문 그림 7), 메인로브가 ±4 bin으로 Hann의 두 배입니다.`,
     },
   ];
 
   return (
-    <LabFrame id="LAB-WIN-02" title="윈도우 비교: 메인로브와 사이드로브" controls={controls} readouts={readouts} tasks={tasks}>
-      <h4>윈도우 모양 (프레임 시작 0 → 끝 1)</h4>
-      <Plot series={timeSeries} x={{ label: '프레임 안의 위치' }} y={{ label: '가중치', range: [0, 1.1] }} height={200} ariaLabel="윈도우 가중치 모양" />
-      <h4>성분 하나가 그려지는 모양 (성분에서 ±12 bin)</h4>
-      <Plot series={freqSeries} x={{ label: '성분에서 떨어진 거리 [bin]' }} y={{ label: '[dB]', range: [-130, 5] }} height={250} ariaLabel="윈도우의 주파수 모양" />
+    <LabFrame lang={lang} id="LAB-WIN-02" title={tr`윈도우 비교: 메인로브와 사이드로브`} controls={controls} readouts={readouts} tasks={tasks}>
+      <h4>{tr`윈도우 모양 (프레임 시작 0 → 끝 1)`}</h4>
+      <Plot
+        series={timeSeries}
+        x={{ label: tr`프레임 안의 위치` }}
+        y={{ label: tr`가중치`, range: [0, 1.1] }}
+        height={200}
+        ariaLabel={tr`윈도우 가중치 모양`}
+      />
+      <h4>{tr`성분 하나가 그려지는 모양 (성분에서 ±12 bin)`}</h4>
+      <Plot
+        series={freqSeries}
+        x={{ label: tr`성분에서 떨어진 거리 [bin]` }}
+        y={{ label: '[dB]', range: [-130, 5] }}
+        height={250}
+        ariaLabel={tr`윈도우의 주파수 모양`}
+      />
     </LabFrame>
   );
 }

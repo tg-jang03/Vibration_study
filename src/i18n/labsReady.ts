@@ -3,4 +3,13 @@
  * 랩을 번역하면 여기와 src/pages/en/lab/[slug].astro에 한 줄씩 더한다 (테스트가 빠진 줄을 잡는다).
  * 브라우저 쪽(LabFrame)도 읽으므로 이 파일은 가볍게 둔다 (페이지 목록 glob은 routes.ts에).
  */
-export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set(['SamplingLab', 'AafLab', 'AdcLab']);
+export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
+  // P2-3
+  'SamplingLab',
+  'AafLab',
+  'AdcLab',
+  // P2-5
+  'WindowLeakageLab',
+  'WindowComparisonLab',
+  'WindowCorrectionLab',
+]);

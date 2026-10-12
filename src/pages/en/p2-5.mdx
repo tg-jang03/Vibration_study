@@ -1,0 +1,299 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-5 Windows
+description: Why a bar spreads out (leakage) and comes out low (scalloping loss) when a component lies between bins, what a window does and what it costs, choosing a window by its main lobe and side lobes, and amplitude versus energy correction
+sectionId: P2-5
+source: p2-5.mdx
+sourceHash: f4627e86da
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import WindowLeakageLab from '../../components/labs/WindowLeakageLab';
+import WindowComparisonLab from '../../components/labs/WindowComparisonLab';
+import WindowCorrectionLab from '../../components/labs/WindowCorrectionLab';
+import * as F from '../../figures/p2-5';
+
+# 2-5 Windows: why bars spread out and come out low
+
+A vibration of amplitude 1 is shaking steadily at 60.5 Hz. Yet the spectrum (Δf = 1 Hz) shows not one bar but two bars of about 0.64, at 60 Hz and 61 Hz, with a row of small bars trailing off on either side. Why does an amplitude of 1 look like 0.64, and where do the side bars come from?
+
+It is not a machine problem, and the analyzer is not broken. It comes from the way the signal is cut into 1-second pieces for the calculation. This page covers why it happens, and the way to reduce it: the **window**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain with a picture why bars spread sideways (leakage) and come out low (scalloping loss) when a component lies between two bins.
+2. You know what a window does and what it costs in return.
+3. You can compare windows by their main lobe and side lobes and pick one that fits the purpose.
+4. You know why amplitude correction (ACF) is right for sines and energy correction (ECF) is right for noise.
+
+</Callout>
+
+---
+
+## 1. Leakage: when a component lies between bins
+
+### 1.1 The FFT assumes the frame repeats
+
+In P2-2 we said that a DFT bin is "a template that repeats exactly $k$ times within the measurement time $T$". Turned around, this means the FFT is effectively computing **a signal in which the measured frame repeats identically before and after**. If the signal repeats a whole number of times within the frame, this assumption holds; otherwise it does not.
+
+<Figure {...F.frameEnds} />
+
+When the end of the frame does not meet the start of the next repetition, as in the bottom of Figure 1, the signal the FFT sees has a sudden break at every boundary. A sudden kink like this cannot be made from a single sine; several frequencies have to be mixed. As a result the energy cannot gather at the one original frequency and scatters into the surrounding bins.
+
+### 1.2 In the spectrum: spread out and lowered
+
+<Figure {...F.leakage} />
+
+Two things happen together in Figure 2.
+
+- **It leaks sideways**: the energy spreads into several bins around the original frequency. This is called <strong>spectral leakage</strong>. Drawn in dB (bottom of Figure 2), it spreads so far that −29 dB (about 1/30) is still left 10 bins away.
+- **The top is shaved off**: bars stand only every 1 Hz, so the true peak (60.5 Hz) hides between two bars. Seeing only at intervals like this, as if peering out through the gaps in a fence, is called the <strong>picket fence effect</strong>, and the amount by which the highest bar comes out lower than the real value because of it is called the <strong>scalloping loss</strong>. Without a window, a component exactly halfway between bins reads 0.64 instead of 1 — 36 % low.
+
+<Callout type="example" title="Real components almost always lie between bins">
+
+The 1X of a pump running at 1789 rpm is $1789/60 = 29.82$ Hz. Measured with $\Delta f$ = 0.25 Hz, $29.82 / 0.25 = 119.27$, that is, 0.27 bin away from bin 119. The running speed will almost never land exactly on a bin, so **the spectra you actually look at almost always contain a little leakage and scalloping loss.**
+
+</Callout>
+
+---
+
+## 2. Windows: turning both ends of the frame down to 0
+
+### 2.1 Removing the break
+
+The problem was the signal breaking at the frame boundary. So **make the signal smaller and smaller toward both ends, until the ends reach 0**. If both ends are 0, the frame can be repeated any number of times without a break at the boundary.
+
+<Callout type="term" title="Window">
+
+A weight $w$ multiplied onto each sample in the frame before the FFT. The weighted signal is $x_w[n] = x[n]\,w[n]$. Turning nothing down at all (all weights equal to 1) also counts as a window and is called the <strong>Uniform (rectangular) window</strong>, or "no window". The most widely used one is the bell-shaped <strong>Hann window</strong>, the default on most analyzers (it is often written "Hanning" as well).
+
+</Callout>
+
+<Figure {...F.windowTime} />
+
+### 2.2 What you gain and what you lose
+
+<Figure {...F.uniformVsHann} />
+
+In Figure 4 the Hann window greatly reduces the far leakage (at 70 Hz, −29 dB → −69 dB) and also brings the highest bar from 0.64 → 0.85, closer to the real value of 1.
+
+There is a price, too. **The central peak gets wider.** Because the two ends are turned down, the part of the 1-second frame that is really "seen well" is effectively shorter. As we saw in P2-4, looking for a shorter time makes frequency separation coarser, so the peak gets wider. The Hann peak is twice as wide as the one with no window (the "Hann window (preview)" box in P2-4).
+
+<Callout type="try">
+
+1. In the starting state (no window, δ = 0 bin), check that a single bar of 1.000 stands at 60 Hz. The readout "10 bins away" is −120 dB (effectively 0).
+2. Slowly raise δ to 0.5. How do the highest bar, the scalloping loss and the size 10 bins away change?
+3. At δ = 0.5, switch the window from Hann → Flat top and read the highest bar each time. In the time waveform, also watch the outline of the weighted signal take on the shape of the window.
+4. Turn on "Show in dB" and compare no window with Blackman-Harris.
+
+</Callout>
+
+<WindowLeakageLab client:load lang="en" />
+
+In step 2, with no window the highest bar is shaved to 0.64 (−3.9 dB) and −29 dB is still left at 70 Hz. In step 3, Hann comes up to 0.85 and Flat top to 0.999. Drawing the same thing while moving the component's position continuously gives Figure 5.
+
+<Figure {...F.scallop} />
+
+| Window | Highest bar with the component exactly halfway between bins | Max. scalloping loss |
+|---|---|---|
+| No window (Uniform) | 0.637 (−36.3 %) | 3.92 dB |
+| Hann | 0.849 (−15.1 %) | 1.42 dB |
+| Blackman-Harris | 0.909 (−9.1 %) | 0.83 dB |
+| Flat top | 0.999 (−0.1 %) | below 0.01 dB |
+
+<Callout type="field" title="When you read bar height as amplitude">
+
+- If a 4.5 mm/s 1X lies exactly halfway between bins, its bar in a Hann-windowed spectrum can look as low as $4.5 \times 0.85 \approx 3.8$ mm/s.
+- When comparing the same machine over time, keep the window and the number of lines unchanged, so that bar heights can be compared with each other.
+- When the amplitude itself matters (comparison with reference values, sensor calibration, measuring 1X before balancing to correct unbalance, and so on), use Flat top.
+
+</Callout>
+
+---
+
+## 3. Choosing a window: main lobe and side lobes
+
+### 3.1 Looking at a window's "shape" in frequency
+
+Each window draws a single component with a different shape. It is easier to compare them if that shape is split into two parts with their own names.
+
+<Callout type="term" title="Main lobe and side lobes">
+
+- <strong>Main lobe</strong>: the central peak at the component's position. Its width is given as the distance to the first zero (the half-width). The narrower it is, the less two close components merge.
+- <strong>Side lobes</strong>: the row of small peaks outside the main lobe. They are exactly the "far leakage" of section 1. The lower they are, the less a small component next to a large one is hidden.
+
+</Callout>
+
+<Figure {...F.kernelShapes} />
+
+As Figure 6 shows, **the harder a window turns down the ends, the lower its side lobes and the wider its main lobe** tend to be. No window improves both at once, so you choose according to the purpose.
+
+### 3.2 A small component next to a large one
+
+Side-lobe height becomes a real problem when a very small component sits right next to a large one. If the leakage spilled by the large component is bigger than the small component, the small one is buried under it.
+
+<Figure {...F.dynamicRange} />
+
+This "difference in size over which a large and a small component can be seen at the same time" is called the <strong>dynamic range</strong>. If the small component is very small, like −70 dB, you need Blackman-Harris with its very low side lobes; at around −50 dB, Hann is enough.
+
+<Callout type="try">
+
+1. Set A = Hann and B = no window, and look at the graph below. Which window has the narrower main lobe, and which has the lower side lobes? Check with the numbers in the readout table too.
+2. Change B to Flat top. Compare its scalloping loss and main-lobe half-width with Hann's.
+3. Change B to Blackman-Harris. Compared with Hann, what do you gain and what do you lose?
+
+</Callout>
+
+<WindowComparisonLab client:load lang="en" />
+
+Collecting the readouts gives the table below. The key point is that the order from narrowest main lobe and the order from lowest side lobes are almost the reverse of each other.
+
+| Window | Main-lobe half-width | Highest side lobe | Max. scalloping loss |
+|---|---|---|---|
+| No window (Uniform) | 1 bin | −13.3 dB | 3.92 dB |
+| Hann | 2 bins | −31.5 dB | 1.42 dB |
+| Blackman-Harris | 4 bins | −92 dB | 0.83 dB |
+| Flat top | 5 bins | −93 dB | below 0.01 dB |
+
+### 3.3 Choosing by purpose
+
+| What you want to do | Window | Why |
+|---|---|---|
+| Routine checks (most measurements) | Hann | A good balance of leakage, peak width and height error |
+| Reading amplitude accurately (comparison with reference values, calibration, 1X before balancing) | Flat top | Scalloping loss below 0.01 dB. In exchange, the widest peak |
+| Finding a very small component next to a large one | Blackman-Harris | Side lobes at −92 dB. In exchange, a peak twice as wide as Hann's |
+| Separating two close components | Hann (or no window) + a longer measurement time | The narrower peak wins (P2-4: 3.5 bins, 2 bins) |
+| A short impact that starts and ends within the frame | No window | Its ends are already 0, so there is no break. Applying a window shaves down an impact near the edge |
+| A measurement set up so that a whole number of cycles fits in the frame | No window | No break, so no leakage (order tracking, which samples in step with shaft rotation, P5-4) |
+
+<Callout type="warn" title="Do not separate close components with Flat top">
+
+Flat top gives accurate amplitudes, but its main lobe is ±5 bins, so by the P2-4 criterion two components must be about 8 bins apart before they separate. Two components 1 Hz apart can be separated in 3.5 seconds with Hann, but Flat top needs 8 seconds.
+
+</Callout>
+
+---
+
+## 4. Restoring the shaved height: amplitude correction and energy correction
+
+### 4.1 Why are there two corrections?
+
+Multiplying by a window makes the signal smaller overall, by as much as the ends were turned down. So the analyzer multiplies the result by a correction factor to restore the original size. But the factor splits in two, depending on what you take as the "original size".
+
+<Figure {...F.windowAverages} />
+
+- **The bar height of a sine** shrinks by the mean of the weight $w$. Hann has a mean of 0.5, so the bar is halved, and multiplying by 2 restores it. This is the <strong>amplitude correction factor (ACF)</strong>.
+- **A broadly spread signal such as noise** is sized not by a single bar but by its total energy (the sum of squares). Energy shrinks by the mean of $w^2$, so for Hann you have to multiply by $1/\sqrt{0.375} \approx 1.63$ to get the total RMS right. This is the <strong>energy correction factor (ECF)</strong>.
+
+$$
+\mathrm{ACF} = \frac{1}{\overline{w}},\qquad
+\mathrm{ECF} = \frac{1}{\sqrt{\overline{w^2}}},\qquad
+\mathrm{ENBW} = \left(\frac{\mathrm{ACF}}{\mathrm{ECF}}\right)^2\ [\mathrm{bin}]
+$$
+
+A bar drawn over a symbol, as in $\overline{w}$, means the mean over the whole frame. The third number, the <strong>equivalent noise bandwidth (ENBW)</strong>, is "how many bins' worth of noise one bin actually collects when noise is present". For Hann it is 1.5 bins, so in an amplitude-corrected spectrum the noise bars look 1.5 times larger in power than they really are.
+
+| Window | ACF | ECF | ENBW |
+|---|---|---|---|
+| No window (Uniform) | 1.000 | 1.000 | 1.00 bin |
+| Hann | 2.000 | 1.633 | 1.50 bins |
+| Blackman-Harris | 2.787 | 1.969 | 2.00 bins |
+| Flat top | 4.639 | 2.389 | 3.77 bins |
+
+<Callout type="example" title="Using the corrections the wrong way round (Hann)">
+
+- **ECF on a sine**: a bar of 0.5 times 1.633 gives 0.816. The amplitude reads 18 % low.
+- **ACF on noise**: the total RMS comes out $2/1.633 \approx 1.22$ times too large (+22 %), and 1.5 times (= ENBW) too large in power.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the starting state (sine, Hann, ACF), check that the highest bar is 1.000. What does it become if you switch to "No correction"?
+2. Change the correction to ECF. What is the bar-height error in %?
+3. Change the signal to noise and compare ACF with ECF. Which correction brings the total RMS to 1?
+4. Change the window to Flat top and repeat steps 1–3. Connect the reason its factors are larger than Hann's to Figure 8.
+
+</Callout>
+
+<WindowCorrectionLab client:load lang="en" />
+
+To sum up: **use amplitude correction to read the amplitude of sine components (bars such as 1X and 2X), and energy correction to measure the size of broadly spread noise.** The display that gives the size of noise as a value per Hz (PSD) is covered in P2-7.
+
+---
+
+## 5. Other windows: for impact tests
+
+<Callout type="field" title="Hammer tests use dedicated windows">
+
+In an impact test (P9-1), where you tap a structure briefly with a hammer to find its natural frequencies, two dedicated windows are used.
+
+- **Force window**: keeps only the instant of impact in the hammer force signal and sets the remaining noise to 0.
+- **Exponential window**: when the response has not fully died away by the end of the frame, multiplying by $w(t) = e^{-t/\tau}$ forces the end down. In exchange, the window artificially adds damping, so that amount has to be subtracted from the measured damping ratio ($\zeta$, the number that expresses how quickly the shaking dies away, P1-3).
+
+$$
+\zeta_{\text{true}} \approx \zeta_{\text{measured}} - \frac{1}{\tau\,\omega_n}
+$$
+
+If you used $\tau$ = 0.2 s at a natural frequency of 50 Hz ($\omega_n = 2\pi \times 50 \approx 314$ rad/s), the damping ratio added by the window is $1/(0.2 \times 314) \approx 0.016$. If the measured value is 0.036, the true value is about 0.020. If you do not subtract it, you report the damping as 1.8 times the real value.
+
+</Callout>
+
+---
+
+## 6. Summary
+
+| Topic | Remember |
+|---|---|
+| Leakage | When a component lies between bins, the frame boundary breaks and energy leaks into the surrounding bins |
+| Scalloping loss | The highest bar comes out low. Up to −36 % with no window, −15 % with Hann, almost 0 with Flat top |
+| Window | Turns both ends of the frame down to 0 to remove the break. The price is a wider peak |
+| Main lobe · side lobes | Width of the central peak (separating close components) vs height of the outer peaks (finding small components) |
+| Choosing | Routine: Hann · amplitude: Flat top · small components: Blackman-Harris · impacts within the frame: no window |
+| Correction | Sine bars: ACF ($1/\overline{w}$); size of noise: ECF ($1/\sqrt{\overline{w^2}}$). Hann 2.000 · 1.633 |
+| ENBW | The width of noise one bin collects. Hann 1.5 bins |
+
+---
+
+## 7. Check yourself
+
+<details>
+<summary><strong>Q1. In a spectrum measured with Δf = 0.5 Hz, a 1X of 2.0 mm/s is at 24.75 Hz. How high does its bar look with a Hann window?</strong></summary>
+
+$24.75 / 0.5 = 49.5$, so it lies exactly halfway between bins. It takes Hann's maximum scalloping loss (×0.849) and appears as about 1.7 mm/s. If you need the exact amplitude, measure again with Flat top or try a different Δf.
+</details>
+
+<details>
+<summary><strong>Q2. You want to see whether there is a small −80 dB component 10 bins away from a large 1X. Which window do you use?</strong></summary>
+
+Blackman-Harris. With no window the leakage at that spot is around −30 dB, and even with Hann it is around −70 dB, so a −80 dB component is buried. Blackman-Harris has side lobes at −92 dB, so the component shows up. Flat top also has low side lobes, but its peak is wider, so the closer the component, the better Blackman-Harris is.
+</details>
+
+<details>
+<summary><strong>Q3. The bar of a sine measured with a Hann window comes out at 0.82 times the real amplitude. What do you suspect?</strong></summary>
+
+Most likely energy correction (ECF = 1.633) is applied instead of amplitude correction (ACF = 2): $1.633/2 = 0.816$. This is about the same size as the scalloping loss you get when a component lies between bins (down to 0.849 at worst), so check the analyzer's correction setting first.
+</details>
+
+<details>
+<summary><strong>Q4. With Δf = 0.25 Hz, can you separate two components 1 Hz apart using Flat top?</strong></summary>
+
+The spacing is only $1/0.25 = 4$ bins, while Flat top needs about 8 bins, so they merge into one. Switch to Hann (about 3.5 bins) and they separate; if you must use Flat top, lower Δf to 0.125 Hz or less (a measurement time of 8 seconds or more).
+</details>
+
+<details>
+<summary><strong>Q5. You measured a short impact that starts and ends within the frame with a Hann window, and its size comes out different every time, even though it is the same impact. Why?</strong></summary>
+
+Hann turns the edges of the frame down toward 0, so an impact in the middle of the frame is reflected as it is, while one near the edge is reflected smaller. An impact that ends within the frame does not break at the boundary in the first place, so measure it with no window (Uniform).
+</details>
+
+The next page (P2-6) looks at why the floor of a spectrum measured once is ragged, and what **averaging** several measurements improves and what it leaves unchanged.
+
+## References
+
+<References items={[
+  ['R-06', 'Comparison of windows: main lobe, side lobes and scalloping loss'],
+  ['R-05', 'Window sums (S₁ · S₂ · CG · ENBW) and normalization — the reference used to verify this site\'s calculations'],
+]} />

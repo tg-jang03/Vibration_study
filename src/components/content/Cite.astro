@@ -4,6 +4,9 @@
  * 쓰는 법 (MDX): 문장 끝에 <Cite ids={['R-26', 'R-27']} /> — ID는 그 페이지의 <References>에도 있어야 한다.
  */
 import { REF_BY_ID, refAnchor } from '../../data/references';
+import { langOfUrl } from '../../i18n';
+import { REFERENCE_EN } from '../../i18n/figures';
+import { translateText } from '../../i18n/translate';
 
 interface Props {
   ids: string[];
@@ -11,9 +14,12 @@ interface Props {
 
 const { ids } = Astro.props;
 for (const id of ids) if (!REF_BY_ID[id]) throw new Error(`인용 ${id}가 data/references.ts에 없다`);
+// 영어 페이지 (D-054): 서지 제목의 한국어는 참고자료 사전으로
+const en = langOfUrl(Astro.url) === 'en';
+const titleOf = (id: string) => (en ? (translateText(REF_BY_ID[id].title, REFERENCE_EN) ?? REF_BY_ID[id].title) : REF_BY_ID[id].title);
 ---
 
-<span class="cite">[{ids.map((id, i) => <>{i > 0 && ', '}<a href={`#cite-${refAnchor(id)}`} title={REF_BY_ID[id].title}>{id}</a></>)}]</span>
+<span class="cite">[{ids.map((id, i) => <>{i > 0 && ', '}<a href={`#cite-${refAnchor(id)}`} title={titleOf(id)}>{id}</a></>)}]</span>
 
 <style>
   .cite {

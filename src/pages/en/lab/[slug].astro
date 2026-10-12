@@ -10,6 +10,9 @@ import { hasEnglishLab } from '../../../i18n/routes';
 
 import AafLab from '../../../components/labs/AafLab';
 import AdcLab from '../../../components/labs/AdcLab';
+import WindowLeakageLab from '../../../components/labs/WindowLeakageLab';
+import WindowComparisonLab from '../../../components/labs/WindowComparisonLab';
+import WindowCorrectionLab from '../../../components/labs/WindowCorrectionLab';
 import SamplingLab from '../../../components/labs/SamplingLab';
 
 export const getStaticPaths = (() =>
@@ -26,4 +29,7 @@ const c = lab.component;
   {c === 'SamplingLab' && <SamplingLab client:load lang="en" />}
   {c === 'AafLab' && <AafLab client:load lang="en" />}
   {c === 'AdcLab' && <AdcLab client:load lang="en" />}
+  {c === 'WindowLeakageLab' && <WindowLeakageLab client:load lang="en" />}
+  {c === 'WindowComparisonLab' && <WindowComparisonLab client:load lang="en" />}
+  {c === 'WindowCorrectionLab' && <WindowCorrectionLab client:load lang="en" />}
 </LabPageShell>

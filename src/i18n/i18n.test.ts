@@ -128,3 +128,13 @@ describe('영어 절 페이지', () => {
     }
   });
 });
+
+describe('참고자료 서지의 한국어가 모두 사전에 있다', () => {
+  it('저자·제목·출처·연도', async () => {
+    const { REFERENCES } = await import('../data/references');
+    const { REFERENCE_EN } = await import('./figures');
+    const missing = new Set<string>();
+    for (const r of REFERENCES) translateDeep({ a: r.authors, t: r.title, s: r.source, y: r.year }, REFERENCE_EN, missing);
+    expect([...missing]).toEqual([]);
+  });
+});

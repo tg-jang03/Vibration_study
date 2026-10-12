@@ -8,6 +8,9 @@ import { texNumber } from '../../lib/format';
 import { createWindow, windowProperties, type WindowType } from '../../lib/dsp/window';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import { createRng } from '../../lib/dsp/random';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/WindowCorrectionLab';
 
 /**
  * LAB-WIN-03 진폭 보정(ACF)과 에너지 보정(ECF) (P2-5, Contents §5-1).
@@ -20,23 +23,24 @@ type SignalMode = 'tone' | 'noise';
 type CorrectionMode = 'none' | 'acf' | 'ecf';
 
 const SIGNAL_OPTIONS: ParamOption<SignalMode>[] = [
-  { value: 'tone', label: '정현파 하나 (60 Hz, 진폭 1 Peak)' },
-  { value: 'noise', label: '넓게 퍼진 잡음 (RMS 1)' },
+  { value: 'tone', label: k('정현파 하나 (60 Hz, 진폭 1 Peak)') },
+  { value: 'noise', label: k('넓게 퍼진 잡음 (RMS 1)') },
 ];
 
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
   { value: 'hann', label: 'Hann (ACF 2.00, ECF 1.63)' },
   { value: 'flatTop', label: 'Flat top (ACF 4.64, ECF 2.39)' },
-  { value: 'uniform', label: '윈도우 없음 (둘 다 1)' },
+  { value: 'uniform', label: k('윈도우 없음 (둘 다 1)') },
 ];
 
 const CORRECTION_OPTIONS: ParamOption<CorrectionMode>[] = [
-  { value: 'none', label: '보정 안 함' },
-  { value: 'acf', label: 'ACF 진폭 보정 (막대 높이를 맞춤)' },
-  { value: 'ecf', label: 'ECF 에너지 보정 (전체 RMS를 맞춤)' },
+  { value: 'none', label: k('보정 안 함') },
+  { value: 'acf', label: k('ACF 진폭 보정 (막대 높이를 맞춤)') },
+  { value: 'ecf', label: k('ECF 에너지 보정 (전체 RMS를 맞춤)') },
 ];
 
-export default function WindowCorrectionLab() {
+export default function WindowCorrectionLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [sigMode, setSigMode] = useState<SignalMode>('tone');
   const [winType, setWinType] = useState<WindowType>('hann');
   const [corrMode, setCorrMode] = useState<CorrectionMode>('acf');
@@ -90,16 +94,21 @@ export default function WindowCorrectionLab() {
     {
       x: data.plotFreqs,
       y: data.plotAmps,
-      name: corrMode === 'none' ? '보정 안 한 스펙트럼' : `${corrMode.toUpperCase()}를 곱한 스펙트럼`,
+      name: corrMode === 'none' ? tr`보정 안 한 스펙트럼` : tr`${corrMode.toUpperCase()}를 곱한 스펙트럼`,
       color: corrMode === 'acf' ? '#10b981' : corrMode === 'ecf' ? '#38bdf8' : '#f59e0b',
     },
   ];
 
   const controls = (
     <>
-      <ParamSelect label="신호" value={sigMode} options={SIGNAL_OPTIONS} onChange={setSigMode} />
-      <ParamSelect label="윈도우" value={winType} options={WINDOW_OPTIONS} onChange={setWinType} />
-      <ParamSelect label="보정" value={corrMode} options={CORRECTION_OPTIONS} onChange={setCorrMode} />
+      <ParamSelect label={tr`신호`} value={sigMode} options={SIGNAL_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setSigMode} />
+      <ParamSelect label={tr`윈도우`} value={winType} options={WINDOW_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setWinType} />
+      <ParamSelect
+        label={tr`보정`}
+        value={corrMode}
+        options={CORRECTION_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
+        onChange={setCorrMode}
+      />
     </>
   );
 
@@ -110,7 +119,7 @@ export default function WindowCorrectionLab() {
         display
       />
       <Formula
-        tex={`\\text{곱한 값} = ${texNumber(data.scaleFactor, 3)}\\ \\Rightarrow\\ \\text{${sigMode === 'tone' ? '막대 높이' : '전체 RMS'} 오차} = ${texNumber(sigMode === 'tone' ? data.peakError : data.rmsError, 3)}\\ \\%`}
+        tex={`\\text{${tr`곱한 값`}} = ${texNumber(data.scaleFactor, 3)}\\ \\Rightarrow\\ \\text{${sigMode === 'tone' ? tr`막대 높이 오차` : tr`전체 RMS 오차`}} = ${texNumber(sigMode === 'tone' ? data.peakError : data.rmsError, 3)}\\ \\%`}
         display
       />
     </>
@@ -119,39 +128,39 @@ export default function WindowCorrectionLab() {
   const readouts = (
     <ReadoutTable
       rows={[
-        { label: '가장 높은 막대', value: data.measPeak, unit: 'Peak', sig: 4 },
-        ...(sigMode === 'tone' ? [{ label: '막대 높이 오차 (실제 1)', value: data.peakError, unit: '%', sig: 3 }] : []),
-        { label: '전체 RMS', value: data.measRms, sig: 4 },
-        { label: '실제 RMS', value: data.trueRms, sig: 4 },
-        { label: '전체 RMS 오차', value: data.rmsError, unit: '%', sig: 3 },
+        { label: tr`가장 높은 막대`, value: data.measPeak, unit: 'Peak', sig: 4 },
+        ...(sigMode === 'tone' ? [{ label: tr`막대 높이 오차 (실제 1)`, value: data.peakError, unit: '%', sig: 3 }] : []),
+        { label: tr`전체 RMS`, value: data.measRms, sig: 4 },
+        { label: tr`실제 RMS`, value: data.trueRms, sig: 4 },
+        { label: tr`전체 RMS 오차`, value: data.rmsError, unit: '%', sig: 3 },
       ]}
     />
   );
 
   const tasks: LabTask[] = [
     {
-      question: '정현파에서 "보정 안 함"과 "ACF"를 번갈아 고르세요. Hann에서 막대 높이가 왜 0.5에서 1로 바뀌나요?',
-      answer: 'Hann 가중치의 평균이 0.5라서 보정하지 않으면 막대가 절반(0.5)으로 나옵니다. ACF = 1/0.5 = 2를 곱하면 실제 진폭 1이 됩니다.',
+      question: tr`정현파에서 "보정 안 함"과 "ACF"를 번갈아 고르세요. Hann에서 막대 높이가 왜 0.5에서 1로 바뀌나요?`,
+      answer: tr`Hann 가중치의 평균이 0.5라서 보정하지 않으면 막대가 절반(0.5)으로 나옵니다. ACF = 1/0.5 = 2를 곱하면 실제 진폭 1이 됩니다.`,
     },
     {
-      question: '정현파에서 보정을 ECF로 바꾸면 막대 높이 오차는 몇 %인가요?',
-      answer: 'Hann의 ECF는 약 1.63이므로 막대가 0.5 × 1.63 ≈ 0.816, 즉 −18.4 %로 낮게 나옵니다. 정현파 진폭을 읽을 때 에너지 보정이 걸려 있으면 진폭을 작게 읽습니다.',
+      question: tr`정현파에서 보정을 ECF로 바꾸면 막대 높이 오차는 몇 %인가요?`,
+      answer: tr`Hann의 ECF는 약 1.63이므로 막대가 0.5 × 1.63 ≈ 0.816, 즉 −18.4 %로 낮게 나옵니다. 정현파 진폭을 읽을 때 에너지 보정이 걸려 있으면 진폭을 작게 읽습니다.`,
     },
     {
-      question: '신호를 잡음으로 바꾸고 ACF와 ECF를 비교하세요. 전체 RMS가 맞는 쪽은?',
-      answer: 'ECF입니다(오차 거의 0). ACF를 곱하면 Hann에서 RMS가 2/1.63 ≈ 1.22배(+22 %), 파워로는 1.5배가 됩니다. 이 1.5가 Hann의 ENBW입니다.',
+      question: tr`신호를 잡음으로 바꾸고 ACF와 ECF를 비교하세요. 전체 RMS가 맞는 쪽은?`,
+      answer: tr`ECF입니다(오차 거의 0). ACF를 곱하면 Hann에서 RMS가 2/1.63 ≈ 1.22배(+22 %), 파워로는 1.5배가 됩니다. 이 1.5가 Hann의 ENBW입니다.`,
     },
   ];
 
   return (
-    <LabFrame id="LAB-WIN-03" title="진폭 보정(ACF)과 에너지 보정(ECF)" controls={controls} formulas={formulas} readouts={readouts} tasks={tasks}>
-      <h4>보정을 곱한 스펙트럼 (0 ~ 120 Hz)</h4>
+    <LabFrame lang={lang} id="LAB-WIN-03" title={tr`진폭 보정(ACF)과 에너지 보정(ECF)`} controls={controls} formulas={formulas} readouts={readouts} tasks={tasks}>
+      <h4>{tr`보정을 곱한 스펙트럼 (0 ~ 120 Hz)`}</h4>
       <Plot
         series={series}
-        x={{ label: '주파수 [Hz]' }}
-        y={{ label: '진폭 [Peak]', range: [0, sigMode === 'tone' ? 1.2 : 0.3] }}
+        x={{ label: tr`주파수 [Hz]` }}
+        y={{ label: tr`진폭 [Peak]`, range: [0, sigMode === 'tone' ? 1.2 : 0.3] }}
         height={240}
-        ariaLabel="보정을 곱한 스펙트럼"
+        ariaLabel={tr`보정을 곱한 스펙트럼`}
       />
     </LabFrame>
   );
