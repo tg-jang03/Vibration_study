@@ -15,12 +15,12 @@
 </p>
 
 <h3 align="center">
-  <a href="https://tg-jang03.github.io/Vibration_study/">Open the site</a> &nbsp;·&nbsp;
-  <a href="https://tg-jang03.github.io/Vibration_study/lab/">Signal Lab</a> &nbsp;·&nbsp;
-  <a href="docs/Curriculum.md">Curriculum</a>
+  <a href="https://tg-jang03.github.io/Vibration_study/en/">Open the site</a> &nbsp;·&nbsp;
+  <a href="https://tg-jang03.github.io/Vibration_study/en/lab/">Signal Lab</a> &nbsp;·&nbsp;
+  <a href="https://tg-jang03.github.io/Vibration_study/en/reference/">Reference</a>
 </h3>
 
-<p align="center"><sub>The site is written in Korean. The labs are interactive, though, so the plots, formulas and numbers carry most of the story.</sub></p>
+<p align="center"><sub>All 11 Parts, 61 sections, 80 labs, figures and reference pages are available in English and Korean. Switch languages on any page.</sub></p>
 
 <br>
 
@@ -34,12 +34,12 @@
       Mass–spring and modes → DSP → sensors → rotordynamics → field plots → faults → GT/ST. Eleven Parts on one thread.
     </td>
     <td width="33%" valign="top">
-      <h3>🎛️ 71 interactive labs</h3>
+      <h3>🎛️ 80 interactive labs</h3>
       Every concept has a lab, with a walkthrough before it and an interpretation after it. Strobed disks, bearings and gears actually spin.
     </td>
     <td width="33%" valign="top">
       <h3>✅ Numbers you can trust</h3>
-      Every calculation is pinned by tests against analytic solutions or reference values, down to the numbers inside the figures.
+      Calculation modules are checked against analytic solutions or reference values, including the numbers used in the figures.
     </td>
   </tr>
 </table>
@@ -47,10 +47,10 @@
 ## Learning path
 
 <p align="center">
-  <img src="docs/assets/readme/roadmap-en.svg" alt="Learning path: four stages, eleven Parts, and their status" width="100%">
+  <img src="docs/assets/readme/roadmap-en.svg" alt="Learning path: all eleven Parts published in Korean and English" width="100%">
 </p>
 
-<p align="center"><sub>As of 2026-10: 50 of 61 sections published. The full outline is in <a href="docs/Curriculum.md">docs/Curriculum.md</a> (Korean).</sub></p>
+<p align="center"><sub>As of 2026-10-13: all 61 sections and 80 labs are published in both languages. Browse the <a href="https://tg-jang03.github.io/Vibration_study/en/">English learning map</a> or <a href="https://tg-jang03.github.io/Vibration_study/">Korean learning map</a>.</sub></p>
 
 ## Signal Lab: labs you can play with
 
@@ -59,43 +59,47 @@ Build a virtual signal, change the settings, and use the formulas and readouts t
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/frc-01/"><img src="docs/assets/readme/lab-frc.png" alt="LAB-FRC-01 Forced vibration and resonance"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/frc-01/"><img src="docs/assets/readme/lab-en-frc.png" alt="LAB-FRC-01 Forced vibration and resonance"></a>
       <b>LAB-FRC-01 · Forced vibration & resonance</b><br>
-      <sub>The dashed box is where the same force would put the mass if applied slowly. At resonance the mass goes 10× farther, a quarter-beat late.</sub>
+      <sub>The dashed box is where the same force would put the mass if applied slowly. With damping ratio 0.05 and forcing at the natural frequency, the steady-state amplitude is 10× larger and lags the force by a quarter-cycle.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/smp-01/"><img src="docs/assets/readme/lab-smp.png" alt="LAB-SMP-01 Sampling and aliasing"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/smp-01/"><img src="docs/assets/readme/lab-en-smp.png" alt="LAB-SMP-01 Sampling and aliasing"></a>
       <b>LAB-SMP-01 · Sampling & aliasing</b><br>
       <sub>A strobe-lit spinning disk. Why does 940 Hz look like 60 Hz, and turn backwards?</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/phs-01/"><img src="docs/assets/readme/lab-phs.png" alt="LAB-PHS-01 Phase measurement"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/phs-01/"><img src="docs/assets/readme/lab-en-phs.png" alt="LAB-PHS-01 Phase measurement"></a>
       <b>LAB-PHS-01 · Keyphasor & phase</b><br>
-      <sub>The notch passes and gives a pulse; the high spot arrives and gives a peak. The Δt between them <i>is</i> the phase.</sub>
+      <sub>The notch passes and gives a pulse; the high spot arrives and gives a peak. The time difference Δt gives the phase relative to the once-per-revolution pulse.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/brg-02/"><img src="docs/assets/readme/lab-brg.png" alt="LAB-BRG-02 Rolling-bearing faults"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/brg-02/"><img src="docs/assets/readme/lab-en-brg.png" alt="LAB-BRG-02 Rolling-bearing faults"></a>
       <b>LAB-BRG-02 · Rolling-bearing faults</b><br>
-      <sub>An impact every time a ball strikes the defect. An inner-race defect moves in and out of the load zone, so it rises and falls at 1X.</sub>
+      <sub>An impact every time a ball strikes the defect. Compare the even impacts of an outer-race defect with the 1X modulation of an inner-race defect.</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/gear-01/"><img src="docs/assets/readme/lab-gear.png" alt="LAB-GEAR-01 Gear faults"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/gear-01/"><img src="docs/assets/readme/lab-en-gear.png" alt="LAB-GEAR-01 Gear faults"></a>
       <b>LAB-GEAR-01 · Gear faults</b><br>
-      <sub>A 23/61-tooth pair in mesh. A broken tooth delivers one big impact per turn.</sub>
+      <sub>A 23/61-tooth pair in mesh. Switch from healthy to a broken tooth to add one big impact per turn.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/fou-01/"><img src="docs/assets/readme/lab-fou.png" alt="LAB-FOU-01 Building harmonics"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/fou-01/"><img src="docs/assets/readme/lab-en-fou.png" alt="LAB-FOU-01 Building harmonics"></a>
       <b>LAB-FOU-01 · Building harmonics</b><br>
-      <sub>Chain rotating arrows together and the height of the chain's tip traces a square wave.</sub>
+      <sub>Start with a sine wave and add harmonics. The height of the rotating-arrow chain approaches a square wave.</sub>
     </td>
   </tr>
 </table>
 
-<p align="center"><a href="https://tg-jang03.github.io/Vibration_study/lab/"><b>See all 71 labs →</b></a></p>
+<p align="center"><a href="https://tg-jang03.github.io/Vibration_study/en/lab/"><b>See all 80 labs →</b></a></p>
+
+## Reference: connect the concepts
+
+The [reference hub](https://tg-jang03.github.io/Vibration_study/en/reference/) brings together a concept overview, [95 sources](https://tg-jang03.github.io/Vibration_study/en/reference/sources/), a [520-entry glossary](https://tg-jang03.github.io/Vibration_study/en/reference/glossary/) and [41 symbol and formula cards](https://tg-jang03.github.io/Vibration_study/en/reference/formulas/). Entries link back to the relevant course sections. The same reference pages are available in Korean.
 
 ## Principles
 
@@ -111,16 +115,24 @@ Build a virtual signal, change the settings, and use the formulas and readouts t
 
 The repo owner, a rotating-machinery vibration diagnostics engineer, decides what to learn and what counts as correct. [Claude Code](https://claude.com/claude-code) and Codex split the work into tracks and build pages, labs and figures on the same `main` branch.
 They share one rulebook, [AGENTS.md](AGENTS.md), and use decision records ([Decisions](docs/Decisions.md), `D-xxx`), issues ([Issues](docs/Issues.md), `I-xxx`) and handoff notes ([Progress](docs/Progress.md)) as shared memory.
-Every push must pass type checking, tests and a build in GitHub Actions before it deploys. A headless browser also checks each page for hydration, console errors and whether the animations actually move.
+Every push must pass type checking, tests, a build and English-content checks in GitHub Actions before it deploys. Separate headless-browser checks cover hydration, console errors, mobile overflow and animation playback.
 
 ## Run it locally
 
 ```bash
-npm install
+npm ci
 npm run dev        # http://localhost:4321/Vibration_study/
 ```
 
-Requires Node.js 22.12 or newer. Other commands: `npm run check` (types) · `npm test` (Vitest) · `npm run build` · `npm run verify:page` (page checks) · `npm run verify:links` (link checks).
+Requires Node.js 22.12 or newer; CI uses Node.js 24. The English home is at `http://localhost:4321/Vibration_study/en/`.
+
+`npm run check` checks types, `npm test` runs Vitest, and `npm run build` generates the static site. After building, `npm run verify:links` checks internal links and `npm run verify:i18n` checks English pages for untranslated Korean. `npm run i18n:status` reports missing or outdated translations.
+
+For browser checks, start `npm run preview` in another terminal, then run:
+
+```bash
+npm run verify:page -- / /en/ /lab/frc-01/ /en/lab/frc-01/
+```
 
 <details>
 <summary><b>Tech stack · repository layout</b></summary>
@@ -136,12 +148,14 @@ Requires Node.js 22.12 or newer. Other commands: `npm run check` (types) · `npm
 
 | Path | Contents |
 |---|---|
-| `src/pages/p{Part}-{section}.mdx` | Course pages |
-| `src/pages/lab/[slug].astro` | Standalone lab pages (Signal Lab) |
+| `src/pages/p{Part}-{section}.mdx` · `src/pages/en/` | Korean course pages and English routes/pages |
+| `src/pages/lab/[slug].astro` · `src/pages/en/lab/` | Standalone labs in both languages (Signal Lab) |
+| `src/pages/reference/` · `src/components/site/` | Reference routes and shared site pages |
+| `src/i18n/` · `src/i18n/en/` | Language routing, UI strings, English lab/figure/glossary dictionaries |
 | `src/components/labs/` · `ui/` | Lab components · shared parts (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
 | `src/lib/` | Calculation modules (`dsp`, `mck`, `rotor`, `faults`, `machine` …) and tests |
 | `src/figures/` | SVG figure data for the pages, with tests |
-| `docs/` | Curriculum, roadmap, decisions, issues, progress, page guide (Korean) |
+| `docs/` | Current content inventory, roadmap, decisions, issues, progress and page guide (Korean); earlier records in `archive/` |
 
 </details>
 
@@ -149,7 +163,7 @@ Requires Node.js 22.12 or newer. Other commands: `npm run check` (types) · `npm
 <summary><b>Docs (Korean)</b></summary>
 <br>
 
-[Curriculum](docs/Curriculum.md) · [Roadmap](docs/Roadmap.md) · [Progress](docs/Progress.md) · [Page guide](docs/PageGuide.md) · [Glossary](docs/Glossary.md) · [Working rules](AGENTS.md) · archive in [docs/archive/](docs/archive/)
+[Content inventory](docs/Contents.md) · [Roadmap](docs/Roadmap.md) · [Progress](docs/Progress.md) · [Page guide](docs/PageGuide.md) · [Glossary](docs/Glossary.md) · [Working rules](AGENTS.md) · archive in [docs/archive/](docs/archive/)
 
 </details>
 

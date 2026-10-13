@@ -19,4 +19,5 @@
   <circle cx="880" cy="150" r="4.5" fill="#cbd5e1"/>
   <circle cx="824.8" cy="103.7" r="6" fill="#f59e0b"/>
   <circle cx="980" cy="103.7" r="6" fill="#f59e0b"/>
+<text x="68" y="280" font-family="'Segoe UI','Malgun Gothic',system-ui,sans-serif" font-size="15" font-weight="600" text-anchor="start" fill="#cbd5e1">11 Parts · 61 sections · 80 labs · 한국어 / English</text>
 </svg>
