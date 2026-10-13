@@ -1,3 +1,6 @@
+import { useLang } from '../ui/lang';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/ProbeMotion';
 import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
@@ -36,9 +39,11 @@ const TWO_PI = 2 * Math.PI;
 const SEG = 72;
 
 export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: ProbeMotionProps) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
   const box = useRef<HTMLDivElement>(null);
   const fr = rpm / 60;
-  const speeds = useMemo(() => turnSpeeds(fr), [fr]);
+  const speeds = useMemo(() => turnSpeeds(fr, undefined, lang), [fr, lang]);
   const [speed, setSpeed] = useState(0);
   const clock = usePlayClock(speeds[speed].rate, 2 / fr, box);
   const th = TWO_PI * fr * clock.t;
@@ -102,14 +107,14 @@ export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: P
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
         status={`gap ${formatNumber(gapNow * 1000, 4)} mm → ${vNow.toFixed(2)} V`} />
       <ResponsiveSvg mobilePanels={[[0,-4,300,270],[300,-4,420,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`근접 프로브 앞으로 축이 돈다. 지금 gap ${formatNumber(gapNow * 1000, 4)} mm, 출력 ${vNow.toFixed(2)} V. 오른쪽에 출력 전압이 그려진다.`}>
+        aria-label={tr`근접 프로브 앞으로 축이 돈다. 지금 gap ${formatNumber(gapNow * 1000, 4)} mm, 출력 ${vNow.toFixed(2)} V. 오른쪽에 출력 전압이 그려진다.`}>
         {/* 프로브 */}
         <rect x={C.x - 11} y={TIP - 40} width={22} height={40} rx={4} fill="var(--surface)" stroke="var(--plot-1)" strokeWidth="2" />
         <rect x={C.x - 11} y={TIP - 6} width={22} height={6} fill="var(--plot-1)" />
         {[0, 1, 2].map((i) => (
           <path key={i} d={`M${C.x - 9 - 4 * i},${TIP + 3 + 3 * i} Q${C.x},${TIP + 9 + 5 * i} ${C.x + 9 + 4 * i},${TIP + 3 + 3 * i}`} fill="none" stroke="var(--plot-1)" strokeWidth="1" opacity={0.5 - 0.12 * i} />
         ))}
-        <text x={C.x + 18} y={TIP - 26} fontSize="12" fill="var(--plot-1)" fontWeight="600">근접 프로브</text>
+        <text x={C.x + 18} y={TIP - 26} fontSize="12" fill="var(--plot-1)" fontWeight="600">{tr("근접 프로브")}</text>
         {/* gap 표시 */}
         <line x1={C.x + 22} y1={TIP} x2={C.x + 22} y2={surfTop} stroke="var(--status-wip)" strokeWidth="1.6" />
         <line x1={C.x + 16} y1={TIP} x2={C.x + 28} y2={TIP} stroke="var(--status-wip)" />
@@ -120,16 +125,16 @@ export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: P
         <path d={outline} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="2" />
         {stains.map((s, i) => s.o > 0.15 && <path key={i} d={s.d} fill="none" stroke="var(--plot-4)" strokeWidth="7" opacity={0.75 * s.o} />)}
         {m.mech && (
-          <text x={cx - (R0 + 14) * Math.sin(scratchPsi)} y={cy - (R0 + 14) * Math.cos(scratchPsi) + 4} textAnchor="middle" fontSize="11" fill="var(--text-muted)">흠집</text>
+          <text x={cx - (R0 + 14) * Math.sin(scratchPsi)} y={cy - (R0 + 14) * Math.cos(scratchPsi) + 4} textAnchor="middle" fontSize="11" fill="var(--text-muted)">{tr("흠집")}</text>
         )}
         <line x1={cx} y1={cy} x2={cx - (R0 - 12) * Math.sin(th)} y2={cy - (R0 - 12) * Math.cos(th)} stroke="var(--plot-1)" strokeWidth="2.4" strokeLinecap="round" />
         <circle cx={cx} cy={cy} r={3.5} fill="var(--text-muted)" />
-        <text x={C.x} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">축 ↺ (움직임·굴곡은 크게 과장)</text>
+        <text x={C.x} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{tr("축 ↺ (움직임·굴곡은 크게 과장)")}</text>
 
         {/* 오른쪽: 출력 전압 */}
-        <text x={X0} y={20} fontSize="12.5" fill="var(--text-muted)">출력 전압 [V] (두 바퀴) — gap이 커지면 더 음으로</text>
+        <text x={X0} y={20} fontSize="12.5" fill="var(--text-muted)">{tr("출력 전압 [V] (두 바퀴) — gap이 커지면 더 음으로")}</text>
         <line x1={X0} y1={m.vy(sim.dcVoltage)} x2={X1} y2={m.vy(sim.dcVoltage)} stroke="var(--plot-2)" strokeDasharray="5 4" />
-        <text x={X1} y={m.vy(sim.dcVoltage) - 5} textAnchor="end" fontSize="11.5" fill="var(--plot-2)">DC {sim.dcVoltage.toFixed(2)} V (평균 gap)</text>
+        <text x={X1} y={m.vy(sim.dcVoltage) - 5} textAnchor="end" fontSize="11.5" fill="var(--plot-2)">DC {sim.dcVoltage.toFixed(2)} {tr("V (평균 gap)")}</text>
         <line x1={X0 + (X1 - X0) / 2} y1={VT - 6} x2={X0 + (X1 - X0) / 2} y2={VB + 6} stroke="var(--text-muted)" strokeDasharray="3 4" opacity="0.5" />
         <path d={path(m.xs.length)} fill="none" stroke="var(--plot-1)" strokeWidth="1.2" opacity="0.2" />
         <path d={path(upto)} fill="none" stroke="var(--plot-1)" strokeWidth="2.2" />
@@ -137,13 +142,13 @@ export default function ProbeMotion({ gapMm, rpm, vibPp, runout, probe, sim }: P
         <circle cx={cursor} cy={m.vy(vNow)} r={4.5} fill="var(--plot-1)" />
         <text x={X0} y={VB + 22} fontSize="11.5" fill="var(--text-muted)">{m.hi.toFixed(2)} ~ {m.lo.toFixed(2)} V</text>
         <text x={X0} y={H - 4} fontSize="12" fill="var(--text-muted)">0</text>
-        <text x={X0 + (X1 - X0) / 2} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">1바퀴</text>
-        <text x={X1} y={H - 4} textAnchor="end" fontSize="12" fill="var(--text-muted)">2바퀴</text>
+        <text x={X0 + (X1 - X0) / 2} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{tr("1바퀴")}</text>
+        <text x={X1} y={H - 4} textAnchor="end" fontSize="12" fill="var(--text-muted)">{tr("2바퀴")}</text>
       </ResponsiveSvg>
       <p className="anim-caption">
-        프로브는 바로 앞 축 표면까지의 거리(gap)를 전압으로 바꿉니다. 축이 센서 쪽으로 오면(진동) gap이 줄어 전압이 덜 음으로,
-        {runout === 'none' ? ' 멀어지면 더 음으로 갑니다.' : ` 표면이 깎인 곳(흠집·타원 — 기계적 런아웃)이나 재질이 다른 곳(보라 무늬 — 전기적 런아웃)이 지나가면 축이 흔들리지 않아도 전압이 바뀝니다. 그래서 저속에서도 이 무늬가 남습니다.`}
-        {' '}지금 진동 {formatNumber(vib.pp * 1e6, 3)} µm pp ({rpm} rpm).
+        {tr("프로브는 바로 앞 축 표면까지의 거리(gap)를 전압으로 바꿉니다. 축이 센서 쪽으로 오면(진동) gap이 줄어 전압이 덜 음으로,")}
+        {runout === 'none' ? tr(' 멀어지면 더 음으로 갑니다.') : tr` 표면이 깎인 곳(흠집·타원 — 기계적 런아웃)이나 재질이 다른 곳(보라 무늬 — 전기적 런아웃)이 지나가면 축이 흔들리지 않아도 전압이 바뀝니다. 그래서 저속에서도 이 무늬가 남습니다.`}
+        {' '}{tr("지금 진동")} {formatNumber(vib.pp * 1e6, 3)} µm pp ({rpm} rpm).
       </p>
     </div>
   );

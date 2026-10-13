@@ -50,6 +50,12 @@ import UnbalanceLab from '../../../components/labs/UnbalanceLab';
 import TwoDofModeLab from '../../../components/labs/TwoDofModeLab';
 import FrequencyMapLab from '../../../components/labs/FrequencyMapLab';
 import SourceSynthesisLab from '../../../components/labs/SourceSynthesisLab';
+import SensorLab from '../../../components/labs/SensorLab';
+import ProximityLab from '../../../components/labs/ProximityLab';
+import PhaseLab from '../../../components/labs/PhaseLab';
+import SlowRollLab from '../../../components/labs/SlowRollLab';
+import ChainQuizLab from '../../../components/labs/ChainQuizLab';
+import AlarmLab from '../../../components/labs/AlarmLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -104,4 +110,10 @@ const c = lab.component;
   {c === 'TwoDofModeLab' && <TwoDofModeLab client:load lang="en" />}
   {c === 'FrequencyMapLab' && <FrequencyMapLab client:load lang="en" />}
   {c === 'SourceSynthesisLab' && <SourceSynthesisLab client:load lang="en" />}
+  {c === 'SensorLab' && <SensorLab client:load lang="en" />}
+  {c === 'ProximityLab' && <ProximityLab client:load lang="en" />}
+  {c === 'PhaseLab' && <PhaseLab client:load lang="en" />}
+  {c === 'SlowRollLab' && <SlowRollLab client:load lang="en" />}
+  {c === 'ChainQuizLab' && <ChainQuizLab client:load lang="en" />}
+  {c === 'AlarmLab' && <AlarmLab client:load lang="en" />}
 </LabPageShell>

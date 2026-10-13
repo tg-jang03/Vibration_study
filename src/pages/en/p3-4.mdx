@@ -1,0 +1,305 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P3-4 Measurement chain traps
+description: False signals created along the measurement chain from machine surface to screen — mounting resonance peaks, bias voltage and settling time, ski-slope amplified by integration, power-line noise (ground loops), cable and connector noise, and input overload (clipping) — and checks and a quiz to tell sensor problems from machine problems
+sectionId: P3-4
+source: p3-4.mdx
+sourceHash: 23a13425da
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import ChainQuizLab from '../../components/labs/ChainQuizLab';
+import * as F from '../../figures/p3-4';
+
+# 3-4 Measurement chain traps: a sensor problem or a machine problem?
+
+The night inspection log says, "Pump B overall vibration 6.2 mm/s, three times the usual value." When you measure again the next morning, it is 2.1 mm/s. Did the machine deteriorate overnight and then recover on its own, or was the measurement wrong?
+
+The number on screen starts at the machine surface and passes through the sensor, cable, power supply and analyzer. This page looks at the **false signals** that can arise along that path, and the habit of **checking whether a signal is real** before reporting it.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can say what false signals can arise at each stage of the measurement chain.
+2. You can check the sensor and its mounting using mounting resonance peaks and IEPE bias voltage.
+3. You can explain, using 2πf, why a ski-slope rises at the left edge of a velocity spectrum.
+4. You can distinguish power-line noise (ground loops), cable noise and input overload from machine faults.
+5. You can choose a check to make before reporting an unusual value.
+
+</Callout>
+
+---
+
+## 1. The measurement chain: from machine to screen
+
+What path does the signal take before a bar appears on screen?
+
+<Figure {...F.chain} />
+
+Vibration at the machine surface reaches the sensor through the mounting. The voltage the sensor produces travels along the cable, through the power supply and analyzer input, and becomes numbers. Finally, calculations such as windowing, averaging and integration turn those numbers into a plot. This sequence is called the <strong>measurement chain</strong>. Just one faulty link can create a bar that is not in the machine, or hide one that is.
+
+Every example on this page uses the same machine: a pump driven by an inverter at 2970 rpm (1X 49.5 Hz, 7 blades → 346.5 Hz), measured with an accelerometer and an analyzer set to $F_{max}$ 5 kHz. In normal operation, 1X is 1.8 mm/s and the overall velocity from 2 ~ 1000 Hz is 2.12 mm/s.
+
+<Callout type="field" title="Reporting a sensor problem as a machine problem">
+
+Reporting a false signal as a fault can lead to stopping a healthy machine or replacing its parts. Conversely, trusting a disconnected sensor's "0" as normal can hide a real fault. That is why experienced practitioners check the measurement chain first when a value looks unusual.
+
+</Callout>
+
+---
+
+## 2. Mounting and sensor resonance: question a high-frequency peak
+
+P3-1 explained that the softer the accelerometer mounting, the lower its mounted resonance and the narrower its usable band. How does that look in a spectrum?
+
+<Figure {...F.mounting} />
+
+Around the mounted resonance, the machine's broadband vibration is amplified by the resonance gain (5 times for a hand-held probe, 10 times for a magnet), forming a **broad peak**. There are three clues to recognizing it.
+
+- **It is broad**: a hill hundreds of Hz wide, rather than a sharp bar
+- **It does not follow speed**: it stays at the same frequency when speed changes (P1-8: components arising from rotation move with speed)
+- **It moves when the mounting changes**: remounting with a stud at the same location makes it disappear or move to a much higher frequency
+
+Even with a firm stud mount, the sensor's own resonance (for example, 25 kHz) remains. Components near resonance always read too high, so keep the usable band well below it (the ±10 % flat band in P3-1).
+
+<Callout type="warn" title="'A magnet mount can measure high frequencies too'">
+
+A magnet's mounted resonance varies greatly with its size and contact surface. Mounting on paint or a curved surface lowers it further. If high-frequency components (above a few kHz) matter, use a stud or adhesive mount, and reserve a hand-held probe for low frequencies.
+
+</Callout>
+
+---
+
+## 3. IEPE power and bias voltage: is the sensor alive?
+
+Can a spectrum alone tell you that the sensor has failed or the cable has come unplugged?
+
+<Callout type="term" title="IEPE (Integrated Electronics Piezo-Electric)">
+
+An accelerometer arrangement with a small amplifier inside the sensor. The analyzer (or power supply) sends a constant current (for example, 4 mA) along a single cable to power the amplifier, and the sensor sends the vibration signal back along the same wire. Manufacturers also use other names, such as ICP.
+
+</Callout>
+
+<Figure {...F.iepeBias} />
+
+An IEPE sensor's output is vibration riding on a steady DC voltage. This DC part is called the <strong>bias voltage</strong>. The analyzer filters out the DC with a capacitor (AC coupling) and receives only the vibration. The bias voltage itself tells you about the health of the sensor and cable.
+
+<Callout type="example" title="Reading bias voltage (example values, 24 V supply)">
+
+1. **About 12 V** (for example, 11.6 V): the amplifier is working normally — use the sensor manual for its normal range
+2. **Near the supply voltage** (for example, 23.8 V): no current is flowing → the cable is broken or the connector is unplugged
+3. **Near 0 V** (for example, 0.3 V): the signal wire is connected to ground → a short circuit, water in the connector, or a failed sensor
+
+</Callout>
+
+At power-on, the bias voltage rises like a step, and the AC-coupling capacitor takes time to filter that step out. In the example in Figure 3 (time constant 2 s), 0.67 % remains even after 10 seconds. Measuring while this tail remains inflates the very low frequencies (the next section).
+
+<Callout type="field" title="Power on, wait, then check the bias first">
+
+After connecting the sensor, wait for the bias voltage to settle before measuring. Many analyzers display bias voltage or a "sensor fault" indicator, so check it before starting a measurement. AC coupling also attenuates very low frequencies (usually below 1 Hz), so check the analyzer input settings for very slow machines.
+
+</Callout>
+
+---
+
+## 4. Ski-slope: integration inflates low frequencies
+
+What might the night log's "three times the usual value" have looked like in the spectrum?
+
+<Figure {...F.skiSlope} />
+
+An accelerometer measures acceleration. The analyzer creates the velocity spectrum by dividing acceleration in each bin by $2\pi f$ ($v = a / 2\pi f$ in P2-7; integration is covered in detail in P5-1).
+
+$$
+v = \frac{a}{2\pi f}
+$$
+
+At low frequencies, the divisor $2\pi f$ is very small. Low-frequency fluctuations that were barely visible in acceleration therefore become large in velocity. This is called <strong>ski-slope</strong> because the left edge of the spectrum rises like a ski slope.
+
+<Callout type="example" title="The same 0.001 g at 1 Hz and 100 Hz">
+
+1. 0.001 g rms = 0.00981 m/s² rms
+2. 100 Hz: 0.00981 ÷ (2π × 100) = 0.0000156 m/s = **0.0156 mm/s**
+3. 1 Hz: 0.00981 ÷ (2π × 1) = 0.00156 m/s = **1.56 mm/s** — 100 times larger
+
+</Callout>
+
+Low-frequency fluctuations often come from the measurement: incomplete settling just after power-on (section 3), a sudden sensor temperature change (thermal shock), slow recovery after a large impact saturates the amplifier, or a moving cable (section 6). The lab below measures just after power-on, as in Figure 4.
+
+<Callout type="try">
+
+1. In the starting state, compare the left edge of the velocity spectrum and the overall velocity readout with the gray trace (last month's normal measurement).
+2. Compare 0 ~ 10 Hz of the acceleration spectrum with the gray trace too. In which spectrum is the difference more visible?
+3. Choose the check **"Change the speed and remeasure"**. Does the left edge follow speed?
+4. Switch to **"Wait 30 seconds and remeasure"**.
+
+</Callout>
+
+<ChainQuizLab client:visible mode="explore" initialCase="skiSlope" lang="en" />
+
+In step 1, 1X stays at 1.81 mm/s, but overall velocity is 6.22 mm/s, three times the usual value (2.12). Almost all the difference comes from the first few Hz at the left edge. As in step 2, the difference is hard to see in acceleration. In step 3, the left edge stays put when speed changes, so it is not a component arising from rotation. Waiting and measuring again, as in step 4, returns the overall velocity to 2.12 mm/s. The night log's "three times" could have been this kind of measurement.
+
+<Callout type="warn" title="'The overall value tripled, so there must be an alarm'">
+
+An overall value combines all components in a band into one number, so it does not tell you where the increase occurred (P2-7). When the overall value suddenly jumps, start with the left edge of the spectrum and the time waveform. Also check the lower frequency limit of the band used to calculate the overall value.
+
+</Callout>
+
+---
+
+## 5. Ground loops: power-line frequencies enter the signal
+
+You plug a new analyzer into the factory power supply and find bars that were absent last month. What could they be?
+
+<Figure {...F.groundLoop} />
+
+The machine carrying the sensor and the outlet powering the analyzer are grounded at different locations, with a small potential difference between them. If the sensor cable shield joins the two grounds, that difference drives current around the loop, adding the power-line frequency (60 Hz) and its integer multiples (especially odd multiples) to the signal. This is called a <strong>ground loop</strong>. The clues are:
+
+- Frequencies are exactly 60 Hz and its integer multiples
+- They stay put when speed changes
+- They disappear when the sensor is electrically isolated or a battery-powered analyzer is used
+
+<Callout type="warn" title="'Bars at 60 Hz and 120 Hz mean an electrical fault'">
+
+On a two-pole motor (about 3600 rpm), 1X is about 59.5 Hz and 2X about 119 Hz, almost overlapping the power-line frequency (60 Hz) or the electromagnetic force component at twice the line frequency ($2f_L$ = 120 Hz, P1-8). Separating two bars 0.5 Hz apart requires Δf below about 0.14 Hz ("spacing ÷ 3.5" in P2-9). First try breaking the ground loop; if the bars remain, investigate electrical causes (P7-7).
+
+</Callout>
+
+<Callout type="try">
+
+1. In the starting state, find 60·180·300 Hz in the velocity spectrum. How large is the 60 Hz bar compared with 1X (49.5 Hz)?
+2. Switch to **"Change the speed and remeasure"**. What happens to 1X, 2X and blade passing, and to 60·180·300 Hz?
+3. Switch to **"Break the ground loop"**.
+
+</Callout>
+
+<ChainQuizLab client:visible mode="explore" initialCase="groundLoop" lang="en" />
+
+In step 1, 60 Hz is about 0.55 mm/s, roughly 1/3 of 1X at 1.8 mm/s, and 180·300 Hz also stand at around 0.3 mm/s. Changing speed to 2400 rpm, as in step 2, moves all the pump components to 1X 40 Hz and blade passing 280 Hz, but 60·180·300 Hz stay put. In step 3, breaking the ground loop removes the three bars while 1X remains at 1.8 mm/s.
+
+<Callout type="field" title="Watch the moment the power is cut">
+
+Components caused by a motor's electrical fault disappear the moment motor power is cut, while mechanical vibration decreases gradually as rotation slows. A ground loop, however, remains regardless of motor power. The power-off test is covered in P7-7.
+
+</Callout>
+
+---
+
+## 6. Cables and input range: noise spikes and clipped peaks
+
+### 6.1 Cables and connectors
+
+<Figure {...F.cableNoise} />
+
+A loose connector intermittently loses contact and creates sharp pulses. A cable touching the machine and moving adds a low-frequency cluster. With high-impedance sensors (charge-mode accelerometers), even flexing a cable can generate charge and produce triboelectric noise. A clue is that this noise appears **in different places on each measurement**. Tighten the connectors and secure the cable so it cannot move.
+
+### 6.2 Input overload (clipping)
+
+<Figure {...F.clipping} />
+
+If the input range is smaller than the signal, its peaks are clipped (clipping in P2-3). The clipped corners create integer multiples that were not there, making the signal resemble a fault with many harmonics. Always check the analyzer's overload indicator. If it overloads, raise the range and measure again. A range that is too large, conversely, buries small components in quantization noise (P2-3).
+
+<Callout type="warn" title="'Integer multiples of 1X line up, so it must be looseness'">
+
+Before diagnosing a fault with many harmonics, such as looseness, first check the overload indicator and whether the time waveform's peaks are cut flat. In Figure 7, raising the range removes all the integer multiples.
+
+</Callout>
+
+---
+
+## 7. A diagnosis quiz: a sensor problem or a machine problem?
+
+Here is a table of what to check first when a value looks unusual.
+
+| Symptom | First suspect | Check |
+|---|---|---|
+| A broad peak at a fixed frequency (kHz) | Mounting or sensor resonance | Remount with a stud at the same location and remeasure |
+| Vibration suddenly near 0 | A broken cable or failed sensor | Bias voltage (near the supply voltage means an open circuit) |
+| The left edge of the velocity spectrum rises | Incomplete settling, thermal shock, or recovery after an impact | Compare with acceleration, wait and remeasure |
+| Exactly 60 Hz and its odd multiples | A ground loop | Change speed, break the ground loop |
+| Occasional time-waveform pulses, different each time | Cables or connectors | Tighten connectors, secure the cable |
+| Integer multiples of 1X line up, peaks are flat | Input overload | Overload indicator, raise the range |
+| Remains after every check and follows speed | Real machine vibration | Remeasure at the same location with another sensor → report |
+
+The quiz below mixes 7 cases. One is real machine vibration rather than a measurement trap.
+
+<Callout type="try">
+
+1. Starting with case 1, guess the diagnosis from the three plots and readouts of the **"Initial measurement"**, without applying any checks.
+2. Try each check and see what disappears and what remains. Also look at bias voltage and input overload.
+3. Choose **"My diagnosis"**. If it is wrong, try more checks and choose again. Try to get all 7 right.
+
+</Callout>
+
+<ChainQuizLab client:visible lang="en" />
+
+As the quiz shows, each trap has a check that makes it disappear, while real machine vibration survives every check and moves with speed. Check direct indicators such as bias voltage and overload at the start of every measurement. Comparing with the previous measurement will reveal most traps on screen first.
+
+---
+
+## 8. Summary
+
+| Topic | Remember |
+|---|---|
+| Measurement chain | Mounting → sensor → cable → power supply → analyzer input → calculations. False signals can arise at any link |
+| Mounting and sensor resonance | A broad peak that does not follow speed and moves when mounting changes. Examples: hand-held 2 kHz (5 times), magnet 7 kHz (10 times) |
+| IEPE bias | About 12 V is normal, near the supply voltage is an open circuit, near 0 V is a short circuit. Wait for settling after power-on |
+| Ski-slope | Velocity = acceleration ÷ 2πf → small low-frequency fluctuations become large. Compare with acceleration, wait and remeasure |
+| Ground loop | Exactly 60 Hz and integer multiples, independent of speed, disappears when the loop is broken. Easily confused with a two-pole motor's 1X and 2X |
+| Cables and connectors | Pulses and low-frequency noise that differ each time. Tighten and secure |
+| Input overload | Flat peaks + bars at integer multiples. Check the overload indicator and raise the range |
+| Checking habits | Bias · time waveform · overload indicator · comparison with previous measurements · remeasurement with another sensor |
+
+## 9. Check yourself
+
+<details>
+<summary><strong>Q1. The 2 Hz component in an acceleration spectrum is 0.002 g rms. What is its velocity in mm/s rms? What if the same 0.002 g is at 200 Hz?</strong></summary>
+
+0.002 g = 0.0196 m/s², so at 2 Hz, 0.0196 ÷ (2π × 2) = 0.00156 m/s = <strong>1.56 mm/s</strong>. At 200 Hz it is 1/100 of that, 0.0156 mm/s. The lower the frequency, the larger the velocity for the same acceleration.
+</details>
+
+<details>
+<summary><strong>Q2. You connect an IEPE accelerometer and the analyzer displays a bias voltage of 23.9 V (24 V supply). The spectrum is almost all noise floor. What do you check?</strong></summary>
+
+A voltage near the supply means no current is flowing to the sensor: the cable is broken or the connector is unplugged. Reconnect the connector and try another cable. Do not report this "zero vibration" as an improvement in the machine.
+</details>
+
+<details>
+<summary><strong>Q3. A bearing spectrum measured with a hand-held probe rises broadly around 2 kHz. Can you report a bearing fault?</strong></summary>
+
+Not yet. A hand-held probe lowers the mounting resonance to a few kHz and amplifies the surrounding band. Remeasure at the same location with a stud or adhesive mount, and see whether the frequency stays fixed when speed changes. If it still remains, then suspect the machine.
+</details>
+
+<details>
+<summary><strong>Q4. A 1780 rpm pump has bars at 60, 180 and 300 Hz in its velocity spectrum. They stay put when speed changes to 1500 rpm. What is likely, and what do you do next?</strong></summary>
+
+They are power-line components independent of rotation. Since they are 60 Hz and its odd multiples, a ground loop is likely. Electrically isolate the sensor or remeasure with a battery-powered analyzer. If they disappear, the measurement is the source; if they remain, investigate electrical causes in the electrical equipment or motor (P7-7).
+</details>
+
+<details>
+<summary><strong>Q5. A spectrum measured with the overload indicator on has bars at 3, 5 and 7 times 1X. Can you diagnose looseness?</strong></summary>
+
+No. Input overload clips the peaks and automatically creates integer multiples. Raise the range and measure again, then see whether the multiples remain. Clipping also makes 1X itself read too low.
+</details>
+
+<details>
+<summary><strong>Q6. Overall velocity is three times yesterday's value, but the 1X, 2X and blade-passing bars are unchanged. Where do you start?</strong></summary>
+
+Start with the left edge of the spectrum (below a few Hz) and the time waveform to find the components raising the overall value. If the machine components are unchanged, ski-slope (settling or thermal shock) or cable noise is likely. Compare with the acceleration spectrum, wait, and measure again.
+</details>
+
+---
+
+The next page (P3-5) covers how to collect data while speed changes during startup or shutdown (speed-interval triggering and synchronous sampling), and the alarm logic of protection systems that stop a machine when vibration grows.
+
+## References
+
+<References items={[
+  ['R-03', 'Sensor mounting, measurement errors and false signals'],
+  ['R-02', 'Measurement chains and signal checks'],
+]}>
+
+For the band available with each mounting method, and the normal ranges of IEPE bias voltage and settling time, follow the manual from the accelerometer manufacturer.
+
+</References>

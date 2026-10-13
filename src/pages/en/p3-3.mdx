@@ -1,0 +1,373 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P3-3 Keyphasor · Phase · 1X Vector
+description: Use a once-per-revolution Keyphasor pulse to establish speed and an angular reference, read the phase lag of a 1X signal, compare phase conventions, combine amplitude and phase in a 1X vector and polar plot, subtract runout with slow roll compensation, and infer shaft motion from the phase difference between two sensors.
+sectionId: P3-3
+source: p3-3.mdx
+sourceHash: 8ed2452dea
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import PhaseLab from '../../components/labs/PhaseLab';
+import SlowRollLab from '../../components/labs/SlowRollLab';
+import * as F from '../../figures/p3-3';
+
+# 3-3 Keyphasor · Phase · 1X Vector: Amplitude and Direction Together
+
+At an inspection a month ago, the 1X vibration at one bearing was 50 µm pp. Today it is still 50 µm pp. The amplitude looks unchanged, but the "phase" shown alongside it on the monitoring system has changed from 120° to 240°. Has nothing happened to this machine?
+
+This page explains **the reference from which phase is measured**, the **1X vector** that combines amplitude and phase in one arrow, and <strong>how to subtract runout as a vector (slow roll compensation)</strong>, continuing from P3-2.
+
+<Callout type="idea" title="By the end of this page">
+
+1. You can explain how a Keyphasor provides both speed and an angular reference.
+2. You can read phase lag from a Keyphasor pulse and a 1X signal, and know that equipment uses different phase conventions.
+3. You can express 1X vibration as a vector with amplitude and phase and place it on a polar plot.
+4. You can subtract the runout vector measured at low speed using complex numbers (slow roll compensation) to find the actual vibration.
+5. You can infer shaft motion from the phase difference between two sensors.
+
+</Callout>
+
+---
+
+## 1. Keyphasor: "This Is 0°" Once per Revolution
+
+To tell the time on a clock, you need a reference: 12 o'clock. To describe the "angle" of 1X vibration, the shaft needs a reference too.
+
+<Figure {...F.keyphasor} />
+
+Make one notch (such as a keyway) or projection on the shaft and mount an extra noncontact displacement sensor above it. As the notch passes the sensor, the gap increases from 1.2 mm to 2.2 mm and the output falls from −9.45 V to −17.3 V (the calibration curve in P3-2). One such pulse appears every revolution.
+
+<Callout type="term" title="Keyphasor">
+
+A rotational reference sensor that produces one pulse per shaft revolution. Keyphasor was originally a trademark of one manufacturer (Bently Nevada), but the name is widely used for this type of sensor. It is also called a rotational marker sensor or phase reference sensor. This is the sensor used as the trigger in P2-6.
+
+</Callout>
+
+This one pulse provides two things.
+
+- **Speed**: a pulse interval $T$ = 16.7 ms means 60 revolutions per second, 60 ÷ 0.0167 s = 3600 rpm
+- **Angular reference**: the instant the pulse crosses the threshold (−13.4 V) defines 0° for that revolution
+
+Without an angular reference, you can measure 1X amplitude but cannot tell "which direction" the vibration points. That is why balancing (the angle at which to place a weight, P9-2), rotational marks on an orbit (P6-3), and phase in a Bode plot (P1-7) all require a Keyphasor.
+
+<Callout type="warn" title="'There is one pulse per revolution'">
+
+If a scratch or key head passes the sensor as well as the notch, two pulses may appear per revolution and the indicated speed doubles. If the threshold is far from the middle of the pulse height, noise can cause missed or extra pulses. After installation, compare the indicated speed with another tachometer.
+
+</Callout>
+
+---
+
+## 2. Phase: The Angle from the Pulse to the Next Peak
+
+If the pulse defines 0°, how do we read the phase of 1X vibration?
+
+### 2.1 From a Time Difference to an Angle
+
+<Figure {...F.phaseByTiming} />
+
+This site defines phase as **the angle the shaft turns from the pulse to the next positive (+) peak of the 1X signal**. Divide the time difference by the time for one revolution and convert it to an angle.
+
+$$
+\varphi = 360^\circ \times \frac{\Delta t}{T} = 360^\circ \times \Delta t \times f_r
+$$
+
+- $\varphi$: phase [°], 0° ~ 360°
+- $\Delta t$: time from the pulse to the next positive peak; $T = 1/f_r$: time for one revolution
+
+<Callout type="example" title="Δt = 5.56 ms at 3600 rpm">
+
+1. $f_r$ = 3600 ÷ 60 = 60 Hz, one revolution $T$ = 1/60 s = 16.7 ms
+2. 5.56 ms ÷ 16.7 ms = 1/3 revolution
+3. $\varphi$ = 360° × 1/3 = **120°**
+
+</Callout>
+
+This angle describes how late the peak arrives after the pulse, so it is called <strong>phase lag</strong>. The name is the same as phase lag in P1-4 (the angle by which displacement lags the force), but here **the Keyphasor pulse is the reference**. The sensor signal is positive as the shaft approaches the sensor (P3-2: a smaller gap gives a less negative voltage), so the positive peak is the instant the shaft is closest to the sensor.
+
+### 2.2 The Peak of the 1X Component, Not the Raw Signal
+
+<Figure {...F.oneXComponent} />
+
+A real signal also contains other components, such as 2X. They shift the highest peak of the raw signal away from the 1X peak. In Figure 3 the difference is 18°. Phase is therefore determined by the peak **after extracting the 1X component from the raw signal**. An analyzer has two ways to extract 1X.
+
+- **Synchronous sampling + DFT**: start at the pulse and take the same number of samples per revolution (synchronous sampling, explained in P3-5). A DFT over an integer number of revolutions places 1X exactly in one bin without leakage (P2-5). The angle of that bin gives the phase (Re·Im in P2-2)
+- **Tracking filter**: use a narrow filter that follows the rotational speed to retain only 1X (P5-5)
+
+In the lab below, read phase from Δt and see what happens when 2X is added. The shaft animation at the top shows this process in motion. Two cross sections of the same shaft rotate counterclockwise. The left section shows the notch and Keyphasor probe; the right shows the vibration sensor location (the two sensors are separated along the shaft and mounted at the same angle, above it). The orange dot on the right section marks the side of the shaft with the greatest displacement toward the sensor, called the **high spot** (we return to it in §4.1). The shaft motion is enlarged to make it visible.
+
+<Callout type="try">
+
+1. In the initial state (phase 120°, 3600 rpm, 2X 0 %), read the orange Δt bar and T in the readouts. Does 360° × Δt ÷ T give 120°?
+2. Lower the speed to 1800 rpm. What happens to Δt and phase?
+3. Raise 2X to 40 %. At what angles are the highest peak of the raw signal (blue dot) and the peak of the 1X component (orange dot)? What does the synchronous DFT report for 1X?
+4. Return 2X to 0 % and press **Play** on the shaft animation. How far does the shaft turn between the notch passing the Keyphasor (pulse) and the high spot reaching the vibration sensor (peak)? When you press "Reset", where is the high spot at the pulse instant?
+
+</Callout>
+
+<PhaseLab client:visible lang="en" />
+
+In step 1, Δt is 5.556 ms and T is 16.67 ms: exactly 1/3 revolution, or 120°. At 1800 rpm in step 2, one revolution takes 33.3 ms, so Δt also doubles to 11.1 ms while phase stays at 120°. The time for the same angle varies with speed, which is why phase is expressed as an angle. In step 3, the raw signal peaks at 138° and the 1X component at 120°. The synchronous DFT extracts only 1X, so its amplitude remains 50 µm pp, but its angle is −120°, with the opposite sign. The next section explains why. In step 4, the shaft turns 120°, or 1/3 revolution, from pulse to peak. At the pulse instant, the high spot is at the lower right, **120° clockwise, opposite to rotation**, from the sensor above. It must turn another 120° counterclockwise to reach the sensor. When the two sensors are at the same angle, phase tells us "how far apart the notch and high spot are on the shaft", and Δt is the time needed to turn through that angle.
+
+---
+
+## 3. Different Conventions Give Different Numbers
+
+An analyzer from another manufacturer measures the same bearing and reports a phase of −120°. Has the machine changed?
+
+<Figure {...F.conventions} />
+
+The phase value depends on "from where to where, and in which direction" the angle is measured. The one signal in Figure 4 can be expressed in three ways.
+
+| Convention | How it is measured | Value for the signal in Figure 4 | Example |
+|---|---|---|---|
+| Phase lag (this site) | Pulse → next positive peak, 0° ~ 360° | 120° | Rotating machinery monitoring systems (Bently convention) |
+| Phase lead (cos reference) | $\psi$ in $x = A\cos(\theta + \psi)$, −180° ~ 180° | −120° | FFT analyzer phase (phase spectrum in P2-2) |
+| Zero crossing reference | Pulse → rising zero crossing | 30° | Equipment using a sin or zero crossing reference |
+
+Phase lead is the negative of phase lag. The DFT in P2-2 reports $\varphi$ in $A\cos(2\pi f t + \varphi)$ as phase, so a signal whose peak **lags** by 120° is expressed as **leading** by −120°. A reading of −120° can therefore represent the same 120° lag, with no change in the machine.
+
+Other factors also change the number.
+
+- **Sensor type**: for the same motion, velocity leads displacement by 90° and acceleration by 180° (P1-2). If displacement has a phase lag of 120°, velocity reads 30° and acceleration 300°. Near a sensor's natural frequency, the sensor's own phase lag also contributes (P3-1)
+- **Mounting angle**: the absolute phase lag depends on the angles of the Keyphasor notch and sensor. Phase is therefore meaningful **when comparing or tracking changes with the same installation**
+
+<Callout type="warn" title="Comparing data marked only 'phase 120°' with another instrument">
+
+First check that the convention (lag or lead, peak or zero crossing), sensor type and orientation, and Keyphasor position agree. If any one differs, the same vibration can produce very different numbers. Record all four when saving data.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (FFT phase convention, phase 120°), look at the "Selected convention" readout.
+2. Change the convention to "Zero crossing reference". Where does the orange bar in the waveform plot end?
+3. Set phase to 350° and read the values for all three conventions in turn.
+
+</Callout>
+
+<PhaseLab client:visible initialConvention="lead" lang="en" />
+
+In step 1, the same signal with a 120° lag is expressed as −120°. In step 2, the orange bar ends at the zero crossing (30°), 1/4 revolution before the peak. In step 3, a lag of 350° becomes a lead of +10° or a zero crossing angle of 260°. A lag of almost one full revolution lands in the same place as "a small lead".
+
+---
+
+## 4. The 1X Vector: Amplitude and Phase in One Arrow
+
+### 4.1 The Arrow and the Polar Plot
+
+In P2-6, we viewed one bin value as an arrow. Its length was amplitude and its direction was phase. A 1X component can be expressed as the same kind of arrow, called a <strong>1X vector</strong>.
+
+$$
+\vec V = A\angle\varphi = A\,e^{-j\varphi}
+$$
+
+- $A$: 1X amplitude. State whether it is µm pp or Peak along with the unit
+- $\varphi$: phase lag. In complex form, enter lag as a negative angle (for the same reason that lead = $-\varphi$ in the previous section)
+
+<Figure {...F.polarMeaning} />
+
+A <strong>polar plot</strong> draws this arrow. It places 0° in the sensor direction (up) and measures lag **opposite to rotation**. There is a reason for this choice. A phase of 120° means that, at the Keyphasor pulse instant, the side of the shaft with the greatest displacement toward the sensor has not yet reached it; it must turn another 120° in the direction of rotation to get there. That point is currently 120° from the sensor, opposite to rotation. The polar arrow therefore points toward **the side of greatest shaft displacement at the pulse instant**. This point is called the high spot; P4-1 explains its relation to the heavy spot (P1-7).
+
+<Callout type="example" title="What if amplitude stays the same but phase changes from 120° → 240°? (The opening question)">
+
+1. Last month $\vec V_1$ = 50 µm pp∠120°; today $\vec V_2$ = 50 µm pp∠240°
+2. Change $\vec V_2 - \vec V_1$ = **86.6 µm pp∠270°** (the arrows are 120° apart, giving 50 × √3)
+3. Amplitude alone looks unchanged, but this is equivalent to adding something larger than the original vibration (for example, a new unbalance)
+
+Looking at amplitude and phase separately can hide this change. P6-4 explains how to track vector changes over time.
+
+</Callout>
+
+### 4.2 Run-up on a Polar Plot: The Path of the Vector Tip
+
+<Figure {...F.runUpBodePolar} />
+
+When we measure a 1X vector at each speed during startup, the Bode plot in P1-7 plots **amplitude and phase separately** against speed, while the polar plot **joins the vector tips** into a curve. In Figure 6, the critical speed (2000 rpm) appears in the Bode plot as an amplitude peak and 90° phase; in the polar plot it is the point farthest from the origin, near the 90° direction. Both plots contain the same data, and the polar plot also makes gradual phase rotation visible at a glance. P4-1 explains how to read this curve to find damping.
+
+---
+
+## 5. Slow Roll Compensation: Subtracting Runout as a Vector
+
+In P3-2, the sensor produced a signal even at 300 rpm before startup. This was runout visible while the shaft was barely vibrating. How do we subtract it from the running measurement?
+
+### 5.1 Runout 1X Is a Fixed Vector, Independent of Speed
+
+Runout is a pattern tied to the shaft's rotational angle (P3-2). Its 1X component is therefore **a vector with the same amplitude and phase at every speed**. The 1X vector $\vec V_{sr}$ measured at low speed (slow roll), where vibration is negligible, represents runout 1X. Subtracting it from the 1X vector measured at another speed leaves the vibration.
+
+$$
+\vec V_c = \vec V - \vec V_{sr}
+$$
+
+- $\vec V$: 1X vector measured at that speed; $\vec V_{sr}$: 1X vector measured at slow roll; $\vec V_c$: compensated 1X vector
+
+<Callout type="example" title="Subtracting 15 µm pp∠60° from 50 µm pp∠120°">
+
+1. $\vec V = 50\,e^{-j120^\circ} = -25 - j43.3$
+2. $\vec V_{sr} = 15\,e^{-j60^\circ} = 7.5 - j13.0$
+3. $\vec V_c = -32.5 - j30.3$ → amplitude $\sqrt{32.5^2 + 30.3^2}$ = **44.4 µm pp**, angle −137° → phase lag **137°**
+
+</Callout>
+
+<Figure {...F.slowRollSubtraction} />
+
+<Callout type="warn" title="'Subtracting 15 µm of runout from 50 µm gives 35 µm'">
+
+Subtracting amplitudes works only when the two arrows point in the same direction. With the 60° separation in Figure 7, it gives 35 µm pp, 21 % too low, and cannot correct phase. If the arrows point in opposite directions, vector subtraction can even give a result larger than the measured value.
+
+</Callout>
+
+### 5.2 Applying It to the Whole Run-up
+
+<Figure {...F.runoutBodePolar} />
+
+In run-up data containing runout, amplitude does not fall to 0 at low speed, and low-speed phase represents runout rather than vibration. The polar curve starts at the tip of the runout vector rather than the origin. Runout also distorts the critical-speed peak and the value at operating speed. Subtracting the 300 rpm vector at every speed returns the curve to the origin.
+
+<Callout type="try">
+
+1. In the initial state (vector subtraction, slow roll 300 rpm, runout 15 µm pp∠60°), compare the measured, compensated, and true values at 3600 rpm in the readout table.
+2. Select "No compensation". How do amplitude and phase look below 500 rpm? Where does the polar curve start?
+3. Select "Subtract amplitudes only". What is the value at 3600 rpm in µm pp?
+
+</Callout>
+
+<SlowRollLab client:visible lang="en" />
+
+In step 1, the values at 3600 rpm are measured 42.1 µm pp∠151°, compensated 45.7 µm pp∠171°, and true 45.0 µm pp∠171°. The 0.7 µm residual after compensation occurs because about 0.7 µm pp of vibration is already present at 300 rpm and was subtracted along with runout. Without compensation in step 2, low-speed amplitude stays around 15 µm pp, phase points near the runout angle of 60°, and the polar curve starts at the runout vector tip. In step 3, subtracting amplitudes gives 42.1 − 15.4 = 26.7 µm pp, 41 % below the true value, while phase remains at 151°.
+
+---
+
+## 6. Where to Measure Slow Roll: Before Vibration Builds Up
+
+The slow roll vector should contain only runout. If speed is high enough for vibration to have developed, that vibration is also treated as runout and subtracted. Choose **a low-speed region where 1X amplitude and phase remain almost unchanged as speed varies slightly**. In the example rotor, vibration is 0.7 µm pp at 300 rpm, but already 17 µm pp at 1200 rpm.
+
+<Callout type="try">
+
+1. In the initial state (slow roll 1200 rpm), compare the compensated amplitude at 3600 rpm with the true value.
+2. Lower the slow roll speed from 1200 → 600 → 300 rpm and see how closely the compensated result approaches the true value.
+3. Change the runout phase to 170°, then 350°, and read the measured value at 3600 rpm with "No compensation".
+
+</Callout>
+
+<SlowRollLab client:visible initialSlowRollRpm={1200} lang="en" />
+
+In step 1, the 1200 rpm slow roll vector is 29.5 µm pp, almost twice the runout amplitude (15 µm pp). Subtracting it gives 61.7 µm pp at 3600 rpm, 37 % above the true value. As the slow roll speed falls in step 2, the result approaches 45 µm pp. In step 3, runout pointing in the same direction as the true response (170°) gives a measured amplitude of about 60 µm pp; in the opposite direction (350°), it gives about 30 µm pp. Runout can make vibration look larger or smaller depending on phase.
+
+<Callout type="field" title="Record the slow roll vector and investigate changes">
+
+Record the slow roll vector in the same low-speed region at every startup. Runout caused by surface condition should be nearly the same from one startup to another. A large change in the slow roll vector may therefore mean the shaft itself is bent rather than a change in its surface (thermal bow caused by heat, P8-2). Time-waveform compensation is also possible: save the entire waveform for one revolution and subtract points at matching angles. This removes not only 1X but also sharp features such as scratches, provided the Keyphasor aligns the angles accurately.
+
+</Callout>
+
+---
+
+## 7. Diagnosis from Phase: The Difference Between Two Sensors
+
+Absolute phase depends on the installation, but **the phase difference between two sensors** tells us how the shaft is moving.
+
+### 7.1 X and Y at One Bearing
+
+<Figure {...F.xyPhase} />
+
+Plot the signals from two sensors mounted 90° apart at one bearing (P3-2) as horizontal and vertical coordinates. The resulting path of the shaft center is an <strong>orbit</strong> (explained in P6-3). If the two sensors read equal 1X amplitudes with a phase difference of 90°, the orbit is a circle: the shaft center travels in a circle inside the bearing. If the phase difference is near 0° or 180°, the orbit is nearly a straight line. The shaft moves back and forth in only one direction, suggesting a support that is softer in that direction or a force acting in one direction.
+
+### 7.2 Between Two Bearings
+
+<Figure {...F.bearingPhase} />
+
+Comparing 1X phase in **the same direction** at two bearings on one shaft shows the shape of its motion. This is the same idea as the in-phase and out-of-phase modes in P1-5.
+
+<Callout type="term" title="Static Unbalance · Couple Unbalance">
+
+Static unbalance occurs when the center of mass is offset to one side of the shaft axis; even when stopped, the heavy side turns downward. Couple unbalance has equal unbalances pointing in opposite directions at the two ends. The center of mass lies on the shaft axis, so it is not apparent at rest, but rotation produces forces that tend to tilt the shaft. The correction requires weights in one plane or two planes, respectively (P9-2).
+
+</Callout>
+
+| Signals compared | Phase difference | Clue | More detail |
+|---|---|---|---|
+| X and Y at one bearing | About 90° | Nearly circular orbit — the shaft center circles | P6-3, P4-2 |
+| X and Y at one bearing | Near 0° or 180° | Straight-line orbit — motion in one direction | P6-3, P7-3 |
+| Two bearings, same direction | About 0° (in phase) | Translational mode, static unbalance | P4-2, P9-2 |
+| Two bearings, same direction | About 180° (out of phase) | Conical mode, couple unbalance | P9-2 |
+| Both sides of a coupling, axial direction | About 180° | Shaft misalignment (the centerlines of the two coupled shafts do not align) | P7-3 |
+
+<Callout type="warn" title="'The phase difference is 180°, so this must be the cause'">
+
+Phase difference is just one piece of evidence. Check it against amplitude, frequency, direction, and operating conditions (the five elements of evidence in P1-9). Both sensors must also use the same convention and direction reference (positive toward the sensor). Two sensors facing each other across the shaft read the same motion 180° apart.
+
+</Callout>
+
+---
+
+## 8. Recap
+
+| Topic | What to remember |
+|---|---|
+| Keyphasor | One pulse per revolution → speed (60 ÷ T) and angular reference (0°). Two pulses double the indicated speed |
+| Phase lag | Pulse → next positive peak of the 1X component, $\varphi = 360^\circ \times \Delta t / T$. Use the 1X component rather than the raw signal peak |
+| Conventions | Lag 120° = lead −120° = zero crossing 30°. Sensor type and mounting angle also change the number → compare under the same conditions |
+| 1X vector | $\vec V = A\angle\varphi = A e^{-j\varphi}$. Equal amplitudes can hide a large change if phase changes (120° difference → √3 times the amplitude) |
+| Polar plot | 0° is the sensor direction; lag runs opposite to rotation. The arrow points toward greatest shaft displacement at the pulse instant. Run-up traces the vector tip |
+| Slow roll compensation | Runout 1X is a fixed vector independent of speed → $\vec V_c = \vec V - \vec V_{sr}$ (using complex numbers). Do not subtract amplitudes |
+| Slow roll region | A low-speed region where 1X amplitude and phase barely change with speed. Too high a speed subtracts vibration too |
+| Diagnosis from phase difference | X-Y 90° → circle; 0° or 180° → line / two bearings in phase → translational/static; out of phase → conical/couple |
+
+## 9. Check Your Understanding
+
+<details>
+<summary><strong>Q1. At 1800 rpm, the time from the Keyphasor pulse to the next positive 1X peak was 8.33 ms. What is the phase?</strong></summary>
+
+One revolution $T$ = 60 ÷ 1800 = 33.3 ms, so 360° × 8.33 ÷ 33.3 = <strong>90°</strong>. Saying only "8 ms late" does not let you compare data taken at different speeds.
+</details>
+
+<details>
+<summary><strong>Q2. A monitoring system reports 1X phase at a bearing as 200° (lag), while an FFT analyzer reports 160° (cos-reference lead). Are they seeing different vibration?</strong></summary>
+
+They may be seeing the same vibration. Converting a lead of 160° to lag gives −160° = 200°, the same value. Only the convention differs. Still, check that the sensors and Keyphasor reference are the same.
+</details>
+
+<details>
+<summary><strong>Q3. Running 1X is 60 µm pp∠90° and the slow roll vector is 20 µm pp∠270°. What is the compensated 1X? What if you subtract amplitudes only?</strong></summary>
+
+The arrows point in exactly opposite directions, so vector subtraction gives 60 + 20 = <strong>80 µm pp∠90°</strong>. Runout was masking vibration and making it look smaller. Subtracting amplitudes gives 40 µm pp, half the actual value.
+</details>
+
+<details>
+<summary><strong>Q4. The slow roll vector was 15 µm pp∠60° at the last startup, but is now 40 µm pp∠200°. What should you suspect?</strong></summary>
+
+Runout due to surface condition should be almost the same at each startup. A large change can indicate shaft bow (for example, thermal bow while stopped, P8-2). Do not use this vector directly for compensation; check the cause or measure again after the bow has relaxed.
+</details>
+
+<details>
+<summary><strong>Q5. The X and Y sensors at one bearing read equal 1X amplitudes with a phase difference near 0°. What is the orbit shape, and what can you infer?</strong></summary>
+
+The orbit is nearly a straight line. Since the shaft moves back and forth in only one direction, this suggests a support that is softer in that direction or a force acting in one direction (for example, shaft misalignment). Judge it alongside other evidence (P6-3, P7-3).
+</details>
+
+<details>
+<summary><strong>Q6. Vertical 1X phases at two bearings on one shaft are 40° and 215° (both sensors are mounted above the shaft in the same direction). How is the shaft likely moving?</strong></summary>
+
+The phase difference is 175°, nearly out of phase. This is close to a conical mode in which the shaft tilts and rotates like a seesaw, consistent with couple unbalance at the two ends in opposite directions. Correction then requires weights in two planes rather than one (P9-2).
+</details>
+
+<details>
+<summary><strong>Q7. A machine runs at 3600 rpm, but its monitoring system displays 7200 rpm. What do you check first?</strong></summary>
+
+Check whether there are two Keyphasor pulses per revolution. A scratch or key head passing the sensor as well as the notch, or noise crossing the threshold, can add pulses. Incorrect pulses corrupt both speed and every phase reading.
+</details>
+
+---
+
+The next page (P3-4) explains how to distinguish machine vibration from false signals caused by sensors, cables, and equipment: bandwidth lost through mounting, sensor bias voltage, power-frequency noise, and a ski-slope rise at low frequencies.
+
+## References
+
+<References items={[
+  ['R-02', 'Keyphasor, phase lag convention, polar plots, slow roll compensation, and mode shapes inferred from phase'],
+  ['R-09', 'Examples of phase measurement and runout compensation'],
+  ['R-03', 'Phase measurement and diagnosis by comparing phase'],
+  ['R-53', 'General considerations for Keyphasor sensor installation'],
+]} />

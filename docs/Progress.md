@@ -7,8 +7,8 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054) — M12.6 Part 1 push 완료(영어 27절) → 다음 **M12.7 Part 3** (사용자 지시 대기) | 진행 중 |
-| **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054) — M12.6 Part 1 완료; Part 3은 B에 배정(D-056), 다음 Part 4 지시 대기 | 대기 |
+| **B** | Codex | 진동공부-Codex | **M12.7 Part 3 영어판 완료** (D-056, 영어 총 32절), Part 4 지시 대기 | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
 - M0 ~ M11 세부 완료. **사용자 확인 대기**: P1-1 ~ P11-3 전 페이지·랩·레퍼런스 허브, M0.15 모바일 그림.
@@ -26,11 +26,11 @@
 - **M12.3 완료 (2026-10-13)**: 영어 P2-3 · P2-5 · P4-2 · P5-6 · P6-3, 랩 13개(SMP·WIN·JEF·ENV·SK·ORB). 고침: Plot 범례 끝 잘림(Plotly 글꼴 이름), `translateDeep`이 Float64Array(그림 heatmap z)를 평범한 객체로 바꾸던 것. 확인법: 한·영 그림의 도형 수 비교(5절 모두 같음).
 - **M12.4 · M12.5 완료 (2026-10-13)**: Part 2 전부(영어 P2-1 ~ P2-9, 랩 13개 더: BAS-02·FOU-01 셋·RES·ZOOM·AVG 둘·SPC 둘·UNIT·MOD·SBX), Part 5 전부(P5-1 ~ P5-7, 랩 9개 더: FLT·INT·STFT·XCH·FULL·ORD·FLT-02·CEP·FEAT). 등록은 `node scripts/i18n/register-lab.mjs <랩>`. `lib/`의 한국어 라벨(sandbox 판정·목적, orbit 모양, 주파수 지도)은 랩 안에서 `k()` 목록 + `tr`로 옮김 — `lib`의 글을 바꾸면 그 랩 사전도. 한국어 "준비 중" 5곳 정리(P2-7·P2-8·P2-9·P8-2·P10-3).
 - **M12.6 완료 (2026-10-13)**: Part 1 전부(영어 P1-1 ~ P1-9), 랩 9개 더(MCK·BAS-01·DAMP·FRC·2DOF·SUP·UNB·FMAP·SRC). 용어: **박자 = "rhythm"**, "beat"는 맥놀이만 (지시문에 적음). 앞서 만든 영어 페이지의 옛 한국어 링크(절·랩에 영어판이 새로 생긴 것)는 `node scripts/i18n/relink.mjs`, 남은 것은 `i18n.test.ts`가 잡는다.
-- **다음 M12.7 ~ (Part 1까지 하고 멈춤, 사용자 지시 대기)**: 번호 순서 Part 3 → 4 → 6 → 7 → 8 → 9 → 10 → 11. Part마다 Sonnet 에이전트(`model: "sonnet"`) 4개씩(`archive/TranslationBrief.md`, 링크할 영어판 목록을 과제에 적는다) → `scan-lab --check` ✓ → `register-lab.mjs` → 다 되면 `relink.mjs` → check·test·build·`verify:i18n`·`verify:links`·그림 비교·`verify:page` → 커밋·push·Actions.
+- **다음 M12.7 ~**: Part 3은 Codex에 배정(D-056, 2026-10-13 사용자). 이후 Part 4 → 6 → 7 → 8 → 9 → 10 → 11은 지시 대기. Part마다 파일별 병렬 번역(`archive/TranslationBrief.md`, 링크할 영어판 목록을 과제에 적는다) → `scan-lab --check` ✓ → `register-lab.mjs` → 다 되면 `relink.mjs` → check·test·build·`verify:i18n`·`verify:links`·그림 비교·`verify:page` → 커밋·push·Actions.
   - 그림 비교: 한·영 도형 수는 `<text>`를 빼고 같아야 한다 (영어 제목이 모바일 사본에서 줄이 더 늘어 글 수는 다름). 미리보기: 10-08에 띄운 옛 `astro preview`(4337)가 새 파일을 404로 내고 `--force`로도 안 바뀜 → dist를 내보내는 작은 정적 서버 + `--base`. Git Bash에서는 `MSYS_NO_PATHCONV=1 npm run verify:page -- …`(아니면 `/en/…`이 Windows 경로로 바뀜). 미뤄 둔 것: 영어 제목의 대소문자(Title Case·문장형) 섞임 — M12 끝에 한꺼번에.
 
 ## 핸드오프 — 트랙 B (Codex)
-- 배정 없음. M0.15 모바일 그림 대응 완료(D-053), 사용자 모바일 검토 대기. 영어판(M12) 파일은 Claude 단독이라 건드리지 않는다.
+- **M12.7 완료 (2026-10-13, D-056)**: Part 3 본문 5절·그림 36개·랩 6개와 애니메이션 3개 영어화, 이전 영어 링크 5곳 갱신. 공용 `Figure.astro`는 영어 모바일 세로 기준선 라벨이 오른쪽에 안 들어가면 왼쪽으로 배치(문구·숫자 유지, 한국어·PC 그대로). Part 4 지시 대기.
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 ### 2026-10-13 · Claude · M12.6 Part 1 영어판 (인계 이어서, Sonnet 에이전트 6개)
@@ -46,15 +46,15 @@
 - 검증: check 0·test 1335·빌드 210쪽·verify:i18n 영어 49쪽 한글 0·링크 7004개 문제 0·그림 도형 수 한·영 같음·verify:page 영어 9쪽 OK
 - 다음: M12.5 Part 5 나머지
 ## 세션 로그 — 트랙 B (Codex) · 최근 2개, 최신이 위
+### 2026-10-13 · Codex · M12.7 Part 3 영어판
+- 요청: 사용자 — "part3 부터 진행"; 단순 번역은 낮은 추론 강도로 전환.
+- 산출: 영어 P3-1 ~ P3-5·그림 사전 5·랩 6개와 애니메이션 3개, 영어 랩 등록·기존 링크 5곳 갱신·P3-4 설명 번역 보완. 한국어 원본·계산 유지.
+- 검증: check 0·test 1408·build 254쪽·i18n 영어 93쪽 한글 0·링크 8248개 문제 0·한국어 초기 화면 11경로 같음·그림 36개 도형 수 같음.
+- 화면: 영어 13경로·모바일 360/390/430px 오류·넘침 0, 확대·재생 통과. 한국어 PC 캡처 90개 픽셀 동일(텍스트 노드 경계도 유지).
+- 다음: Part 3 커밋·push 후 Actions 확인, Part 4 지시 대기.
 ### 2026-10-12 · Codex · M0.15 모바일 그림 대응 (D-053)
 - 요청: 전체 모바일 그림 개선, PC 화면 유지. 640px 이하에만 별도 표시.
 - 변경: Figure 모바일 그래프·범례/제목·확대, Plot 높이·눈금, 랩 여백·그리드·MCK 빈 공간, 가로 애니메이션 8종 세로 분할(원판 2개는 나란히). 계산·그림 데이터 유지.
 - 검증: check 오류0·test1192·build157쪽·링크5080 문제0, 모바일15경로 × 3폭 넘침/조작 통과. PC96개: 93 픽셀·3 Plot 데이터/축/SVG 경로/좌표/선 스타일 동일.
 - 핸드오프: 공용 ResponsiveSvg·useMobileLayout 추가, A 애니메이션은 태그만 연결. QA --visuals/--compare-desktop/--mobile-widths/--mobile-smoke/--desktop-only(PageGuide §5-2).
 - 다음: 모바일 사용자 검토. 자세한 기록은 archive/Milestones.md §M0.15.
-### 2026-10-12 · Codex · M10 규격·판정·진단 절차
-- 요청: 사용자 — M10 진행. D-051 계획·척추·랩 사양 → M10.1(d01473f)·M10.2, 전체2/2 구현.
-- 산출물: P10-1~3·그림19·LAB-ISO-01, 적용 범위/측정량·크기/변화·API 역할·가설/확인/보고·CAT. 규격 경계·표 전재 없음.
-- 검토: SI 등호 오차·미관측을 지지로 쓴 표현·3점으로 폭을 암시한 캡션 수정. A M9.1 보존·P9-1 링크·참고자료 번호 충돌 해소.
-- 최종 검증: check 오류0·test1069·build149쪽·링크4812 문제0·화면5경로 오류/넘침0·랩조작19항목씩. M10.1 Actions 성공, M10.2 push 후 확인.
-- 다음: M10 페이지·랩 사용자 검토, M11.1~3의 범위·담당 확인 대기. 자세한 표·회고는 archive §M10.

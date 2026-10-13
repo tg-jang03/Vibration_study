@@ -1,3 +1,6 @@
+import { useLang } from '../ui/lang';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/PhaseShaft';
 import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
@@ -54,10 +57,12 @@ function Probe({ x, tip, lit, label }: { x: number; tip: number; lit: boolean; l
 }
 
 export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: PhaseShaftProps) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
   const box = useRef<HTMLDivElement>(null);
   const fr = rpm / 60;
   const T = 1 / fr;
-  const speeds = useMemo(() => turnSpeeds(fr), [fr]);
+  const speeds = useMemo(() => turnSpeeds(fr, undefined, lang), [fr, lang]);
   const [speed, setSpeed] = useState(0);
   const clock = usePlayClock(speeds[speed].rate, 2 * T, box);
   const lag = toRad(lagDeg);
@@ -110,9 +115,9 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
     y: B.y - (a1 * Math.cos(b1) + (hasTwoX ? a2 * Math.cos(b2) : 0)) * KD,
   };
   const high = rim(center, b1, R);
-  // 펄스 표시는 홈이 프로브 앞에 있는 동안(θ = 0 포함 — '처음으로'가 펄스 순간)
+  // 펄스 표시는 홈이 프로브 앞에 있는 동안(θ = 0 포함 — tr`처음으로`가 펄스 순간)
   const pulse = theta % TWO_PI < KEY_NOTCH.width || keyphasorVoltage(theta) < keyphasorThreshold();
-  // '가장 가까움'은 실제로 그린 축(1X + 2X)이 센서에 가장 가까운 각도에서 켠다 (2X가 있으면 1X 봉우리와 다르다)
+  // tr`가장 가까움`은 실제로 그린 축(1X + 2X)이 센서에 가장 가까운 각도에서 켠다 (2X가 있으면 1X 봉우리와 다르다)
   const nearPeak = Math.abs(wrapPi(theta - closest)) < toRad(7);
   const notch = [rim(A, theta - KEY_NOTCH.width, R), rim(A, theta - KEY_NOTCH.width, R - NOTCH_DEPTH), rim(A, theta, R - NOTCH_DEPTH), rim(A, theta, R)];
   // 축에 그린 φ: high spot에서 홈 방향까지 반시계로 φ
@@ -129,18 +134,18 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
         status={`θ = ${Math.round(((theta * 180) / Math.PI) % 360)}° · t = ${(clock.t * 1e3).toFixed(1)} ms`} />
       <ResponsiveSvg mobilePanels={[[0,-4,314,270],[314,-4,406,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`축이 ${rpm} rpm으로 반시계로 돈다. 홈이 키페이저 앞을 지날 때 펄스, high spot이 진동 센서 앞에 올 때 봉우리. 그 사이 ${formatNumber(dtMs, 3)} ms = 위상 ${lagDeg}°.`}>
-        <text x={A.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">키페이저 자리</text>
-        <text x={B.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">진동 센서 자리</text>
-        <text x={(A.x + B.x) / 2} y={16} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">같은 축 · 회전 ↺</text>
+        aria-label={tr`축이 ${rpm} rpm으로 반시계로 돈다. 홈이 키페이저 앞을 지날 때 펄스, high spot이 진동 센서 앞에 올 때 봉우리. 그 사이 ${formatNumber(dtMs, 3)} ms = 위상 ${lagDeg}°.`}>
+        <text x={A.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">{tr`키페이저 자리`}</text>
+        <text x={B.x} y={H - 6} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">{tr`진동 센서 자리`}</text>
+        <text x={(A.x + B.x) / 2} y={16} textAnchor="middle" fontSize="12.5" fill="var(--text-muted)">{tr`같은 축 · 회전 ↺`}</text>
 
         {/* 왼쪽: 홈이 있는 단면 */}
         <circle cx={A.x} cy={A.y} r={R} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="2" />
         <polygon points={notch.map(pt).join(' ')} fill="var(--surface-2)" stroke="var(--text-muted)" strokeWidth="1.5" />
         <line x1={A.x} y1={A.y} x2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[0]} y2={rim(A, theta - KEY_NOTCH.width / 2, R - NOTCH_DEPTH)[1]} stroke="var(--text-muted)" strokeDasharray="3 3" opacity="0.8" />
         <circle cx={A.x} cy={A.y} r={3} fill="var(--text-muted)" />
-        <Probe x={A.x} tip={KP_TIP} lit={pulse} label="키페이저" />
-        {pulse && <text x={A.x + 14} y={KP_TIP - 6} fontSize="12.5" fontWeight="700" fill="var(--status-wip)">펄스</text>}
+        <Probe x={A.x} tip={KP_TIP} lit={pulse} label={tr`키페이저`} />
+        {pulse && <text x={A.x + 14} y={KP_TIP - 6} fontSize="12.5" fontWeight="700" fill="var(--status-wip)">{tr`펄스`}</text>}
 
         {/* 오른쪽: high spot이 있는 단면 (축 중심의 움직임은 확대) */}
         <circle cx={B.x} cy={B.y} r={a1 * KD} fill="none" stroke="var(--border)" strokeDasharray="3 3" />
@@ -151,12 +156,12 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
         <text x={lx} y={ly + 4} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">φ</text>
         <circle cx={high[0]} cy={high[1]} r={6} fill="var(--status-wip)" />
         <circle cx={center.x} cy={center.y} r={3} fill="var(--text-muted)" />
-        <Probe x={B.x} tip={VIB_TIP} lit={nearPeak} label="진동 센서" />
-        {nearPeak && <text x={B.x + 14} y={VIB_TIP - 6} fontSize="12.5" fontWeight="700" fill="var(--status-wip)">가장 가까움</text>}
+        <Probe x={B.x} tip={VIB_TIP} lit={nearPeak} label={tr`진동 센서`} />
+        {nearPeak && <text x={B.x + 14} y={VIB_TIP - 6} fontSize="12.5" fontWeight="700" fill="var(--status-wip)">{tr`가장 가까움`}</text>}
 
         {/* 오른쪽 띠: 키페이저 출력 · 축 진동 */}
-        <text x={X0} y={22} fontSize="12.5" fill="var(--text-muted)">키페이저 출력 [V]</text>
-        <text x={X0} y={VIB_Y0 - 76} fontSize="12.5" fill="var(--text-muted)">진동 센서 [µm] (센서 쪽 +)</text>
+        <text x={X0} y={22} fontSize="12.5" fill="var(--text-muted)">{tr`키페이저 출력 [V]`}</text>
+        <text x={X0} y={VIB_Y0 - 76} fontSize="12.5" fill="var(--text-muted)">{tr`진동 센서 [µm] (센서 쪽 +)`}</text>
         <line x1={X0} y1={VIB_Y0} x2={X1} y2={VIB_Y0} stroke="var(--border)" />
         {[0, TWO_PI, 2 * TWO_PI].map((th) => (
           <line key={th} x1={xAt(th)} y1={28} x2={xAt(th)} y2={VIB_Y0 + 58} stroke="var(--text-muted)" strokeDasharray="4 4" opacity="0.6" />
@@ -173,7 +178,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
               <>
                 <circle cx={xAt(p)} cy={VIB_Y0 - a1 * VIB_K} r={5} fill="var(--status-wip)" />
                 <line x1={xAt(p)} y1={VIB_Y0 - 50} x2={xAt(p)} y2={VIB_Y0 - a1 * VIB_K} stroke="var(--status-wip)" strokeDasharray="2 3" />
-                {i === 0 && <text x={(xAt(0) + xAt(p)) / 2} y={VIB_Y0 - 55} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">Δt (지연각) = {formatNumber(dtMs, 3)} ms</text>}
+                {i === 0 && <text x={(xAt(0) + xAt(p)) / 2} y={VIB_Y0 - 55} textAnchor="middle" fontSize="12" fontWeight="700" fill="var(--status-wip)">{tr`Δt (지연각) = ${formatNumber(dtMs, 3)} ms`}</text>}
               </>
             )}
           </g>
@@ -185,9 +190,7 @@ export default function PhaseShaft({ lagDeg, rpm, oneXpp, twoXpp, twoXLag }: Pha
         <text x={X1} y={H - 6} textAnchor="end" fontSize="12" fill="var(--text-muted)">{formatNumber(2 * T * 1e3, 3)} ms</text>
       </ResponsiveSvg>
       <p className="anim-caption">
-        같은 축의 두 단면입니다. 왼쪽 단면의 홈이 키페이저 프로브 앞을 지나는 순간 펄스가 뜨고(0°), 오른쪽 단면의 <strong>high spot</strong>(주황 점 — 축이 센서 쪽으로 가장 많이 나온 쪽,
-        움직임은 확대)이 진동 센서 앞에 오면 신호가 봉우리입니다. 그 사이 축이 돈 각도가 위상 φ = {lagDeg}°이고, 축 위에 그린 주황 호(점선 = 홈 방향)와 같습니다.
-        "처음으로"(펄스 순간)에서 high spot은 위에서 시계 방향으로 φ인 자리에 있습니다 — 아래 Polar 화살표가 가리키는 쪽입니다. 이 그림의 Δt는 위상 관례와 상관없이 지연각(펄스 → 양의 봉우리)입니다.
+        {tr`같은 축의 두 단면입니다. 왼쪽 단면의 홈이 키페이저 프로브 앞을 지나는 순간 펄스가 뜨고(0°), 오른쪽 단면의 `}<strong>high spot</strong>{tr`(주황 점 — 축이 센서 쪽으로 가장 많이 나온 쪽, 움직임은 확대)이 진동 센서 앞에 오면 신호가 봉우리입니다. 그 사이 축이 돈 각도가 위상 φ = `}{lagDeg}{tr`°이고, 축 위에 그린 주황 호(점선 = 홈 방향)와 같습니다. "처음으로"(펄스 순간)에서 high spot은 위에서 시계 방향으로 φ인 자리에 있습니다 — 아래 Polar 화살표가 가리키는 쪽입니다. 이 그림의 Δt는 위상 관례와 상관없이 지연각(펄스 → 양의 봉우리)입니다.`}
       </p>
     </div>
   );

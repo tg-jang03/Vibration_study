@@ -49,4 +49,10 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'TwoDofModeLab',
   'FrequencyMapLab',
   'SourceSynthesisLab',
+  'SensorLab',
+  'ProximityLab',
+  'PhaseLab',
+  'SlowRollLab',
+  'ChainQuizLab',
+  'AlarmLab',
 ]);

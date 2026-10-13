@@ -1,0 +1,260 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P3-1 Sensor principles and selection
+description: What proximity probes, velocity pickups and accelerometers measure; why the mass-spring system inside a sensor is flat below resonance for accelerometers and above resonance for velocity pickups; calculating the ±10 % flat band; how mounting narrows the band; and why power-generation turbines measure the shaft directly
+sectionId: P3-1
+source: p3-1.mdx
+sourceHash: 8aab63c086
+---
+
+import Figure from '../../components/content/Figure.astro';
+import { withBase } from '../../lib/site';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SensorLab from '../../components/labs/SensorLab';
+import * as F from '../../figures/p3-1';
+
+# 3-1 Sensor principles and selection
+
+In Part 2 we started with a time waveform and made a spectrum. Where did that waveform come from? A sensor attached to the machine converted vibration into voltage.
+
+Suppose the 5 kHz bar is twice as high when an accelerometer is attached with a magnet as when it is screwed onto the same bearing housing. Which reading is right? This page looks at **what a sensor measures and at which frequencies you can trust it**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can say what proximity probes, velocity pickups and accelerometers measure: relative or absolute motion, and displacement, velocity or acceleration.
+2. You can explain why the mass-spring system inside a sensor makes an accelerometer useful far below resonance and a velocity pickup useful above its natural frequency.
+3. You can calculate a sensor's ±10 % flat band.
+4. You know that the attachment method (mounting) can narrow the usable band.
+5. You can explain why power-generation turbines measure shaft vibration directly with proximity probes.
+
+</Callout>
+
+---
+
+## 1. From vibration to voltage: three sensors
+
+<Figure {...F.threeSensors} />
+
+| Sensor | Quantity measured | Reference | Example sensitivity | Common applications |
+|---|---|---|---|---|
+| Proximity probe (P3-2) | Displacement | Position **relative** to the sensor mounting | 7.87 V/mm | Shafts of turbines and large compressors |
+| Velocity pickup | Velocity | **Absolute** motion of the machine surface | 20 mV/(mm/s) | Casing (the machine's outer body), relatively low frequencies |
+| Accelerometer (piezoelectric) | Acceleration | **Absolute** motion of the machine surface | 100 mV/g | Casing, high frequencies (bearings and gears) |
+
+P2-1 showed that the same vibration can be expressed as displacement, velocity or acceleration. A sensor measures one of these directly. If you need another quantity, use the relation in P2-7 ($v = 2\pi f d$ for a sinusoid) or integrate the signal (P5-1).
+
+<Callout type="term" title="Sensitivity">
+
+Sensitivity is the voltage a sensor produces per unit of vibration. An accelerometer with a sensitivity of 100 mV/g produces 100 mV for 1 g (9.81 m/s²). Entering the wrong sensitivity in the analyzer scales every reading by the wrong ratio, so check it whenever you change sensors. The sensitivities in the table are common examples.
+
+</Callout>
+
+---
+
+## 2. Inside a sensor is a mass-spring system
+
+### 2.1 What happens to the mass when the case shakes?
+
+Velocity pickups and accelerometers contain a mass suspended on a spring inside a case. When the machine surface shakes, the case shakes with it, and the spring pulls the mass along. The sensor converts **the relative motion between the mass and the case**, $z$, into voltage.
+
+This is the same problem as forced vibration in P1-4: the acceleration of the case acts like an excitation force on the mass. The amplitude of the relative motion is therefore set by the amplitude ratio from P1-4. Here we write that ratio as $H(r)$.
+
+$$
+H(r) = \frac{1}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}},\qquad r = \frac{f}{f_n}
+$$
+
+$f$ is the machine's vibration frequency, $f_n$ is the natural frequency of the mass-spring system inside the sensor, and $\zeta$ is the damping ratio (P1-3).
+
+### 2.2 Below and above resonance: different working regions
+
+<Figure {...F.twoRegimes} />
+
+What you can read from Figure 2:
+
+- **Far below resonance** ($r \ll 1$): the mass follows the case almost exactly, and the spring extension $z$ is proportional to the case acceleration. Measured value ÷ actual acceleration = $H(r) \approx 1$ → this is where an **accelerometer** works.
+- **Far above the natural frequency** ($r \gg 1$): the mass has too much inertia to follow and stays almost in place. The motion of the case then becomes the relative motion. Measured value ÷ actual velocity = $r^2 H(r) \approx 1$ → this is where a **velocity pickup** works.
+- **Near $r = 1$**: resonance amplifies both responses, so neither is trustworthy there.
+
+An accelerometer therefore uses a very stiff spring, such as a piezoelectric element (a crystal that produces voltage when pressed), to raise its natural frequency to tens of kHz. A velocity pickup uses a soft spring to lower its natural frequency to around 10 Hz.
+
+---
+
+## 3. Accelerometers: work far below resonance
+
+<Figure {...F.accelerometerResponse} />
+
+<Callout type="example" title="The upper edge of the ±10 % flat band">
+
+With small damping, $H(r) \approx 1/(1 - r^2)$. It reaches 1.1 at
+
+$$
+1 - r^2 = \frac{1}{1.1}\ \to\ r = \sqrt{1 - \frac{1}{1.1}} \approx 0.30
+$$
+
+For an accelerometer with a resonance at 25 kHz, this is $0.30 \times 25 = 7.5$ kHz. You can trust it only up to **about 1/3 of its resonance frequency**. If you allow 3 dB (a factor of 1.41), the limit is about $0.54 \times 25 = 13.5$ kHz.
+
+</Callout>
+
+<Callout type="try">
+
+1. With the initial settings (accelerometer, stud mounting, resonance 25 kHz, damping 0.02), look at the readout for the "Upper edge of ±10 % flat band".
+2. Lower the damping ratio from 0.02 → 0.01. Does the upper edge change?
+3. Lower the resonance from 25 → 10 kHz. What is the upper edge now, in kHz?
+4. Move the test frequency near resonance and find where the phase lag reaches 90° in the graph below.
+5. In the lab's "Inside the sensor" animation, press **Play** and change "View" from below → near → above the natural frequency. Does the mass (m) follow the case, shake strongly, or stay in place?
+
+</Callout>
+
+<SensorLab client:visible lang="en" initialKind="accelerometer" initialMount="stud" />
+
+In step 1 the upper edge is about 7.5 kHz. It barely changes over the small damping range in step 2: the upper edge is mainly set by the resonance frequency. In step 3, a resonance at 10 kHz lowers it to about 3.0 kHz. In step 4 the phase lag is exactly 90° at resonance (P1-4). The animation in step 5 shows the three regions from §2.2. Below resonance (r = 0.2), the mass moves almost with the case, and the spring extends and contracts by only 0.04 times the base motion. This small extension is proportional to acceleration, so the accelerometer reads it. Near resonance (r = 1), the mass shakes 25 times more than the base (1/(2ζ), ζ = 0.02), making the reading too large. Above resonance (r = 5), the mass stays almost still in space (0.04 times the base motion), while the case moves around it. This is the region used by the velocity pickup in §4.
+
+---
+
+## 4. Velocity pickups: work above the natural frequency
+
+<Figure {...F.velocityResponse} />
+
+Velocity pickups work the other way around. Their ratio reaches 1 at frequencies sufficiently above the natural frequency (10 Hz in Figure 4). Small damping produces strong amplification near the natural frequency, so velocity pickups are deliberately built with a damping ratio around 0.6 (green).
+
+<Callout type="warn" title="Avoid velocity pickups on slow machines">
+
+Below the natural frequency, the reading falls rapidly in proportion to $r^2$, and the phase error is large. Measuring the 1X (5 Hz) of a machine running at 300 rpm with a velocity pickup whose natural frequency is 10 Hz gives only about 26 % of the actual amplitude and a phase error greater than 140°. Use an accelerometer or a proximity probe on slow machines. The moving parts inside a velocity pickup also wear with long use. Piezoelectric velocity sensors, which integrate the signal inside an accelerometer and output velocity, are also widely used today.
+
+</Callout>
+
+<Callout type="try">
+
+1. With the initial settings (velocity pickup, natural frequency 10 Hz, damping 0.6, test frequency 5 Hz), read the amplitude ratio and phase difference.
+2. Lower the damping to 0.1. What happens to the lower edge of the ±10 % band and the amplitude ratio at 20 Hz?
+3. Raise the damping to 0.7 and see whether the lower edge moves down or up compared with 0.6.
+
+</Callout>
+
+<SensorLab client:visible lang="en" initialKind="velocity" />
+
+In step 1, 5 Hz is read at 0.26 times the actual amplitude, with a phase error of about 141°. In step 2, damping 0.1 raises the lower edge to about 33 Hz and amplifies the reading at 20 Hz to 1.3 times the actual amplitude. In step 3, damping 0.7 instead raises the lower edge to about 14 Hz. The response near the natural frequency falls below 1, so a damping ratio around 0.6 gives the widest band.
+
+---
+
+## 5. How you attach the sensor sets its band
+
+### 5.1 Mounting adds another spring
+
+The accelerometer resonance of 25 kHz applies when the sensor is firmly screwed (stud-mounted) onto the machine. A softer attachment, such as adhesive, a magnet or a handheld probe, effectively adds another spring between the sensor and the machine, lowering the <strong>resonance in the mounted condition (mounted resonance)</strong>.
+
+<Figure {...F.mountingResponse} />
+
+<Callout type="warn" title="The mounted resonance values are examples">
+
+The mounted resonances in Figure 5 and the lab (stud 25, adhesive 18, magnet 7, handheld 2 kHz) are examples to show the ordering. Actual values vary greatly with sensor mass, contact-surface flatness, magnet size and pressing force (I-025). The usable band narrows in the order "stud > adhesive > magnet > handheld".
+
+</Callout>
+
+### 5.2 The measured spectrum changes
+
+<Figure {...F.spectrumDistortion} />
+
+A magnet-mounted accelerometer makes the 5 ~ 8 kHz bars near its mounted resonance (7 kHz) stand 2 ~ 3.6 times higher than their actual amplitudes, as in the lower panel of Figure 6. If those bars lead you to conclude that "the bearing is producing high-frequency impacts", you have mistaken sensor mounting for a machine fault.
+
+<Callout type="try">
+
+1. With the initial settings (accelerometer, magnet mounting, test frequency 5 kHz), look at the amplitude ratio and "Sensor reading" in the lower graph.
+2. Change the mounting from stud → adhesive → magnet → handheld and record the upper edge of the ±10 % band.
+3. With handheld mounting, move the test frequency to 1 kHz. How many times the actual amplitude does it read?
+
+</Callout>
+
+<SensorLab client:visible lang="en" initialKind="accelerometer" initialMount="magnet" />
+
+In step 1, 5 kHz is read at about 2.0 times the actual amplitude. In step 2 the upper edge falls through about 7.5 → 5.4 → 2.1 → 0.6 kHz. With handheld mounting in step 3, even 1 kHz is amplified by more than 1.3 times, so a handheld probe is useful only for approximate amplitudes at low frequencies.
+
+---
+
+## 6. Why measure the shaft directly on power-generation turbines?
+
+<Figure {...F.turbineMeasurement} />
+
+The shafts of power-generation gas turbines (GT) and steam turbines (ST) rotate inside **plain bearings** supported by an oil film. The casing is very heavy, and the shaft's vibration is attenuated through the oil film before reaching it. An accelerometer or velocity pickup on the casing therefore has difficulty showing how far the shaft actually moves inside the bearing clearance.
+
+A proximity probe is instead fixed to the bearing and aimed directly at the shaft. The clearance between shaft and bearing is on the order of hundreds of µm, so measuring relative shaft displacement in µm Peak-Peak allows a direct comparison with the clearance (the unit conventions in P2-7). P3-2 explains why two sensors (X·Y), 90° apart, are used at one cross-section.
+
+<Callout type="field" title="Combining relative displacement and absolute vibration">
+
+A proximity probe measures displacement **relative** to the bearing on which it is mounted. If the bearing (casing) also vibrates, a casing sensor at the same location can measure that absolute vibration; adding it to the relative motion gives absolute shaft vibration. P3-2 and Part 6 cover how to read shaft position (mean position) as well.
+
+</Callout>
+
+---
+
+## 7. Summary
+
+The machine's components determine which band you need to measure (<a href={withBase('/en/p1-8/')}>P1-8 frequency-band map</a>). Choose a sensor to suit that band. <a href={withBase('/en/p1-8/')}>P1-8 §4</a> explains why rolling-element bearing and gear impacts require several kHz.
+
+| What you want to measure | Sensor to choose | Working band | Also check |
+|---|---|---|---|
+| Shaft vibration and position inside a plain bearing | Proximity probe | From 0 Hz (DC) to several kHz | Target material and calibration (P3-2) |
+| General casing vibration (a few Hz ~ a few kHz) | Accelerometer (integrated to velocity) or velocity pickup | Velocity pickup: above its natural frequency | Avoid velocity pickups on slow machines |
+| High frequencies (bearing and gear impacts) | Accelerometer | Below about 1/3 of the mounted resonance | Firm stud or adhesive mounting |
+
+| Topic | What to remember |
+|---|---|
+| Sensor = mass-spring system | Relative motion is set by $H(r)$ (P1-4) |
+| Accelerometer | Flat at $r \ll 1$. Upper ±10 % edge ≈ resonance × 0.30 |
+| Velocity pickup | Flat at $r \gg 1$. Damping around 0.6. Unsuitable for slow machines |
+| Mounting | Softer mounting lowers the mounted resonance and narrows the band |
+| GT/ST | Measure the shaft directly with proximity probes (relative displacement, µm pp) |
+
+---
+
+## 8. Check questions
+
+<details>
+<summary><strong>Q1. An accelerometer with a resonance at 30 kHz is stud-mounted. Ignoring damping, up to how many kHz can you trust it within ±10 %?</strong></summary>
+
+$0.30 \times 30 = 9$ kHz (more precisely, $\sqrt{1 - 1/1.1} = 0.3015$ times the resonance, or about 9.05 kHz).
+</details>
+
+<details>
+<summary><strong>Q2. An accelerometer with a sensitivity of 100 mV/g produces 50 mV Peak. What is the acceleration in m/s² Peak?</strong></summary>
+
+$50 / 100 = 0.5$ g Peak $= 0.5 \times 9.81 \approx 4.9$ m/s² Peak.
+</details>
+
+<details>
+<summary><strong>Q3. You plan to measure the 1X of a machine running slowly at 120 rpm with a velocity pickup whose natural frequency is 10 Hz. What is the problem?</strong></summary>
+
+1X = 2 Hz, far below the natural frequency ($r = 0.2$). The reading falls in proportion to $r^2$ to only a few % of the actual amplitude, and the phase error is large. Use an accelerometer or a proximity probe.
+</details>
+
+<details>
+<summary><strong>Q4. A large bar appears near 6 kHz in the spectrum from a magnet-mounted accelerometer. Can you report a bearing fault?</strong></summary>
+
+Check the sensor first. The magnet mount's resonance may be at several kHz, amplifying nearby components. Remount it with a stud or adhesive and measure again to see whether the bar remains (P3-4).
+</details>
+
+<details>
+<summary><strong>Q5. An accelerometer on the bearing casing of a power-generation steam turbine reads a small value. Does that mean shaft vibration is also small?</strong></summary>
+
+No. The heavy casing and oil film may transmit only a small part of the shaft's vibration, while the shaft still moves strongly inside the bearing clearance. Measure shaft vibration directly with a proximity probe.
+</details>
+
+<details>
+<summary><strong>Q6. Accelerometers and velocity pickups both contain a mass-spring system. Why does one work below resonance and the other above it?</strong></summary>
+
+Below resonance, the mass follows the case and the spring extension is proportional to acceleration ($H(r) \approx 1$). Above it, the mass stays in place, so the case motion becomes the relative motion ($r^2 H(r) \approx 1$). Accelerometers therefore use a high natural frequency, and velocity pickups a low one.
+</details>
+
+The next page (P3-2) covers how a proximity probe converts distance into voltage, mean position (DC) and vibration (AC), and the false vibration caused by the shaft surface (runout).
+
+## References
+
+<References items={[
+  ['R-03', 'Sensor types and mounting'],
+  ['R-02', 'Why proximity probes measure the shaft directly'],
+]}>
+
+The sources for the example mounted resonance values are being cross-checked.
+
+</References>

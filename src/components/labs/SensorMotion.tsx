@@ -1,3 +1,6 @@
+import { useLang } from '../ui/lang';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/SensorMotion';
 import ResponsiveSvg from '../ui/ResponsiveSvg';
 import { useMemo, useRef, useState } from 'react';
 import { formatNumber } from '../../lib/format';
@@ -42,11 +45,13 @@ function spring(x: number, yBottom: number, yTop: number, coils = 7, half = 16):
 }
 
 export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number; zeta: number; testF: number; velocity: boolean }) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
   const box = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<View>(velocity ? 'high' : 'low');
   const r = view === 'test' ? testF / fn : VIEW_R[view];
   const f = r * fn;
-  const speeds = useMemo(() => turnSpeeds(f, [0.25, 0.5, 1]).map((s, i) => ({ ...s, label: `${['느리게', '보통', '빠르게'][i]} — 1초에 ${[0.25, 0.5, 1][i]}번 왕복 (${rateLabel(s.rate)})` })), [f]);
+  const speeds = useMemo(() => turnSpeeds(f, [0.25, 0.5, 1], lang).map((s, i) => ({ ...s, label: tr`${[tr('느리게'), tr('보통'), tr('빠르게')][i]} — 1초에 ${[0.25, 0.5, 1][i]}번 왕복 (${rateLabel(s.rate, lang)})` })), [f, lang]);
   const [speed, setSpeed] = useState(1);
   const clock = usePlayClock(speeds[speed].rate, 2 / f, box);
   const th = TWO_PI * f * clock.t;
@@ -74,40 +79,40 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
   const path = (ys: number[], n = ys.length) => ys.slice(0, n).map((y, i) => `${i ? 'L' : 'M'}${m.xs[i].toFixed(1)},${y.toFixed(1)}`).join('');
   const cursor = X0 + ((X1 - X0) * th) / (2 * TWO_PI);
   // 문장은 r 구간이 아니라 실제 숫자로 만든다: 질량/바닥 |x|, 스프링/바닥 |z|, 센서가 읽는 배율(평탄 = ±10 %)
-  const kind = velocity ? '속도계' : '가속도계';
+  const kind = velocity ? tr('속도계') : tr('가속도계');
   const read = sensorResponse(velocity ? 'velocity' : 'accelerometer', f, fn, zeta).ratio;
-  const massSay = m.xa > 1.5 ? `질량이 바닥보다 크게(바닥의 ${formatNumber(m.xa, 3)}배) 흔들립니다`
-    : m.xa < 0.5 ? `질량은 공간에서 거의 멈춰 있고(바닥의 ${formatNumber(m.xa, 2)}배) 케이스만 그 둘레를 오갑니다`
-    : m.za < 0.2 ? `질량이 케이스와 거의 함께 움직입니다(바닥의 ${formatNumber(m.xa, 3)}배)`
-    : `질량은 바닥의 ${formatNumber(m.xa, 2)}배로 움직입니다`;
-  const why = velocity ? '코일은 이 상대 운동의 빠르기를 읽습니다' : '압전 소자는 이 늘어남(r이 작을 때 바닥 가속도에 비례)을 읽습니다';
-  const verdict = Math.abs(read - 1) <= 0.1 ? '평탄 대역(±10 %) 안입니다' : read > 1 ? '실제보다 크게 읽습니다' : '실제보다 작게 읽습니다';
-  const say = `r = ${formatNumber(r, 3)}: ${massSay}. 스프링 늘어남 z는 바닥 움직임의 ${formatNumber(m.za, 3)}배이고, ${why}. 그래서 ${kind}는 실제의 ${formatNumber(read, 3)}배로 읽습니다 — ${verdict}.`;
+  const massSay = m.xa > 1.5 ? tr`질량이 바닥보다 크게(바닥의 ${formatNumber(m.xa, 3)}배) 흔들립니다`
+    : m.xa < 0.5 ? tr`질량은 공간에서 거의 멈춰 있고(바닥의 ${formatNumber(m.xa, 2)}배) 케이스만 그 둘레를 오갑니다`
+    : m.za < 0.2 ? tr`질량이 케이스와 거의 함께 움직입니다(바닥의 ${formatNumber(m.xa, 3)}배)`
+    : tr`질량은 바닥의 ${formatNumber(m.xa, 2)}배로 움직입니다`;
+  const why = velocity ? tr('코일은 이 상대 운동의 빠르기를 읽습니다') : tr('압전 소자는 이 늘어남(r이 작을 때 바닥 가속도에 비례)을 읽습니다');
+  const verdict = Math.abs(read - 1) <= 0.1 ? tr('평탄 대역(±10 %) 안입니다') : read > 1 ? tr('실제보다 크게 읽습니다') : tr('실제보다 작게 읽습니다');
+  const say = tr`r = ${formatNumber(r, 3)}: ${massSay}. 스프링 늘어남 z는 바닥 움직임의 ${formatNumber(m.za, 3)}배이고, ${why}. 그래서 ${kind}는 실제의 ${formatNumber(read, 3)}배로 읽습니다 — ${verdict}.`;
 
   return (
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed} status={`r = f/fₙ = ${formatNumber(r, 3)}`}>
         <label className="anim-speed">
-          보기
+          {tr("보기")}
           <select value={view} onChange={(e) => setView(e.target.value as View)}>
-            <option value="low">고유진동수 아래 (r = 0.2)</option>
-            <option value="res">고유진동수 근처 (r = 1)</option>
-            <option value="high">고유진동수 위 (r = 5)</option>
-            <option value="test">랩의 시험 주파수 ({formatNumber(testF, 4)} Hz)</option>
+            <option value="low">{tr("고유진동수 아래 (r = 0.2)")}</option>
+            <option value="res">{tr("고유진동수 근처 (r = 1)")}</option>
+            <option value="high">{tr("고유진동수 위 (r = 5)")}</option>
+            <option value="test">{tr("랩의 시험 주파수 (")}{formatNumber(testF, 4)} Hz)</option>
           </select>
         </label>
       </PlayControls>
       <ResponsiveSvg mobilePanels={[[0,-4,330,270],[330,-4,390,270]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`${velocity ? '속도계' : '가속도계'} 케이스 안의 질량과 스프링. ${say}`}>
+        aria-label={tr`${velocity ? tr('속도계') : tr('가속도계')} 케이스 안의 질량과 스프링. ${say}`}>
         {/* 공간에 고정된 기준 높이 */}
         <line x1={30} y1={M0} x2={290} y2={M0} stroke="var(--status-wip)" strokeDasharray="6 4" opacity="0.8" />
-        <text x={218} y={M0 - 6} fontSize="11.5" fill="var(--status-wip)">질량의 제자리</text>
+        <text x={218} y={M0 - 6} fontSize="11.5" fill="var(--status-wip)">{tr("질량의 제자리")}</text>
         {/* 바닥판 (기계 표면) */}
         <rect x={40} y={floor} width={220} height={12} fill="var(--border)" stroke="var(--text-muted)" />
-        <text x={266} y={floor + 10} fontSize="12" fill="var(--text-muted)">기계 표면</text>
+        <text x={266} y={floor + 10} fontSize="12" fill="var(--text-muted)">{tr("기계 표면")}</text>
         {/* 케이스 */}
         <rect x={CX - 62} y={floor - CASE_H} width={124} height={CASE_H} rx={6} fill="none" stroke="var(--text-muted)" strokeWidth="2.4" />
-        <text x={CX + 66} y={floor - CASE_H + 14} fontSize="12" fill="var(--text-muted)">케이스</text>
+        <text x={CX + 66} y={floor - CASE_H + 14} fontSize="12" fill="var(--text-muted)">{tr("케이스")}</text>
         {/* 스프링 (케이스 바닥 → 질량 아래) */}
         <path d={spring(CX, floor - 2, massC + MASS_H / 2)} fill="none" stroke="var(--plot-2)" strokeWidth="2.4" />
         <rect x={CX - MASS_W / 2} y={massC - MASS_H / 2} width={MASS_W} height={MASS_H} rx={5} fill="var(--accent-soft)" stroke="var(--plot-1)" strokeWidth="2.4" />
@@ -115,7 +120,7 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
 
         {/* 위 띠: 바닥과 질량 (같은 축척) */}
         <text x={X0} y={18} fontSize="12.5" fill="var(--text-muted)">
-          <tspan fill="var(--text-muted)">바닥(케이스) ━</tspan> <tspan fill="var(--plot-1)">질량 ━</tspan> (공간에서 본 높이)
+          <tspan fill="var(--text-muted)">{tr("바닥(케이스) ━")}</tspan> <tspan fill="var(--plot-1)">{tr("질량 ━")}</tspan> {tr("(공간에서 본 높이)")}
         </text>
         <line x1={X0} y1={T1} x2={X1} y2={T1} stroke="var(--border)" />
         <path d={path(m.base)} fill="none" stroke="var(--text-muted)" strokeWidth="1.2" opacity="0.25" />
@@ -123,14 +128,14 @@ export default function SensorMotion({ fn, zeta, testF, velocity }: { fn: number
         <path d={path(m.base, upto)} fill="none" stroke="var(--text-muted)" strokeWidth="2.2" />
         <path d={path(m.mass, upto)} fill="none" stroke="var(--plot-1)" strokeWidth="2.4" />
         {/* 아래 띠: 스프링 늘어남 = 센서가 읽는 것 */}
-        <text x={X0} y={T2 - 52} fontSize="12.5" fill="var(--plot-2)">스프링 늘어남 z = 센서가 읽는 것</text>
-        <text x={X1} y={H - 4} textAnchor="end" fontSize="11.5" fill="var(--text-muted)">z의 크기 = 바닥의 {formatNumber(m.za, 2)}배 (그림은 크기를 따로 맞춤)</text>
+        <text x={X0} y={T2 - 52} fontSize="12.5" fill="var(--plot-2)">{tr("스프링 늘어남 z = 센서가 읽는 것")}</text>
+        <text x={X1} y={H - 4} textAnchor="end" fontSize="11.5" fill="var(--text-muted)">{tr("z의 크기 = 바닥의 ")}{formatNumber(m.za, 2)}{tr("배 (그림은 크기를 따로 맞춤)")}</text>
         <line x1={X0} y1={T2} x2={X1} y2={T2} stroke="var(--border)" />
         <path d={path(m.rel)} fill="none" stroke="var(--plot-2)" strokeWidth="1.2" opacity="0.2" />
         <path d={path(m.rel, upto)} fill="none" stroke="var(--plot-2)" strokeWidth="2.4" />
         <line x1={cursor} y1={26} x2={cursor} y2={H - 8} stroke="var(--text-muted)" opacity="0.5" />
       </ResponsiveSvg>
-      <p className="anim-caption">{say} 그림은 상자 안에 들어가게 크기를 맞췄고 재생 속도는 위 선택(실제 대비 배율)대로입니다 (센서 고유진동수 {formatNumber(fn, 4)} Hz, ζ = {formatNumber(zeta, 2)}).</p>
+      <p className="anim-caption">{say}{tr(" 그림은 상자 안에 들어가게 크기를 맞췄고 재생 속도는 위 선택(실제 대비 배율)대로입니다 (센서 고유진동수 ")}{formatNumber(fn, 4)} Hz, ζ = {formatNumber(zeta, 2)}).</p>
     </div>
   );
 }

@@ -1,0 +1,259 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P3-2 Proximity probe systems
+description: The probe, cable and driver of a proximity probe system and eddy currents; gap voltage, sensitivity and linear range; mean position (DC) and vibration (AC) in one signal; distortion outside the linear range; mechanical and electrical runout and slow-roll measurement; and X-Y installation
+sectionId: P3-2
+source: p3-2.mdx
+sourceHash: 25b3c83843
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import ProximityLab from '../../components/labs/ProximityLab';
+import * as F from '../../figures/p3-2';
+
+# 3-2 Proximity probe systems: position and vibration in one voltage
+
+The monitoring display of a power-generation turbine shows values such as "Gap −9.8 V" and "52 µm pp" at each bearing. How can a sensor that never touches the shaft show both its position and motion in µm? And why can it read more than 10 µm even when the shaft is turning very slowly before startup?
+
+P3-1 explained why GT/ST shafts are measured directly with proximity probes. This page looks at **how the sensor system converts distance into voltage, what you can read from that voltage, and what to watch for**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain how a probe, cable and driver work as one set to convert distance into voltage.
+2. You can calculate the distance to the shaft from gap voltage and sensitivity, and explain the linear range.
+3. You know that the signal's mean (DC) gives shaft position and its fluctuation (AC) gives vibration.
+4. You know that vibration is under-read outside the linear range.
+5. You can identify runout (mechanical and electrical), which appears even without shaft vibration, by measuring at slow roll.
+
+</Callout>
+
+---
+
+## 1. The probe system: probe · cable · driver
+
+How can we measure distance without touching the shaft?
+
+<Figure {...F.probeSystem} />
+
+The probe tip contains a small coil. When the driver sends high-frequency current through it, a magnetic field forms around the coil and induces small circulating currents in the nearby metal (the shaft surface). The closer the shaft, the stronger these currents become and the more energy they take from the coil. The driver converts this change into **a voltage proportional to distance**.
+
+<Callout type="term" title="Eddy current">
+
+An eddy current circulates inside metal exposed to a changing magnetic field. A proximity probe measures distance through the strength of the eddy currents at the shaft surface. It is therefore also called an eddy-current probe.
+
+</Callout>
+
+The eddy-current strength depends on **shaft material** and **cable length** as well as distance. The probe, cable and driver are therefore calibrated together for a specified length and target material (often a tool-steel grade). Replacing only one component or using a different shaft material invalidates that calibration.
+
+---
+
+## 2. Gap voltage: from distance to voltage
+
+How does the sensor voltage relate to the distance to the shaft?
+
+<Figure {...F.calibrationCurve} />
+
+What you can read from Figure 2:
+
+- **Negative (−) voltage**: the output is below 0 V and becomes more negative as the shaft moves farther away.
+- **Linear range**: inside the gray band, voltage is directly proportional to distance. The slope is the <strong>sensitivity</strong> $S$.
+- **Outside the range**: the curve flattens when the shaft is very close or very far away.
+
+$$
+V_{gap} = -S\,d \quad\Longrightarrow\quad d = \frac{V_{gap}}{-S}
+$$
+
+- $V_{gap}$: mean output voltage [V], commonly called gap voltage.
+- $S$: sensitivity [V/mm], $d$: distance to the shaft (gap) [mm].
+
+<Callout type="example" title="How many mm does a gap voltage of −9.5 V mean?">
+
+1. Sensitivity is often specified as 200 mV/mil. Since 1 mil = 1/1000 inch = 25.4 µm, 0.2 V ÷ 0.0254 mm = **7.87 V/mm**.
+2. $d$ = −9.5 V ÷ (−7.87 V/mm) = **1.21 mm**.
+3. This is around the middle of the linear range (0.25 ~ 2.3 mm).
+
+</Callout>
+
+<Callout type="warn" title="'Higher voltage means a closer shaft'">
+
+The negative output can be confusing. −15 V means **farther away** than −5 V. As the shaft approaches the sensor, the voltage rises toward 0 V.
+
+</Callout>
+
+---
+
+## 3. Position and vibration in one signal: DC and AC
+
+What happens to the output voltage when the shaft vibrates?
+
+<Figure {...F.dcAndAc} />
+
+The <strong>mean (DC)</strong> of the output voltage gives mean shaft position. It tells you where the shaft sits inside the bearing clearance. Combining the DC values of two sensors lets you plot how the shaft center shifts with load and speed (shaft centerline, P4-3).
+
+The <strong>fluctuation (AC)</strong> around the mean is vibration. Dividing it by sensitivity gives distance, and shaft vibration is usually expressed as Peak-Peak (pp), so the total span of shaft motion can be compared directly with bearing clearance (P2-1).
+
+$$
+d_{pp} = \frac{\Delta V_{pp}}{S} = \frac{0.472\ \mathrm{V}}{7.87\ \mathrm{V/mm}} = 0.060\ \mathrm{mm} = 60\ \mu\mathrm{m\ pp}
+$$
+
+In the lab below, change gap and vibration and read DC and AC.
+
+<Callout type="try">
+
+1. With the initial settings (mean gap 1.20 mm, 3600 rpm, vibration 60 µm pp, no runout), read the gap voltage and "Vibration + runout pp".
+2. Set the mean gap to 1.21 mm and see whether the gap voltage is near −9.5 V.
+3. Increase shaft vibration from 60 → 120 µm pp. How many V is the fluctuation span (AC) in the second graph?
+4. Press **Play** in the animation at the top of the lab. As the shaft approaches the probe, does the voltage become less negative or more negative?
+
+</Callout>
+
+<ProximityLab client:visible lang="en" />
+
+In step 1 the gap voltage is −9.45 V (1.20 mm × 7.87 V/mm), and the voltage fluctuates around it by 0.472 V pp, giving a converted vibration of 60 µm pp. Setting 1.21 mm in step 2 gives −9.53 V. Doubling vibration in step 3 also doubles AC to 0.945 V pp, while DC stays the same. Read **position from DC and vibration from AC** separately. In the animation in step 4, as the shaft rises toward the probe (motion is greatly exaggerated), the gap decreases and the voltage becomes less negative (upward). As it moves away, the voltage becomes more negative (downward). The voltage waveform directly records the shaft's approach to and retreat from the probe.
+
+---
+
+## 4. Outside the linear range: vibration is under-read
+
+What happens if you install the probe with too large (or too small) a gap?
+
+<Figure {...F.outOfRange} />
+
+Where the curve flattens, the same change in distance produces a smaller change in voltage. Conversion still divides by the same sensitivity, so the portion entering that region is **compressed**, and vibration is under-read. In Figure 4, the probe installed at 2.4 mm reads 300 µm pp as 193 µm pp.
+
+<Callout type="field" title="Set the gap near the middle of the linear range">
+
+During installation, stop the shaft and use the gap voltage to set the gap near the middle of the linear range (for example, around −9 ~ −10 V for this probe). During operation, thermal expansion and load shift mean shaft position, with vibration superimposed, so leave room on both sides. Follow the probe and machine manuals for the exact setting.
+
+</Callout>
+
+<Callout type="try">
+
+1. With the initial settings (mean gap 2.40 mm, vibration 300 µm pp), see whether the thick blue line in the first graph crosses the end of the linear range (orange dashed).
+2. Compare the "Vibration + runout pp" readout with the actual value.
+3. Move the mean gap to 1.20 mm and compare again.
+4. Change the target material to "Different material". What is read incorrectly this time?
+
+</Callout>
+
+<ProximityLab client:visible lang="en" initialGap={2.4} initialVib={300} />
+
+In steps 1·2, the signal ranges from 2.25 ~ 2.55 mm, crossing the end of the linear range (2.3 mm). The converted vibration is about 193 µm pp, 36 % below the actual 300 µm pp. Moving the gap to 1.20 mm in step 3 restores the reading to 300 µm pp. Step 4 produces an error even inside the linear range: actual sensitivity is 12 % lower, but conversion uses the calibrated sensitivity, so both vibration and mean distance are under-read by 12 %.
+
+<Callout type="warn" title="'The calibration works on any shaft'">
+
+Calibrated sensitivity applies only to the target material and cable length used for calibration. If the shaft material differs or the cable length has changed, recalibrate under those conditions.
+
+</Callout>
+
+---
+
+## 5. Runout: a signal even without shaft vibration
+
+Vibration should be almost zero when the shaft turns very slowly before startup. What could make the sensor still read more than 10 µm?
+
+<Figure {...F.runoutFigure} />
+
+The sensor measures **the distance to the surface passing in front of it**, rather than shaft **motion** itself. An uneven surface therefore produces a signal even when the shaft simply rotates in place. This is called <strong>runout</strong>.
+
+- **Mechanical runout**: a slightly eccentric or elliptical surface produces 1X·2X; a scratch or dent produces a sharp pulse at one angle.
+- **Electrical runout**: uneven material, local magnetism or uneven plating changes the eddy currents and output even at a constant distance.
+
+Runout is **a pattern fixed to rotation angle**: when speed changes, it appears at the same angle with the same shape and amplitude. Unbalance vibration, however, grows and shrinks with speed (P1-7). Measuring at a very low speed where vibration is almost zero (<strong>slow roll</strong>) therefore leaves runout alone.
+
+<Callout type="try">
+
+1. With the initial settings (both types of runout, 300 rpm, operating vibration 60 µm pp), compare "Vibration only" and "Runout only" in the third graph.
+2. Raise the speed to 3600 rpm. Does the shape or amplitude of the runout pattern change?
+3. Set runout to "None" and see what signal remains at 300 rpm.
+4. Restore runout to "Both" and press **Play** in the animation. What happens to the voltage waveform as the scratch and purple pattern (material variation) pass the probe?
+
+</Callout>
+
+<ProximityLab client:visible lang="en" initialRunout="both" initialRpm={300} />
+
+In step 1, vibration at 300 rpm is only about 1 µm pp; the signal of about 14 µm pp is almost entirely runout (about 13 µm pp). Raising speed to 3600 rpm in step 2 increases vibration to 60 µm pp and the signal to about 63 µm pp, while the runout pattern stays at the same angle and amplitude. Removing runout in step 3 leaves about 1 µm pp at 300 rpm. In step 4 the shaft barely vibrates, yet the scratch passing the probe increases the gap and makes the voltage drop in a sharp downward pulse. While the purple pattern passes, the voltage fluctuates irregularly even though the surface remains round. The pattern repeats whenever the same part of the shaft returns, so it is drawn again exactly after 1 revolution.
+
+Operating readings include runout, so subtracting the runout measured at slow roll gives the actual vibration. The 1X component has angle (phase) as well as amplitude: subtraction must account for direction rather than subtracting numbers alone. P3-3 covers this method (slow-roll compensation).
+
+<Callout type="field" title="Reducing runout">
+
+Keep the shaft track seen by the probe smoothly ground, demagnetized, and free of plating or scratches. Record any remaining runout at slow roll on each startup and use it for compensation.
+
+</Callout>
+
+---
+
+## 6. Installation: two probes 90° apart
+
+Why is one sensor not enough?
+
+<Figure {...F.xyProbes} />
+
+One sensor measures distance only along its viewing direction. The shaft moves in a plane inside the bearing, so **two sensors 90° apart** are needed to capture the full motion. Plotting their two signals together gives the path traced by the shaft center (orbit, P6-3), while their two DC values give shaft-center position (P4-3). A separate Keyphasor sensor near the same bearing provides the rotation-angle reference (P3-3).
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Probe system | Calibrate probe, cable and driver as one set. Measure distance through eddy currents |
+| Gap voltage | $V = -S\,d$; the output is negative and becomes more negative with distance. 7.87 V/mm = 200 mV/mil |
+| DC and AC | DC = mean shaft position (P4-3); AC ÷ sensitivity = vibration (µm pp) |
+| Linear range | Vibration is under-read outside it → set the gap near the middle of the range |
+| Calibration conditions | Different target material or cable length changes sensitivity → recalibrate |
+| Runout | Surface roundness and scratches (mechanical), material and magnetism (electrical). A pattern fixed to angle, identified at slow roll |
+| Installation | Two probes 90° apart (X-Y); check brackets, interference and surface condition |
+
+## 8. Check questions
+
+<details>
+<summary><strong>Q1. A probe with a sensitivity of 7.87 V/mm has a gap voltage of −12.4 V. How many mm away is the shaft? Is it inside the linear range (0.25 ~ 2.3 mm)?</strong></summary>
+
+12.4 ÷ 7.87 = **1.58 mm**. This is inside the linear range, though a little farther than its middle (about 1.3 mm).
+</details>
+
+<details>
+<summary><strong>Q2. The output voltage fluctuates by 0.95 V pp around its mean. What is the shaft vibration in µm pp?</strong></summary>
+
+0.95 ÷ 7.87 = 0.121 mm = **121 µm pp**. The mean voltage (DC) is not used to calculate vibration.
+</details>
+
+<details>
+<summary><strong>Q3. The datasheet gives sensitivity as 200 mV/mil. What is that in V/mm?</strong></summary>
+
+Since 1 mil = 25.4 µm = 0.0254 mm, 0.2 V ÷ 0.0254 mm = **7.87 V/mm**.
+</details>
+
+<details>
+<summary><strong>Q4. A probe at one bearing is installed with a gap voltage of −19 V, and its vibration reading is always lower than those of neighboring probes. What should you suspect?</strong></summary>
+
+19 ÷ 7.87 = 2.41 mm, beyond the end of the linear range (2.3 mm). The curve is flat there, so vibration may be under-read. Reset the gap near the middle of the range and compare again.
+</details>
+
+<details>
+<summary><strong>Q5. You read 15 µm pp at 300 rpm before startup and 70 µm pp during operation. Is actual vibration 70 − 15 = 55 µm pp?</strong></summary>
+
+You cannot simply subtract those numbers. Most of the 15 µm pp at 300 rpm is runout, and its 1X component may have a different <strong>angle (phase)</strong> from the operating 1X. Subtract with both amplitude and angle accounted for, and subtract 1X components rather than overall pp values (slow-roll compensation, P3-3).
+</details>
+
+<details>
+<summary><strong>Q6. A probe set calibrated with a tool-steel target is installed unchanged on a shaft of a different material. What could go wrong?</strong></summary>
+
+Different sensitivity can make both position (DC) and vibration (AC) wrong by the same ratio. Recalibrate with that shaft material or check the manufacturer's correction values. The same applies if cable length changes.
+</details>
+
+---
+
+The next page (P3-3) uses the once-per-revolution Keyphasor pulse to establish a rotation-angle reference, then covers reading 1X amplitude and phase together (the 1X vector) and slow-roll compensation.
+
+## References
+
+<References items={[
+  ['R-02', 'Eddy-current probes, gap voltage, runout and slow roll'],
+  ['R-09', 'Probe installation and runout examples'],
+  ['R-53', 'General sensor installation practices'],
+]} />

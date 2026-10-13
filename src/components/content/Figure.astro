@@ -58,6 +58,9 @@ function layoutFigure(mobile: boolean) {
   const W = compact ? 360 : FIG_LAYOUT.W;
   const ML = compact ? 54 : FIG_LAYOUT.ML;
   const MR = compact ? 18 : FIG_LAYOUT.MR;
+  const lineLabelOnLeft = (x: number, label?: string) =>
+    x > ML + (W - ML - MR) * 0.85 ||
+    (lang === 'en' && compact && x + 4 + textWidth(label ?? '') > W - MR && x - 4 - textWidth(label ?? '') >= ML);
   const wrap = (value: string, available: number) => {
     if (!compact) return [value];
     const lines: string[] = []; let line = '';
@@ -274,14 +277,14 @@ function layoutFigure(mobile: boolean) {
   }
 
   const rendered = laid.map(render);
-  return { W, H, ML, MR, rendered, mobile, compact };
+  return { W, H, ML, MR, rendered, mobile, compact, lineLabelOnLeft };
 }
 const figures = [layoutFigure(false), layoutFigure(true)];
 ---
 
 <figure class="fig" id={id}>
   <div class="fig-scroll">
-    {figures.map(({ W, H, ML, MR, rendered, mobile, compact }) => (
+    {figures.map(({ W, H, ML, MR, rendered, mobile, compact, lineLabelOnLeft }) => (
     <svg class={mobile ? 'fig-mobile' : 'fig-desktop'} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={caption} xmlns="http://www.w3.org/2000/svg">
       <title>{caption}</title>
       {
@@ -502,9 +505,9 @@ const figures = [layoutFigure(false), layoutFigure(true)];
                     {a.label && (
                       <text
                         class="fig-note"
-                        x={f2(r.sx(a.x) > ML + r.plotW * 0.85 ? r.sx(a.x) - 4 : r.sx(a.x) + 4)}
+                        x={f2(lineLabelOnLeft(r.sx(a.x), a.label) ? r.sx(a.x) - 4 : r.sx(a.x) + 4)}
                         y={top + 12}
-                        text-anchor={r.sx(a.x) > ML + r.plotW * 0.85 ? 'end' : 'start'}
+                        text-anchor={lineLabelOnLeft(r.sx(a.x), a.label) ? 'end' : 'start'}
                         style={`fill:${COLOR[a.color ?? 'muted']}`}
                       >
                         {a.label}

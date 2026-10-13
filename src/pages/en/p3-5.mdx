@@ -1,0 +1,266 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P3-5 Transient data acquisition and protection systems
+description: Collecting data while speed changes (time-interval and speed-interval triggers, synchronous sampling and order spectra, Bode, Polar and Cascade plots from runup data), protection system channels and alarm logic (Alert and Danger levels, time delay, voting, startup trip multiply and Danger bypass), and the difference between protection and condition monitoring systems
+sectionId: P3-5
+source: p3-5.mdx
+sourceHash: c708594b00
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import AlarmLab from '../../components/labs/AlarmLab';
+import * as F from '../../figures/p3-5';
+
+# 3-5 Transient data acquisition and protection systems: minutes to start, seconds at critical speed
+
+A turbine takes several minutes to start, but it passes through the critical-speed region, where vibration changes most, in just a few seconds. Saving data at the usual fixed time intervals can miss those seconds. And if vibration exceeds an alarm level during those same seconds, should the machine be stopped?
+
+This page covers **how to collect data** while speed changes, and **how a protection system decides** to stop a machine automatically when vibration grows.
+
+<Callout type="idea" title="After reading this page">
+
+1. You know the difference between time-interval and speed-interval triggers, and can explain why startup data uses speed intervals.
+2. You understand how synchronous sampling keeps components in one place even when speed changes.
+3. You can say what plots runup data provides (Bode, Polar and Cascade).
+4. You can explain what Alert and Danger levels, time delay, voting and trip multiply each prevent.
+5. You know the different roles of protection and condition monitoring systems.
+
+</Callout>
+
+---
+
+## 1. When to save: time intervals vs speed intervals
+
+Is saving data every few seconds enough during startup?
+
+<Figure {...F.triggers} />
+
+When operating speed is steady, data can be saved at fixed time intervals (for example, every few minutes). This is <strong>steady-state acquisition</strong>. While speed changes during startup or shutdown, switch to <strong>transient data acquisition</strong>. There are two ways to choose when to save.
+
+- **Time-interval trigger (Δt)**: save at fixed time intervals. The faster speed changes, the wider the speed spacing between saved points
+- **Speed-interval trigger (Δrpm)**: save whenever speed changes by a set amount (for example, 10 rpm). Even regions passed through quickly are captured closely
+
+The example runup in Figure 1 deliberately passes quickly through the critical-speed region (P1-7: pass through critical speed without dwelling), so the difference between the two methods is largest there.
+
+<Callout type="example" title="During the 10 seconds from 1900 ~ 2100 rpm">
+
+1. Acceleration through the critical region is 20 rpm/s → 10 seconds to cross 200 rpm
+2. Saving every 10 seconds: **2 points** in this region (1900·2100 rpm) — skipping the peak
+3. Saving every 10 rpm: **21 points** — capturing the peak and the 90° phase point
+
+</Callout>
+
+<Callout type="warn" title="'Collect startup data at the usual fixed time intervals'">
+
+Time intervals alone leave only a few points around critical speed. As in Figure 1, the peak reads 25 % too low, and the speed where phase passes through 90° is hard to identify accurately. Use speed-interval triggering as the basis of transient acquisition, with an additional time interval for regions where speed barely changes (for example, a warmup hold).
+
+</Callout>
+
+---
+
+## 2. Sampling with rotation: synchronous sampling
+
+What does a spectrum from one frame measured during acceleration look like?
+
+<Figure {...F.syncSampling} />
+
+With fixed time intervals between samples, the 1X frequency keeps changing during the frame and spreads over several bins. This is <strong>smearing</strong>, seen in P2-4. The peak becomes lower, and components that move faster, such as 2X, spread further.
+
+<strong>Synchronous sampling</strong> takes samples at fixed **rotation angles** rather than fixed times. The Keyphasor pulse (P3-3) measures the time of one revolution, which is divided into the same number of samples (for example, 64 points) each time. Even when speed changes, 1X is always "once per revolution," so plotting against order instead of frequency (an order spectrum, P2-6) places 1X exactly at order 1 and 2X at order 2. This is the order tracking introduced in P2-4 as a way to avoid smearing, and the same principle as P3-3's leakage-free 1X vector from a DFT of an integer number of revolutions starting at the Keyphasor. The calculation behind order tracking is covered in detail in P5-4.
+
+---
+
+## 3. What can runup data plot?
+
+What can you extract from data collected at speed intervals?
+
+<Figure {...F.cascade} />
+
+| Plot | What it plots | What to look for | Details |
+|---|---|---|---|
+| Bode · Polar | Magnitude and phase of the 1X (or nX) vector vs speed | Critical speed, amplification factor, phase change | P3-3, P4-1, P8-1 |
+| Cascade | Spectra stacked at each speed (Figure 3) | Components that follow rotation or stay fixed, the speed where a component appears | P6-2 |
+| Shaft centerline | Shaft center position from two sensors' gap voltages (DC) vs speed | Position changes as the shaft lifts onto the oil film | P3-2, P4-3 |
+
+These plots all come from **the same data at speed intervals**. Saving data in the same way on every startup lets you overlay it with the previous startup and compare changes.
+
+---
+
+## 4. Protection systems: stopping a machine when vibration is too large
+
+Who stops the machine when vibration becomes dangerous, and on what basis?
+
+<Figure {...F.channels} />
+
+A <strong>machinery protection system</strong> continuously monitors sensor signals. It raises an alarm when vibration exceeds a set level, and automatically stops the machine at a higher level. Its input channels include X·Y shaft vibration sensors at each bearing, an <strong>axial position sensor</strong> at the shaft end (how far the shaft has moved back or forth — indicating thrust bearing wear), a Keyphasor, and casing sensors when needed. For critical machines such as power-generation turbines, standards (including API 670) define the basic framework of channels and logic (the standard's numerical requirements are not reproduced on this site, I-009).
+
+<Callout type="term" title="Alert, Danger and trip">
+
+A protection monitor has two levels for each channel. Exceeding <strong>Alert</strong> (the first level) raises an alarm for someone to investigate. Exceeding <strong>Danger</strong> (the second level) sends a signal to stop the machine, called a <strong>trip</strong>. A trip when there is nothing wrong with the machine is called a spurious trip.
+
+</Callout>
+
+<Figure {...F.levelsDelay} />
+
+Judging by level alone would stop the machine even for a momentary measurement-chain spike (P3-4). A <strong>time delay</strong> therefore requires the level to be exceeded <strong>continuously for a set duration</strong> before an alarm activates. The 0.3-second spike in Figure 5 is shorter than the delay (1 second) and is ignored, while a real vibration increase activates the alarm 1 second later.
+
+<Callout type="try">
+
+1. In the starting state (momentary spike, delay 0 seconds, 1oo2), look at the trip time. What happened to the healthy machine?
+2. Raise the delay to 0.25 → 0.5 → 1 second. At what delay does the trip disappear?
+3. Change the scenario to **"Both channels grow gradually"**. With a 1-second delay, when do Alert and trip activate?
+
+</Callout>
+
+<AlarmLab client:visible lang="en" />
+
+In step 1, the 0.3-second spike at 20 s trips the machine as soon as it exceeds Danger — a spurious trip. At a 0.25-second delay in step 2 it still trips, but from 0.5 seconds the spike is shorter than the delay, so no alarm activates. In step 3, Alert activates at about 26 s and trip at about 37 s (1oo2). A delay still detects a real problem, just a few seconds later.
+
+<Callout type="warn" title="'A longer delay is safer'">
+
+A longer delay reduces spurious trips but also delays the response to a real fault with rapidly growing vibration. Keep the delay just long enough to reject measurement-chain spikes. Actual values follow the machine, manufacturer recommendations and standards.
+
+</Callout>
+
+---
+
+## 5. Voting: how many channels must exceed the level?
+
+Should a machine stop based on just one sensor?
+
+| Voting | Trip condition | What it prevents or catches | What it can miss or cause |
+|---|---|---|---|
+| 1oo1 (one out of one) | One channel reaches Danger | — | A failed sensor can cause a spurious trip or miss a fault |
+| 1oo2 (one out of two) | Either of two channels reaches Danger | Catches problems that grow in only one direction too | A spurious trip from one failed sensor or spike |
+| 2oo2 (two out of two) | Both channels reach Danger | Spurious trips caused by one failed sensor or spike | A problem that grows in only one channel |
+
+<strong>Voting</strong> is the logic that sets how many channels must agree before issuing a trip. Grouping the X·Y channels of one bearing as "trip when both exceed the level" (2oo2) keeps the machine running if one sensor fails. It can, however, miss vibration growing in only one direction, such as the straight-line orbit seen in P3-3. Voting is a choice between spurious trips and missed faults.
+
+<Callout type="try">
+
+1. In the starting state (Y cable intermittently disconnects and spikes, delay 1 second, 1oo2), look at the trip time and the alarm-state traces.
+2. Switch voting to 2oo2. What happens to the trip, and what remains?
+3. Change the scenario to **"Only X grows"** and compare 1oo2 with 2oo2.
+
+</Callout>
+
+<AlarmLab client:visible initialScenario="faultyProbe" initialDelay={1} initialVoting="1oo2" lang="en" />
+
+In step 1, the Y cable spike (1.5 seconds) is longer than the 1-second delay and causes a spurious trip at 16 s. Switching to 2oo2, as in step 2, prevents the trip because X is healthy, leaving only Y's Alert to prompt a sensor check. In step 3, conversely, 1oo2 trips at about 35.7 s, while 2oo2 never trips because Y stays near 60 µm pp.
+
+<Callout type="field" title="The protection system reports sensor faults separately">
+
+If gap voltage (P3-2) or bias voltage (P3-4) leaves the normal range, the protection monitor marks the channel "Not OK" and excludes it from alarm and trip decisions, or raises a warning. How voting changes while a channel is excluded depends on the settings, so check the equipment manual.
+
+</Callout>
+
+---
+
+## 6. Critical speed during startup: trip multiply
+
+What if a machine briefly exceeds Danger at critical speed on every startup?
+
+<Figure {...F.tripMultiply} />
+
+Vibration naturally exceeds its normal operating level during the few seconds spent passing critical speed (P1-7). Tripping every time would prevent the machine from starting. A function therefore temporarily raises the levels by a set multiplier during startup. This is called <strong>trip multiply</strong>. It is active only while the startup signal is present and returns the levels to normal near operating speed.
+
+<Callout type="try">
+
+1. In the starting state (startup, delay 1 second, 2oo2, multiply off), look at the trip time and speed plot.
+2. Turn on trip multiply. How do the level lines and trip time change?
+3. Turn multiply off again and instead raise the delay to 3.5 seconds. Does the trip disappear? Why is this approach undesirable?
+
+</Callout>
+
+<AlarmLab client:visible initialScenario="runup" initialDelay={1} initialVoting="2oo2" lang="en" />
+
+In step 1, amplitude rises to about 140 µm pp while passing critical speed (145 s), exceeds Danger 125 for a few seconds, and trips at 144.8 s. Turning on multiply in step 2 raises the startup level to 250 and prevents the trip; the level returns to 125 at about 306 s, when speed reaches 3500 rpm. In step 3, Y exceeds Danger for only 3.25 seconds, so a 3.5-second delay removes the 2oo2 trip. But that delay remains during normal operation and delays the response to a real fault by 3.5 seconds too. Trip multiply, which acts only during startup, is the appropriate tool.
+
+<Callout type="field" title="Always restore Danger bypass">
+
+Danger bypass temporarily disables the Danger output to prevent trips during maintenance or testing. The machine runs without protection during that time. Record when it is disabled and always restore it afterwards. Also check that trip multiply has turned off after startup ends.
+
+</Callout>
+
+---
+
+## 7. Protection and condition monitoring systems
+
+How do the two systems differ when they receive the same sensor signals?
+
+| | Protection system | Condition monitoring system |
+|---|---|---|
+| Purpose | Prevent major damage — stop the machine if it is dangerous | Find faults early and diagnose their causes |
+| Data used | A few numbers such as amplitude for each channel | Raw signals, spectra, phase, Bode·Polar·Cascade, orbits, trends |
+| Decision | Automatic and immediate, using levels, delay and voting | By a person (or diagnostic rules), over time |
+| Output | Alarm and trip relays | Reports, maintenance plans |
+| If it misses a fault | The machine may suffer major damage | The fault is recognized late |
+
+Protection systems quickly and reliably decide "should it stop now?" Condition monitoring systems decide "why is this happening, and when should it be repaired?" Most of Part 4 onwards on this site (rotordynamics, extended signal processing, field plots and diagnosis by fault type) concerns condition monitoring.
+
+---
+
+## 8. Summary
+
+| Topic | Remember |
+|---|---|
+| Transient acquisition | While speed changes, save at speed intervals (for example, 10 rpm). Time intervals alone can miss the critical-speed region |
+| Synchronous sampling | Divide each revolution into the same number of samples using the Keyphasor → nX stays exactly at order n even when speed changes |
+| Runup plots | Bode·Polar (1X vector vs rpm), Cascade (spectra stacked at each speed), shaft centerline |
+| Levels | Alert = alarm (a person investigates), Danger = trip (stop the machine) |
+| Time delay | A level must be exceeded continuously for a set duration → prevents spurious trips from momentary spikes. A long delay responds late |
+| Voting | 1oo2 misses fewer faults but has more spurious trips; 2oo2 is the reverse. A choice between spurious trips and missed faults |
+| Trip multiply | Raise levels only during startup to pass critical speed. Check restoration, along with Danger bypass |
+| The two systems | Protection = whether to stop now; condition monitoring = why and when to repair |
+
+## 9. Check yourself
+
+<details>
+<summary><strong>Q1. A runup passes through the critical region at 30 rpm/s, with data saved every 5 seconds. What is the speed spacing between saved points?</strong></summary>
+
+30 rpm/s × 5 s = <strong>150 rpm</strong>. This is comparable to the peak width of a lightly damped rotor (for example, about 200 rpm for the rotor in Figure 1), so the peak can be skipped. Switch to a speed-interval trigger (for example, 10 rpm).
+</details>
+
+<details>
+<summary><strong>Q2. In a spectrum measured during startup, the 1X bar spreads sideways and becomes lower. If this is a measurement problem, what do you change?</strong></summary>
+
+Speed changed during the frame, causing smearing. Synchronous sampling, using the same number of points per revolution tied to the Keyphasor, brings 1X together at order 1. If that is unavailable, shorten the frame (at the cost of coarser resolution, P2-4).
+</details>
+
+<details>
+<summary><strong>Q3. Occasional 0.2-second spikes on one channel caused spurious trips. What settings do you check?</strong></summary>
+
+Check whether the time delay is shorter than 0.2 seconds. Set it longer than the spike (for example, 1 second). Changing voting from 1oo1 or 1oo2 to 2oo2 for the same bearing's X·Y channels is another option. Also find and fix the source of the spikes (cables or connectors, P3-4).
+</details>
+
+<details>
+<summary><strong>Q4. On a bearing with X·Y grouped as 2oo2, X exceeds Danger but Y stays below Alert. Does the machine stop? Is it acceptable to leave it running without investigation?</strong></summary>
+
+It does not trip because voting is 2oo2. But X's Alert will have activated, so someone must investigate. Check whether Y's sensor has failed and reads low (bias or gap voltage), or whether vibration really is growing in only one direction (orbit, P3-3). In the latter case, 2oo2 is missing a real problem.
+</details>
+
+<details>
+<summary><strong>Q5. The machine trips at critical speed on every startup and cannot start. Can you permanently double the Danger level?</strong></summary>
+
+No. That would also weaken protection during normal operation. Use trip multiply to raise levels only during startup, returning to the original levels at operating speed. Before that, compare the Bode plot with the previous startup to check whether vibration at critical speed has grown (for example, from increased unbalance).
+</details>
+
+<details>
+<summary><strong>Q6. Can you diagnose a "bearing outer-race fault" from protection system amplitude values alone?</strong></summary>
+
+It is difficult. A protection system uses a few numbers such as amplitude per channel to decide whether to stop the machine. Diagnosing the fault type requires condition monitoring data such as spectra, time waveforms and phase (Part 6, Part 7).
+</details>
+
+---
+
+You have finished Part 3. Part 4 (rotordynamics) uses physics to interpret the runup data collected here. P4-1 extracts amplification factors and separation margins from Bode·Polar, followed by the shaft center's path (the Jeffcott rotor), fluid-film bearings and shaft centerline, and self-growing vibration (stability). The integration mentioned here (ski-slope, P3-4), tracking filters (P3-3) and order tracking (this page) are covered in the following Part 5 (extended signal processing).
+
+## References
+
+<References items={[
+  ['R-02', 'Transient data acquisition, synchronous sampling, Bode·Polar·Cascade and protection systems'],
+  ['R-09', 'Protection system settings and spurious trip examples'],
+  ['R-53', 'Basic framework of channels, alarm levels, delay, voting and trip multiply'],
+]} />
