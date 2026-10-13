@@ -67,7 +67,7 @@ const EN: Dict = {
   "성능 곡선과 운전점": 'Performance curve and operating point',
   "양정": 'Head',
   "효율": 'Efficiency',
-  "운전점": 'Operating point',
+  "운전점": 'Op. point',
   "펌프 성능 곡선과 운전점": 'Pump performance curve and operating point',
   "속도 스펙트럼 (1 s, Hann)": 'Velocity spectrum (1 s, Hann)',
   "속도": 'Velocity',

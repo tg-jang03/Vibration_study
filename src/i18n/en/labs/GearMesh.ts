@@ -27,7 +27,7 @@ const EN: Dict = {
   '상한 이빨이 맞물릴 때만 · 헌팅 투스 두 주기 (2 × {0} s)': 'Only when a damaged tooth engages · two hunting tooth periods (2 × {0} s)',
   '기어 2바퀴': '2 gear turns',
   '피니언 4바퀴': '4 pinion turns',
-  '맞물림마다의 충격 (막대 높이) · {0} 동안 {1}번': 'Impact at each engagement (bar height) · {1} engagements in {0}',
+  '맞물림마다의 충격 (막대 높이) · {0} 동안 {1}번': 'Impacts (bar height) · {1} in {0}',
   '피니언 바퀴 수': 'Pinion turns',
   '기어 바퀴 수': 'Gear turns',
   '파랑·보라 선은 두 기어가 도는 것을 보이는 표시선입니다. 그림은 실제보다 느리게 재생합니다':

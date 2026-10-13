@@ -35,7 +35,7 @@ const EN: Dict = {
   '계통↔축계 에너지 교환': 'Grid ↔ shaft energy exchange',
   '기록을 같은 시각에 비교': 'Compare records at the same time',
   '전압·전류 / 제어 로그': 'Voltage, current / control log',
-  '각속도·상대각·축 변형률': 'Angular speed, relative angle, shaft strain',
+  '각속도·상대각·축 변형률': 'Speed · twist · strain',
   '감쇠 / 반복 / 지속 성장': 'Decays / repeats / persists or grows',
   '그림 5. 가상 f₀₁=400 Hz·c₁=40, f₀₂=700 Hz·c₂=20과12차 가진의 교차는2353.39·3771.71 rpm입니다. 첫 모드의 c=0 교차2000 rpm과 비교하면 강성화가 교차를 옮깁니다. 교차 표시만으로 응력이나 피로수명은 알 수 없습니다.':
     'Figure 5. For the virtual f₀₁=400 Hz, c₁=40 and f₀₂=700 Hz, c₂=20 with order-12 excitation, the crossings are at 2353.39 and 3771.71 rpm. Compared with the c=0 crossing of the first mode at 2000 rpm, stiffening moves the crossing. The crossing marks alone do not tell you stress or fatigue life.',

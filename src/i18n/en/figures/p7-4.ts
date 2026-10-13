@@ -5,12 +5,12 @@ const EN: Dict = {
   // 그림 1
   '그림 1. 1X 아래(서브싱크로너스) 후보를 한 장의 주파수-회전수 지도에 그렸다 (설명용, 1차 임계속도 3000 rpm = 50 Hz). 오일 휠(파랑)은 문턱(4800 rpm) 위에서 0.45X로 따라가다 6670 rpm에서 50 Hz에 잠기고(오일 휩), 유체력 선회(보라)는 처음부터 50 Hz 근처에 선다. 러브·회전 풀림의 ½X(주황)는 임계속도의 약 2배 구간에서 정확히 회전수의 절반이다. Rotating stall(초록)은 유량이 줄면 0.17 ~ 0.2X에, 구조 공진(회색)은 회전수와 무관하게 38 Hz에 선다. 구름베어링이라면 케이지 FTF(약 0.4X, 점선)도 있다. 6000 ~ 7200 rpm에서 0.4 ~ 0.5X 둘레에 후보 여럿이 몇 Hz 차이로 겹친다 — 자리만으로는 가를 수 없다.':
     'Figure 1. The candidates below 1X (subsynchronous) drawn on one frequency-versus-speed map (explanatory; first critical speed 3000 rpm = 50 Hz). Oil whirl (blue) follows at 0.45X above its threshold (4800 rpm) and locks at 50 Hz from 6670 rpm (oil whip); fluid-force whirl (purple) stands near 50 Hz from the start. The ½X of rub and rotating looseness (orange) is exactly half the speed in the range about twice the critical speed. Rotating stall (green) stands at 0.17 to 0.2X when the flow drops, and structural resonance (gray) stands at 38 Hz regardless of speed. With rolling-element bearings there is also the cage FTF (about 0.4X, dotted). At 6000 to 7200 rpm several candidates overlap within a few Hz around 0.4 to 0.5X, so position alone cannot separate them.',
-  'FTF 0.4X (구름베어링)': 'FTF 0.4X (rolling-el.)',
+  'FTF 0.4X (구름베어링)': 'FTF 0.4X',
   '오일 휠 → 휩': 'Oil whirl → whip',
-  '유체력 선회': 'Fluid-force whirl',
-  '½X (러브·풀림)': '½X (rub, looseness)',
-  'Rotating stall (유량 60 %)': 'Rotating stall (flow 60 %)',
-  '구조 공진 38 Hz': 'Structural res. 38 Hz',
+  '유체력 선회': 'Fluid whirl',
+  '½X (러브·풀림)': '½X (rub, loose)',
+  'Rotating stall (유량 60 %)': 'Stall (flow 60 %)',
+  '구조 공진 38 Hz': 'Structural resonance 38 Hz',
   // 그림 2
   '그림 2. 유체막 불안정의 1X 아래 성분 크기(정·역 반지름의 합, 설명용). 회전수를 올릴 때(파랑)는 4800 rpm에서 갑자기 나타나고, 6670 rpm 위에서 휩으로 잠기며 크게 자란다(65 µm). 내릴 때(주황 점선)는 나타났던 회전수보다 낮은 4200 rpm까지 남아 있다 — 한번 시작된 선회는 더 낮은 회전수까지 이어진다(히스테리시스). 런업과 코스트다운의 문턱이 다르면 불안정을 의심하는 단서가 된다.':
     'Figure 2. Size of the component below 1X in fluid-film instability (sum of the forward and reverse radii, explanatory). On the way up (blue) it appears suddenly at 4800 rpm and, above 6670 rpm, locks as whip and grows large (65 µm). On the way down (orange dashed) it remains down to 4200 rpm, lower than the speed where it appeared: once started, the whirl continues to lower speeds (hysteresis). If the run-up and coast-down thresholds differ, that is a clue to suspect instability.',

@@ -91,9 +91,13 @@ export const candidateMap: FigureSpec = {
         { ...steamLine, color: 'c4', width: 1.8, dash: true, label: '유체력 선회' },
         { ...halfLine, color: 'c2', width: 2.4, label: '½X (러브·풀림)' },
         { ...stallLine, color: 'c3', width: 2, label: 'Rotating stall (유량 60 %)' },
-        { ...structLine, color: 'text', width: 1.4, label: '구조 공진 38 Hz' },
+        // 범례가 한 줄을 넘쳐 마지막 항목이 잘리므로 구조 공진은 선 옆에 글자로 단다
+        { ...structLine, color: 'text', width: 1.4 },
       ],
-      annotations: [{ type: 'hline', y: M.fn, color: 'muted', dash: true, label: `f_n = ${M.fn} Hz`, labelAt: 'start' }],
+      annotations: [
+        { type: 'hline', y: M.fn, color: 'muted', dash: true, label: `f_n = ${M.fn} Hz`, labelAt: 'start' },
+        { type: 'text', x: M.rpmMax, y: 38, dx: -4, dy: 16, anchor: 'end', text: '구조 공진 38 Hz' },
+      ],
     },
   ],
 };

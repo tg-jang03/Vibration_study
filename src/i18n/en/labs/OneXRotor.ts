@@ -1,8 +1,8 @@
 import type { Dict } from '../../translate';
 
 const EN: Dict = {
-  '두 끝이 함께 — 원통형(병진)': 'Both ends together — cylindrical (translation)',
-  '두 끝이 반대로 — 원추형(기울기)': 'Ends opposite — conical (tilting)',
+  '두 끝이 함께 — 원통형(병진)': 'Ends together — cylindrical',
+  '두 끝이 반대로 — 원추형(기울기)': 'Ends opposite — conical',
   '병진과 기울기가 섞임': 'Translation and tilting mixed',
   '축 {0}바퀴 · {1} rpm': 'Shaft {0} turns · {1} rpm',
   '원판 두 개 로터를 옆에서 본 모습. 두 베어링 수직 1X 위상차 {0}°: {1}.': 'Side view of a rotor with two disks. Vertical 1X phase difference between the two bearings {0}°: {1}.',
@@ -10,7 +10,7 @@ const EN: Dict = {
   '센서 {0} (수직)': 'Sensor {0} (V)',
   '베어링 {0}': 'Bearing {0}',
   '두 센서의 1X (두 바퀴)': '1X of the two sensors (two turns)',
-  '위상차 (수직, 센서 2 − 센서 1) =': 'Phase difference (vertical, sensor 2 − sensor 1) =',
+  '위상차 (수직, 센서 2 − 센서 1) =': 'Phase diff. (vert., S2 − S1) =',
   '축의 위아래 움직임은 두 수직 센서가 읽은 1X를 직선으로 이은 것입니다(강성 로터, 움직임은 크게 그리되 축척은 고정이라 진폭 차이도 그대로 보입니다 — 센서 1 {0} µm p-p, 센서 2 {1} µm p-p).':
     'The up-and-down motion of the shaft is a straight line through the 1X read by the two vertical sensors (a stiff rotor; the motion is drawn enlarged but with a fixed scale, so differences in amplitude are visible too — sensor 1 {0} µm p-p, sensor 2 {1} µm p-p).',
   ' 주황 점은 원판의 불평형(무거운 쪽)입니다. 두 원판에서 같은 각이면 축 전체가 같이 들리고(정적), 반대 각이면 한쪽이 들릴 때 다른 쪽이 내려갑니다(커플).':
