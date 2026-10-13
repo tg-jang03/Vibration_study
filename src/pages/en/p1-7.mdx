@@ -1,0 +1,295 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 'P1-7 Vibration of Rotating Machinery: Unbalance and 1X'
+description: 'Learn the rotating force that unbalance produces and the resulting 1X vibration, the centrifugal force that grows with the square of speed, the critical speed and passing through resonance, and the mass-center rotation (self-centering) of the supercritical range, using the unbalance run-up lab'
+sectionId: P1-7
+source: p1-7.mdx
+sourceHash: 77908f6cdd
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import UnbalanceLab from '../../components/labs/UnbalanceLab';
+import * as F from '../../figures/p1-7';
+
+# 1-7 Vibration of Rotating Machinery: Unbalance and 1X
+
+If a car's wheel balance is off, the steering wheel shakes in a certain speed range. Yet drive faster than that range and the shaking sometimes dies down.
+
+Why does a rotating shaft shake in step with its rotation speed? And why does the vibration subside again once you pass a particular speed (the critical speed)?
+
+This phenomenon can be explained by the **unbalance** of the rotor and the **centrifugal force** it creates.
+
+<Figure {...F.unbalanceModel} />
+
+<Callout type="idea" title="After reading this page">
+
+1. You can convert revolutions per minute (rpm) to frequency (Hz, 1X).
+2. You can explain why the centrifugal force from unbalance grows with the square of speed ($\Omega^2$).
+3. You understand why a force rotating with the shaft shows up in one fixed direction as a **1X sinusoidal vibration**.
+4. You can explain how amplitude and phase change (0° → 90° → 180°) as the speed passes the natural frequency (the **critical speed**).
+5. You know the **mass-center rotation (self-centering)**, in which the shaft turns about its center of mass at high speed beyond the critical speed.
+6. You can explain how the high-speed limits differ between ordinary forced vibration (P1-4) and unbalance vibration (P1-7).
+
+</Callout>
+
+---
+
+## 1. Speed and frequency: from rpm to 1X
+
+The rotation speed of a machine is usually given in **rpm (revolutions per minute)**. One minute is 60 seconds, so dividing by 60 gives the frequency $f$ [Hz], the number of turns per second.
+
+$$
+f = \frac{\text{rpm}}{60} \quad [\text{Hz}], \quad \Omega = 2\pi f = 2\pi \left(\frac{\text{rpm}}{60}\right) \quad [\text{rad/s}]
+$$
+
+- 1800 rpm = 30 Hz (4-pole generator on a 60 Hz grid)
+- 3000 rpm = 50 Hz (2-pole gas or steam turbine on a 50 Hz grid)
+- 3600 rpm = 60 Hz (2-pole generator on a 60 Hz grid, Korea and the US)
+
+In diagnostics, the vibration component that repeats once per revolution is called **1X (once-per-revolution frequency)**. At 3000 rpm, 1X is 50 Hz.
+
+<Callout type="term" title="1X (once-per-revolution vibration)">
+
+The vibration component that occurs at the same rate as the rotation frequency. It is the most typical component produced by rotor unbalance and serves as the basic reference point in rotating-machinery diagnostics.
+
+</Callout>
+
+---
+
+## 2. A shifted center of mass: unbalance and centrifugal force
+
+However precisely a shaft is machined, its weight can never be perfectly symmetric. Machining error, internal voids, assembly deviation and weight differences between blades all push the center of mass (G) of the whole rotor slightly away from the center of rotation (O).
+
+This offset is called **unbalance**. As in Figure 1, it can be simplified as a small unbalance mass $m_u$ attached at a distance $e$ from the center of rotation O. The box in Figure 1 is the whole machine that shakes together with the rotor, and we call its mass $M$.
+
+When a mass rotates at angular speed $\Omega$, a **centrifugal force** arises that tries to fling it outward.
+
+$$
+F_u = m_u e \,\Omega^2
+$$
+
+$m_u e$ is the unbalance mass times its radius (unit kg·m). The most important fact here is that the centrifugal force is proportional to the **square** of the angular speed ($\Omega^2$).
+
+<Callout type="example" title="Double the speed, four times the force">
+
+The example machine on this page has $m_u e = 0.01$ kg·m (roughly 20 g sitting at a radius of 0.5 m).
+
+1. 1500 rpm: $\Omega = 2\pi \times 25 = 157.1\text{ rad/s}$, $F_u = 0.01 \times 157.1^2 \approx 247\text{ N}$
+2. 3000 rpm: $\Omega = 314.2\text{ rad/s}$, $F_u \approx 987\text{ N}$ (speed ×2 → force $2^2 = 4$ times)
+3. 6000 rpm: $\Omega = 628.3\text{ rad/s}$, $F_u \approx 3948\text{ N}$ (speed ×4 → force $4^2 = 16$ times)
+
+At 3000 rpm, an unbalance of 20 g pushes the shaft around with a force (987 N) equal to the weight of about 100 kg.
+
+</Callout>
+
+<Figure {...F.centrifugalForceCurve} />
+
+In Figure 2, the curve getting steeper to the right is the shape of a square law. The centrifugal force of 247 N at 1500 rpm becomes 987 N at 3000 rpm and 3948 N at 6000 rpm.
+
+---
+
+## 3. 1X vibration from a rotating force
+
+Let us look at the centrifugal force $F_u$ that turns with the shaft through the eyes of a vibration sensor fixed in one direction (say, horizontal).
+
+Because the force arrow turns through the angle $\Omega t$, its component along the horizontal (x) axis is a sinusoid:
+
+$$
+F_x(t) = F_u \cos\Omega t = (m_u e \Omega^2) \cos\Omega t
+$$
+
+This has the same form as the harmonic force $F_0 \cos\omega t$ from P1-4. The only difference is that the force amplitude $F_u$ itself changes with the square of the speed ($\Omega^2$).
+
+<Figure {...F.timeWaveform1X} />
+
+As in Figure 3, the horizontal displacement response of a machine turning at 3000 rpm (50 Hz) also appears as a 50 Hz sinusoid. It is a vibration that swings back and forth once per revolution (20 ms), that is, **1X vibration**.
+
+$$
+x(t) = X \cos(\Omega t - \varphi)
+$$
+
+Here $X$ is the displacement amplitude and $\varphi$ is the phase lag by which the displacement trails the force (P1-4).
+
+<Callout type="warn" title="'Large 1X vibration always means unbalance?'">
+
+1X vibration is the signature of unbalance, but misalignment, a bent shaft, and vibration amplified by resonance near a natural frequency (the critical speed in the next section) also produce a large 1X. Before attaching a balancing weight based on size alone, look at the phase and the operating conditions together (P1-9, P7-2).
+
+</Callout>
+
+---
+
+## 4. Critical speed and the Bode plot
+
+As you slowly raise the speed of a machine, there comes a moment when the angular speed $\Omega$ equals the natural angular frequency $\omega_n = \sqrt{k/M}$ of the shaft-bearing support system.
+
+This speed is called the **critical speed**. The 1X excitation frequency equals the natural frequency, so **resonance** occurs.
+
+Solving the equation of motion $M\ddot{x} + c\dot{x} + kx = (m_u e \Omega^2)\cos\Omega t$ gives the steady-state amplitude $X$ and phase lag $\varphi$:
+
+$$
+\frac{X}{m_u e / M} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}, \quad \varphi = \operatorname{atan2}(2\zeta r, \, 1-r^2)
+$$
+
+Here $r = \Omega / \omega_n$ is the frequency ratio (P1-4), and $m_u e / M = e_{\text{cg}}$ is the distance by which the center of mass of the whole machine is off the center of rotation (the eccentricity). The example machine has $M = 100$ kg, natural frequency $f_n = 50$ Hz (critical speed 3000 rpm) and damping ratio $\zeta = 0.05$. Then $e_{\text{cg}} = 0.01/100$ m $= 0.1$ mm.
+
+<Figure {...F.unbalanceBode} />
+
+Let us look at the three ranges along the frequency ratio $r$ in the Bode plot of Figure 4.
+
+### 4.1 Subcritical range: low speed, $r \ll 1$
+
+At low speed the centrifugal force ($\propto \Omega^2$) itself is small. Because of the $r^2$ in the numerator, the amplitude ratio is close to 0, and the phase lag is nearly 0°. At 1500 rpm ($r = 0.5$), the amplitude ratio is 0.333 (amplitude 0.033 mm) and the phase lag is 3.8°.
+
+### 4.2 Critical speed: resonance, $r = 1$
+
+When the speed equals the natural frequency, the numerator is 1 and only $2\zeta$ is left in the denominator, so the amplitude ratio becomes $1/(2\zeta)$. For $\zeta = 0.05$ that is 10, i.e. 1.0 mm, ten times the eccentricity of 0.1 mm. The phase lag is **90°**.
+
+### 4.3 Supercritical range: high speed, $r \gg 1$
+
+When the speed is far above the critical speed, the quantity under the square root in the denominator approaches $r^4$, so the denominator is about $r^2$ and cancels the $r^2$ in the numerator. The amplitude ratio therefore does not grow without limit but **converges to 1**. The actual amplitude $X$ approaches $e_{\text{cg}} = 0.1$ mm, and the phase lag approaches **180°**. The approach is slow: even at 6000 rpm ($r = 2$), the amplitude ratio is 1.33 (0.133 mm) and the phase lag is 176°.
+
+---
+
+## 5. Difference from P1-4 forced vibration: it does not go to zero at high speed
+
+The unbalance curve looks similar to the ordinary forced-vibration curve of P1-4, but the low-speed and high-speed ends differ.
+
+<Figure {...F.staticVsUnbalance} />
+
+The two curves of Figure 5 are compared in the table below.
+
+| Item | Constant-force forced vibration (P1-4) | Unbalance centrifugal vibration (P1-7) |
+|---|---|---|
+| **Force magnitude** | Constant regardless of speed ($F_0 = \text{const}$) | Proportional to speed squared ($F_u \propto \Omega^2$) |
+| **At rest ($r = 0$)** | Static deflection occurs ($X/X_{\text{st}} = 1$) | No force, so no vibration ($X \to 0$) |
+| **High-speed limit ($r \gg 1$)** | Vibration dies out, suppressed by inertia ($X \to 0$) | Converges to the eccentricity ($X \to m_u e / M$) |
+| **Peak position ($r_{\text{peak}}$)** | Below the natural frequency ($r = \sqrt{1 - 2\zeta^2} \le 1$) | Above the natural frequency ($r = 1/\sqrt{1 - 2\zeta^2} \ge 1$) |
+
+Because the force itself grows with speed in unbalance, the amplitude peak appears slightly above the natural frequency ($r \approx 1.0025$ for $\zeta = 0.05$).
+
+---
+
+## 6. Run-up and supercritical operation: mass-center rotation (self-centering)
+
+Raising a machine from standstill up to its normal operating speed is called a **run-up**.
+
+<Figure {...F.runUpTransient} />
+
+As in Figure 6, during a run-up the amplitude is small at low speed, grows to 1.0 mm (ten times the eccentricity) in the short interval around the critical speed (3000 rpm), and shrinks again afterwards. At 6000 rpm ($r = 2$) it is 0.133 mm. That is why the critical speed is treated as a speed you pass through, not one you stay at.
+
+But why does the amplitude shrink toward $e_{\text{cg}}$ instead of growing once the critical speed is exceeded? The key is the **180° phase lag**.
+
+Figure 1 is a model in which the whole machine on a spring shakes, but the same equation also holds for a rotor in which a disk shakes as the shaft bends. Figure 7 shows such a rotor viewed along the shaft axis.
+
+<Figure {...F.selfCenteringDiagram} />
+
+What to read in Figure 7:
+
+- **Low speed (subcritical, phase ≈ 0°)**: the displacement is on the same side as the force. The shaft center O is pushed toward the heavy spot $m_u$, and the heavy spot points to the outside of the orbit that O traces.
+- **High speed (supercritical, phase ≈ 180°)**: the inertia force exceeds the spring restoring force, so the displacement is on the side opposite the force. The shaft center O is pushed away from the heavy spot, and the heavy spot points to the inside of the orbit (toward the bearing center).
+
+As a result, the center of mass G of the whole stays on the bearing center, and the geometric center O of the shaft circles around it at radius $e_{\text{cg}}$. The shaft turns about its center of mass rather than its geometric center, and the vibration displacement is limited to $e_{\text{cg}}$. This phenomenon is called **mass-center rotation (self-centering)**.
+
+<Callout type="warn" title="'Raise the speed and the vibration keeps growing?'">
+
+The centrifugal force keeps growing with the square of speed, but the amplitude is largest at the critical speed and decreases after it. The example machine has 1.0 mm at 3000 rpm and 0.133 mm at 6000 rpm. The force is 4 times larger, yet the amplitude has dropped to 1/7.5.
+
+</Callout>
+
+<Callout type="field" title="Keeping the operating speed away from the critical speed: separation margin">
+
+Many large compressors and high-speed turbines are supercritical rotors, whose rated operating speed is above the first critical speed. Such machines pass through the critical speed during start-up but never dwell near it. So the operating speed is designed to stay at least a certain ratio away from the critical speed. This gap is called the separation margin, and how large it must be depends on the damping (the amplification factor: how many times larger the amplitude gets at resonance, the same as Q in P1-4) as set by standards (see P4-1 for details).
+
+</Callout>
+
+---
+
+## 7. Hands-on with the unbalance run-up lab (LAB-UNB-01)
+
+In the lab below, play the run-up or change the speed, and watch the centrifugal force arrow, the motion of the rotating disk, and the current operating point on the amplitude and phase curves. The disk on screen is shown turning 50 times slower than the real one (3000 rpm is one turn per second).
+
+<Callout type="try" title="Try it: experience a run-up and the critical-speed crossing">
+
+1. In the initial state (ζ = 0.05, eccentricity 0.1 mm), press **Play run-up (0 → 6000 rpm)**. As the speed doubles from 1500 → 3000 → 6000 rpm, watch how many times longer the centrifugal force arrow (orange) and the readout $F_u$ become each time.
+2. When the run-up passes around 3000 rpm, watch the current point on the amplitude and phase curves. Does the amplitude shoot up toward 1 mm and the phase pass 90°? What are the amplitude and phase when you stop at 6000 rpm?
+3. Press the **Critical speed (r = 1)** button and raise the damping ratio ζ from 0.05 to 0.10. What does the amplitude change to?
+
+</Callout>
+
+<UnbalanceLab client:load lang="en" />
+
+In step 1, when the speed doubles from 1500 → 3000 → 6000 rpm, the centrifugal force grows 4 times each time, 247 → 987 → 3948 N, and the arrow lengthens by the same ratio.
+
+In step 2, passing 3000 rpm ($r = 1$), the amplitude grows to 1.0 mm, ten times the eccentricity of 0.1 mm, and the phase passes 90°. At 6000 rpm ($r = 2$) the amplitude is 0.133 mm (ratio 1.33) and the phase is 176°. The force is 4 times that at 3000 rpm, yet the amplitude has dropped to 1/7.5; raising the speed further brings it closer to 0.1 mm and 180°.
+
+In step 3, raising ζ from 0.05 to 0.10 halves the amplitude ratio at $r = 1$ from $1/(2\zeta)$ = 10 to 5, so the amplitude falls from 1.0 mm to 0.5 mm. The more damping, the smaller the amplitude when passing through the critical speed.
+
+---
+
+## 8. Summary
+
+| Rotation range | Frequency ratio $r = \Omega/\omega_n$ | Dimensionless amplitude ratio | Phase lag $\varphi$ | Physical character |
+|---|---|---|---|---|
+| **Subcritical (low speed)** | $r \ll 1$ | Close to 0 ($\propto r^2$) | $\approx 0^\circ$ | Small force, small vibration. Heavy spot on the outside of the orbit |
+| **Critical speed (resonance)** | $r \approx 1$ | $\approx 1/(2\zeta)$ | $90^\circ$ | 1X resonance. Largest amplitude, so you pass through without dwelling |
+| **Supercritical (high speed)** | $r \gg 1$ | Converges to 1 | $\to 180^\circ$ | Mass-center rotation (self-centering): $X \to e_{\text{cg}}$ |
+
+---
+
+## 9. Check your understanding
+
+<details>
+<summary><strong>Q1. A 2-pole generator turns at 3600 rpm. What is the frequency in Hz of the unbalance 1X vibration it produces?</strong></summary>
+
+$f = \text{rpm} / 60 = 3600 / 60 = 60\text{ Hz}$. It makes 60 turns per second, so the 1X vibration frequency is also 60 Hz.
+</details>
+
+<details>
+<summary><strong>Q2. The turbine speed is doubled from 1800 rpm to 3600 rpm. By what factor does the centrifugal force of the unbalance mass shaking the shaft grow?</strong></summary>
+
+The centrifugal force is proportional to the square of the angular speed ($\Omega^2$), so it grows by $2^2 = 4$ times.
+</details>
+
+<details>
+<summary><strong>Q3. At the moment the machine passes the critical speed (resonance), what is the phase lag in degrees between the unbalance centrifugal force and the horizontal displacement vibration?</strong></summary>
+
+$90^\circ$. The displacement peak appears a quarter period after the force peak. At 3000 rpm (period 20 ms), that is 5 ms later.
+</details>
+
+<details>
+<summary><strong>Q4. The whole machine mass is M = 100 kg, the unbalance is mᵤe = 0.01 kg·m, the critical speed is 3000 rpm and ζ = 0.05. If the speed is raised to 10,000 rpm, what does the vibration amplitude approach?</strong></summary>
+
+In the supercritical range ($r \gg 1$), the amplitude ratio converges to 1, so the amplitude approaches the eccentricity $e_{\text{cg}} = m_u e / M = 0.01 / 100 = 0.0001\text{ m} = 0.1\text{ mm}$. 10,000 rpm is $r = 3.33$, giving an amplitude ratio of 1.10 and an amplitude of about 0.11 mm.
+</details>
+
+<details>
+<summary><strong>Q5. Why does the shaft turn about its center of mass rather than its geometric center in the supercritical range?</strong></summary>
+
+When the phase lag approaches $180^\circ$, the shaft center O is pushed to the side opposite the heavy spot. The heavy spot then points to the inside of the orbit, and the center of mass G of the whole stays on the bearing center (mass-center rotation).
+</details>
+
+<details>
+<summary><strong>Q6. What is the difference in the high-speed-limit (r → ∞) amplitude between ordinary forced vibration (P1-4) and unbalance vibration (P1-7)?</strong></summary>
+
+In ordinary forced vibration the force is constant, so the amplitude shrinks to 0, suppressed by inertia. In unbalance vibration the centrifugal force also grows with speed squared, so the amplitude converges to the finite value of the eccentricity $e_{\text{cg}}$.
+</details>
+
+---
+
+On the next page (P1-8), we count how many Hz each event that happens several times per revolution rather than once like unbalance (gear teeth, bearing balls, pump vanes) shakes the machine, as 'times per revolution × speed'.
+
+<Callout type="field" title="Where this leads in Part 2">
+
+P2-1 reorganizes speed (rpm), 1X and order (how many times the rotation frequency) from the signal-processing viewpoint. When the speed changes during measurement, as in a run-up, the peaks in the spectrum (a picture that stands up a bar for each component's size, covered in P2-1) spread out (smearing, P2-4), and order tracking, which measures in step with the speed (P5-4), also starts from this 1X.
+
+</Callout>
+
+## References
+
+<References items={[
+  ['R-02', 'Unbalance response, 1X vector, mass-center rotation in the supercritical range'],
+  ['R-03', '1X vibration and the basics of rotor balancing'],
+  ['R-08', 'General principles of vibration severity evaluation'],
+]} />

@@ -8,6 +8,9 @@ import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable, { type Readout } from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
 import { symmetricTwoDofModes, twoDofFreeResponse, twoDofFreeResponseAt } from '../../lib/mck';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/TwoDofModeLab';
 
 const M = 1; // 1 kg
 const K = 1000; // 1000 N/m
@@ -17,10 +20,10 @@ const POINTS = 801;
 type InitialConditionKey = 'mode1' | 'mode2' | 'mass1_only' | 'arbitrary';
 
 const INITIAL_OPTIONS = [
-  { value: 'mode1' as const, label: '모드 1: 동상 [10, 10] mm' },
-  { value: 'mode2' as const, label: '모드 2: 역상 [10, −10] mm' },
-  { value: 'mass1_only' as const, label: '왼쪽만 당김 [10, 0] mm (중첩/맥놀이)' },
-  { value: 'arbitrary' as const, label: '비대칭 임의 [10, 4] mm' },
+  { value: 'mode1' as const, label: k('모드 1: 동상 [10, 10] mm') },
+  { value: 'mode2' as const, label: k('모드 2: 역상 [10, −10] mm') },
+  { value: 'mass1_only' as const, label: k('왼쪽만 당김 [10, 0] mm (중첩/맥놀이)') },
+  { value: 'arbitrary' as const, label: k('비대칭 임의 [10, 4] mm') },
 ];
 
 function clean(value: number): number {
@@ -38,7 +41,8 @@ function springPath(x1: number, x2: number, y: number, coils = 7, height = 16): 
   return points.map(([x, py], i) => `${i === 0 ? 'M' : 'L'} ${x} ${py}`).join(' ');
 }
 
-export default function TwoDofModeLab() {
+export default function TwoDofModeLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const arrowId = useId().replace(/:/g, '');
   const [kc, setKc] = useState(1000);
   const [initKey, setInitKey] = useState<InitialConditionKey>('mass1_only');
@@ -127,14 +131,14 @@ export default function TwoDofModeLab() {
       {
         x: timeline,
         y: response.map((r) => clean(r.x1 * 1000)),
-        name: '질량 1 변위 x₁(t)',
+        name: tr('질량 1 변위 x₁(t)'),
         color: 'var(--plot-1)',
         width: 2.2,
       },
       {
         x: timeline,
         y: response.map((r) => clean(r.x2 * 1000)),
-        name: '질량 2 변위 x₂(t)',
+        name: tr('질량 2 변위 x₂(t)'),
         color: 'var(--plot-2)',
         width: 2.0,
       },
@@ -144,7 +148,7 @@ export default function TwoDofModeLab() {
       s.push({
         x: timeline,
         y: response.map((r) => clean(r.mode1[0] * 1000)),
-        name: `x₁ 모드 1 성분 (${formatNumber(f1, 3)} Hz)`,
+        name: tr`x₁ 모드 1 성분 (${formatNumber(f1, 3)} Hz)`,
         color: 'var(--plot-3)',
         width: 1.5,
         dash: 'dash',
@@ -152,7 +156,7 @@ export default function TwoDofModeLab() {
       s.push({
         x: timeline,
         y: response.map((r) => clean(r.mode2[0] * 1000)),
-        name: `x₁ 모드 2 성분 (${formatNumber(f2, 3)} Hz)`,
+        name: tr`x₁ 모드 2 성분 (${formatNumber(f2, 3)} Hz)`,
         color: 'var(--plot-4)',
         width: 1.5,
         dash: 'dash',
@@ -163,14 +167,14 @@ export default function TwoDofModeLab() {
     s.push({
       x: [elapsed, elapsed],
       y: [-15, 15],
-      name: '현재 시점 t',
+      name: tr('현재 시점 t'),
       color: 'rgba(239, 68, 68, 0.65)',
       width: 1.5,
       dash: 'dot',
     });
 
     return s;
-  }, [timeline, response, showDecomp, f1, f2, elapsed]);
+  }, [timeline, response, showDecomp, f1, f2, elapsed, lang]);
 
   // 도식 좌표 계산 (SVG 680x160)
   const leftWallX = 35;
@@ -200,7 +204,7 @@ export default function TwoDofModeLab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
         <ParamSlider
-          label="가운데 연성 스프링 강성 kc"
+          label={tr('가운데 연성 스프링 강성 kc')}
           value={kc}
           min={50}
           max={2000}
@@ -212,9 +216,9 @@ export default function TwoDofModeLab() {
           }}
         />
         <ParamSelect
-          label="초기 변위 [x₁(0), x₂(0)]"
+          label={tr('초기 변위 [x₁(0), x₂(0)]')}
           value={initKey}
-          options={INITIAL_OPTIONS}
+          options={INITIAL_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
           onChange={(val) => {
             setInitKey(val);
             handleReset();
@@ -224,12 +228,12 @@ export default function TwoDofModeLab() {
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
         <ParamToggle
-          label="질량 1 모드 성분 분해 표시"
+          label={tr('질량 1 모드 성분 분해 표시')}
           checked={showDecomp}
           onChange={setShowDecomp}
         />
         <ParamToggle
-          label="슬로우 모션 (0.35x)"
+          label={tr('슬로우 모션 (0.35x)')}
           checked={slowMo}
           onChange={setSlowMo}
         />
@@ -252,7 +256,7 @@ export default function TwoDofModeLab() {
               whiteSpace: 'nowrap',
             }}
           >
-            약한 결합 (kc = 0.1k, 맥놀이)
+            {tr('약한 결합 (kc = 0.1k, 맥놀이)')}
           </button>
           <button
             type="button"
@@ -270,7 +274,7 @@ export default function TwoDofModeLab() {
               whiteSpace: 'nowrap',
             }}
           >
-            표준 결합 (kc = k)
+            {tr('표준 결합 (kc = k)')}
           </button>
         </div>
       </div>
@@ -278,14 +282,14 @@ export default function TwoDofModeLab() {
   );
 
   const readoutsRows: readonly Readout[] = [
-    { label: '1차 고유진동수 f₁', value: f1, unit: 'Hz', sig: 3 },
-    { label: '2차 고유진동수 f₂', value: f2, unit: 'Hz', sig: 3 },
-    { label: '진동수 비 f₂ / f₁', value: ratio, unit: '', sig: 3 },
-    { label: '모드 1 형상 비 x₂ / x₁', value: clean(mode1.shape[1] / mode1.shape[0]), unit: '', sig: 3 },
-    { label: '모드 2 형상 비 x₂ / x₁', value: clean(mode2.shape[1] / mode2.shape[0]), unit: '', sig: 3 },
-    { label: '처음 변위 중 모드 1 몫', value: q1_0_mm, unit: 'mm', sig: 3 },
-    { label: '처음 변위 중 모드 2 몫', value: q2_0_mm, unit: 'mm', sig: 3 },
-    { label: '맥놀이 주기 1 / (f₂ − f₁)', value: beatPeriod, unit: 's', sig: 3 },
+    { label: tr('1차 고유진동수 f₁'), value: f1, unit: 'Hz', sig: 3 },
+    { label: tr('2차 고유진동수 f₂'), value: f2, unit: 'Hz', sig: 3 },
+    { label: tr('진동수 비 f₂ / f₁'), value: ratio, unit: '', sig: 3 },
+    { label: tr('모드 1 형상 비 x₂ / x₁'), value: clean(mode1.shape[1] / mode1.shape[0]), unit: '', sig: 3 },
+    { label: tr('모드 2 형상 비 x₂ / x₁'), value: clean(mode2.shape[1] / mode2.shape[0]), unit: '', sig: 3 },
+    { label: tr('처음 변위 중 모드 1 몫'), value: q1_0_mm, unit: 'mm', sig: 3 },
+    { label: tr('처음 변위 중 모드 2 몫'), value: q2_0_mm, unit: 'mm', sig: 3 },
+    { label: tr('맥놀이 주기 1 / (f₂ − f₁)'), value: beatPeriod, unit: 's', sig: 3 },
   ];
 
   const formulas = (
@@ -302,38 +306,39 @@ export default function TwoDofModeLab() {
   const tasks: readonly LabTask[] = [
     {
       question:
-        '초기 조건을 "모드 1: 동상 [10, 10] mm"으로 두고 재생해 보세요. 두 질량의 변위 파형이 완전히 포개지며, 주파수는 f₁ 하나뿐인가요? 가운데 스프링의 길이는 어떻게 되나요?',
+        tr('초기 조건을 "모드 1: 동상 [10, 10] mm"으로 두고 재생해 보세요. 두 질량의 변위 파형이 완전히 포개지며, 주파수는 f₁ 하나뿐인가요? 가운데 스프링의 길이는 어떻게 되나요?'),
       answer:
-        '두 질량이 같은 방향으로 정확히 같이 움직이므로 x₁(t) = x₂(t)가 되어 두 파형이 완전히 포개집니다. 두 질량 사이의 상대 거리가 일정하므로 가운데 스프링은 늘어나지도 줄어들지도 않습니다.',
+        tr('두 질량이 같은 방향으로 정확히 같이 움직이므로 x₁(t) = x₂(t)가 되어 두 파형이 완전히 포개집니다. 두 질량 사이의 상대 거리가 일정하므로 가운데 스프링은 늘어나지도 줄어들지도 않습니다.'),
     },
     {
       question:
-        '초기 조건을 "모드 2: 역상 [10, −10] mm"으로 바꾸어 보세요. 두 질량이 서로 반대로 마주보며 움직이고 주파수가 f₂로 높아집니다. kc = 1000 N/m일 때 f₂/f₁ 비율은 얼마인가요?',
+        tr('초기 조건을 "모드 2: 역상 [10, −10] mm"으로 바꾸어 보세요. 두 질량이 서로 반대로 마주보며 움직이고 주파수가 f₂로 높아집니다. kc = 1000 N/m일 때 f₂/f₁ 비율은 얼마인가요?'),
       answer:
-        '두 질량이 반대 위상으로 마주보며 움직이므로 가운데 스프링이 2배로 강하게 압축/인장되어 유효 강성이 k + 2kc가 됩니다. kc = k일 때 f₂/f₁ 비율은 정확히 √3 ≈ 1.732배입니다.',
+        tr('두 질량이 반대 위상으로 마주보며 움직이므로 가운데 스프링이 2배로 강하게 압축/인장되어 유효 강성이 k + 2kc가 됩니다. kc = k일 때 f₂/f₁ 비율은 정확히 √3 ≈ 1.732배입니다.'),
     },
     {
       question:
-        '초기 조건을 "왼쪽만 당김 [10, 0] mm"으로 두고, "질량 1 모드 성분 분해 표시"를 켜보세요. 질량 1의 울렁거리는 복잡한 파형은 모드 1과 모드 2 성분으로 어떻게 분해되나요?',
+        tr('초기 조건을 "왼쪽만 당김 [10, 0] mm"으로 두고, "질량 1 모드 성분 분해 표시"를 켜보세요. 질량 1의 울렁거리는 복잡한 파형은 모드 1과 모드 2 성분으로 어떻게 분해되나요?'),
       answer:
-        '초기 변위 [10, 0] mm는 모드 1 성분 5 mm와 모드 2 성분 5 mm의 정확한 1:1 합입니다. 따라서 x₁(t)는 5.03 Hz 정현파와 8.72 Hz 정현파가 더해져 울렁거리는 모양을 만듭니다.',
+        tr('초기 변위 [10, 0] mm는 모드 1 성분 5 mm와 모드 2 성분 5 mm의 정확한 1:1 합입니다. 따라서 x₁(t)는 5.03 Hz 정현파와 8.72 Hz 정현파가 더해져 울렁거리는 모양을 만듭니다.'),
     },
     {
       question:
-        '약한 결합 (kc = 0.1k) 버튼을 누르고 "왼쪽만 당김" 상태로 재생해 보세요. 에너지가 질량 1에서 질량 2로 갔다가 다시 돌아오는 맥놀이 주기는 얼마인가요?',
+        tr('약한 결합 (kc = 0.1k) 버튼을 누르고 "왼쪽만 당김" 상태로 재생해 보세요. 에너지가 질량 1에서 질량 2로 갔다가 다시 돌아오는 맥놀이 주기는 얼마인가요?'),
       answer:
-        'kc = 100 N/m일 때 f₁ ≈ 5.033 Hz, f₂ ≈ 5.513 Hz로 주파수 차이가 0.480 Hz에 불과합니다. 따라서 에너지가 두 질량 사이를 오가는 맥놀이 주기는 T_beat = 1/Δf ≈ 2.08초입니다.',
+        tr('kc = 100 N/m일 때 f₁ ≈ 5.033 Hz, f₂ ≈ 5.513 Hz로 주파수 차이가 0.480 Hz에 불과합니다. 따라서 에너지가 두 질량 사이를 오가는 맥놀이 주기는 T_beat = 1/Δf ≈ 2.08초입니다.'),
     },
   ];
 
   return (
     <LabFrame
       id="LAB-2DOF-01"
-      title="2자유도 모드와 에너지 교환"
+      title={tr('2자유도 모드와 에너지 교환')}
       controls={controls}
       readouts={<ReadoutTable rows={readoutsRows} />}
       formulas={formulas}
       tasks={tasks}
+      lang={lang}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
         {/* 두 질량 물리 애니메이션 도식 */}
@@ -463,7 +468,7 @@ export default function TwoDofModeLab() {
                 cursor: 'pointer',
               }}
             >
-              {playing ? '일시정지' : elapsed >= DURATION ? '다시 재생' : '재생'}
+              {playing ? tr('일시정지') : elapsed >= DURATION ? tr('다시 재생') : tr('재생')}
             </button>
             <button
               type="button"
@@ -476,10 +481,10 @@ export default function TwoDofModeLab() {
                 cursor: 'pointer',
               }}
             >
-              처음으로 (t=0)
+              {tr('처음으로 (t=0)')}
             </button>
             <span style={{ fontSize: '0.85rem', color: '#475569' }}>
-              진행 시간: <strong>{elapsed.toFixed(2)}</strong> s / {DURATION.toFixed(1)} s
+              {tr('진행 시간:')} <strong>{elapsed.toFixed(2)}</strong> s / {DURATION.toFixed(1)} s
             </span>
           </div>
         </div>
@@ -487,8 +492,8 @@ export default function TwoDofModeLab() {
         {/* 변위 시간 파형 플롯 */}
         <Plot
           series={plotSeries}
-          x={{ label: '시간 t [s]', range: [0, DURATION] }}
-          y={{ label: '변위 [mm]', range: [-13, 13] }}
+          x={{ label: tr('시간 t [s]'), range: [0, DURATION] }}
+          y={{ label: tr('변위 [mm]'), range: [-13, 13] }}
           height={220}
         />
       </div>

@@ -7,7 +7,7 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054) — M12.5 Part 5 push 완료(영어 18절) → **M12.6 Part 1 작업 중 (커밋 전)** | 진행 중 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054) — M12.6 Part 1 push 완료(영어 27절) → 다음 **M12.7 Part 3** (사용자 지시 대기) | 진행 중 |
 | **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
@@ -17,38 +17,34 @@
 - **문서 보관 (2026-10-12, M0.16·D-055)**: `Curriculum.md` → `archive/`, Contents 개념 척추·기준값 → `archive/ContentsBuild.md`, Roadmap 세부 표 → `archive/Milestones.md` 끝, Progress 구축 핸드오프 → `archive/Handoffs.md`. 지금 기준은 페이지·코드·테스트·`Glossary.md`·`PageGuide.md`.
 - **재사용 계산**: `lib/` 목록은 Roadmap §4-2 — 새 랩·그림은 있는 모듈부터 찾는다. 참고자료 **다음 번호 R-96** (`references.ts` 머리).
 - **영어판 뼈대 (2026-10-12, M12.2·D-054) — 공용 코어 변경**: `BaseLayout`·`MdxLayout`이 주소(/en/)로 언어를 정함(html lang·hreflang·언어 전환 버튼·KO 표시). 홈·Part·랩 모음·랩 단독 페이지 본문은 `components/site/*`(lang prop)로 옮기고 `pages/`·`pages/en/`은 얇은 껍데기. `LabFrame`에 `lang`·`slug`, 공용 UI(읽음값·재생 막대·Plot·Polar)는 `ui/lang.tsx`의 LangContext로 문구를 고름. `Figure`·`Callout`·`References`는 영어 페이지에서 사전으로 옮김. 한국어 화면은 그대로. 만드는 법 PageGuide §13.
-- **공용 코어 최근 추가**: `ui/Plot`의 `bands`(M10), `ResponsiveSvg`·`useMobileLayout`·QA `--visuals`/`--mobile-*`(M0.15, PageGuide §5-2).
+- **공용 코어 최근 추가**: `ui/Plot`의 `bands`(M10), `ResponsiveSvg`·`useMobileLayout`·QA `--visuals`/`--mobile-*`(M0.15, PageGuide §5-2). `Figure.astro` 모바일 제목 줄바꿈이 영어 낱말·숫자(`8.7|2 Hz`, `150 H|z`) 가운데서 자르지 않음(M12.6) — 한국어는 그런 제목이 있던 P1-5·P2-2·P2-9·P5-1·P5-7 모바일만 바뀜, PC 그대로.
 - **함정**: 유효숫자 인자, 이론상 0 → 0 표시(hydration), MDX 함정 PageGuide §8. Node·gh는 PATH에 있음, Python 없음. rebase 충돌 때 다른 트랙의 행·절·로그는 origin 쪽 그대로 (I-026).
 
 ## 핸드오프 — 트랙 A (Claude)
 - **M12.1 완료 (2026-10-12)**: sitemap(`/sitemap-index.xml`)·canonical·OG·JSON-LD·`/dev/` noindex(`lib/seo.ts`). **사용자 할 일**: Search Console 확인·sitemap 제출(소유 확인 태그는 `lib/site.ts`에 넣음), 네이버는 보류.
 - **M12.2 완료 (2026-10-12)**: `src/i18n/`(경로·`ui.ts` 문구·`translate.ts` 사전·`lab.ts` tr/k·`routes.ts` 영어판 목록·`en/` 목차·랩 모음·그림·랩 사전), 영어 홈·Part 11·랩 모음·랩 3·**P2-3 전체**(본문·그림 8·SMP-01~03). 검사: `src/i18n/*.test.ts`(빠진 영어·감싸지 않은 한글·그림 사전), `npm run verify:i18n`(CI에 추가), `npm run i18n:status`. sitemap에 ko↔en 짝. 레퍼런스는 아직 한국어만(영어 메뉴에 KO 표시).
 - **M12.3 완료 (2026-10-13)**: 영어 P2-3 · P2-5 · P4-2 · P5-6 · P6-3, 랩 13개(SMP·WIN·JEF·ENV·SK·ORB). 고침: Plot 범례 끝 잘림(Plotly 글꼴 이름), `translateDeep`이 Float64Array(그림 heatmap z)를 평범한 객체로 바꾸던 것. 확인법: 한·영 그림의 도형 수 비교(5절 모두 같음).
-- **M12.4 완료 (2026-10-13)**: Part 2 전부(영어 P2-1 ~ P2-9), 랩 13개 더(BAS-02·FOU-01 셋·RES·ZOOM·AVG 둘·SPC 둘·UNIT·MOD·SBX). 등록은 `node scripts/i18n/register-lab.mjs <랩>`. `lib/`의 한국어 라벨(sandbox 판정·목적, orbit 모양)은 랩 안에서 `k()` 목록 + `tr`로 옮김 — `lib`의 글을 바꾸면 그 랩 사전도. 한국어 "준비 중" 남은 것 5곳 정리(P2-7·P2-8·P2-9·P8-2·P10-3).
-- **M12.5 완료 (2026-10-13)**: Part 5 전부(영어 P5-1 ~ P5-7), 랩 9개 더(FLT·INT·STFT·XCH·FULL·ORD·FLT-02·CEP·FEAT). **다음 M12.6 ~**: 번호 순서 Part 1(진행 중) → 3 → 4 → 6 → 7 → 8 → 9 → 10 → 11 (사용자 지적: 영어 "Start here"가 P2-1로 가는 등 읽는 흐름이 깨짐).
-- **인계 (2026-10-13, 세션 한도로 새 세션에 넘김)** — M12.6 Part 1, **작업 트리에만 있고 커밋 안 됨**:
-  - 끝남·등록함: P1-1(MassSpringLab), P1-2(SineBasicsLab) — `en/p1-1·p1-2.mdx`, 그림 사전, 랩 사전, `labsReady.ts`·`en/lab/[slug].astro` 등록.
-  - 에이전트가 하던 중(결과 미확인): P1-3(DampingLab + 하위 DampingMotion), P1-4(ForcedVibrationLab). 새 세션은 `node scripts/i18n/scan-lab.mjs <랩> --check`와 `npx vitest run src/i18n/figures.test.ts`로 상태를 보고 남은 것만 이어서(지시문 `archive/TranslationBrief.md`).
-  - 남은 Part 1: P1-5(TwoDofModeLab) · P1-6(SupportStiffnessLab, 링크 /p1-7·/p1-8·/p3-1·/p3-2·/p4-1) · P1-7(UnbalanceLab) · P1-8(FrequencyMapLab) · P1-9(SourceSynthesisLab, 링크 /p1-8·/p2-1). 링크 규칙: 영어판이 있거나 만드는 중인 절(P1-x·P2-x·P4-2·P5-x·P6-3)은 `/en/`(앵커 뺌), 나머지는 한국어 그대로.
-  - 절차: Sonnet 에이전트(`model: "sonnet"`) 4개 동시 → 끝나는 대로 다음 → `scan-lab --check` ✓ 확인 → `node scripts/i18n/register-lab.mjs <랩>` → Part 다 되면 check·test·build·`verify:i18n`·`verify:links`·한·영 그림 도형 수 비교·`verify:page`(미리보기 서버가 옛 파일 목록을 들고 있으면 `--base`로 다른 서버) → Part 커밋·push·Actions 확인. 진행 중인 다른 Part 파일이 섞이면 그 Part 파일만 `git add`하고 깨끗한 worktree에서 검증(node_modules는 junction, 지울 때 junction 먼저 `rmdir`).
+- **M12.4 · M12.5 완료 (2026-10-13)**: Part 2 전부(영어 P2-1 ~ P2-9, 랩 13개 더: BAS-02·FOU-01 셋·RES·ZOOM·AVG 둘·SPC 둘·UNIT·MOD·SBX), Part 5 전부(P5-1 ~ P5-7, 랩 9개 더: FLT·INT·STFT·XCH·FULL·ORD·FLT-02·CEP·FEAT). 등록은 `node scripts/i18n/register-lab.mjs <랩>`. `lib/`의 한국어 라벨(sandbox 판정·목적, orbit 모양, 주파수 지도)은 랩 안에서 `k()` 목록 + `tr`로 옮김 — `lib`의 글을 바꾸면 그 랩 사전도. 한국어 "준비 중" 5곳 정리(P2-7·P2-8·P2-9·P8-2·P10-3).
+- **M12.6 완료 (2026-10-13)**: Part 1 전부(영어 P1-1 ~ P1-9), 랩 9개 더(MCK·BAS-01·DAMP·FRC·2DOF·SUP·UNB·FMAP·SRC). 용어: **박자 = "rhythm"**, "beat"는 맥놀이만 (지시문에 적음). 앞서 만든 영어 페이지의 옛 한국어 링크(절·랩에 영어판이 새로 생긴 것)는 `node scripts/i18n/relink.mjs`, 남은 것은 `i18n.test.ts`가 잡는다.
+- **다음 M12.7 ~ (Part 1까지 하고 멈춤, 사용자 지시 대기)**: 번호 순서 Part 3 → 4 → 6 → 7 → 8 → 9 → 10 → 11. Part마다 Sonnet 에이전트(`model: "sonnet"`) 4개씩(`archive/TranslationBrief.md`, 링크할 영어판 목록을 과제에 적는다) → `scan-lab --check` ✓ → `register-lab.mjs` → 다 되면 `relink.mjs` → check·test·build·`verify:i18n`·`verify:links`·그림 비교·`verify:page` → 커밋·push·Actions.
+  - 그림 비교: 한·영 도형 수는 `<text>`를 빼고 같아야 한다 (영어 제목이 모바일 사본에서 줄이 더 늘어 글 수는 다름). 미리보기: 10-08에 띄운 옛 `astro preview`(4337)가 새 파일을 404로 내고 `--force`로도 안 바뀜 → dist를 내보내는 작은 정적 서버 + `--base`. Git Bash에서는 `MSYS_NO_PATHCONV=1 npm run verify:page -- …`(아니면 `/en/…`이 Windows 경로로 바뀜). 미뤄 둔 것: 영어 제목의 대소문자(Title Case·문장형) 섞임 — M12 끝에 한꺼번에.
 
 ## 핸드오프 — 트랙 B (Codex)
 - 배정 없음. M0.15 모바일 그림 대응 완료(D-053), 사용자 모바일 검토 대기. 영어판(M12) 파일은 Claude 단독이라 건드리지 않는다.
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
-
+### 2026-10-13 · Claude · M12.6 Part 1 영어판 (인계 이어서, Sonnet 에이전트 6개)
+- 요청: 사용자 — "M12 영어판 작업 이어서" → 중간에 "Part1 까지만 완료해"
+- 산출: P1-3·P1-4 확인·등록, 영어 P1-5 ~ P1-9 + 그림 사전 5 + 랩 5개 변환·등록, `relink.mjs`, 옛 한국어 링크 테스트
+- 고침: 박자 "beat" → "rhythm"(P1-1 ~ P1-4·사전·목차), 옛 링크 16곳(P2-x·P6-3 → 영어 P1·P5), 그림 모바일 제목 낱말·숫자 중간 자름(한·영)
+- 검증: check 0·test 1388·빌드 243쪽·verify:i18n 영어 82쪽 한글 0·링크 7934개 문제 0·그림 27절 도형 수 같음(글 제외)·verify:page 영어 10·한국어 1쪽 OK
+- 다음: M12.7 Part 3 (사용자 지시 대기)
 ### 2026-10-13 · Claude · M12.4 Part 2 영어판 (Sonnet 에이전트 7개)
 - 요청: 사용자 — "진행해보자 다음거"
 - 산출: 영어 P2-1·P2-2·P2-4·P2-6·P2-7·P2-8·P2-9 + 그림 사전 7 + 랩 13개 변환·등록, `register-lab.mjs`, verify:i18n이 링크 주소(한국어 앵커)는 건너뜀
 - 고침: 한국어 "준비 중" 5곳(이미 있는 페이지), Fourier 랩 위상 축 제목 잘림
 - 검증: check 0·test 1335·빌드 210쪽·verify:i18n 영어 49쪽 한글 0·링크 7004개 문제 0·그림 도형 수 한·영 같음·verify:page 영어 9쪽 OK
 - 다음: M12.5 Part 5 나머지
-### 2026-10-13 · Claude · M12.3 시범 번역 4절 + 범례 잘림·heatmap 번역 버그
-- 요청: 사용자 — "문제사항 고치고 다음 작업 진행" → 한도 끊김 뒤 "이어서", "단순 번역은 Sonnet subagent로"
-- 산출: 영어 P2-5(직접 마무리)·P4-2·P5-6·P6-3, 랩 7개 변환·등록, 참고자료 서지 사전 전체, `scan-lab.mjs --check`, 번역 지시문
-- 고침: Plot 범례 끝 잘림(한·영 공통), 영어 그림 heatmap 칸 사라짐(typed array), Orbit 선택 상자 문구 짧게
-- 검증: check 0·test 1300·빌드 189쪽·verify:i18n 영어 28쪽 한글 0·링크 6450개 문제 0·verify:page 영어 4·한국어 1쪽 OK, P2-5는 깨끗한 worktree에서 따로 검증 후 push
-- 다음: 사용자 시범 품질 확인 → M12.4 Part 2 (Sonnet 에이전트)
 ## 세션 로그 — 트랙 B (Codex) · 최근 2개, 최신이 위
 ### 2026-10-12 · Codex · M0.15 모바일 그림 대응 (D-053)
 - 요청: 전체 모바일 그림 개선, PC 화면 유지. 640px 이하에만 별도 표시.

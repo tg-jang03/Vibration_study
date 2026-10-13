@@ -3,7 +3,7 @@ import type { Dict } from '../../translate';
 /** src/figures/p2-1.ts 그림의 영어 (D-054). 페이지 본문에서 번호를 바꿔 쓰는 그림(그림 3~7)은 영어 MDX가 caption을 직접 넘긴다. */
 const EN: Dict = {
   '그림 1. 3600 rpm으로 도는 기계의 케이싱 진동 (예시로 만든 신호). 가로축은 시간, 세로축은 그 순간의 진동 속도다. 0.1초 동안 큰 물결이 6번 반복된다 — 1초에 60번, 회전과 같은 박자다. 큰 물결 위의 잔물결과 들쭉날쭉함은 다른 성분과 잡음이다.':
-    'Figure 1. Casing vibration of a machine running at 3600 rpm (a made-up signal). The horizontal axis is time and the vertical axis is the vibration velocity at that instant. The large wave repeats 6 times in 0.1 s — 60 times a second, the same beat as the rotation. The ripples and jaggedness on top of the large wave are other components and noise.',
+    'Figure 1. Casing vibration of a machine running at 3600 rpm (a made-up signal). The horizontal axis is time and the vertical axis is the vibration velocity at that instant. The large wave repeats 6 times in 0.1 s — 60 times a second, the same rhythm as the rotation. The ripples and jaggedness on top of the large wave are other components and noise.',
   '속도 [mm/s]': 'Velocity [mm/s]',
 
   '그림 2. 같은 움직임을 세 가지 양으로 본 모습. 느린 흔들림(60 Hz, 변위 50 µm)과 아주 작은 빠른 떨림(600 Hz, 변위 0.5 µm)이 섞여 있다. 변위로 보면 빠른 떨림은 거의 안 보이지만, 속도에서는 잔물결로, 가속도에서는 느린 흔들림과 같은 크기(7.11 m/s²)로 드러난다. 미분할 때마다 성분이 주파수에 비례해 커지기 때문이다.':

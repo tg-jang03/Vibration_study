@@ -13,7 +13,7 @@ Working directory: `C:\Users\AX\Desktop\ATG\업무\진동공부` (Astro site, Ko
 - Page: `src/pages/p2-3.mdx` (Korean) vs `src/pages/en/p2-3.mdx` (English) — copy this structure and tone.
 - Figure dictionary: `src/i18n/en/figures/p2-3.ts`.
 - Lab conversion: `src/components/labs/SamplingLab.tsx`, `src/components/labs/StrobeDisk.tsx`, dictionaries `src/i18n/en/labs/SamplingLab.ts`, `StrobeDisk.ts`; helpers `src/i18n/lab.ts`, `src/components/ui/lang.tsx`.
-- Terms: `docs/Glossary.md` (Korean term with English in parentheses).
+- Terms: `docs/Glossary.md` (Korean term with English in parentheses). 박자 (the site's metaphor for how often something repeats) = "rhythm", never "beat" — "beat"/"beating" is reserved for 맥놀이.
 
 ## English page `src/pages/en/pX-Y.mdx`
 - Frontmatter: `layout: ../../layouts/MdxLayout.astro`, English `title` (keep the leading `PX-Y `), English `description`, same `sectionId`, `source: pX-Y.mdx`, `sourceHash: 0000000000` (placeholder) — then run `npm run i18n:status -- --stamp pX-Y` to write the real hash.

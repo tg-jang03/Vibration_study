@@ -6,6 +6,9 @@ import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable, { type Readout } from '../ui/ReadoutTable';
 import { formatNumber, texNumber } from '../../lib/format';
 import { unbalancePeak, unbalanceResponseFactor, unbalanceSteadyState } from '../../lib/mck';
+import type { Lang } from '../../i18n';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/UnbalanceLab';
 
 const TOTAL_MASS = 100; // 100 kg
 const RPM_MAX = 6000;
@@ -34,7 +37,8 @@ const buttonStyle = (active: boolean) => ({
   whiteSpace: 'nowrap' as const,
 });
 
-export default function UnbalanceLab() {
+export default function UnbalanceLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const arrowId = useId().replace(/:/g, '');
   const [rpm, setRpm] = useState(1500);
   const [nnRpm, setNnRpm] = useState(3000); // 고유 회전수 N_n (임계속도)
@@ -113,7 +117,7 @@ export default function UnbalanceLab() {
       {
         x: tMs,
         y: timeAxis.map((t) => clean(currentAmpMm * 0.8 * Math.cos(omega * t))),
-        name: '원심력 수평 성분 F_x(t) (크기는 임의, 박자 비교용)',
+        name: tr('원심력 수평 성분 F_x(t) (크기는 임의, 박자 비교용)'),
         color: 'var(--plot-2)',
         dash: 'dash',
         width: 1.6,
@@ -121,7 +125,7 @@ export default function UnbalanceLab() {
       {
         x: tMs,
         y: timeAxis.map((t) => clean(currentAmpMm * Math.cos(omega * t - current.phaseLag))),
-        name: `수평 변위 x(t) (진폭 ${formatNumber(currentAmpMm, 3)} mm)`,
+        name: tr`수평 변위 x(t) (진폭 ${formatNumber(currentAmpMm, 3)} mm)`,
         color: 'var(--plot-1)',
         width: 2.2,
       },
@@ -132,14 +136,14 @@ export default function UnbalanceLab() {
     {
       x: RPM_CURVE,
       y: factorCurve,
-      name: `진폭비 (ζ = ${zeta.toFixed(2)})`,
+      name: tr`진폭비 (ζ = ${zeta.toFixed(2)})`,
       color: 'var(--plot-1)',
       width: 2.2,
     },
     {
       x: [0, RPM_MAX],
       y: [1, 1],
-      name: '고속 한계 (1.0)',
+      name: tr('고속 한계 (1.0)'),
       color: '#94a3b8',
       dash: 'dash',
       width: 1.2,
@@ -147,7 +151,7 @@ export default function UnbalanceLab() {
     {
       x: [rpm],
       y: [current.responseFactor],
-      name: '현재 운전점',
+      name: tr('현재 운전점'),
       color: 'var(--plot-2)',
       mode: 'markers',
       markerSize: 10,
@@ -158,14 +162,14 @@ export default function UnbalanceLab() {
     {
       x: RPM_CURVE,
       y: phaseCurve,
-      name: '위상 지연 φ',
+      name: tr('위상 지연 φ'),
       color: 'var(--plot-1)',
       width: 2.2,
     },
     {
       x: [0, RPM_MAX],
       y: [90, 90],
-      name: '90° (임계속도)',
+      name: tr('90° (임계속도)'),
       color: '#94a3b8',
       dash: 'dash',
       width: 1.2,
@@ -173,7 +177,7 @@ export default function UnbalanceLab() {
     {
       x: [rpm],
       y: [currentPhaseDeg],
-      name: '현재 운전점',
+      name: tr('현재 운전점'),
       color: 'var(--plot-2)',
       mode: 'markers',
       markerSize: 10,
@@ -200,16 +204,16 @@ export default function UnbalanceLab() {
   const nearCritical = r >= 0.95 && r <= 1.05;
 
   const presets = [
-    { r: 0.5, label: '저속 (r = 0.5)' },
-    { r: 1, label: '임계속도 (r = 1)' },
-    { r: 2, label: '초임계 (r = 2)' },
+    { r: 0.5, label: tr('저속 (r = 0.5)') },
+    { r: 1, label: tr('임계속도 (r = 1)') },
+    { r: 2, label: tr('초임계 (r = 2)') },
   ];
 
   const controls = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         <ParamSlider
-          label="회전수 rpm"
+          label={tr('회전수 rpm')}
           value={rpm}
           min={0}
           max={RPM_MAX}
@@ -222,7 +226,7 @@ export default function UnbalanceLab() {
           }}
         />
         <ParamSlider
-          label="고유 회전수 N_n (임계속도)"
+          label={tr('고유 회전수 N_n (임계속도)')}
           value={nnRpm}
           min={1500}
           max={3000}
@@ -231,7 +235,7 @@ export default function UnbalanceLab() {
           onChange={setNnRpm}
         />
         <ParamSlider
-          label="감쇠비 ζ"
+          label={tr('감쇠비 ζ')}
           value={zeta}
           min={0.02}
           max={0.3}
@@ -239,7 +243,7 @@ export default function UnbalanceLab() {
           onChange={setZeta}
         />
         <ParamSlider
-          label="편심 거리 e_cg (= m_u e / M)"
+          label={tr('편심 거리 e_cg (= m_u e / M)')}
           value={eCgMm}
           min={0.02}
           max={0.25}
@@ -273,10 +277,10 @@ export default function UnbalanceLab() {
             whiteSpace: 'nowrap',
           }}
         >
-          {runningUp ? '런업 중지' : '런업 가속 재생 (0 → 6000 rpm)'}
+          {runningUp ? tr('런업 중지') : tr('런업 가속 재생 (0 → 6000 rpm)')}
         </button>
         <button type="button" onClick={() => setSpinning(!spinning)} style={buttonStyle(spinning)}>
-          {spinning ? '원판 멈추기' : '원판 돌리기'}
+          {spinning ? tr('원판 멈추기') : tr('원판 돌리기')}
         </button>
 
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -299,13 +303,13 @@ export default function UnbalanceLab() {
   );
 
   const readoutsRows: readonly Readout[] = [
-    { label: '회전수', value: rpm, unit: 'rpm', sig: 4 },
-    { label: '1X 주파수', value: f1X, unit: 'Hz', sig: 3 },
-    { label: '진동수비 r (Ω/ω_n)', value: r, unit: '', sig: 3 },
-    { label: '원심력 F_u', value: current.forceAmplitude, unit: 'N', sig: 4 },
-    { label: '진폭비 (X / e_cg)', value: current.responseFactor, unit: '', sig: 3 },
-    { label: '수평 변위 진폭 X', value: currentAmpMm, unit: 'mm', sig: 3 },
-    { label: '위상 지연 φ', value: currentPhaseDeg, unit: '°', sig: 3 },
+    { label: tr('회전수'), value: rpm, unit: 'rpm', sig: 4 },
+    { label: tr('1X 주파수'), value: f1X, unit: 'Hz', sig: 3 },
+    { label: tr('진동수비 r (Ω/ω_n)'), value: r, unit: '', sig: 3 },
+    { label: tr('원심력 F_u'), value: current.forceAmplitude, unit: 'N', sig: 4 },
+    { label: tr('진폭비 (X / e_cg)'), value: current.responseFactor, unit: '', sig: 3 },
+    { label: tr('수평 변위 진폭 X'), value: currentAmpMm, unit: 'mm', sig: 3 },
+    { label: tr('위상 지연 φ'), value: currentPhaseDeg, unit: '°', sig: 3 },
   ];
 
   const formulas = (
@@ -322,38 +326,39 @@ export default function UnbalanceLab() {
   const tasks: readonly LabTask[] = [
     {
       question:
-        '회전수를 1500 rpm에서 3000 rpm으로 2배 올리면 불평형 원심력 F_u는 몇 배가 되나요? 원심력 화살표의 길이는요?',
+        tr('회전수를 1500 rpm에서 3000 rpm으로 2배 올리면 불평형 원심력 F_u는 몇 배가 되나요? 원심력 화살표의 길이는요?'),
       answer:
-        '원심력은 F_u = m_u e Ω²로 각속도(회전수)의 제곱에 비례합니다. 회전수가 2배가 되면 원심력은 4배(약 247 N → 약 987 N)가 되고, 화살표 길이도 4배가 됩니다.',
+        tr('원심력은 F_u = m_u e Ω²로 각속도(회전수)의 제곱에 비례합니다. 회전수가 2배가 되면 원심력은 4배(약 247 N → 약 987 N)가 되고, 화살표 길이도 4배가 됩니다.'),
     },
     {
       question:
-        '임계속도 (r = 1) 버튼을 눌러 3000 rpm에 맞추어 보세요. 진폭은 편심 거리 e_cg의 몇 배이며 위상 지연은 몇 도인가요?',
+        tr('임계속도 (r = 1) 버튼을 눌러 3000 rpm에 맞추어 보세요. 진폭은 편심 거리 e_cg의 몇 배이며 위상 지연은 몇 도인가요?'),
       answer:
-        'r = 1에서는 진폭비가 1/(2ζ) = 1/(2 × 0.05) = 10이 되어, 편심 거리 0.1 mm의 10배인 1.0 mm가 됩니다. 힘과 변위 사이의 위상 지연은 90°입니다.',
+        tr('r = 1에서는 진폭비가 1/(2ζ) = 1/(2 × 0.05) = 10이 되어, 편심 거리 0.1 mm의 10배인 1.0 mm가 됩니다. 힘과 변위 사이의 위상 지연은 90°입니다.'),
     },
     {
       question:
-        '3000 rpm 상태에서 감쇠비 ζ를 0.05에서 0.10으로 올려 보세요. 임계속도에서의 진폭과 Q값은 어떻게 바뀌나요?',
+        tr('3000 rpm 상태에서 감쇠비 ζ를 0.05에서 0.10으로 올려 보세요. 임계속도에서의 진폭과 Q값은 어떻게 바뀌나요?'),
       answer:
-        'r = 1의 진폭비는 1/(2ζ)이므로 감쇠비가 2배가 되면 10에서 5로 절반이 됩니다(진폭 1.0 mm → 0.5 mm). Q ≈ 1/(2ζ)도 10에서 5로 줄어듭니다. 감쇠가 클수록 임계속도를 지날 때의 진폭이 작습니다.',
+        tr('r = 1의 진폭비는 1/(2ζ)이므로 감쇠비가 2배가 되면 10에서 5로 절반이 됩니다(진폭 1.0 mm → 0.5 mm). Q ≈ 1/(2ζ)도 10에서 5로 줄어듭니다. 감쇠가 클수록 임계속도를 지날 때의 진폭이 작습니다.'),
     },
     {
       question:
-        '초임계 (r = 2) 버튼을 눌러 6000 rpm으로 올려 보세요. 진폭은 원심력처럼 계속 커지나요?',
+        tr('초임계 (r = 2) 버튼을 눌러 6000 rpm으로 올려 보세요. 진폭은 원심력처럼 계속 커지나요?'),
       answer:
-        '아닙니다. 6000 rpm의 원심력은 3000 rpm의 4배(약 3948 N)이지만 진폭은 0.133 mm(진폭비 1.33), 위상은 176°입니다. 회전수를 더 올리면 진폭은 편심 거리 e_cg = 0.1 mm(진폭비 1)에, 위상은 180°에 다가갑니다. 축 중심이 무거운 점의 반대쪽으로 밀려 전체 질량 중심이 베어링 중심에 머물기 때문입니다(질량 중심 회전).',
+        tr('아닙니다. 6000 rpm의 원심력은 3000 rpm의 4배(약 3948 N)이지만 진폭은 0.133 mm(진폭비 1.33), 위상은 176°입니다. 회전수를 더 올리면 진폭은 편심 거리 e_cg = 0.1 mm(진폭비 1)에, 위상은 180°에 다가갑니다. 축 중심이 무거운 점의 반대쪽으로 밀려 전체 질량 중심이 베어링 중심에 머물기 때문입니다(질량 중심 회전).'),
     },
   ];
 
   return (
     <LabFrame
       id="LAB-UNB-01"
-      title="불평형 런업과 1X 진동"
+      title={tr('불평형 런업과 1X 진동')}
       controls={controls}
       readouts={<ReadoutTable rows={readoutsRows} />}
       formulas={formulas}
       tasks={tasks}
+      lang={lang}
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
         {/* 회전 원판 및 편심 질량 물리 애니메이션 도식 */}
@@ -378,7 +383,7 @@ export default function UnbalanceLab() {
 
             {/* 평형 중심선 */}
             <line x1={svgCenterEqX} y1="22" x2={svgCenterEqX} y2="195" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="4 4" />
-            <text x={svgCenterEqX} y="15" fontSize="11" fill="#94a3b8" textAnchor="middle">베어링 평형 중심</text>
+            <text x={svgCenterEqX} y="15" fontSize="11" fill="#94a3b8" textAnchor="middle">{tr`베어링 평형 중심`}</text>
 
             {/* 회전 로터 원판 */}
             <circle
@@ -392,7 +397,7 @@ export default function UnbalanceLab() {
             <circle cx={diskCenterX} cy={svgCenterY} r="4" fill="#1e40af" />
             {/* 글자는 불평형 질량의 반대쪽에 둔다 (겹침 방지) */}
             <text x={diskCenterX + (massX >= diskCenterX ? -8 : 8)} y={svgCenterY + 4} fontSize="11" fontWeight="bold" fill="#1e40af" textAnchor={massX >= diskCenterX ? 'end' : 'start'}>
-              축 중심 O
+              {tr`축 중심 O`}
             </text>
 
             {/* 편심 반경 선과 불평형 질량 */}
@@ -429,25 +434,25 @@ export default function UnbalanceLab() {
               />
             )}
             <text x={svgCenterEqX} y="220" fontSize="11" fontWeight="bold" fill="#2563eb" textAnchor="middle">
-              수평 변위 x = {currentInstantX >= 0 ? `+${currentInstantX.toFixed(3)}` : currentInstantX.toFixed(3)} mm
+              {tr`수평 변위 x = ${currentInstantX >= 0 ? `+${currentInstantX.toFixed(3)}` : currentInstantX.toFixed(3)} mm`}
             </text>
 
             {/* 좌측 안내 상자 */}
             <rect x="20" y="30" width="190" height="100" rx="4" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
             <text x="30" y="52" fontSize="11" fill="#475569">
-              회전수: <tspan fontWeight="bold">{rpmShown} rpm</tspan>
+              {tr`회전수:`} <tspan fontWeight="bold">{rpmShown} rpm</tspan>
             </text>
             <text x="30" y="74" fontSize="11" fill="#475569">
-              1X 주파수: <tspan fontWeight="bold">{f1X.toFixed(1)} Hz</tspan>
+              {tr`1X 주파수:`} <tspan fontWeight="bold">{f1X.toFixed(1)} Hz</tspan>
             </text>
             <text x="30" y="96" fontSize="11" fill="#475569">
-              진동수비 r: <tspan fontWeight="bold">{r.toFixed(2)}</tspan>
+              {tr`진동수비 r:`} <tspan fontWeight="bold">{r.toFixed(2)}</tspan>
             </text>
             <text x="30" y="118" fontSize="11" fill={nearCritical ? '#ef4444' : '#475569'}>
-              상태: <tspan fontWeight="bold">{nearCritical ? '임계속도 근처 (공진)' : r < 1 ? '아임계 운전' : '초임계 운전'}</tspan>
+              {tr`상태:`} <tspan fontWeight="bold">{nearCritical ? tr('임계속도 근처 (공진)') : r < 1 ? tr('아임계 운전') : tr('초임계 운전')}</tspan>
             </text>
             <text x="20" y="150" fontSize="10" fill="#94a3b8">
-              화면의 원판은 실제보다 {SLOW_FACTOR}배 느리게 돈다
+              {tr`화면의 원판은 실제보다 ${SLOW_FACTOR}배 느리게 돈다`}
             </text>
           </svg>
         </div>
@@ -455,32 +460,32 @@ export default function UnbalanceLab() {
         {/* 2단 플롯: 왼쪽 진폭 곡선 / 오른쪽 시간파형 */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1rem' }}>
           <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>Bode 선도: 회전수별 무차원 진폭비</h4>
+            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{tr`Bode 선도: 회전수별 무차원 진폭비`}</h4>
             <Plot
               series={bodeAmpSeries}
-              x={{ label: '회전수 [rpm]', range: [0, RPM_MAX] }}
-              y={{ label: '진폭비 X / (m_u e / M)', range: [0, Math.min(Math.max(peak?.responseFactor ?? 10, 10) * 1.15, 14)] }}
+              x={{ label: tr('회전수 [rpm]'), range: [0, RPM_MAX] }}
+              y={{ label: tr('진폭비 X / (m_u e / M)'), range: [0, Math.min(Math.max(peak?.responseFactor ?? 10, 10) * 1.15, 14)] }}
               height={200}
             />
           </div>
 
           <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>정상상태 1X 시간파형 (2주기)</h4>
+            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{tr`정상상태 1X 시간파형 (2주기)`}</h4>
             <Plot
               series={waveSeries}
-              x={{ label: '시간 t [ms]', range: [0, 2 * period * 1000] }}
-              y={{ label: '변위 [mm]', range: [-Math.max(0.15, currentAmpMm * 1.2), Math.max(0.15, currentAmpMm * 1.2)] }}
+              x={{ label: tr('시간 t [ms]'), range: [0, 2 * period * 1000] }}
+              y={{ label: tr('변위 [mm]'), range: [-Math.max(0.15, currentAmpMm * 1.2), Math.max(0.15, currentAmpMm * 1.2)] }}
               height={200}
             />
           </div>
         </div>
 
         <div>
-          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>위상 지연 곡선 φ (회전수 증가에 따라 0° → 90° → 180°)</h4>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{tr`위상 지연 곡선 φ (회전수 증가에 따라 0° → 90° → 180°)`}</h4>
           <Plot
             series={bodePhaseSeries}
-            x={{ label: '회전수 [rpm]', range: [0, RPM_MAX] }}
-            y={{ label: '위상 지연 [°]', range: [0, 190] }}
+            x={{ label: tr('회전수 [rpm]'), range: [0, RPM_MAX] }}
+            y={{ label: tr('위상 지연 [°]'), range: [0, 190] }}
             height={160}
           />
         </div>

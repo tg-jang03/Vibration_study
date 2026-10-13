@@ -1,0 +1,364 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P1-2 Natural Frequency
+description: Find the natural frequency from the equation of motion, and learn with a sine-wave lab and a mass-spring lab how mass, stiffness and initial conditions affect the rhythm and the amplitude
+sectionId: P1-2
+source: p1-2.mdx
+sourceHash: 178e73d8da
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import MassSpringLab from '../../components/labs/MassSpringLab';
+import SineBasicsLab from '../../components/labs/SineBasicsLab';
+import * as F from '../../figures/p1-2';
+
+# 1-2 Natural frequency: every object has its own rhythm
+
+Pluck a guitar string and you get the same note; strike a bell again and again and the pitch stays the same. A ruler held over the edge of a desk swings back and forth at almost the same rhythm whether you pull it hard or gently.
+
+The size of the motion changes, so why does the rhythm stay the same? Put the **inertia** and the **restoring force** from the previous page into one equation and the answer appears.
+
+<Figure {...F.equationBalance} />
+
+<Callout type="idea" title="After reading this page">
+
+1. You can set up the equation of motion from the restoring force and Newton's law.
+2. You can read a sine wave in terms of amplitude, frequency and phase.
+3. You can calculate the natural frequency from mass and stiffness and predict how it changes.
+4. You can explain the size and timing relationships among displacement, velocity and acceleration.
+
+</Callout>
+
+---
+
+## 1. Put the forces into one equation and the rhythm appears
+
+Suppose the only force acting on mass $m$ is the restoring force of the spring. With right as the $+$ direction, the restoring force is
+
+$$
+F=-kx
+$$
+
+and Newton's second law is $F=ma$. Acceleration is how fast the velocity changes. It is the second time derivative of displacement, so it is also written $\ddot{x}$.
+
+- $\dot{x}=v$: how fast the displacement changes, the velocity
+- $\ddot{x}=a$: how fast the velocity changes, the acceleration
+
+Both force expressions describe the same mass at the same instant, so we set them equal.
+
+$$
+m\ddot{x}=-kx
+$$
+
+Gathering everything on one side gives the <strong>equation of motion</strong> of the simplest mass-spring system.
+
+$$
+m\ddot{x}+kx=0
+$$
+
+This equation says "at this position, what is the acceleration?" Dividing both sides by $m$ makes the relationship clearer.
+
+$$
+\ddot{x}=-\frac{k}{m}x
+$$
+
+The acceleration always points opposite to the displacement, and its size is the displacement times $k/m$. The farther the mass strays, the harder it accelerates back toward equilibrium.
+
+<Callout type="warn" title="mẍ is not a new force">
+
+$m\ddot{x}$ is not a force you add to the restoring force. It is **the same value as the net force $F$ on the mass, written as a change of motion**. That is why we write $m\ddot{x}=-kx$.
+
+</Callout>
+
+---
+
+## 2. The shape that satisfies this equation: the sine wave
+
+The equation of motion asks for a function that, when differentiated twice, becomes minus itself times a constant. Cosine and sine have exactly that property.
+
+$$
+x(t)=A\cos(\omega_n t+\varphi)
+$$
+
+Differentiating twice gives
+
+$$
+\ddot{x}(t)=-\omega_n^2 A\cos(\omega_n t+\varphi)=-\omega_n^2x(t)
+$$
+
+Comparing with $\ddot{x}=-(k/m)x$ in the equation of motion, we need $\omega_n^2=k/m$. Here $\omega_n$ is a number that tells how fast the system swings by itself. Its exact meaning comes below, in angular frequency and in the natural frequency of Section 3.
+
+This smoothly repeating cosine or sine shape is called a <strong>sinusoid</strong> (sine wave). A sine wave is fully determined by three numbers.
+
+<Figure {...F.sineAnatomy} />
+
+| Number | Question | Meaning |
+|---|---|---|
+| Amplitude $A$ | How big is the swing? | Height from the center to the top |
+| Frequency $f$ | How often does it repeat? | Repeats per second [Hz] |
+| Phase $\varphi$ | Where does it start within the same rhythm? | Shift of the starting moment [rad or °] |
+
+The period $T$ is the time for one back-and-forth swing, and the frequency is the number of swings per second.
+
+$$
+f=\frac{1}{T},\qquad T=\frac{1}{f}
+$$
+
+The <strong>angular frequency $\omega$</strong> counts one swing as $2\pi$ rad and gives the angle covered per second.
+
+$$
+\omega=2\pi f
+$$
+
+<Callout type="example" title="Reading 5 Hz two ways">
+
+A vibration with $f=5$ Hz repeats 5 times a second, so $T=1/5=0.2$ s. Writing the same rhythm as an angle gives $\omega=2\pi(5)\approx31.42$ rad/s.
+
+</Callout>
+
+### 2.1 Changing the three numbers of a sine wave yourself
+
+In the lab below, change the amplitude, frequency and phase one at a time. The dashed line is a reference wave for comparison. The **rotating arrow** at the top of the lab draws the same sine wave in a different way. An arrow of length $A$ turns counterclockwise $f$ times per second, and the height of its tip is $x(t)$ at that instant. Press play and that height draws the wave out to the right. The phase $\varphi$ is how far the arrow has turned from the top (0°) at $t=0$, that is, the **starting angle**.
+
+<Callout type="try">
+
+1. Raise only the frequency from 5 Hz to 10 Hz. Compare the number of waves on screen and the period $T$.
+2. Put the frequency back to 5 Hz and set the phase to $-90^\circ$. See how much later than the reference the peak arrives.
+3. Set the phase to $180^\circ$. Check how the wave differs from the reference, top versus bottom.
+4. Change only the amplitude. See which changes, the height of the waves or the period.
+5. Set the phase to $+90^\circ$ and press **Reset**, then **Play**. Watch where the arrow starts, and whether the wave first goes up or down.
+
+</Callout>
+
+<SineBasicsLab client:load lang="en" />
+
+In step 1, doubling the frequency halves the period from 0.2 s to 0.1 s, and the waves in the 1-second window go from 5 to 10. The amplitude stays the same. At $-90^\circ$ in step 2, the peak comes 1/4 of a period later, that is $0.2 \times 1/4 = 0.05$ s. The $180^\circ$ of step 3 is the reference flipped upside down ($-A\cos 2\pi f t$). As in step 4, changing only the amplitude changes only the height; the period stays. Phase only shifts the wave along the time axis and changes neither the height nor the rhythm. **Amplitude, frequency and phase carry different information.**
+
+At $+90^\circ$ in step 5, the arrow starts on the left, turned 90° counterclockwise from the top. It starts at height 0 and goes down as it turns counterclockwise, so the wave also goes down from 0. It has already passed the top (0°) 1/4 of a period earlier, so it is **ahead of** the reference. Conversely, $-90^\circ$ starts on the right, 1/4 turn short of the top, and is late. Once you see phase as "the starting angle of the arrow," you can read the arrow pictures in P2-8 (sidebands), the phase measurement in P3-3 and the full spectrum in P5-3 in the same way. The 0° is placed at the top so that the height of the arrow tip reads directly as the signal value. Note, however, that the phase measurement in P3-3 uses a delay angle measured in the opposite direction (clockwise), so there you only reverse the direction when reading.
+
+---
+
+## 3. The object's own rhythm: the natural frequency
+
+When a mass-spring system swings freely, with no repeating outside force, its angular frequency is the <strong>natural angular frequency $\omega_n$</strong>, and the same value in Hz is the <strong>natural frequency $f_n$</strong>.
+
+$$
+\omega_n=\sqrt{\frac{k}{m}},\qquad
+f_n=\frac{\omega_n}{2\pi}=\frac{1}{2\pi}\sqrt{\frac{k}{m}}
+$$
+
+Two things can be read straight from the equation.
+
+- A larger mass $m$ means more inertia, so the motion changes more slowly → $f_n$ goes down.
+- A larger stiffness $k$ means a stronger force back toward equilibrium → $f_n$ goes up.
+
+<Figure {...F.massAndStiffness} />
+
+Because of the square root, a change in mass or stiffness does not turn directly into the same factor in frequency.
+
+| What you change | Change in $f_n$ | Why |
+|---|---|---|
+| Mass × 4 | × $1/2$ | $\sqrt{1/4}=1/2$ |
+| Stiffness × 4 | × 2 | $\sqrt{4}=2$ |
+| Mass × 2 | × $1/\sqrt{2}\approx0.707$ | $\sqrt{1/2}$ |
+| Stiffness × 2 | × $\sqrt{2}\approx1.414$ | $\sqrt{2}$ |
+
+<Callout type="example" title="m = 1 kg, k = 1000 N/m">
+
+$$
+\omega_n=\sqrt{\frac{1000}{1}}=31.62\ \mathrm{rad/s}
+$$
+
+$$
+f_n=\frac{31.62}{2\pi}=5.033\ \mathrm{Hz},\qquad
+T=\frac{1}{5.033}=0.1987\ \mathrm{s}
+$$
+
+This is why the mass on the previous page came back about every 0.1987 s.
+
+</Callout>
+
+---
+
+## 4. Swing it big and the rhythm is still the same
+
+The natural-frequency formula has no amplitude $A$ in it. With the same $m$ and $k$, the time for one swing is the same whether you pull it 5 mm or 15 mm.
+
+<Figure {...F.amplitudeIndependence} />
+
+This conclusion holds for the **linear model**, where the restoring force is proportional to displacement, $F=-kx$. If a real part bends so much that its stiffness changes, or contact and clearance come into play, the rhythm can depend on the amplitude. For now we stay in the linear range, which is the reference for vibration.
+
+<Callout type="warn" title="Plucking harder can mix two effects">
+
+Plucking the same object harder usually makes the amplitude larger, but within the linear range the natural frequency stays the same. If you change the object, or the point where you hold it, so that stiffness or mass also changes, the rhythm can change too.
+
+</Callout>
+
+---
+
+## 5. How you let go at the start sets the amplitude and the phase
+
+Let the initial position be $x_0$ and the initial velocity $v_0$. The undamped free response can be written as
+
+$$
+x(t)=x_0\cos\omega_n t+\frac{v_0}{\omega_n}\sin\omega_n t
+$$
+
+You can pull the mass far and release it, or push it from the equilibrium position to give it speed. In both cases $\omega_n$ is the same as long as $m$ and $k$ are the same.
+
+<Figure {...F.initialConditions} />
+
+Combining $x_0$ and $v_0$ into one cosine, the amplitude is
+
+$$
+A=\sqrt{x_0^2+\left(\frac{v_0}{\omega_n}\right)^2}
+$$
+
+The initial position and initial velocity decide **how big** the swing is and **at which point of the cycle** it starts. The object's own rhythm, the natural frequency, is still set by $m$ and $k$.
+
+---
+
+## 6. Displacement, velocity and acceleration do not peak at the same time
+
+If displacement is a sine wave, differentiating gives the velocity and the acceleration.
+
+$$
+x=A\cos(\omega t+\varphi)
+$$
+
+$$
+v=\dot{x}=-\omega A\sin(\omega t+\varphi)
+$$
+
+$$
+a=\ddot{x}=-\omega^2A\cos(\omega t+\varphi)=-\omega^2x
+$$
+
+The velocity amplitude is $\omega A$ and the acceleration amplitude is $\omega^2A$. Each differentiation moves the phase $90^\circ$ ahead.
+
+<Figure {...F.displacementVelocityAcceleration} />
+
+| Position | Displacement $x$ | Velocity $v$ | Acceleration $a$ |
+|---|---|---|---|
+| Right end point | $+A$ | 0 | Maximum in the negative direction |
+| Passing equilibrium | 0 | Maximum magnitude | 0 |
+| Left end point | $-A$ | 0 | Maximum in the positive direction |
+
+In the basic model, $A=10$ mm and $\omega_n=31.62$ rad/s, so the velocity amplitude is about $0.316$ m/s and the acceleration amplitude is $10.0$ m/s².
+
+<Callout type="field" title="The numbers depend on what you measure the same vibration with">
+
+A sensor records one of displacement, velocity or acceleration. For the same sine wave, the velocity amplitude is multiplied by $\omega$ and the acceleration amplitude by $\omega^2$. How to read a measured waveform as amplitude, frequency and phase and how to measure the phase difference between two waveforms is covered in P2-1; real unit conversion and frequency-by-frequency interpretation continue in P2-7.
+
+</Callout>
+
+---
+
+## 7. Changing mass and stiffness yourself
+
+Now we extend the same mass-spring lab so you can change four values, mass, stiffness, initial displacement and initial velocity, along with what is displayed. The first two ($m$, $k$) are properties of the system, and the last two ($x_0$, $v_0$) are how you let go at the start.
+
+<Callout type="try">
+
+1. At the defaults $m=1$ kg, $k=1000$ N/m, check the readouts $f_n\approx5.033$ Hz and $T\approx0.1987$ s. Change only the mass to 4 kg and press **Play**. Does the wave widen, and does $f_n$ halve?
+2. Put the mass back to 1 kg and change the stiffness to 4000 N/m, then play. Does $f_n$ double?
+3. Put $m$ and $k$ back to the defaults, then change $x_0$ from 10 mm to 20 mm. The vertical axis of the graph stretches to fit the amplitude, so look at the readouts. Which changes, the amplitude $A$ or $f_n$?
+4. Set $x_0=0$ mm and $v_0=0.30$ m/s and play, then switch **Show on graph** among displacement, velocity and acceleration. At $t=0$, which value is at its maximum and which is 0?
+
+</Callout>
+
+<MassSpringLab client:load lang="en" mode="expanded" />
+
+In step 1, quadrupling the mass widens the wave and halves $f_n$ from 5.033 Hz to 2.516 Hz. In step 2, quadrupling the stiffness packs the wave more tightly and doubles $f_n$ to 10.07 Hz. In step 3, the amplitude $A$ changes from 10 mm to 20 mm, but $f_n$ stays at 5.033 Hz.
+
+At $t=0$ in step 4, the displacement and the acceleration are 0 and only the velocity is at its maximum, 0.30 m/s. The amplitude is $A=v_0/\omega_n=0.30/31.62\approx9.49$ mm. In this way $x_0$ and $v_0$ change the amplitude and the starting phase, but not the rhythm.
+
+### 7.1 Estimating the rhythm from the static sag
+
+This time, put the mass on a support, standing vertically. If the weight $mg$ of the mass ($g \approx 9.81\ \mathrm{m/s^2}$, gravitational acceleration) makes the support sag by $\delta_{st}$, then in static equilibrium
+
+$$
+k\delta_{st}=mg
+$$
+
+Gravity only moves the equilibrium position to the sagged position; it does not change the rhythm of the swing about that position. So $k/m=g/\delta_{st}$ can be put straight into the natural-frequency formula.
+
+$$
+f_n=\frac{1}{2\pi}\sqrt{\frac{g}{\delta_{st}}}
+$$
+
+<Figure {...F.staticDeflectionEstimate} />
+
+A large static sag means the support gives way more under the same weight, that is, it is softer. So the natural frequency is lower. Use this formula as a quick estimate for the simple mass-spring model.
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Equation of motion | $m\ddot{x}+kx=0$; acceleration is opposite to displacement |
+| Sine wave | $x=A\cos(\omega t+\varphi)$; set by amplitude, frequency and phase |
+| Period and frequency | $T=1/f$, $\omega=2\pi f$ |
+| Natural frequency | $\omega_n=\sqrt{k/m}$, $f_n=\omega_n/(2\pi)$ |
+| Mass and stiffness | Heavier is slower; stiffer is faster |
+| Initial conditions | $x_0$ and $v_0$ set the amplitude and phase and do not change $f_n$ |
+| Displacement, velocity, acceleration | Amplitudes are $A$, $\omega A$, $\omega^2A$, and the phases are shifted by 90° each |
+| Static sag | $f_n=(1/2\pi)\sqrt{g/\delta_{st}}$; the more it sags, the lower the rhythm |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. What are the natural frequency and the period of a system with m = 1 kg, k = 1000 N/m?</strong></summary>
+
+$\omega_n=\sqrt{1000}=31.62$ rad/s, $f_n=31.62/(2\pi)=5.033$ Hz, $T=1/f_n=0.1987$ s.
+</details>
+
+<details>
+<summary><strong>Q2. What happens to the natural frequency if you only quadruple the mass?</strong></summary>
+
+$f_n$ is proportional to $\sqrt{k/m}$, so it becomes $\sqrt{1/4}=1/2$ of the original.
+</details>
+
+<details>
+<summary><strong>Q3. What happens to the natural frequency if you only quadruple the stiffness?</strong></summary>
+
+It becomes $\sqrt{4}=2$ times as large.
+</details>
+
+<details>
+<summary><strong>Q4. If you pull the same system twice as far and release it, does the period also double?</strong></summary>
+
+Not in a linear model. Only the amplitude doubles; the period and the natural frequency stay the same.
+</details>
+
+<details>
+<summary><strong>Q5. What are the velocity and the acceleration at the right end point and at the equilibrium point?</strong></summary>
+
+At the right end point the velocity is 0 and the acceleration is at its maximum, in the negative direction toward equilibrium. At the equilibrium point the velocity magnitude is at its maximum and the acceleration is 0.
+</details>
+
+<details>
+<summary><strong>Q6. Does changing the initial velocity change the natural frequency?</strong></summary>
+
+No. The initial velocity changes the amplitude $A$ and the phase $\varphi$, but the natural frequency is set by the mass $m$ and the stiffness $k$.
+</details>
+
+<details>
+<summary><strong>Q7. You put a mass on a support and its weight makes the support sag by 10 mm. What is the estimated natural frequency?</strong></summary>
+
+$\delta_{st}=0.010$ m, so $f_n=(1/2\pi)\sqrt{9.80665/0.010}\approx4.98$ Hz.
+</details>
+
+On the next page (P1-3) we look at why real vibration dies away over time, that is, **how damping takes energy away**.
+
+## References
+
+<References items={[
+  ['R-51', 'Free vibration of an undamped mass-spring system and its initial conditions'],
+  ['R-52', 'Relation between natural frequency and static deflection'],
+]} />

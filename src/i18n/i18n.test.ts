@@ -118,14 +118,28 @@ describe('영어 랩 (EN_LAB_COMPONENTS)', () => {
 });
 
 describe('영어 절 페이지', () => {
+  const glob = import.meta.glob('../pages/en/p*.mdx', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
   it('파일 이름과 sectionId가 맞고 원본 해시를 적었다', () => {
-    const glob = import.meta.glob('../pages/en/p*.mdx', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
     for (const [file, text] of Object.entries(glob)) {
       const id = file.match(/p(\d+)-(\d+)\.mdx$/)!;
       expect(text, file).toMatch(new RegExp(`^sectionId: P${id[1]}-${id[2]}$`, 'm'));
       expect(text, file).toMatch(/^sourceHash: [0-9a-f]{10}$/m);
       expect(existsSync(join(root, 'pages', `p${id[1]}-${id[2]}.mdx`)), file).toBe(true);
     }
+  });
+  // 나중에 영어판이 생긴 절·랩으로 가는 옛 한국어 링크를 잡는다 (영어 주소로 바꾸고 한국어 앵커는 뺀다)
+  it('영어판이 있는 절·랩은 영어 주소로 링크한다', () => {
+    const enSections = new Set(Object.keys(glob).map((f) => f.match(/(p\d+-\d+)\.mdx$/)![1]));
+    const stale = Object.entries(glob).flatMap(([file, text]) =>
+      [...text.matchAll(/withBase\('\/(p\d+-\d+|lab\/[^/']+)\/[^']*'\)/g)]
+        .filter(([, target]) => {
+          if (enSections.has(target)) return true;
+          const lab = LABS.find((l) => `lab/${l.slug}` === target);
+          return !!lab && EN_LAB_COMPONENTS.has(lab.component);
+        })
+        .map(([link]) => `${file.replace('../pages/', '')}: ${link}`),
+    );
+    expect(stale).toEqual([]);
   });
 });
 

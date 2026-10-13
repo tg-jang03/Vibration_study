@@ -1,0 +1,301 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P1-5 Several Masses and Modes
+description: The coupled equations of motion of a two-degree-of-freedom system, its natural frequencies and mode shapes, pure-mode vibration and modal superposition, beating in weakly coupled systems, the 2-DOF frequency response (FRF) and the bending modes of a continuum, learned with the 2-DOF lab
+sectionId: P1-5
+source: p1-5.mdx
+sourceHash: 47cd32c6ad
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import TwoDofModeLab from '../../components/labs/TwoDofModeLab';
+import * as F from '../../figures/p1-5';
+
+# 1-5 Several Masses and Modes: Why Machines Vibrate to Several Rhythms
+
+Tap a long steam pipe or a gas turbine shaft and you do not hear one clean note, but several notes layered together. The single-mass systems we have seen so far (P1-1 ~ P1-4) had exactly one natural frequency. So why do real machines and structures vibrate to several rhythms?
+
+Because a machine is not one lump. It is made of many mass elements tied to each other by elasticity. As the number of masses that can move grows, so does the number of natural frequencies, and each frequency has its own characteristic vibration pattern (the <strong>mode shape</strong>).
+
+<Figure {...F.twoDofModel} />
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain what a <strong>degree of freedom (DOF)</strong> is and why adding masses gives several natural frequencies.
+2. You can explain the motion and the frequency difference of the two natural modes of a 2-DOF system (<strong>in-phase</strong> and <strong>anti-phase</strong>).
+3. You know that a complicated waveform you get by pulling the system any which way and letting go is a <strong>simple sum of modes (superposition)</strong>.
+4. You can explain the <strong>beat</strong> phenomenon, where energy swings between two masses when the coupling between them is weak.
+5. You know why the frequency response (FRF) of a 2-DOF system has <strong>two resonance peaks</strong>.
+6. You know why a continuum such as a long pipe or shaft has <strong>infinitely many modes</strong>.
+
+</Callout>
+
+---
+
+## 1. Degrees of freedom and two masses tied together: coupling
+
+The number of independent coordinates needed to describe the position of a body completely is its <strong>degree of freedom (DOF)</strong>.
+
+- If a single mass moves left and right, one displacement $x(t)$ is enough, so it is a <strong>single-degree-of-freedom (SDOF)</strong> system (P1-1 ~ P1-4).
+- If two masses $m_1$ and $m_2$ move side by side as in Figure 1, you need two displacements, $x_1(t)$ and $x_2(t)$, so it is a <strong>two-degree-of-freedom (2DOF)</strong> system.
+
+Between the two masses sits the middle spring $k_c$. Its deformation is the relative displacement of the two masses, $(x_2 - x_1)$. So when mass 1 moves, a force is passed through the middle spring to mass 2, and when mass 2 moves, a force acts back on mass 1. A connection through which the motions affect each other like this is called <strong>coupling</strong>.
+
+<Callout type="term" title="Coupling">
+
+The state in which two or more masses or vibrating degrees of freedom are tied together by springs, dampers, fluid films and so on and exchange forces. With coupling, touching one side makes the other side shake too.
+
+</Callout>
+
+Let us write the equations of motion by putting the restoring force on each mass into Newton's second law ($F = ma$).
+
+$$
+\begin{aligned}
+m_1 \ddot{x}_1 &= -k x_1 + k_c (x_2 - x_1) = -(k + k_c)x_1 + k_c x_2 \\
+m_2 \ddot{x}_2 &= -k_c (x_2 - x_1) - k x_2 = k_c x_1 - (k + k_c)x_2
+\end{aligned}
+$$
+
+Moving all the terms on the right to the left and writing it in matrix form gives the following.
+
+$$
+\begin{bmatrix} m_1 & 0 \\ 0 & m_2 \end{bmatrix} \begin{bmatrix} \ddot{x}_1 \\ \ddot{x}_2 \end{bmatrix} + \begin{bmatrix} k + k_c & -k_c \\ -k_c & k + k_c \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}
+$$
+
+In short, $\mathbf{M}\ddot{\mathbf{x}} + \mathbf{K}\mathbf{x} = \mathbf{0}$. We now have a mass matrix $\mathbf{M}$ and a stiffness matrix $\mathbf{K}$. The off-diagonal entry $-k_c$ of the stiffness matrix is exactly the coupling term that ties the two masses together.
+
+---
+
+## 2. Two natural frequencies and mode shapes: in-phase and anti-phase
+
+In an SDOF system there was only one natural frequency, $\omega_n = \sqrt{k/m}$. What about a 2-DOF system? Assume both masses oscillate harmonically together at a constant angular frequency $\omega$ ($x_1 = u_1 \cos\omega t$, $x_2 = u_2 \cos\omega t$).
+
+Substituting into the equations gives $(\mathbf{K} - \omega^2\mathbf{M})\mathbf{u} = \mathbf{0}$. For a real vibration to exist, other than the trivial solution in which both masses stand still ($\mathbf{u} = \mathbf{0}$), the determinant must be zero.
+
+$$
+\det(\mathbf{K} - \omega^2\mathbf{M}) = 0
+$$
+
+Solving this gives a quadratic equation in $\omega^2$ (the characteristic equation), which yields **exactly two** positive natural frequencies $\omega$. To make it concrete, let us solve a symmetric system with both masses $m_1 = m_2 = m = 1\text{ kg}$, both outer springs $k = 1000\text{ N/m}$ and the middle spring $k_c = 1000\text{ N/m}$.
+
+<Figure {...F.modeShapesDiagram} />
+
+### Mode 1 (in-phase)
+$$
+\omega_1 = \sqrt{\frac{k}{m}} = \sqrt{\frac{1000}{1}} \approx 31.62\text{ rad/s} \implies f_1 \approx 5.03\text{ Hz}, \quad \mathbf{u}^{(1)} = \begin{bmatrix} +1 \\ +1 \end{bmatrix}
+$$
+
+The two masses move by the same amount in the **same direction**. If mass 1 goes 10 mm to the right, mass 2 also goes 10 mm to the right. The distance between them, $(x_2 - x_1)$, is always 0, so the middle spring $k_c$ is neither stretched nor compressed. It is as if the middle spring were not there and each mass hung only on its own wall spring $k$, so the natural frequency comes out as $\sqrt{k/m}$ unchanged.
+
+### Mode 2 (anti-phase)
+$$
+\omega_2 = \sqrt{\frac{k + 2k_c}{m}} = \sqrt{\frac{1000 + 2000}{1}} \approx 54.77\text{ rad/s} \implies f_2 \approx 8.72\text{ Hz}, \quad \mathbf{u}^{(2)} = \begin{bmatrix} +1 \\ -1 \end{bmatrix}
+$$
+
+The two masses move by the same amount in **opposite directions**, toward and away from each other. When mass 1 goes right, mass 2 comes left, so the middle spring is compressed and stretched twice as much. The restoring force is stronger and the effective stiffness becomes $k + 2k_c$, so the natural frequency is higher than that of mode 1: $\sqrt{3}\,f_1 \approx 8.72\text{ Hz}$ (when $k_c = k$).
+
+<Callout type="term" title="Mode shape">
+
+The geometric pattern of the displacement ratios and phase relationships among the masses (or points) of the system when it vibrates at one particular natural frequency. The absolute size of the amplitude is set by the initial conditions, but the **relative ratios and signs** among the masses are a property of the system itself.
+
+</Callout>
+
+---
+
+## 3. Pure-mode vibration: release it in a mode shape and it dances to a single rhythm
+
+What happens if you pull the masses to $[+10, +10]\text{ mm}$, the ratio of the mode 1 shape, and let go? Look at the upper graph of Figure 3.
+
+<Figure {...F.pureModeResponses} />
+
+Mass 1 (blue solid line) and mass 2 (orange dotted line) overlap perfectly, and the motion is a single sinusoid at $f_1 = 5.03\text{ Hz}$ only. Mode 2 is not awakened at all.
+
+Conversely, if you release the masses from $[+10, -10]\text{ mm}$, the ratio of the mode 2 shape, the two masses oscillate exactly 180° out of phase at the faster rhythm of $f_2 = 8.72\text{ Hz}$ only (lower graph of Figure 3). Mode 1 does not appear at all.
+
+If you displace the system in the shape of one of its natural modes, it vibrates at that one natural frequency without mixing in the other mode. Without damping the vibration goes on forever, and with damping it dies away while keeping the same shape (P1-3).
+
+---
+
+## 4. Modal superposition and beating: pull it any which way and the modes mix
+
+In real life, when you hit a machine, can you pull it in exactly the ratio of a mode shape? Hardly. Suppose, for example, that you pull only mass 1 10 mm to the right, hold mass 2 still, and release ($x_1(0) = 10\text{ mm}, x_2(0) = 0$).
+
+This initial condition splits into an exact 1:1 sum of the mode 1 vector and the mode 2 vector.
+
+$$
+\begin{bmatrix} 10 \\ 0 \end{bmatrix} = 5 \begin{bmatrix} 1 \\ 1 \end{bmatrix} + 5 \begin{bmatrix} 1 \\ -1 \end{bmatrix}
+$$
+
+For a linear differential equation, the solutions of the individual modes can simply be added. This is the principle of <strong>modal superposition</strong>.
+
+$$
+\begin{aligned}
+x_1(t) &= 5\cos(\omega_1 t) + 5\cos(\omega_2 t) \\
+x_2(t) &= 5\cos(\omega_1 t) - 5\cos(\omega_2 t)
+\end{aligned}
+$$
+
+<Figure {...F.modalSuperposition} />
+
+In the upper graph of Figure 4, the displacements $x_1(t)$ and $x_2(t)$ are not single sinusoids but a complicated shape in which two rhythms push and pull against each other. But as the decomposition in the lower graph shows, this wobble is not random fluctuation. It is the sum of the two mode components at 5.03 Hz and 8.72 Hz.
+
+### Weakly coupled systems and energy exchange (beating)
+
+What if the middle spring is very soft? Reduce it to, say, $k_c = 100\text{ N/m}$ ($0.1k$).
+- First natural frequency: $f_1 = \sqrt{1000}/(2\pi) \approx 5.033\text{ Hz}$
+- Second natural frequency: $f_2 = \sqrt{1200}/(2\pi) \approx 5.513\text{ Hz}$
+
+The difference between the two natural frequencies becomes very small, $\Delta f = 0.480\text{ Hz}$. If you now pull and release only mass 1, the sum-and-difference formulas of trigonometry group the motion as follows.
+
+$$
+\begin{aligned}
+x_1(t) &= 10 \cos\left(\frac{\omega_2 - \omega_1}{2} t\right) \cos\left(\frac{\omega_2 + \omega_1}{2} t\right) \\
+x_2(t) &= 10 \sin\left(\frac{\omega_2 - \omega_1}{2} t\right) \sin\left(\frac{\omega_2 + \omega_1}{2} t\right)
+\end{aligned}
+$$
+
+<Figure {...F.beatEnergyExchange} />
+
+Look at Figure 5. Mass 1 (blue) shakes fast, but its amplitude gradually shrinks and it almost stops after about 1 second. Meanwhile the amplitude of mass 2 (orange) grows to 10 mm. Then mass 2 stops again and mass 1 comes back to life. Energy travels through the middle spring and swings entirely between the two masses. The period of this amplitude swell is called the <strong>beat period</strong>, and it is set by the difference of the two frequencies.
+
+$$
+T_{\text{beat}} = \frac{1}{|f_2 - f_1|} = \frac{1}{0.480\text{ Hz}} \approx 2.08\text{ s}
+$$
+
+<Callout type="field" title="Two machines on a common frame: energy exchange and beating">
+
+When two identical machines sit on a common frame and you hit one with a hammer, the vibration slowly passes to the other and comes back. That is the energy exchange of Figure 5. The droning you hear when the two run together at slightly different speeds, on the other hand, is the beat of P1-4 (the difference between two excitation frequencies). If only one machine keeps running, the other simply shakes steadily at the same frequency and does not swell and fade.
+
+</Callout>
+
+---
+
+## 5. Frequency response (FRF) of a 2-DOF system: a resonance peak that rises twice
+
+In P1-4 we saw the frequency response (FRF) of an SDOF system under an external force, with a single resonance peak at the natural frequency $\omega_n$.
+
+What happens if we apply a harmonic force $F_0 \cos\omega t$ to mass 1 of the 2-DOF system? The system has two natural frequencies, so resonance occurs each time the force frequency matches one of them.
+
+<Figure {...F.twoDofFrf} />
+
+As Figure 6 shows, the frequency response curve has **two distinct resonance peaks**.
+1. **First resonance ($f_1 \approx 5.03\text{ Hz}$)**: when the force frequency meets the first natural frequency, the two masses swing strongly in the same direction (in-phase).
+2. **Second resonance ($f_2 \approx 8.72\text{ Hz}$)**: when the force frequency meets the second natural frequency, the two masses swing strongly in opposite directions (anti-phase), crossing each other.
+
+With 3 masses there are at most 3 peaks, and with $N$ masses at most $N$. But if the point where you apply the force or where you measure lies at a node of some mode (a point that does not move in that mode, section 6), the peak of that mode does not appear.
+
+---
+
+## 6. Extension to a continuum: why do pipes and shafts have infinitely many modes?
+
+The long steam pipes of a real power plant, the long shafts of pumps and the rotors of gas turbines are not systems of two blocks. Mass and elasticity are spread continuously with no gaps along the whole bar; it is a <strong>continuum</strong>.
+
+<Figure {...F.continuumModes} />
+
+A continuum is a system of infinitely many tiny masses connected to each other by elasticity, so in theory it has **infinitely many degrees of freedom**. The natural frequencies and mode shapes therefore go on without end: first, second, third, fourth...
+
+- **First bending mode (fundamental mode)**: the whole shaft bends to one side like a bow. It has the lowest natural frequency, and there is no point that stays still (a <strong>node</strong>) other than the supports at both ends.
+- **Second bending mode**: the left and right halves of the shaft bend in opposite directions. One node that does not move at all appears in the middle.
+- **Third bending mode**: the shaft bends in an S shape like a wave, with two nodes inside.
+
+The higher the order, the more sharply the shaft bends, so the elastic strain energy grows and the natural frequency rises steeply. In real rotating-machinery diagnosis, you concentrate on the <strong>few lowest orders (mainly modes 1 to 3)</strong> that lie within and just above the operating speed range.
+
+<Callout type="warn" title="'The sensor on the node sees no vibration, so it is safe?'">
+
+Suppose the shaft is bending strongly in its second mode and you attach the sensor at the node of the second mode (the exact middle). The instrument then reads zero for the second-mode component. If you do not know the mode shape, you can wrongly believe there is no vibration. The same goes for adding a support to a pipe: if you put the support at the node of some mode, the vibration of that mode hardly decreases. The exact middle is also the most effective place for the first mode, so first decide which mode you want to reduce.
+
+</Callout>
+
+---
+
+## 7. Hands-on with the 2-DOF mode lab (LAB-2DOF-01)
+
+In the lab below, change the middle spring stiffness $k_c$ and the initial condition yourself, and see directly the physical motion of the two masses, the modal decomposition waveforms and the beat phenomenon.
+
+<Callout type="try" title="Follow along: experiencing 2-DOF modes and beating">
+
+1. Choose the initial condition <code>Mode 1: in-phase [10, 10] mm</code> and press <strong>Play</strong>. Watch the two masses dance side by side and see that the length of the middle spring does not change.
+2. Change the initial condition to <code>Mode 2: anti-phase [10, −10] mm</code> and play. Notice that the frequency is clearly faster and the two masses face each other and squeeze the middle spring.
+3. Press the <code>Weak coupling (kc = 0.1k, beating)</code> button, set the initial condition to <code>Left mass only</code>, and play. Measure the beat period at which energy passes from the left mass to the right mass and back.
+
+</Callout>
+
+<TwoDofModeLab client:load lang="en" />
+
+As in step 1, if you pull to [10, 10] mm, the ratio of the mode 1 shape, the two masses move the same amount in the same direction and the middle spring length does not change, so the system vibrates cleanly at a single rhythm, the first natural frequency ($f_1 \approx 5.03\text{ Hz}$).
+
+As in step 2, if you switch to [10, −10] mm, the ratio of the mode 2 shape, the two masses face each other and compress and stretch the middle spring twice as much, so only an anti-phase vibration at the much higher frequency ($f_2 \approx 8.72\text{ Hz}$) appears.
+
+As in step 3, if you lower the middle spring stiffness to $k_c = 100\text{ N/m}$ ($0.1k$) and pull only the left mass, a beat in which energy swings entirely between the two masses about every 2.08 seconds shows up clearly in the time waveform.
+
+---
+
+## 8. Summary
+
+| | Single DOF (SDOF) | Symmetric 2-DOF (2DOF) | Continuum (beam, rotor shaft, pipe) |
+|---|---|---|---|
+| **Independent coordinates** | 1 ($x$) | 2 ($x_1, x_2$) | Infinitely many ($w(x, t)$) |
+| **Natural frequencies** | 1 ($\omega_n = \sqrt{k/m}$) | 2 ($\omega_1, \omega_2$) | Infinitely many ($\omega_1, \omega_2, \omega_3, \dots$) |
+| **Mode shapes** | None (a single scalar) | 2: in-phase $[1, 1]$, anti-phase $[1, -1]$ | Infinitely many: 1st (0 nodes), 2nd (1 node), 3rd (2 nodes)... |
+| **Resonance peaks** | 1 frequency response peak | 2 frequency response peaks | Many resonance peaks in the band of interest |
+| **Characteristic phenomena** | Single-sinusoid free vibration | Modal superposition, beating when weakly coupled | A node for each mode, bending deformation |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. Three masses connected by four springs move along a straight line, forming a 3-DOF system. How many natural frequencies and mode shapes does it have?</strong></summary>
+
+With 3 degrees of freedom there are 3 natural frequencies and 3 mode shapes. Each natural frequency corresponds one-to-one to its own vibration ratio among the masses of the whole system (the mode shape).
+</details>
+
+<details>
+<summary><strong>Q2. In a symmetric 2-DOF system with m₁ = m₂ = 1 kg, outer springs k = 1000 N/m and a middle spring kc = 1000 N/m, how many times the first natural frequency is the second?</strong></summary>
+
+The first is $\omega_1 = \sqrt{k/m} = \sqrt{1000} \approx 31.62\text{ rad/s}$ (5.03 Hz) and the second is $\omega_2 = \sqrt{(k + 2k_c)/m} = \sqrt{3000} \approx 54.77\text{ rad/s}$ (8.72 Hz), so the ratio is $\sqrt{3} \approx 1.732$.
+</details>
+
+<details>
+<summary><strong>Q3. If you make the coupling spring kc between the two masses very stiff (kc → ∞), what happens to the first and second natural frequencies?</strong></summary>
+
+The first natural frequency, $\omega_1 = \sqrt{k/m}$, does not depend on $k_c$ at all, so it stays the same. The second, $\omega_2 = \sqrt{(k + 2k_c)/m} \to \infty$, rises without limit. In other words the two masses are bound into one lump and move together only in the first mode.
+</details>
+
+<details>
+<summary><strong>Q4. When you pull and release only one mass of a 2-DOF system, is the complicated wobbling waveform you observe random noise?</strong></summary>
+
+No. It is a very regular motion: two pure sinusoids, the first-mode component ($\omega_1$) and the second-mode component ($\omega_2$), added linearly (modal superposition).
+</details>
+
+<details>
+<summary><strong>Q5. A weakly coupled structure has two natural frequencies f₁ = 10.0 Hz and f₂ = 10.5 Hz. If you strike one part, what is the beat period at which energy swings between the two parts?</strong></summary>
+
+The beat period is the reciprocal of the difference between the two natural frequencies: $T_{\text{beat}} = 1/|f_2 - f_1| = 1/(0.5\text{ Hz}) = 2.0\text{ s}$.
+</details>
+
+<details>
+<summary><strong>Q6. Why is the amplitude at the exact middle of a shaft supported at both ends zero in its second bending mode?</strong></summary>
+
+In the second bending mode the first half and the second half of the shaft bend 180° out of phase, so the exact middle is a node where the vibration displacement is 0.
+</details>
+
+---
+
+On the next page (P1-6) we map the masses, springs and modes seen so far onto a real rotating machine and sort out what turns and what supports it. Then P1-7 covers the most common and important excitation force a rotating machine makes with its own centrifugal force, namely **unbalance and 1X vibration**, and the physics of critical speeds.
+
+<Callout type="field" title="Where this leads in Part 2">
+
+P2-2 (Fourier basics) teaches the mathematical tool that breaks a complicated waveform into a sum of pure sinusoids. Spectrum analysis is the principle of P1-5's "modal superposition (the sum of two sinusoids = a wobbling waveform)" turned upside down: separating the frequency components out of a single line of sensor signal.
+
+</Callout>
+
+## References
+
+<References items={[
+  ['R-51', 'Natural modes and modal coordinates of a 2-DOF system'],
+  ['R-52', 'Characteristic equation, mode shapes and continuum vibration of multi-DOF systems'],
+  ['R-02', 'Mode shapes and the importance of node placement when measuring'],
+]} />

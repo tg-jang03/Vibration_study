@@ -18,7 +18,7 @@ export const PARTS_EN: Record<number, { title: string; question: string }> = {
 
 export const SECTIONS_EN: Record<string, string> = {
   'P1-1': 'What is vibration? Equilibrium · restoring force · inertia',
-  'P1-2': 'Natural frequency: every object has its own beat',
+  'P1-2': 'Natural frequency: every object has its own rhythm',
   'P1-3': 'Damping: why does shaking die away?',
   'P1-4': 'Forced vibration and resonance',
   'P1-5': 'Multiple masses and modes',

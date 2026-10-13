@@ -1,0 +1,243 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P1-1 What Is Vibration?
+description: Oscillation about an equilibrium position, restoring force and inertia, end points and the equilibrium point, and the mass-spring model as the starting point for vibration
+sectionId: P1-1
+source: p1-1.mdx
+sourceHash: 9b29a04160
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import MassSpringLab from '../../components/labs/MassSpringLab';
+import * as F from '../../figures/p1-1';
+
+# 1-1 What Is Vibration? Equilibrium · Restoring Force · Inertia
+
+Press a ruler against the edge of a desk, pull its free end down, and let go. The ruler does not just return to its original position and stop. It overshoots upward, comes back down, and keeps shaking for a while.
+
+Nobody is pushing it, so why does it keep going back and forth? To answer, all you need to find is **one thing that brings it back** and **one thing that makes it overshoot**.
+
+<Figure {...F.rulerQuestion} />
+
+<Callout type="idea" title="After reading this page">
+
+1. You can describe vibration as back-and-forth motion about an equilibrium position.
+2. You can say what the restoring force and inertia each do.
+3. You can find the end points, the equilibrium point and the period on a displacement graph.
+4. You can simplify different machines into a mass-spring model.
+
+</Callout>
+
+---
+
+## 1. The reference point of vibration: a place where it can sit still
+
+Before you touch the ruler, the forces balance and it sits still. A place where **the forces balance and the object can stay put** is called the <strong>equilibrium position</strong>.
+
+<Callout type="term" title="Vibration">
+
+Vibration is **repeated motion of an object back and forth about its equilibrium position**. Unlike something that keeps travelling in one direction, it changes direction and moves over the same range again and again.
+
+</Callout>
+
+How far the object has moved away from the equilibrium position is the <strong>displacement $x$</strong>. If we choose right or up as $+$, the opposite side is $-$. Displacement that changes with time is written $x(t)$.
+
+- $x = 0$: the equilibrium position
+- $x > 0$: displaced in the chosen $+$ direction
+- $x < 0$: displaced in the opposite direction
+
+Which direction you call $+$ is your choice. Once you have chosen, though, you must read the signs of force and displacement by the same rule all the way through.
+
+---
+
+## 2. Why does it come back? The restoring force points toward equilibrium
+
+Let us look at the simplest model: a mass on a spring, moving horizontally. When the mass is at equilibrium, the spring pulls neither way. Pull the mass to the right, and the stretched spring pulls it to the left.
+
+<Figure {...F.equilibriumAndRestoringForce} />
+
+A force that tries to bring an object back to its equilibrium position like this is called the <strong>restoring force</strong>. For an ideal spring, if the distance from equilibrium doubles, the force doubles too.
+
+$$
+F = -kx
+$$
+
+$F$ is the restoring force [N], $x$ is the displacement from equilibrium [m], and $k$ is the spring's <strong>stiffness</strong> [N/m]. Stiffness tells you how stiff the spring is.
+
+<Callout type="example" title="A spring pulled 10 mm">
+
+If you pull a spring with $k = 1000\ \mathrm{N/m}$ to the right by $x = 10\ \mathrm{mm} = 0.010\ \mathrm{m}$, then
+
+$$
+F = -(1000)(0.010) = -10\ \mathrm{N}
+$$
+
+The $-10$ N means the force has a magnitude of 10 N and points opposite to the displacement, that is, to the left.
+
+</Callout>
+
+<Callout type="warn" title="The minus sign does not mean the force is small">
+
+The minus sign in $F=-kx$ does not mean the magnitude is negative. It is a **direction label**. If the mass is displaced to the right, the force points left; if it is displaced to the left, the force points right.
+
+</Callout>
+
+---
+
+## 3. Why does it overshoot? Inertia keeps the motion going
+
+If you think only about the restoring force, it seems the mass should return to equilibrium and stop. But when it arrives at equilibrium, the mass is already moving. The tendency of a moving object to keep moving is called <strong>inertia</strong>.
+
+In Newton's second law $F=ma$, the mass $m$ is the measure of inertia. Even under the same force, a larger mass changes its motion more slowly.
+
+<Figure {...F.oneCycle} />
+
+How fast the position changes is called the <strong>velocity</strong>. Follow Figure 3 from the left and you can see how velocity and restoring force change during one back-and-forth cycle.
+
+1. **Right end point**: pulled out the farthest, with an instantaneous velocity of zero. The restoring force to the left is at its largest.
+2. **Passing the equilibrium point**: since $x=0$ the restoring force is zero, but the mass is moving fastest and carries straight on past it.
+3. **Left end point**: the motion stops for a moment again. This time the restoring force points to the right.
+4. It then retraces the same path back to the starting end point.
+
+At the end points the mass reverses direction, so its velocity is zero; at the equilibrium point it is fastest.
+
+<Callout type="warn" title="The equilibrium point is not where it stops">
+
+Displacement $x=0$ means the mass is passing through the equilibrium position, not that its motion is zero. The mass is fastest at the equilibrium point and stops only for a moment at the end points.
+
+</Callout>
+
+---
+
+## 4. The time for one cycle: the period T
+
+Start at the right end point, go through the left end point, and come back to the right end point, and you are in the same state as when you started. The time that one back-and-forth cycle takes is called the <strong>period $T$</strong>.
+
+The basic model in Figure 3 has $T \approx 0.1987\ \mathrm{s}$. The same motion repeats every 0.1987 seconds. What sets this time is something we will check on the next page (P1-2) by changing the mass $m$ and the stiffness $k$.
+
+While the motion repeats, energy does not disappear; only the place where it sits changes. For now, you can think of energy here as **the ability to do work through motion or deformation**.
+
+<Figure {...F.energyExchange} />
+
+- End point: the mass stops and the spring is stretched or compressed the most → the energy is stored in the spring
+- Equilibrium point: the spring is at its natural length and the mass is fastest → the energy is in the motion of the mass
+
+A real ruler or machine slowly loses amplitude because of friction and air resistance. Where the energy goes is covered under damping in P1-3. For now we start with the simplest model, in which no energy escapes, to understand how the back-and-forth works.
+
+---
+
+## 5. Pull it and let go yourself
+
+Let us move the mass-spring of Figure 2 ourselves. The initial screen shows the mass held still, pulled 10 mm to the right. At real speed it oscillates about 5 times a second, which makes it hard to catch a single moment. So we use the **T/4 forward** button to step a quarter of a period at a time.
+
+<Callout type="try">
+
+1. From the initial state (the right end point), press **T/4 forward** once. The mass reaches the equilibrium position $x=0$. Is the current velocity zero, or at its largest?
+2. Press **T/4 forward** once more to go to the left end point. Compared with the first right end point, how do the direction and size of the velocity and the restoring force change?
+3. Press **Play** and watch the motion for 3 seconds, then change the initial pull from 10 mm to 20 mm and play it again. Which changes: the width of the motion or the time $T$ for one cycle?
+4. Reduce it from 20 mm to 2 mm and check whether $T$ is still about 0.1987 s.
+
+</Callout>
+
+<MassSpringLab client:load lang="en" />
+
+In step 1, the mass does not stop as it passes the equilibrium point ($t \approx 0.0497$ s); it moves fastest there, at about 0.316 m/s. The readout shows $-0.3162$ m/s because it is moving to the left (the $-$ direction), and the restoring force is zero. At the left end point of step 2 ($t \approx 0.0993$ s) the velocity is zero again, and the restoring force is $+10$ N, the same size as the initial $-10$ N but in the opposite direction. If you had pulled 20 mm, the restoring force at the end point would be 20 N.
+
+When you change the pull as in steps 3 and 4, the end-point lines on the graph (±10 mm → ±20 mm), the width of the animation, and the restoring force all change together. Even so, the period $T$ of this <strong>linear model</strong> (the model $F=-kx$, in which the restoring force is proportional to displacement) stays at about 0.1987 s. **Pulling it farther does not make the rhythm slower or faster.**
+
+---
+
+## 6. Different shapes, same idea: find the mass and the spring
+
+On a real machine you may not see a square mass and a coil spring. Even so, two questions let you simplify it.
+
+1. **What moves and creates the inertia?** → the mass $m$
+2. **What creates the force that pulls it back to its original place?** (the part that bends or stretches, or gravity for a swing) → the stiffness $k$
+
+<Figure {...F.modelMap} />
+
+| Real object | Role of the mass | Role of the spring |
+|---|---|---|
+| Ruler on a desk edge | The moving part of the ruler | The bending of the ruler itself |
+| Swing | The person and the seat | The pull-back created by gravity |
+| Pump on a foundation | The pump and motor | The elasticity of the foundation and supports |
+
+A complicated object reduced to its essentials like this is called a <strong>mass-spring model</strong>. It is not a drawing that copies the real shape. It is a calculation model for examining which properties determine the vibration.
+
+<Callout type="field" title="This motion is what a sensor records">
+
+A sensor records, over time, how far the machine is from its equilibrium position and how fast it is moving. In P2-1 you will read this record as a time waveform and meet the starting point for splitting a mixture of shaking into its separate components.
+
+</Callout>
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Vibration | Repeated back-and-forth motion about an equilibrium position |
+| Equilibrium position | The place where forces balance and the object can sit still, $x=0$ |
+| Restoring force | The force that points toward equilibrium. For an ideal spring, $F=-kx$ |
+| Inertia | The tendency of a moving object to keep moving |
+| End point | Displacement is at its maximum, velocity is zero, restoring force is at its maximum |
+| Equilibrium point | Displacement and restoring force are zero, velocity is at its maximum |
+| Period $T$ | The time for one back-and-forth cycle back to the same state |
+| Mass-spring model | Simplifies an object into a moving mass $m$ and a restoring stiffness $k$ |
+
+---
+
+## 8. Check your understanding
+
+<details>
+<summary><strong>Q1. If the mass is displaced to the right, which way does the restoring force point?</strong></summary>
+
+To the left, toward the equilibrium position. When $x>0$, $F=-kx<0$, so the force is opposite to the displacement.
+</details>
+
+<details>
+<summary><strong>Q2. If the restoring force is zero at the instant the mass passes the equilibrium position, does it stop there?</strong></summary>
+
+No. A mass that already has velocity carries on past the equilibrium position because of inertia. In fact, its speed is at its largest at that instant.
+</details>
+
+<details>
+<summary><strong>Q3. A spring with k = 500 N/m is compressed 20 mm to the left. What are the size and direction of the restoring force?</strong></summary>
+
+If left is the negative direction, then $x=-0.020$ m. $F=-kx=-(500)(-0.020)=+10$ N, so the size is 10 N and the direction is to the right (toward equilibrium).
+</details>
+
+<details>
+<summary><strong>Q4. What are the displacement and velocity at the end points and at the equilibrium point?</strong></summary>
+
+At an end point, the displacement is at its maximum and the velocity is zero. At the equilibrium point, the displacement is zero and the speed is at its maximum.
+</details>
+
+<details>
+<summary><strong>Q5. For the same mass-spring, if you double the initial pull, does the period double too?</strong></summary>
+
+In the linear model of this page, the period does not change. The displacement, velocity and restoring force all double in size (the velocity at the equilibrium point goes from 0.316 to 0.632 m/s), and only the period stays at about 0.1987 s. The period is set by the mass and the stiffness, which we check with a formula in P1-2.
+</details>
+
+<details>
+<summary><strong>Q6. If you view a pump on a foundation as a mass-spring model, what plays the roles of m and k?</strong></summary>
+
+The parts that move together, such as the pump and motor, are the mass $m$; the foundation and supports, which bend and spring back, play the role of the stiffness $k$. Which parts you include in the mass can depend on the motion you want to study.
+</details>
+
+<details>
+<summary><strong>Q7. If you hang a heavier mass on the same spring, does the oscillation get faster or slower?</strong></summary>
+
+Slower. That is, the period $T$ gets longer. A larger mass has more inertia, so even under the same restoring force its motion changes more slowly. How much slower is something we calculate from the mass and stiffness in P1-2.
+</details>
+
+On the next page (P1-2), we calculate and change the mass $m$ and the stiffness $k$ ourselves to see **why this model has a rhythm of about 0.1987 seconds**.
+
+## References
+
+<References items={[
+  ['R-51', 'The basic model of free vibration of a mass-spring system'],
+  ['R-52', 'An introductory explanation of mass, stiffness, inertial force, and the energy viewpoint'],
+]} />

@@ -1,0 +1,282 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P1-4 Forced Vibration and Resonance
+description: The transient and steady-state response when a periodic force keeps pushing, how the amplitude ratio and phase depend on the frequency ratio, the role of resonance and damping, the frequency response (FRF), and beating — learned with the forced-vibration lab
+sectionId: P1-4
+source: p1-4.mdx
+sourceHash: e7c61b3a15
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import ForcedVibrationLab from '../../components/labs/ForcedVibrationLab';
+import * as F from '../../figures/p1-4';
+
+# 1-4 Forced Vibration and Resonance: When the Rhythm of the Force Meets the Rhythm of the System
+
+When a washing machine starts its spin cycle, the drum speeds up and at some moment the whole machine shakes violently. Spin faster still, and it quiets down again. The drum keeps turning in the same way, so why does it shake hard only at one particular moment?
+
+In P1-2 and P1-3 we looked at free vibration: the motion that continues by itself after you pull the mass once and let go. On this page we look at what happens when an outside **force keeps pushing at a steady rhythm**.
+
+<Figure {...F.forcedModel} />
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain that when a periodic force keeps acting, the system eventually vibrates at the rhythm of the force.
+2. You can explain how the amplitude ratio and phase change with the frequency ratio $r$ (0° → 90° → 180°).
+3. You know that at resonance the amplitude is about $1/(2\zeta)$ times larger, and that damping sets both the height and the width of the peak.
+4. You know that the frequency response (FRF) is a property of the system, not of a signal.
+5. You can say why the amplitude surges up and down (beating) when a force is suddenly applied near resonance.
+
+</Callout>
+
+---
+
+## 1. A force that keeps pushing: the excitation force
+
+As in Figure 1, apply a force of the form $F_0\cos\omega t$ to the mass continuously. It pushes to the right with size $F_0$, and half a period later pulls to the left with the same size. $\omega$ is the angular frequency of the force ($\omega = 2\pi f$ from P1-2), which sets how many times per second it pushes and pulls.
+
+<Callout type="term" title="Excitation Force">
+
+A force applied from outside, continuously, to make the system vibrate. The vibration it causes is called **forced vibration**. The rhythm of the force is called the excitation frequency.
+
+</Callout>
+
+In the equation of motion from P1-3, this force goes where the 0 was on the right-hand side.
+
+$$
+m\ddot{x}+c\dot{x}+kx=F_0\cos\omega t
+$$
+
+The left side is set by the system (mass, damping, spring) and the right side by the outside force. Keep in mind that the natural frequency of this system, $\omega_n = \sqrt{k/m}$ (P1-2), and the rhythm of the force, $\omega$, are two numbers with no relation to each other. How the two relate is the star of this page.
+
+---
+
+## 2. Mixed at first, only the rhythm of the force remains
+
+When you start applying the force to a system at rest, the response is the sum of two parts.
+
+- <strong>Transient Response</strong>: the part where the system vibrates on its own. It is the same as the damped free vibration of P1-3, so it oscillates at a rhythm near the natural frequency and dies away along the envelope.
+- <strong>Steady-state Response</strong>: the part that the force keeps producing. It holds a constant amplitude **at the same rhythm as the force**.
+
+<Figure {...F.transientAndSteady} />
+
+Figure 2 shows a 5 Hz system shaken at 8 Hz. For the first second or so the two rhythms are mixed and the waveform looks ragged. The transient shrinks along the envelope $e^{-\zeta\omega_n t}$ from P1-3, so it drops to $1/e$ (about 37 %) every $\tau = 1/(\zeta\omega_n) \approx 0.64$ s. After about 1.9 s (3τ), the actual displacement almost overlaps the gray dotted line, which is the 8 Hz steady-state response.
+
+The displacement in steady state has this form.
+
+$$
+x(t)=X\cos(\omega t-\varphi)
+$$
+
+$X$ is the steady-state amplitude, and $\varphi$ is the angle by which the displacement lags the force (the <strong>phase lag</strong>). The rhythm is $\omega$, the rhythm of the force. How these two numbers, $X$ and $\varphi$, are determined is the subject of Section 3.
+
+<Callout type="warn" title="'The steady-state response vibrates at the natural frequency'">
+
+Only the transient response vibrates at the natural frequency, and even that dies away because of damping. What remains after a long time follows **the rhythm of the force**. Push at 8 Hz and it vibrates at 8 Hz; push at 3 Hz and it vibrates at 3 Hz. The natural frequency does not set the rhythm; it affects "how big the vibration gets."
+
+</Callout>
+
+---
+
+## 3. Size and lateness: set by the frequency ratio
+
+If you apply the same force $F_0$ very slowly, the mass is pushed only as far as the spring holds it. We use this deflection as the reference.
+
+$$
+X_{st}=\frac{F_0}{k}
+$$
+
+$X_{st}$ is the static deflection. We then compare the rhythm of the force with the natural frequency as the <strong>Frequency Ratio</strong>.
+
+$$
+r=\frac{\omega}{\omega_n}=\frac{f}{f_n}
+$$
+
+When $r = 1$, the rhythm of the force equals the natural frequency. The steady-state amplitude ratio and phase lag are set by $r$ and the damping ratio $\zeta$ (P1-3) alone.
+
+$$
+\frac{X}{X_{st}}=\frac{1}{\sqrt{(1-r^2)^2+(2\zeta r)^2}},\qquad
+\varphi=\operatorname{atan2}\!\left(2\zeta r,\ 1-r^2\right)
+$$
+
+$\operatorname{atan2}(y, x)$ is an angle calculation that tells the angle of the point $(x, y)$ apart over the full range from 0° to 180°. The formulas look long, but once you split $r$ into three regions as in Figure 3, the meaning is simple.
+
+<Figure {...F.threeRegimes} />
+
+| Region | What dominates | Amplitude | Phase lag |
+|---|---|---|---|
+| $r \ll 1$ (slow) | Spring: it is pushed as far as the force pushes | $\approx X_{st}$ | about 0° (moves with the force) |
+| $r \approx 1$ (at the natural frequency) | Damping: the spring and mass forces cancel each other, leaving only damping | Strongly amplified | 90° |
+| $r \gg 1$ (fast) | Mass (inertia): no time to follow | Smaller than $X_{st}$ | about 180° (opposite to the force) |
+
+<Callout type="example" title="Plugging in r = 0.5, 1, 2 at ζ = 0.05">
+
+1. $r = 0.5$: $\sqrt{(1-0.25)^2 + (0.05)^2} = 0.7517$ → amplitude ratio $1/0.7517 = 1.330$, phase $\operatorname{atan2}(0.05, 0.75) = 3.8^\circ$
+2. $r = 1$: $1 - r^2 = 0$, so only $2\zeta r = 0.1$ remains in the denominator → amplitude ratio $10.0$, phase $90^\circ$
+3. $r = 2$: $\sqrt{(1-4)^2 + (0.2)^2} = 3.007$ → amplitude ratio $0.3326$, phase $\operatorname{atan2}(0.2, -3) = 176.2^\circ$
+
+The force is the same, yet changing only the rhythm changed the response size by a factor of 30.
+
+</Callout>
+
+---
+
+## 4. Resonance: only damping limits the amplitude
+
+If you vary $r$ continuously from 0 to 3 and plot the amplitude ratio, you get Figure 4. The phenomenon where the response rises sharply when the rhythm of the force matches the natural frequency is called <strong>Resonance</strong>.
+
+<Figure {...F.amplitudeCurve} />
+
+At $r = 1$, the restoring force of the spring and the inertia of the mass cancel each other, so only damping holds the amplitude back. That is why the height of the resonance peak is set by the damping ratio.
+
+$$
+\left.\frac{X}{X_{st}}\right|_{r=1}=\frac{1}{2\zeta}
+$$
+
+For $\zeta = 0.05$ that is 10 times; for $\zeta = 0.01$ it is 50 times. This amplification factor is also called the Q factor. Strictly, the peak is slightly higher, $1/(2\zeta\sqrt{1-\zeta^2})$ at $r = \sqrt{1-2\zeta^2}$, but at $\zeta = 0.05$ it is 10.01, a difference of 0.1 %.
+
+The washing machine that shakes at only one moment during the spin is explained by this peak as well. Only while the drum speeds up and its rhythm passes the natural frequency of the machine body and its mount ($r \approx 1$) does it shake hard, and after passing it settles down again. However, the force made by a rotating body grows as the rotation gets faster; that case is covered separately in P1-7.
+
+<Figure {...F.phaseCurve} />
+
+Regardless of the damping ratio, the phase passes through exactly 90° at $r = 1$. Even when large damping smears out the amplitude peak so that it is hard to find, the place where the phase passes 90° always points to the natural frequency.
+
+<Figure {...F.peakWidth} />
+
+The sharpness of the peak is measured by the width between the two points where the height falls to $1/\sqrt{2}$ of the peak. This is called the <strong>half-power width</strong> (the points where power, the square of the amplitude, is halved); for small damping, $\Delta r \approx 2\zeta$, or in frequency $\Delta f \approx 2\zeta f_n$. Halve the damping and the peak becomes twice as tall and half as wide. How to extract the damping ratio from this width in real data is covered in P4-1 and P9-1.
+
+<Callout type="warn" title="'Big vibration means big force'">
+
+At resonance even a small force is amplified by $1/(2\zeta)$. For a structure with $\zeta = 0.02$, the same force produces 25 times the vibration. A large vibration alone does not tell you whether the force is large or whether the rhythm has matched the natural frequency. To tell the two apart, change the rhythm (frequency) or look at the phase as well.
+
+</Callout>
+
+---
+
+## 5. Frequency response (FRF): the system's properties on one sheet
+
+Figures 4 and 5 do not plot a particular signal. They collect, for every rhythm, the answer to "if I apply the same force to this system at this rhythm, how many times the static deflection does it move, and how late?"
+
+<Callout type="term" title="Frequency Response Function (FRF)">
+
+The size and phase of the output (response) per unit input (force), shown at each frequency. It is drawn as two curves, an amplitude-ratio curve and a phase curve, and the figure with the two stacked one above the other is called a <strong>Bode Plot</strong>. The FRF is a **property of the system**, set by mass, stiffness and damping alone.
+
+</Callout>
+
+If you know the FRF, you can compute the response right away for a force of any rhythm. "Size of the force × the FRF amplitude ratio at that rhythm" is the size of the response, and it lags by the phase of the FRF.
+
+<Callout type="field" title="Measured vibration size = force × FRF">
+
+What a sensor measures is the response. If vibration at some rhythm comes out large, it may be that the force at that rhythm was large, or that the FRF at that rhythm was large (resonance). In a rotating machine this happens at the rotating speed where a force with the same rhythm as the rotation (unbalance, P1-7) meets the natural frequency. The impact test that measures a structure's FRF directly is covered in P5-3 and P9-1.
+
+</Callout>
+
+---
+
+## 6. Starting near resonance: the amplitude surges
+
+In Section 2 we said that at first the transient and steady-state responses are mixed. When the rhythm of the force is close to the natural frequency and damping is small, this mixed stretch is long and easy to notice.
+
+<Figure {...F.beatStart} />
+
+The transient near 5 Hz and the 4.5 Hz steady-state response have slightly different rhythms, so moments of moving in the same direction alternate with moments of moving in opposite directions. When they move the same way the amplitudes add, and when they move oppositely they cancel. This surging of the amplitude every $5 - 4.5 = 0.5$ Hz, the difference of the two rhythms, that is, every 2 seconds, is called <strong>Beating</strong>. When damping wipes out the transient, the beating disappears too.
+
+<Callout type="warn" title="'The amplitude surges, so the force surges'">
+
+The force applied in Figure 7 has a constant size from start to finish. The surging comes from two rhythms overlapping inside the system. When an amplitude grows and shrinks at a regular period, first suspect that two components with close rhythms are present together (see P2-8 for details).
+
+</Callout>
+
+---
+
+## 7. Shake it yourself
+
+The lab below applies a force to a system with a mass of 1 kg and a natural frequency of 5 Hz, sized so that $X_{st} = 10$ mm. The orange line in the time waveform is the force divided by $k$ and drawn in mm, so you can compare its size directly with the blue displacement.
+
+<Callout type="try">
+
+1. Pick the buttons "Below resonance", "Resonance" and "Above resonance" in turn and play ($\zeta$ = 0.05). In steady state, watch how much farther and how much later the mass goes than the dashed box (the position F/k when the same force is applied slowly). Check that it matches 1.33 and 3.8° at 2.5 Hz, 10.0 and 90° at 5 Hz, and 0.333 and 176° at 10 Hz.
+2. At "Resonance", go back to the start and press "Forward T/4". Check whether the displacement is +100 mm when the force reaches 0. Then change $\zeta$ from 0.05 → 0.025 → 0.10 and compare the peak height and width.
+3. Set "Start from rest" and play at $f$ = 5 Hz, $\zeta$ = 0.05. Use "Show the whole time waveform" to spread out the 4 seconds, and compare how the amplitude builds up and the maximum over 3 to 4 s with the value from the formula.
+4. Change to $\zeta$ = 0.01, $f$ = 4.5 Hz and play. In the whole time waveform, how many seconds apart does the amplitude surge? Use the stop button and the time slider to read the apparatus and the waveform together at any moment you like.
+
+</Callout>
+
+<ForcedVibrationLab client:visible lang="en" />
+
+In the steady state at resonance, the displacement is 0 when the force is strongest, and T/4 = 0.05 s later the force is 0 and the displacement is +100 mm. Read this quarter-cycle delay from the force peak to the displacement peak at the same instant in the apparatus and the waveform. Compared with the dashed box (the F/k position) in the drawing, at resonance the mass goes 10 times farther than the box and a quarter cycle later, and above resonance it goes only 1/3 as far, on the side opposite to the box. The scale is fitted to the screen for each condition, so treat the mm values as readings.
+
+In step 1, with the same 10 mm force, the mass moves 13.3 mm at 2.5 Hz, 100 mm at 5 Hz and 3.3 mm at 10 Hz. The orange dot on the phase curve also moves from near 0° → 90° → near 180°. In step 2, halving $\zeta$ to 0.025 doubles the peak to 20 and visibly narrows the curve. Doubling it to 0.10 halves the peak to 5 and widens it by a factor of 2 ($\Delta r \approx 0.2$).
+
+In step 3, even though this is resonance, the amplitude does not become large all at once. The smaller the damping, the longer the transient lasts ($\tau \approx 0.64$ s), and it takes time to build up to the steady-state amplitude. In the last second of the 4-second span it comes within 1 % of the formula value of 10. In step 4, the amplitude surges about every 2 seconds, and it shrinks over the 4 seconds but has not yet disappeared completely ($\tau \approx 3.2$ s for $\zeta$ = 0.01).
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Forced vibration | $m\ddot{x}+c\dot{x}+kx=F_0\cos\omega t$, response = transient (dies away) + steady state (remains) |
+| Steady-state response | Vibrates at **the rhythm of the force**. Size $X$ and phase lag $\varphi$ are set by $r$ and $\zeta$ |
+| Frequency ratio | $r = \omega/\omega_n$. Amplitude ratio $X/X_{st} = 1/\sqrt{(1-r^2)^2+(2\zeta r)^2}$ |
+| Three regions | $r \ll 1$: spring, 0° / $r \approx 1$: damping, 90° / $r \gg 1$: mass, 180° |
+| Resonance | Peak $\approx 1/(2\zeta)$, half-power width $\Delta f \approx 2\zeta f_n$. Half the damping → twice the height, half the width |
+| FRF · Bode plot | Size and phase of the response per unit force, at each frequency. A property of the system, not of a signal |
+| Beating | If you start suddenly near resonance, the transient (natural frequency) and steady state (rhythm of the force) overlap, and the amplitude surges every 1/(difference of the two rhythms) seconds |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. A system with a 5 Hz natural frequency is shaken for a long time by an 8 Hz force. At what frequency does it vibrate in steady state?</strong></summary>
+
+8 Hz. The transient response, which vibrates at the natural frequency (5 Hz), dies away because of damping, and the remaining steady-state response follows the rhythm of the force.
+</details>
+
+<details>
+<summary><strong>Q2. For a system with ζ = 0.05, what are the amplitude ratio and phase lag at r = 0.5, 1 and 2?</strong></summary>
+
+About 1.33 and 3.8°, 10.0 and 90°, 0.333 and 176°. At $r = 1$, $1 - r^2 = 0$, so the amplitude ratio is $1/(2\zeta) = 10$.
+</details>
+
+<details>
+<summary><strong>Q3. If you halve the damping ratio, what happens to the height and the half-power width of the resonance peak?</strong></summary>
+
+The height is $1/(2\zeta)$, so it doubles, and the width is $2\zeta f_n$, so it halves. The smaller the damping, the taller and sharper the resonance.
+</details>
+
+<details>
+<summary><strong>Q4. At resonance, by how many degrees does the displacement lag the force? Does it move together with the force?</strong></summary>
+
+It lags by 90°. When the force is strongest, the displacement is passing through 0 (the equilibrium point). Moving together with the force (0°) happens only when you push very slowly. Regardless of the damping ratio, it is always 90° at $r = 1$.
+</details>
+
+<details>
+<summary><strong>Q5. In one machine, vibration at one particular rhythm was unusually large. Can you report that "the force at that rhythm is large"?</strong></summary>
+
+Not on that evidence alone. Since response = force × FRF, it may be that the rhythm is close to a natural frequency so that the FRF is large (resonance). You also need to check whether the size changes a lot when you change the rhythm (for example, by changing the rotating speed) and whether the phase passes near 90°.
+</details>
+
+<details>
+<summary><strong>Q6. A structure with a natural frequency of 20 Hz and ζ = 0.02 is suddenly started with a 19 Hz force. How does the amplitude look over the first few seconds?</strong></summary>
+
+You see beating, surging with a period of about 1 second (= 1/(20 − 19) s). The transient decays with $\tau = 1/(\zeta\omega_n) = 1/(0.02 \times 2\pi \times 20) \approx 0.4$ s, so after 1 to 2 seconds the surging disappears and a constant amplitude remains.
+</details>
+
+The next page (P1-5) covers why a system with several masses has several natural frequencies, and why a resonance peak stands at each of them.
+
+<Callout type="field" title="Leading into Part 2">
+
+P2-1 separates the spectrum, which is the component list of a signal, from the FRF, which is a property of the system. The **position** of a spectrum peak is the rhythm of the cause (the force), and its **height** is "force × the FRF at that rhythm." To separate a sharp resonance peak with small damping, you need enough frequency resolution (the ability to tell two close frequencies apart, P2-4), and beating is revisited from the signal side in P2-8.
+
+</Callout>
+
+## References
+
+<References items={[
+  ['R-51', 'Damped single-degree-of-freedom system under harmonic excitation'],
+  ['R-52', 'Amplitude-ratio and phase curves, half-power width and Q factor'],
+]} />

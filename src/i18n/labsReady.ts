@@ -40,4 +40,13 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'TrackingLab',
   'CepstrumLab',
   'FeatureLab',
+  'MassSpringLab',
+  'SineBasicsLab',
+  'DampingLab',
+  'ForcedVibrationLab',
+  'SupportStiffnessLab',
+  'UnbalanceLab',
+  'TwoDofModeLab',
+  'FrequencyMapLab',
+  'SourceSynthesisLab',
 ]);

@@ -20,7 +20,7 @@ Part 1 showed why machines vibrate, and how the responses to several causes get 
 Now let us move to the analyzer screen. Next to a moving line you see "4.2 mm/s rms", "50 µm p-p" and "1X 60 Hz". What should you read from each?
 
 This page is where we sort out <strong>what the measured numbers mean</strong>.
-We will not explain the physics of the sine wave or the principle of unbalance at length again; we take them from <a href={withBase('/p1-2/')}>P1-2</a> and <a href={withBase('/p1-7/')}>P1-7</a> and recap them briefly.
+We will not explain the physics of the sine wave or the principle of unbalance at length again; we take them from <a href={withBase('/en/p1-2/')}>P1-2</a> and <a href={withBase('/en/p1-7/')}>P1-7</a> and recap them briefly.
 
 <Callout type="idea" title="After reading this page">
 
@@ -92,14 +92,14 @@ When you change the quantity, the weight of each frequency changes too. Velocity
 
 ### 2.2 The sine wave is recapped in Part 1
 
-The sine wave you varied in <a href={withBase('/p1-2/#21-정현파의-세-숫자를-직접-바꾸기')}>LAB-BAS-01 of P1-2</a> is $x(t)=A\cos(2\pi ft+\varphi)$.
+The sine wave you varied in <a href={withBase('/en/p1-2/')}>LAB-BAS-01 of P1-2</a> is $x(t)=A\cos(2\pi ft+\varphi)$.
 $A$ is the amplitude, $f$ the frequency and $\varphi$ the phase. The period is $1/f$ and the angular frequency is $2\pi f$. You can review the meaning of the three numbers and the phase difference on that page.
 
 ---
 
 ## 3. Rotating frequency and order: reading the frequency reference
 
-In <a href={withBase('/p1-7/')}>P1-7</a> we converted 3600 rpm to 60 Hz. The rotating frequency $f_r=\mathrm{rpm}/60$ is 1X, and twice that is 2X.
+In <a href={withBase('/en/p1-7/')}>P1-7</a> we converted 3600 rpm to 60 Hz. The rotating frequency $f_r=\mathrm{rpm}/60$ is 1X, and twice that is 2X.
 The <strong>order</strong> is the ratio $f/f_r$ of the measured frequency to the rotating frequency. At 3600 rpm, 120 Hz is 2X.
 
 <Callout type="term" title="Components below 1X: sub-synchronous">
@@ -110,7 +110,7 @@ This name only says where the frequency lies; it does not settle the cause.
 </Callout>
 
 A component that moves together with the rotating speed can keep a constant order, but a fixed 120 Hz component changes order when the speed changes.
-How to check whether a component follows the rotation was covered in <a href={withBase('/p1-8/')}>P1-8 Frequencies Produced by Machine Elements</a>.
+How to check whether a component follows the rotation was covered in <a href={withBase('/en/p1-8/')}>P1-8 Frequencies Produced by Machine Elements</a>.
 
 ---
 
@@ -201,7 +201,7 @@ You also have to tell whether the RMS was calculated directly or converted by as
 
 ## 5. Spectrum: reading one waveform frequency by frequency
 
-In the <a href={withBase('/p1-9/')}>cause-synthesis lab of P1-9</a> we added several responses to build one waveform.
+In the <a href={withBase('/en/p1-9/')}>cause-synthesis lab of P1-9</a> we added several responses to build one waveform.
 This time let us read that waveform as a component list: "which frequency components are in it, and how large?"
 
 <Figure {...F.mixToSpectrum} caption="Figure 5. (Top) The time waveform of three sine waves added together — it is hard to find the components from this alone. (Middle) Split into components, the same signal is three sine waves at 60, 120 and 180 Hz. (Bottom) The spectrum is a graph of this component list: horizontal axis = frequency of each component, vertical axis = its amplitude (Peak)." />
@@ -215,7 +215,7 @@ The size at 60 Hz is 5, at 120 Hz it is 2, and at 180 Hz it is 1. If 1X is 60 Hz
 
 <Callout type="warn" title="A big spectrum bar is not the same as a big force">
 
-The FRF (frequency response function) in <a href={withBase('/p1-4/')}>P1-4</a> is the ratio of response to force, a property of the system. A spectrum is the component list of the signal measured now.
+The FRF (frequency response function) in <a href={withBase('/en/p1-4/')}>P1-4</a> is the ratio of response to force, a property of the system. A spectrum is the component list of the signal measured now.
 A response bar may be large because the force is large, or because the structure responds well at that frequency. A single response spectrum is neither the FRF nor a fault verdict table.
 
 </Callout>

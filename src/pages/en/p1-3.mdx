@@ -1,0 +1,318 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P1-3 Damping
+description: How damping drains vibration energy, the damping ratio and underdamped, critical and overdamped motion, the envelope and the logarithmic decrement, explored with a free-vibration lab
+sectionId: P1-3
+source: p1-3.mdx
+sourceHash: 704b64001e
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import DampingLab from '../../components/labs/DampingLab';
+import * as F from '../../figures/p1-3';
+
+# 1-3 Damping: why does shaking die away?
+
+Strike a bell once and it rings for a while, then goes quiet. A car body does not keep bobbing after it passes a bump. The undamped mass-spring on the previous page kept moving with the same amplitude forever, so why does real motion shrink?
+
+Vibration energy is turned into heat by air resistance, friction inside the material, the flow of oil and so on. This action of draining energy from the motion is called <strong>damping</strong>.
+
+<Figure {...F.damperModel} />
+
+<Callout type="idea" title="By the end of this page">
+
+1. You can explain how damping reduces vibration energy.
+2. You can tell the damping coefficient from the damping ratio, and identify underdamped, critically damped and overdamped motion.
+3. You can read how fast the size shrinks and how fast the rhythm is from the envelope and the damped natural frequency.
+4. You can estimate the logarithmic decrement and the damping ratio from successive peaks.
+
+</Callout>
+
+---
+
+## 1. A force that opposes the motion
+
+The simplest damping model produces a force proportional to the velocity, pointing the opposite way. This is called <strong>viscous damping</strong>.
+
+$$
+F_c=-c\dot{x}
+$$
+
+$c$ is the <strong>damping coefficient</strong> [N·s/m] and $\dot{x}$ is the velocity. The minus sign means the damping force points opposite to the direction of motion.
+
+- Moving right, $\dot{x}>0$ → the damping force points left
+- Moving left, $\dot{x}<0$ → the damping force points right
+- Momentarily stopped, $\dot{x}=0$ → the viscous damping force is zero
+
+Putting the spring's restoring force $-kx$ and the damping force $-c\dot{x}$ into Newton's law gives
+
+$$
+m\ddot{x}=-c\dot{x}-kx
+$$
+
+and collecting terms on one side gives the equation of motion of the mass-spring-damper system.
+
+$$
+m\ddot{x}+c\dot{x}+kx=0
+$$
+
+Since the damping force opposes the velocity, the rate at which it removes mechanical energy at any instant is proportional to $c\dot{x}^2$. The lost mechanical energy is mostly turned into heat.
+
+<Callout type="warn" title="'The damping force is a restoring force toward equilibrium, just like a spring'">
+
+The restoring force $-kx$ changes direction with position and stores energy in the spring and gives it back. The damping force $-c\dot{x}$ resists the motion and removes energy from the system. Both play a part in returning to equilibrium, but they are not the same kind of force.
+
+</Callout>
+
+---
+
+## 2. The damping ratio is easier to compare than the damping coefficient
+
+The same damping coefficient $c$ has a different effect on systems with different mass and stiffness. So we compare the current damping with "the boundary where the system returns fastest without oscillating".
+
+The damping coefficient at that boundary is the <strong>critical damping coefficient $c_c$</strong>.
+
+$$
+c_c=2\sqrt{km}=2m\omega_n
+$$
+
+The ratio of the current damping coefficient to the critical value is the <strong>damping ratio $\zeta$</strong>.
+
+$$
+\zeta=\frac{c}{c_c}=\frac{c}{2\sqrt{km}}
+$$
+
+The damping ratio is a dimensionless number, so systems with different mass and stiffness can be compared on the same scale.
+
+| Damping ratio | Name | Motion |
+|---|---|---|
+| $\zeta=0$ | Undamped | Swings back and forth with the same amplitude forever |
+| $0<\zeta<1$ | Underdamped | Passes through equilibrium and swings back and forth with shrinking amplitude |
+| $\zeta=1$ | Critically damped | Returns fastest without crossing equilibrium |
+| $\zeta>1$ | Overdamped | Does not cross equilibrium, but returns more slowly than critical damping |
+
+<Figure {...F.dampingRegimes} />
+
+The horizontal axis of Figure 2, $\omega_n t$, is time scaled by the natural frequency so that systems with different natural frequencies can be compared on the same footing. At the same $\omega_n t$, critical damping gets close to zero fastest among the non-oscillating responses.
+
+<Callout type="field" title="A shock absorber does not replace the spring">
+
+A car's spring supports the body and brings it back to its original height. The shock absorber removes the energy of that back-and-forth motion. With too little damping the car bounces several times; with too much, the motion becomes sluggish.
+
+</Callout>
+
+---
+
+## 3. Underdamped: the swinging stays, the amplitude shrinks
+
+The free vibration of mechanical structures is usually underdamped, $0<\zeta<1$. The response is then a shrinking exponential multiplied by a sinusoid.
+
+$$
+x(t)=A e^{-\zeta\omega_n t}\cos(\omega_d t+\phi)
+$$
+
+$A$ and $\phi$ are set by the initial position and initial velocity. The outer curves
+
+$$
+\pm A e^{-\zeta\omega_n t}
+$$
+
+are called the <strong>envelope</strong>. It is the boundary that wraps the tops of the waveform, and it falls more steeply for a larger damping ratio.
+
+<Figure {...F.decayingWaveform} />
+
+With no damping, the amplitude of the orange waveform stays the same. The blue waveform with $\zeta=0.05$ swings at a similar rhythm, but its amplitude gets smaller as the gray envelope shrinks.
+
+<Figure {...F.decayPerCycle} />
+
+Two systems with the same damping ratio have the same amplitude ratio left after the **same number of cycles**, even if their natural frequencies differ. But a system with a higher natural frequency has a shorter cycle, so in the same number of seconds it goes through more cycles and decays sooner.
+
+<Callout type="example" title="With ζ = 0.05, after how many cycles is the amplitude halved?">
+
+At $\zeta=0.05$, peaks in the same direction shrink to about 0.730 times per cycle.
+
+$$
+1.000\rightarrow0.730\rightarrow0.533\rightarrow0.389
+$$
+
+So the amplitude falls to half of the start between 0.533 (after 2 cycles) and 0.389 (after 3 cycles), at about 2.20 cycles.
+
+</Callout>
+
+---
+
+## 4. Damping changes the duration far more than the rhythm
+
+In underdamped motion, the angular frequency at which the system actually swings is the <strong>damped natural frequency $\omega_d$</strong>.
+
+$$
+\omega_d=\omega_n\sqrt{1-\zeta^2}
+$$
+
+The larger the damping, the lower $\omega_d$ becomes. But for small damping ratios the change is very small.
+
+<Figure {...F.dampedFrequencyShift} />
+
+At $\zeta=0.05$,
+
+$$
+\frac{\omega_d}{\omega_n}=\sqrt{1-0.05^2}=0.99875
+$$
+
+so the rhythm is only about 0.125% lower than without damping. The amplitude, on the other hand, is halved in about 2.2 cycles.
+
+<Callout type="warn" title="'More damping changes the rhythm a lot'">
+
+Near critical damping the change in rhythm also becomes large, but for ordinary small damping, the change in how fast the amplitude disappears is far bigger than the change in rhythm. When looking at small damping, first ask "how many cycles did it last?" rather than "by how many Hz did it change?"
+
+</Callout>
+
+---
+
+## 5. Reading the damping ratio from the waveform: the logarithmic decrement
+
+When you cannot know the damping ratio directly, you can compare successive peaks in the same direction. Call the first positive peak $x_i$ and the positive peak one cycle later $x_{i+1}$.
+
+<Figure {...F.logarithmicDecrement} />
+
+The natural logarithm of the peak ratio is the <strong>logarithmic decrement $\delta$</strong>.
+
+$$
+\delta=\ln\left(\frac{x_i}{x_{i+1}}\right)
+$$
+
+For an underdamped single-degree-of-freedom system, it is related to the damping ratio exactly as follows.
+
+$$
+\delta=\frac{2\pi\zeta}{\sqrt{1-\zeta^2}}
+$$
+
+When the damping ratio is small, the denominator is almost 1, so you can quickly estimate $\delta\approx2\pi\zeta$. Inverting exactly gives
+
+$$
+\zeta=\frac{\delta}{\sqrt{(2\pi)^2+\delta^2}}
+$$
+
+If the two peaks in Figure 6 are $10.0$ mm and $7.30$ mm, then
+
+$$
+\delta=\ln\left(\frac{10.0}{7.30}\right)=0.315
+$$
+
+and $\zeta\approx0.050$. The number of cycles $N_{1/2}$ until the amplitude is halved also follows from the peak-decay formula.
+
+$$
+N_{1/2}=\frac{\ln 2}{\delta}
+$$
+
+<Callout type="warn" title="'You can get the damping ratio from the ratio of any two peaks'">
+
+You must compare **peaks in the same direction** that are one cycle apart. If several natural-frequency components are mixed so the waveform shape changes, or if an external force keeps acting, a simple peak ratio does not mean a single damping ratio.
+
+</Callout>
+
+---
+
+## 6. Changing the damping ratio yourself
+
+The lab below pulls a 1 kg system with zero initial velocity out by 10 mm and releases it. When the damping ratio is less than 1, positive peaks in the same direction are marked with orange dots.
+
+<Callout type="try">
+
+1. Play with the defaults $\zeta=0.05$, $f_n=5$ Hz and initial displacement 10 mm. Watch when the green damping-force arrow is longest, when it disappears, and which way it always points. After it stops, press "Restart → Next positive peak" and read the displacement after one swing, the peak ratio, $\delta$ and the number of cycles to half amplitude.
+2. Raise $\zeta$ to 0.20 and play again. See which changes more: the rhythm of the waveform or how fast it shrinks.
+3. Set $\zeta=0.05$ again and raise $f_n$ from 5 Hz to 10 Hz. Compare the number of cycles to half amplitude with the decay rate in seconds.
+4. Set $\zeta$ to 1.00 and 1.50 and play. Check whether the mass crosses equilibrium to the other side.
+
+</Callout>
+
+<DampingLab client:load lang="en" />
+
+In step 1, "Next positive peak" jumps to about 0.2003 s, where the mass sits at the right end, having shrunk from 10.0 mm to about 7.30 mm. At this instant the velocity is zero, so the damping-force arrow disappears; it is longest, 0.91 N, when passing through equilibrium (about 0.05 s). The arrow always points opposite to the direction of motion. The device drawing has a fixed scale, so doubling the initial displacement doubles the width of the motion.
+
+With the step 1 defaults, $\omega_d/\omega_n\approx0.99875$, so the rhythm is almost unchanged, but the next positive peak is about 0.730 times the previous one. The damping ratio recovered from $\delta\approx0.3146$, measured on the first two peaks of the waveform, matches the set value 0.05, and the amplitude halves after about 2.20 cycles.
+
+In step 2, at $\zeta=0.20$, $\omega_d/\omega_n$ is 0.980, only 2 % lower. The next peak ratio, however, drops from 0.730 to 0.277 ($\delta\approx1.28$), so half amplitude takes only 0.54 cycles. The decay speed changes far more than the rhythm.
+
+In step 3, raising $f_n$ to 10 Hz leaves the number of cycles to half amplitude at 2.20. But one cycle gets shorter, from about 0.2 s to 0.1 s, so the half-amplitude time in seconds drops from about 0.44 s to 0.22 s.
+
+In step 4, with both $\zeta=1.00$ and 1.50 the displacement never goes below 0, and 1.50 returns more slowly. There are no repeating peaks, so the logarithmic decrement is not calculated either. This is why the corresponding readouts in the lab turn to "—".
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Damping | The action that turns vibration energy into heat and the like, shrinking the amplitude |
+| Viscous damping force | $F_c=-c\dot{x}$, opposite to the velocity |
+| Equation of motion | $m\ddot{x}+c\dot{x}+kx=0$ |
+| Damping ratio | $\zeta=c/(2\sqrt{km})$, the ratio of the current damping to critical damping |
+| Underdamped | $0<\zeta<1$, swings while decaying along the envelope $Ae^{-\zeta\omega_nt}$ |
+| Critical and overdamped | $\zeta\ge1$, returns without crossing equilibrium |
+| Damped natural frequency | $\omega_d=\omega_n\sqrt{1-\zeta^2}$ |
+| Logarithmic decrement | $\delta=\ln(x_i/x_{i+1})$, computed from successive peaks in the same direction |
+| Cycles to half amplitude | $N_{1/2}=\ln2/\delta$ |
+
+---
+
+## 8. Check your understanding
+
+<details>
+<summary><strong>Q1. If the mass is moving to the right, which way does the viscous damping force point?</strong></summary>
+
+To the left. When $\dot{x}>0$, $F_c=-c\dot{x}<0$, so it points opposite to the velocity.
+</details>
+
+<details>
+<summary><strong>Q2. With m = 1 kg, k = 1000 N/m and c = 3.162 N·s/m, what is the damping ratio?</strong></summary>
+
+$c_c=2\sqrt{km}=2\sqrt{1000}=63.25$ N·s/m, so $\zeta=c/c_c=3.162/63.25\approx0.050$.
+</details>
+
+<details>
+<summary><strong>Q3. At ζ = 0.05, what is ωd/ωn, and does the rhythm change much?</strong></summary>
+
+$\sqrt{1-0.05^2}=0.99875$. It is about 0.125% lower, so with small damping the rhythm hardly changes.
+</details>
+
+<details>
+<summary><strong>Q4. If successive peaks in the same direction are 1.00 and 0.73, what are δ and ζ?</strong></summary>
+
+$\delta=\ln(1/0.73)\approx0.315$, and $\zeta=\delta/\sqrt{(2\pi)^2+\delta^2}\approx0.050$.
+</details>
+
+<details>
+<summary><strong>Q5. At ζ = 0.05, how many cycles does it take for the amplitude to halve?</strong></summary>
+
+$N_{1/2}=\ln2/0.3146\approx2.20$ cycles.
+</details>
+
+<details>
+<summary><strong>Q6. Which returns to equilibrium faster, critical damping or overdamping?</strong></summary>
+
+With the same mass and stiffness, critical damping returns fastest among the non-oscillating responses. Overdamping does not cross equilibrium either, but it is slower.
+</details>
+
+<details>
+<summary><strong>Q7. Can I get ζ straight from two big peaks of a waveform with several frequencies mixed in?</strong></summary>
+
+No. The peak shapes can change because the components interfere. First check that it is a free decaying response vibrating at a single natural frequency. If several components are mixed, you must separate them first (Part 2).
+</details>
+
+On the next page (P1-4), we apply a repeating force to a damped system and follow up on **why the response is greatly amplified at a particular rhythm**: resonance.
+
+<Callout type="field" title="Where this leads in Part 2">
+
+If you spread a short ringing that dies away quickly into its size at each frequency (the spectrum, covered in detail in P2-1), you do not get a thin bar at one frequency but a broad hump around the natural frequency. The shorter the pulse, the wider it spreads; we look at that in P2-2. The exponential window used in impact testing (striking a structure with a hammer and measuring its ringing, P9-1) is a processing step that presses the end of a measured waveform down with an exponential function (P2-5). It adds damping artificially, so the $\zeta$ read from that waveform must be corrected.
+
+</Callout>
+
+## References
+
+<References items={[
+  ['R-51', 'Free response of a viscously damped single-degree-of-freedom system'],
+  ['R-52', 'Damping ratio, critical damping and logarithmic decrement'],
+]} />

@@ -1,0 +1,282 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 'P1-6 What a Rotating Machine Is Made Of: What Turns and What Supports It?'
+description: 'Motor and rotor, driver and driven machine, shaft, coupling, bearings and support system, lateral, axial and torsional motion — laying out the machine and tying it to the MCK model.'
+sectionId: P1-6
+source: p1-6.mdx
+sourceHash: ed9266ab8e
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SupportStiffnessLab from '../../components/labs/SupportStiffnessLab';
+import * as F from '../../figures/p1-6';
+import { withBase } from '../../lib/site';
+
+# 1-6 What a Rotating Machine Is Made Of: What Turns and What Supports It?
+
+A motor is driving a pump. The outer body sits still while the shaft inside spins fast, and vibration travels through the bearings that carry the shaft into the floor.
+
+In this scene, **how does a motor differ from its rotor?** What does the shaft rest on while it turns, and which parts correspond to the mass, stiffness and damping we learned earlier?
+
+In P1-1 ~ P1-5 you learned why and how an object vibrates using mass, spring and damper. Before moving on to the vibration of rotating machines (P1-7) and the frequencies that machine elements produce (P1-8), let's lay out the machine that produces that vibration.
+
+<Callout type="idea" title="By the end of this page you can">
+
+1. Tell the whole motor apart from the rotor and stator inside it.
+2. Trace the load path from the shaft through the bearing and housing to the foundation.
+3. Classify a bearing separately by its support method and by its load direction.
+4. Tell lateral, axial and torsional vibration apart, and connect the machine's makeup to the MCK model.
+
+</Callout>
+
+## 1. What do the motor and the pump each do?
+
+The side that turns the shaft is the **driver**, and the side that takes that torque and does work is the **driven machine**. A motor converts electrical energy into rotary motion and is a driver. A turbine converts the energy of a flowing fluid into shaft torque.
+
+Pumps, fans and compressors take that torque to move a liquid or gas or raise its pressure. A generator converts the mechanical energy it receives from the shaft into electricity.
+
+<Figure {...F.machineRoles} />
+
+The two arrangements in Figure 1 differ in where the energy starts and what it becomes. Still, they share one thing: **a rotating part, bearings that support it, and a fixed body**.
+
+<Callout type="term" title="Rotating machinery and rotor are not the same word">
+
+Rotating machinery is the category of machines that do work using a rotating part. The rotor is the part inside such a machine that turns. So motors, turbines and pumps are kinds of machines, while the rotor is a component.
+
+</Callout>
+
+Here we use ordinary motor-pump and turbine-generator arrangements as examples. Some machines swap roles depending on how they run, so rather than memorizing names, first check **which side supplies the torque in this arrangement**.
+
+## 2. What turns and what stays still inside a motor?
+
+In simple terms, a motor has a turning **rotor** and a fixed **stator**. The electromagnetic interaction between the two produces torque — the effect that twists the shaft around. The electrical details and faults come in Part 7; here we start with where the parts are.
+
+<Figure {...F.motorParts} />
+
+What you can read from Figure 2:
+
+- The blue rotor and the **shaft** turn together. The shaft carries torque outward.
+- The stator sits still around the rotor. The motor's outer **housing** is the body that holds and supports the inner parts.
+- The **bearings** on both sides of the shaft allow rotation while supporting the shaft's position and loads.
+- The small gap between rotor and stator is the **air gap**. The figure draws the gap large as a concept sketch.
+
+<Callout type="example" title="What is the rotor of a pump or turbine?">
+
+In a pump, the vaned wheel that does work on the fluid is the impeller; in a turbine, the vanes are blades. The shaft together with the parts attached to it and turning with it can be called the rotor. Rotor dynamics looks at the mass and deformation of this rotating assembly together.
+
+</Callout>
+
+The casing is the fixed body that surrounds a machine. Turbines also have stationary blades. But **not every fixed part is the same thing as a motor's stator.** The role of the fixed part differs from machine to machine.
+
+## 3. How are the shafts of two machines joined?
+
+If the motor and pump are installed separately, the two shafts are joined by a **coupling**. A coupling is the connecting part that transmits torque. When several shafts, rotating parts and couplings are treated together, we call it a **shaft train**.
+
+<Figure {...F.shaftCoupling} />
+
+In the top of Figure 3, the torque of the motor rotor passes through the coupling to the pump impeller. Below, the loads play different roles.
+
+- **Torque**: the effect that turns or twists about the shaft. Its unit is N·m.
+- **Radial force**: a force acting at right angles to the shaft axis. The rotating force produced when mass is not evenly distributed around the shaft (unbalance) belongs here.
+
+Torque being transmitted steadily is not the same phenomenon as the shaft center swaying sideways. The unbalance model in the next section, P1-7, deals mainly with the second motion.
+
+<Callout type="warn" title="Having a coupling does not remove the need for alignment">
+
+A flexible coupling can allow relative displacement within a set range, but it does not absorb shaft misalignment without limit. This page looks only at how things are connected. Diagnosing misalignment continues in Part 7, and the alignment work in Part 9.
+
+</Callout>
+
+Even when the shafts are connected, the bearings and support conditions of each shaft can differ. We will need this layout later when we compare amplitude and phase at different positions at the same rotating speed.
+
+## 4. If there is a bearing, is the shaft held completely fixed?
+
+A bearing supports the shaft, but real parts deform a little under load. The bearing and the body around it are no exception. First, let's separate the two criteria used to name bearings.
+
+### Support method: rolling elements or an oil film?
+
+A **rolling-element bearing** transmits load through rolling elements such as balls or rollers. The inner race, outer race, balls and cage make up this arrangement. How many times per revolution these parts shake the machine is counted in P1-8.
+
+A **fluid-film bearing** supports the rotating part with the pressure built up by a thin film of lubricating oil. The example on this page is a fluid-film journal bearing that wraps around the cylindrical shaft portion, the **journal**.
+
+<Figure {...F.bearingWays} />
+
+The left of Figure 4 shows load transmitted through ball contact; the right shows load carried by oil between the shaft and the fixed part. Both bearings let the shaft turn while carrying load.
+
+<Callout type="term" title="Does using oil make it a fluid-film bearing?">
+
+Rolling-element bearings also need lubricant, but their main load path is the contact of the rolling elements. Here, a fluid-film bearing means one that carries load by fluid pressure between the journal and the fixed part. How rotation creates that pressure is explained in P4-3.
+
+</Callout>
+
+### Load direction: beside the shaft or along it?
+
+A **radial bearing** mainly carries loads perpendicular to the shaft, and a **thrust bearing** carries axial loads. Thrust is the force pushing the shaft along its length.
+
+| Basis of classification | Terms | Question it asks |
+|---|---|---|
+| Support method | rolling / fluid-film | What transmits the load? |
+| Load direction | radial / thrust | Which direction of load does it carry? |
+
+These are different classifications. Rolling-element bearings come in radial and thrust types, and fluid-film bearings also have designs that carry both directions. A single bearing may carry radial and thrust loads together.
+
+### What lies outside the bearing?
+
+Outside the bearing are the housing, the **pedestal** that the housing sits on, and the **foundation** that supports the machine. Together we will call them the **support system**.
+
+<Figure {...F.supportPath} />
+
+Following the radial load path in Figure 5: shaft → bearing → housing and pedestal → foundation. If the foundation deforms or moves, the conditions supporting the shaft change too. "Fixed part" means there is no intended spinning, not that vibration is necessarily zero.
+
+<Callout type="field" title="Where the sensor is mounted matters too">
+
+A non-contact displacement sensor that looks at the shaft reads the shaft's motion relative to the fixed part the probe is mounted on. An accelerometer on the housing reads the motion of that housing. Even on the same load path, the two values are not always the same. Measurement principles and selection are covered in <a href={withBase('/p3-1/')}>P3-1</a>, and the relationship between shaft and probe in <a href={withBase('/p3-2/')}>P3-2</a>.
+
+</Callout>
+
+## 5. What is the difference between turning and vibrating?
+
+The shaft's own continuous turning is called **spin**. We then look separately at which direction of vibration is superimposed on it.
+
+<Figure {...F.motionDirections} />
+
+| Motion | What changes? | Example |
+|---|---|---|
+| Lateral vibration | Sideways position of the shaft center | X·Y motion due to unbalance |
+| Axial vibration | Position along the shaft | Back-and-forth in the thrust direction |
+| Torsional vibration | Relative twist angle between two cross-sections | The shaft's twist grows and shrinks |
+
+The torsion at the bottom of Figure 6 does not mean merely that the shaft rotates. It is **a motion in which the relative angle between different positions along the shaft changes**. Even a shaft that transmits torque can have torsional vibration on top of it.
+
+<Callout type="warn" title="Repetition rate alone cannot tell you the direction of motion">
+
+Even at the same repetition rate, whether the motion is lateral, axial or torsional depends on the measurement direction and the physical quantity together. The sideways trajectory of the shaft center is not a plot of the shaft's twist angle.
+
+</Callout>
+
+We also have to distinguish the shaft spinning from the shaft center orbiting around, called **whirl**. Whirl and the shapes of shaft bending are followed up in P4-2 with figures and a rotor model.
+
+## 6. Which parts of the machine are m, c and k?
+
+The MCK in P1-1 ~ P1-5 is a model that lumps mass, damping and stiffness to compute motion. When reducing a real machine to a model, first decide **which direction and which mode it represents**.
+
+| Model value | Link to the machine's makeup | Caution |
+|---|---|---|
+| Mass m | Mass of the rotating parts etc. that take part in the motion of interest | Not always equal to the total rotor mass |
+| Stiffness k | Restoring effect of shaft, bearings, housing and foundation | Not set by the shaft stiffness alone |
+| Damping c | Energy dissipation in lubricant, contacts, structure, etc. | Do not fix one value from the bearing type alone |
+
+<Callout type="example" title="Let's check only the support's deformation on its own">
+
+We build an example with one mass connected through three springs in series. We name the springs shaft, bearing and support. Ignoring the mass of the connections, the same force flows through them, and the total deflection is assumed to be the sum of each spring's deflection. It is not a model that draws a real two-bearing shaft train as it is.
+
+</Callout>
+
+<Figure {...F.supportModel} />
+
+A spring carrying the same force $F$ deflects by $F/k$. Since the total deflection adds up:
+
+$$
+\frac{1}{k_{eq}}=\frac{1}{k_{sh}}+\frac{1}{k_{br}}+\frac{1}{k_{sup}},\qquad
+f_n=\frac{1}{2\pi}\sqrt{\frac{k_{eq}}{m}}
+$$
+
+$k_{sh}$ is the shaft, $k_{br}$ the bearing along this one path, and $k_{sup}$ the support stiffness. The unit is N/m, and **1 MN/m = $10^6$ N/m**. Because they are in series, you add the deflections, not the stiffnesses.
+
+<Callout type="try" title="Change only the support and check">
+
+1. At the default mass of 100 kg and support stiffness of 1 MN/m, read the equivalent stiffness and natural frequency.
+2. Lower the support stiffness to 0.25 MN/m and see whether $f_n$ drops even though the shaft and bearing are the same.
+3. Raise the support stiffness to 4 MN/m and see how close you get to the orange dashed line.
+4. After returning to the starting values, change only the mass to 200 kg and compare the frequency ratio.
+
+</Callout>
+
+<SupportStiffnessLab lang="en" client:visible />
+
+At the default values $k_{eq}$ is **0.400 MN/m** and $f_n$ is **about 10.07 Hz**. Lowering the support stiffness to 0.25 MN/m brings the equivalent stiffness to about 0.1818 MN/m and the natural frequency to **about 6.786 Hz**. It changes even though the rotor mass and the shaft stiffness are left alone.
+
+Conversely, raising the support stiffness to 4 MN/m gives $f_n$ of about 12.03 Hz. Even if the support became infinitely stiff, the deformation of the shaft and bearing would remain, so the limit for this example is about 12.99 Hz. Resetting and doubling only the mass lowers the frequency by a factor of $1/\sqrt2$, to about 7.118 Hz.
+
+<Callout type="warn" title="Do not lump the stiffness of a real machine in series without thought">
+
+A real model has to account for bearing positions, load directions, the distributed mass and bending of the shaft, and multiple support paths. This lab shows that the response can change when the support stiffness changes; it is not a lab for judging real operating amplitude, critical speed or stability with this formula. Damping and rotating effects are also left out here.
+
+</Callout>
+
+## Summary
+
+| Relationship covered here | Where it is used next |
+|---|---|
+| Driver/driven are roles; rotor/fixed part are components | Linking the machine layout to measurement positions |
+| Shaft and coupling transmit torque; bearings and support system carry load | Comparing the response at several positions along the shaft train |
+| Rolling/fluid-film is the method; radial/thrust is the direction | Choosing a bearing model |
+| Spin is distinct from lateral, axial and torsional vibration | Whirl and the rotor model in P4-2 |
+| m·c·k are model values fitted to the motion of interest | Unbalance response in P4-1, fluid-film stability in P4-4 |
+
+Here we sorted out what moves and what supports. The next section, P1-7, covers the force a turning shaft produces (unbalance), and <a href={withBase('/en/p1-8/')}>frequencies by element</a> in P1-8 covers how many times per revolution each element shakes the machine. How to measure them is left to Part 3, and the question of pinning down faults to Part 7.
+
+## Review questions
+
+<details>
+<summary>1. Why is it wrong to split "motor" and "rotor" into two kinds of rotating machine?</summary>
+
+The motor is the kind of whole machine, and the rotor is the part inside it that turns. A motor has not only a rotor but also a stator, bearings and a housing.
+
+</details>
+
+<details>
+<summary>2. If it is a rolling-element bearing, can it not carry thrust load?</summary>
+
+That is not so. Rolling/fluid-film is the method, radial/thrust is the direction. Depending on the design, rolling-element bearings also carry thrust or carry loads in both directions together.
+
+</details>
+
+<details>
+<summary>3. With the same rotor and bearings, is the natural frequency necessarily the same even if the pedestal differs?</summary>
+
+No. The deformation and mass of the support can also affect the mode of interest. In this lab, lowering the support stiffness from 1 to 0.25 MN/m changes it from about 10.07 to 6.786 Hz.
+
+</details>
+
+<details>
+<summary>4. If three springs in series all have stiffness k, what is the equivalent stiffness?</summary>
+
+Since $1/k_{eq}=3/k$, $k_{eq}=k/3$. The deflections of the springs add, so the assembly becomes softer. 3k is not the answer for this series example.
+
+</details>
+
+<details>
+<summary>5. Can you read the twist angle directly from the sideways trajectory of the shaft center?</summary>
+
+No. The sideways trajectory is the lateral motion of the shaft center. Torsion is a separate motion, looking at the relative rotation angle between two positions.
+
+</details>
+
+<details>
+<summary>6. Can the natural frequency from the support stiffness lab tell you the real operating amplitude?</summary>
+
+No. You need the real modes, excitation, damping and rotating effects. The natural frequency is the free-vibration rate of this simple model, and it differs from the size of a forced response or a safety judgment of a real machine.
+
+</details>
+
+Next is <a href={withBase('/en/p1-7/')}><strong>P1-7 Vibration of rotating machinery: unbalance and 1X</strong></a>. Now that we have sorted out what turns and what supports it, we look at the force a turning shaft produces and its vibration. Reading the response of a shaft train quantitatively (Bode/Polar, amplification factor) continues in <a href={withBase('/p4-1/')}>P4-1</a> of Part 4.
+
+<Callout type="field" title="Where this leads into Part 2">
+
+P2-1 starts by sorting out where, and relative to what, the same vibration is measured (the shaft's relative displacement, or the housing's absolute vibration). The rotating and fixed parts and the load path we separated on this page become that reference.
+
+</Callout>
+
+## References
+
+<References items={[
+  ['R-15', 'Makeup of rotor, stator, shaft, bearings and frame'],
+  ['R-50', 'Explanation that shaft and bearing positions, stiffness and housing deformation affect the dynamics'],
+]}>
+
+The series-stiffness example in the text is not a real machine model that reproduces this source.
+
+</References>

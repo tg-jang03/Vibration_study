@@ -62,7 +62,12 @@ function layoutFigure(mobile: boolean) {
     if (!compact) return [value];
     const lines: string[] = []; let line = '';
     for (const ch of value) {
-      if (line && textWidth(line + ch) > available) { lines.push(line.trim()); line = ''; }
+      if (line && textWidth(line + ch) > available) {
+        // 영어 낱말·숫자(8.72, F_max) 가운데서는 자르지 않고 마지막 빈칸에서 나눈다 (한글은 글자 단위 그대로)
+        const cut = /[\w.]$/.test(line) && /[\w.]/.test(ch) ? line.lastIndexOf(' ') : -1;
+        if (cut > 0) { lines.push(line.slice(0, cut).trim()); line = line.slice(cut + 1); }
+        else { lines.push(line.trim()); line = ''; }
+      }
       line += ch;
     }
     if (line.trim()) lines.push(line.trim());

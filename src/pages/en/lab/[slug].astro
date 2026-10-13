@@ -41,6 +41,15 @@ import IntegrationLab from '../../../components/labs/IntegrationLab';
 import TrackingLab from '../../../components/labs/TrackingLab';
 import CepstrumLab from '../../../components/labs/CepstrumLab';
 import FeatureLab from '../../../components/labs/FeatureLab';
+import MassSpringLab from '../../../components/labs/MassSpringLab';
+import SineBasicsLab from '../../../components/labs/SineBasicsLab';
+import DampingLab from '../../../components/labs/DampingLab';
+import ForcedVibrationLab from '../../../components/labs/ForcedVibrationLab';
+import SupportStiffnessLab from '../../../components/labs/SupportStiffnessLab';
+import UnbalanceLab from '../../../components/labs/UnbalanceLab';
+import TwoDofModeLab from '../../../components/labs/TwoDofModeLab';
+import FrequencyMapLab from '../../../components/labs/FrequencyMapLab';
+import SourceSynthesisLab from '../../../components/labs/SourceSynthesisLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -86,4 +95,13 @@ const c = lab.component;
   {c === 'TrackingLab' && <TrackingLab client:load lang="en" />}
   {c === 'CepstrumLab' && <CepstrumLab client:load lang="en" />}
   {c === 'FeatureLab' && <FeatureLab client:load lang="en" />}
+  {c === 'MassSpringLab' && <MassSpringLab client:load lang="en" mode="expanded" />}
+  {c === 'SineBasicsLab' && <SineBasicsLab client:load lang="en" />}
+  {c === 'DampingLab' && <DampingLab client:load lang="en" />}
+  {c === 'ForcedVibrationLab' && <ForcedVibrationLab client:load lang="en" />}
+  {c === 'SupportStiffnessLab' && <SupportStiffnessLab client:load lang="en" />}
+  {c === 'UnbalanceLab' && <UnbalanceLab client:load lang="en" />}
+  {c === 'TwoDofModeLab' && <TwoDofModeLab client:load lang="en" />}
+  {c === 'FrequencyMapLab' && <FrequencyMapLab client:load lang="en" />}
+  {c === 'SourceSynthesisLab' && <SourceSynthesisLab client:load lang="en" />}
 </LabPageShell>

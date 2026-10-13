@@ -9,6 +9,9 @@ import ReadoutTable from '../ui/ReadoutTable';
 import { texNumber } from '../../lib/format';
 import { forcedResponse, resonancePeak, steadyStateResponse } from '../../lib/mck';
 import { forcedMotionAt, nextForcedQuarter } from '../../lib/mck/forcedAnimation';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/ForcedVibrationLab';
 
 /** LAB-FRC-01: m = 1 kg, f_n = 5 Hz, X_st = F₀/k = 10 mm로 고정한 1자유도 강제진동. */
 const MASS = 1;
@@ -24,10 +27,10 @@ const CURVE = Array.from({ length: 601 }, (_, i) => (R_MAX * i) / 600);
 
 type DisplayMode = 'total' | 'steady';
 const DISPLAY_OPTIONS = [
-  { value: 'total' as const, label: '정지 상태에서 시작 (과도 포함)' },
-  { value: 'steady' as const, label: '정상상태만' },
+  { value: 'total' as const, label: k('정지 상태에서 시작 (과도 포함)') },
+  { value: 'steady' as const, label: k('정상상태만') },
 ];
-const SPEED_OPTIONS = [{value:0.1,label:'실제의 1/10'}, {value:0.25,label:'실제의 1/4'}, {value:0.5,label:'실제의 1/2'}, {value:1,label:'실제 속도'}];
+const SPEED_OPTIONS = [{value:0.1,label:k('실제의 1/10')}, {value:0.25,label:k('실제의 1/4')}, {value:0.5,label:k('실제의 1/2')}, {value:1,label:k('실제 속도')}];
 
 function springPath(x1:number,x2:number,y:number):string {
   const lead=16,span=x2-x1-2*lead;
@@ -44,9 +47,11 @@ const deg = (rad: number) => (rad * 180) / Math.PI;
 interface ForcedVibrationLabProps {
   initialFrequency?: number;
   initialZeta?: number;
+  lang?: Lang;
 }
 
-export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta = 0.05 }: ForcedVibrationLabProps) {
+export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta = 0.05, lang = 'ko' }: ForcedVibrationLabProps) {
+  const tr = makeT(lang, EN);
   const [forcingHz, setForcingHz] = useState(initialFrequency);
   const [zeta, setZeta] = useState(initialZeta);
   const [display, setDisplay] = useState<DisplayMode>('total');
@@ -103,54 +108,55 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
   const forceEnd=massX+75*scene.force/F0;
 
   const timeSeries = useMemo<PlotSeries[]>(() => [
-    { x: time.slice(startIndex,count), y: force.slice(startIndex,count), name: '힘 F(t)/k [mm 환산]', color: 'var(--plot-2)', width: 1.4 },
-    { x: time.slice(startIndex,count), y: displacement.slice(startIndex,count), name: display === 'total' ? '변위 x(t)' : '정상상태 변위', color: 'var(--plot-1)', width: 2 },
-    {x:[elapsed,elapsed],y:[-yLimit,yLimit],name:'현재 시각',color:'var(--text-muted)',dash:'dot',hideInLegend:true},
-    {x:[elapsed],y:[forceMm],name:'현재 힘 / k',color:'var(--plot-2)',mode:'markers',markerSize:9,hideInLegend:true},
-    {x:[elapsed],y:[currentMm],name:'현재 변위',color:'var(--plot-1)',mode:'markers',markerSize:9,hideInLegend:true},
-  ], [display, displacement, force, time,count,startIndex,elapsed,yLimit,forceMm,currentMm]);
+    { x: time.slice(startIndex,count), y: force.slice(startIndex,count), name: tr`힘 F(t)/k [mm 환산]`, color: 'var(--plot-2)', width: 1.4 },
+    { x: time.slice(startIndex,count), y: displacement.slice(startIndex,count), name: display === 'total' ? tr`변위 x(t)` : tr`정상상태 변위`, color: 'var(--plot-1)', width: 2 },
+    {x:[elapsed,elapsed],y:[-yLimit,yLimit],name:tr`현재 시각`,color:'var(--text-muted)',dash:'dot',hideInLegend:true},
+    {x:[elapsed],y:[forceMm],name:tr`현재 힘 / k`,color:'var(--plot-2)',mode:'markers',markerSize:9,hideInLegend:true},
+    {x:[elapsed],y:[currentMm],name:tr`현재 변위`,color:'var(--plot-1)',mode:'markers',markerSize:9,hideInLegend:true},
+  ], [display, displacement, force, time,count,startIndex,elapsed,yLimit,forceMm,currentMm,lang]);
 
   const amplitudeCurve = useMemo(()=>CURVE.map((value) => Math.min(steadyStateResponse(value, zeta).amplitudeRatio, 60)),[zeta]);
   const phaseCurve = useMemo(()=>CURVE.map((value) => deg(steadyStateResponse(value, zeta).phaseLag)),[zeta]);
   const ampMax = Math.min(Math.max(peak?.amplitudeRatio ?? 1, 1) * 1.15, 55);
 
   const amplitudeSeries = useMemo<PlotSeries[]>(()=>[
-    { x: CURVE, y: amplitudeCurve, name: `진폭비 (ζ = ${Number(zeta.toFixed(3))})`, color: 'var(--plot-1)', width: 2.2 },
+    { x: CURVE, y: amplitudeCurve, name: tr`진폭비 (ζ = ${Number(zeta.toFixed(3))})`, color: 'var(--plot-1)', width: 2.2 },
     { x: [0, R_MAX], y: [1, 1], name: 'X_st', color: '#94a3b8', dash: 'dash', width: 1.2 },
-    { x: [r], y: [response.amplitudeRatio], name: '현재 점', color: 'var(--plot-2)', mode: 'markers', markerSize: 11 },
-  ],[amplitudeCurve,zeta,r,response.amplitudeRatio]);
+    { x: [r], y: [response.amplitudeRatio], name: tr`현재 점`, color: 'var(--plot-2)', mode: 'markers', markerSize: 11 },
+  ],[amplitudeCurve,zeta,r,response.amplitudeRatio,lang]);
   const phaseSeries = useMemo<PlotSeries[]>(()=>[
-    { x: CURVE, y: phaseCurve, name: '위상 지연', color: 'var(--plot-1)', width: 2.2 },
+    { x: CURVE, y: phaseCurve, name: tr`위상 지연`, color: 'var(--plot-1)', width: 2.2 },
     { x: [0, R_MAX], y: [90, 90], name: '90°', color: '#94a3b8', dash: 'dash', width: 1.2 },
-    { x: [r], y: [phaseDeg], name: '현재 점', color: 'var(--plot-2)', mode: 'markers', markerSize: 11 },
-  ],[phaseCurve,r,phaseDeg]);
+    { x: [r], y: [phaseDeg], name: tr`현재 점`, color: 'var(--plot-2)', mode: 'markers', markerSize: 11 },
+  ],[phaseCurve,r,phaseDeg,lang]);
 
   const regime = r < 0.75
-    ? '스프링이 지배: 힘과 거의 같이 움직임'
+    ? tr`스프링이 지배: 힘과 거의 같이 움직임`
     : r <= 1.3
-      ? '공진 근처: 감쇠만이 진폭을 제한'
-      : '질량(관성)이 지배: 작게, 힘과 거의 반대로 움직임';
+      ? tr`공진 근처: 감쇠만이 진폭을 제한`
+      : tr`질량(관성)이 지배: 작게, 힘과 거의 반대로 움직임`;
 
   return (
     <LabFrame
       id="LAB-FRC-01"
-      title="같은 힘, 다른 박자: 언제 크게 흔들릴까?"
+      title={tr`같은 힘, 다른 박자: 언제 크게 흔들릴까?`}
+      lang={lang}
       controls={
         <>
-          <ParamSlider label="가진 주파수 f" value={forcingHz} min={0} max={15} step={0.05} unit="Hz" format={(v) => v.toFixed(2)} onChange={change(setForcingHz)} />
-          <ParamSlider label="감쇠비 ζ" value={zeta} min={0.01} max={0.5} step={0.005} format={(v) => v.toFixed(3)} onChange={change(setZeta)} />
-          <ParamSelect label="시간파형" value={display} options={DISPLAY_OPTIONS} onChange={change(setDisplay)} />
-          <div className="param"><span>위상 비교 — 정상상태로 선택</span><div style={{display:'flex',gap:'.5rem',flexWrap:'wrap'}}>
-            {[[2.5,'공진 아래'],[5,'공진'],[10,'공진 위']].map(([f,label])=><button key={f} className="lab-button" type="button" data-frc-preset={f} onClick={()=>preset(Number(f))}>{label} ({f} Hz)</button>)}
+          <ParamSlider label={tr`가진 주파수 f`} value={forcingHz} min={0} max={15} step={0.05} unit="Hz" format={(v) => v.toFixed(2)} onChange={change(setForcingHz)} />
+          <ParamSlider label={tr`감쇠비 ζ`} value={zeta} min={0.01} max={0.5} step={0.005} format={(v) => v.toFixed(3)} onChange={change(setZeta)} />
+          <ParamSelect label={tr`시간파형`} value={display} options={DISPLAY_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={change(setDisplay)} />
+          <div className="param"><span>{tr`위상 비교 — 정상상태로 선택`}</span><div style={{display:'flex',gap:'.5rem',flexWrap:'wrap'}}>
+            {[[2.5,tr`공진 아래`],[5,tr`공진`],[10,tr`공진 위`]].map(([f,label])=><button key={f} className="lab-button" type="button" data-frc-preset={f} onClick={()=>preset(Number(f))}>{label} ({f} Hz)</button>)}
           </div></div>
-          <ParamSelect label="재생 속도" value={speed} options={SPEED_OPTIONS} onChange={setSpeed}/>
-          <ParamSlider label="선택 시각 t" value={elapsed} min={0} max={DURATION} step={.001} unit="s" format={v=>v.toFixed(3)} onChange={change(setElapsed)}/>
-          <ParamToggle label="전체 시간파형 보기" checked={showAll} onChange={setShowAll}/>
-          <div className="param"><span>재생 제어</span><div style={{display:'flex',gap:'.5rem',flexWrap:'wrap'}}>
-            <button className="lab-button" type="button" disabled={playing} onClick={()=>{if(elapsed>=DURATION)setElapsed(0);setPlaying(true);}}>{elapsed>=DURATION?'처음부터 재생':playing?'재생 중':'재생'}</button>
-            <button className="lab-button" type="button" disabled={!playing} onClick={()=>setPlaying(false)}>정지</button>
-            <button className="lab-button" type="button" disabled={nextQuarter===null} onClick={()=>{setPlaying(false);if(nextQuarter!==null)setElapsed(nextQuarter);}}>T/4 앞으로</button>
-            <button className="lab-button" type="button" onClick={reset}>처음으로</button>
+          <ParamSelect label={tr`재생 속도`} value={speed} options={SPEED_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setSpeed}/>
+          <ParamSlider label={tr`선택 시각 t`} value={elapsed} min={0} max={DURATION} step={.001} unit="s" format={v=>v.toFixed(3)} onChange={change(setElapsed)}/>
+          <ParamToggle label={tr`전체 시간파형 보기`} checked={showAll} onChange={setShowAll}/>
+          <div className="param"><span>{tr`재생 제어`}</span><div style={{display:'flex',gap:'.5rem',flexWrap:'wrap'}}>
+            <button className="lab-button" type="button" disabled={playing} onClick={()=>{if(elapsed>=DURATION)setElapsed(0);setPlaying(true);}}>{elapsed>=DURATION?tr`처음부터 재생`:playing?tr`재생 중`:tr`재생`}</button>
+            <button className="lab-button" type="button" disabled={!playing} onClick={()=>setPlaying(false)}>{tr`정지`}</button>
+            <button className="lab-button" type="button" disabled={nextQuarter===null} onClick={()=>{setPlaying(false);if(nextQuarter!==null)setElapsed(nextQuarter);}}>{tr`T/4 앞으로`}</button>
+            <button className="lab-button" type="button" onClick={reset}>{tr`처음으로`}</button>
           </div></div>
         </>
       }
@@ -162,90 +168,90 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
             tex={`\\dfrac{X}{X_{st}} = \\dfrac{1}{\\sqrt{(1-r^2)^2 + (2\\zeta r)^2}} = \\dfrac{1}{\\sqrt{(${texNumber(clean(1 - r ** 2), 3)})^2 + (${texNumber(2 * zeta * r, 3)})^2}} = ${texNumber(response.amplitudeRatio, 4)}`}
           />
           <Formula display tex={`\\varphi = \\operatorname{atan2}(2\\zeta r,\\ 1-r^2) = ${texNumber(clean(phaseDeg), 4)}^\\circ`} />
-          <p style={{ margin: 0 }}><strong>지금 구간:</strong> {regime}</p>
+          <p style={{ margin: 0 }}><strong>{tr`지금 구간:`}</strong> {regime}</p>
         </>
       }
       readouts={
         <ReadoutTable
-          caption="정상상태 응답과 공진"
+          caption={tr`정상상태 응답과 공진`}
           rows={[
-            { label:'현재 시각',value:elapsed,unit:'s',sig:4 },
-            { label:'현재 가진력 F(t)',value:current.force,unit:'N',sig:4 },
-            { label:'현재 변위 x(t)',value:currentMm,unit:'mm',sig:4 },
-            { label: '진동수비 r', value: r, sig: 3 },
-            { label: '정상상태 진폭비 X/X_st (식)', value: response.amplitudeRatio, sig: 4 },
-            { label: '3~4초의 최대 |x|/X_st (전체 계산)', value: lastSecondPeak, theory: response.amplitudeRatio, sig: 4 },
-            { label: '전체 구간의 최대 |x|/X_st', value: firstPeak, sig: 4 },
-            { label: '위상 지연 φ', value: clean(phaseDeg), unit: '°', sig: 4 },
-            { label: '공진 봉우리 ≈ 1/(2ζ)', value: 1 / (2 * zeta), sig: 4 },
-            { label: '과도 응답이 1/e로 줄어드는 시간 τ', value: tau, unit: 's', sig: 3 },
+            { label:tr`현재 시각`,value:elapsed,unit:'s',sig:4 },
+            { label:tr`현재 가진력 F(t)`,value:current.force,unit:'N',sig:4 },
+            { label:tr`현재 변위 x(t)`,value:currentMm,unit:'mm',sig:4 },
+            { label: tr`진동수비 r`, value: r, sig: 3 },
+            { label: tr`정상상태 진폭비 X/X_st (식)`, value: response.amplitudeRatio, sig: 4 },
+            { label: tr`3~4초의 최대 |x|/X_st (전체 계산)`, value: lastSecondPeak, theory: response.amplitudeRatio, sig: 4 },
+            { label: tr`전체 구간의 최대 |x|/X_st`, value: firstPeak, sig: 4 },
+            { label: tr`위상 지연 φ`, value: clean(phaseDeg), unit: '°', sig: 4 },
+            { label: tr`공진 봉우리 ≈ 1/(2ζ)`, value: 1 / (2 * zeta), sig: 4 },
+            { label: tr`과도 응답이 1/e로 줄어드는 시간 τ`, value: tau, unit: 's', sig: 3 },
           ]}
         />
       }
       tasks={[
-        {question:'공진 (5 Hz)을 고르고 T/4를 누르면 힘과 변위는?',answer:'정상상태의 t=0에서 힘은 +F₀, 변위는 0입니다. 0.05 s 뒤 힘은 0, 변위는 +100 mm입니다(ζ=.05). 힘의 피크에서 T/4 늦게 변위가 피크에 도달합니다.'},
+        {question:tr`공진 (5 Hz)을 고르고 T/4를 누르면 힘과 변위는?`,answer:tr`정상상태의 t=0에서 힘은 +F₀, 변위는 0입니다. 0.05 s 뒤 힘은 0, 변위는 +100 mm입니다(ζ=.05). 힘의 피크에서 T/4 늦게 변위가 피크에 도달합니다.`},
         {
-          question: 'ζ = 0.05에서 f = 2.5, 5, 10 Hz(r = 0.5, 1, 2)의 진폭비와 위상은?',
-          answer: '약 1.33배·3.8°, 10.0배·90°, 0.333배·176°입니다. 같은 힘인데 박자만 바꿔 응답 크기가 30배 달라집니다.',
+          question: tr`ζ = 0.05에서 f = 2.5, 5, 10 Hz(r = 0.5, 1, 2)의 진폭비와 위상은?`,
+          answer: tr`약 1.33배·3.8°, 10.0배·90°, 0.333배·176°입니다. 같은 힘인데 박자만 바꿔 응답 크기가 30배 달라집니다.`,
         },
         {
-          question: 'f = 5 Hz에서 ζ를 0.05 → 0.025로 줄이면 봉우리 높이와 폭은?',
-          answer: '높이는 10 → 20으로 약 2배, 진폭비 곡선의 봉우리 폭은 약 절반이 됩니다. 감쇠가 작을수록 공진은 높고 날카롭습니다.',
+          question: tr`f = 5 Hz에서 ζ를 0.05 → 0.025로 줄이면 봉우리 높이와 폭은?`,
+          answer: tr`높이는 10 → 20으로 약 2배, 진폭비 곡선의 봉우리 폭은 약 절반이 됩니다. 감쇠가 작을수록 공진은 높고 날카롭습니다.`,
         },
         {
-          question: '"정지 상태에서 시작"으로 두고 f = 5 Hz, ζ = 0.05이면 마지막 1초의 진폭이 식의 값 10에 도달했나요?',
-          answer: '아직 조금 모자랍니다. 과도 응답이 τ ≈ 0.64 s로 줄어드는데, 공진에서는 진폭이 1 − e^(−t/τ) 모양으로 천천히 차오르기 때문입니다. "정상상태만"으로 바꾸면 10이 됩니다.',
+          question: tr`"정지 상태에서 시작"으로 두고 f = 5 Hz, ζ = 0.05이면 마지막 1초의 진폭이 식의 값 10에 도달했나요?`,
+          answer: tr`아직 조금 모자랍니다. 과도 응답이 τ ≈ 0.64 s로 줄어드는데, 공진에서는 진폭이 1 − e^(−t/τ) 모양으로 천천히 차오르기 때문입니다. "정상상태만"으로 바꾸면 10이 됩니다.`,
         },
         {
-          question: 'ζ = 0.01, f = 4.5 Hz, "정지 상태에서 시작"이면 시간파형에 무엇이 보이나요?',
-          answer: '진폭이 약 2초 주기로 커졌다 작아지는 맥놀이입니다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 겹쳐서 생기며, 과도 응답이 사라질수록 줄어듭니다.',
+          question: tr`ζ = 0.01, f = 4.5 Hz, "정지 상태에서 시작"이면 시간파형에 무엇이 보이나요?`,
+          answer: tr`진폭이 약 2초 주기로 커졌다 작아지는 맥놀이입니다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 겹쳐서 생기며, 과도 응답이 사라질수록 줄어듭니다.`,
         },
       ]}
-      footer="m = 1 kg, fₙ = 5 Hz, 힘의 크기는 X_st = F₀/k = 10 mm가 되도록 고정. 주황 선은 힘을 k로 나눠 mm로 그린 것(그 힘을 천천히 걸었을 때의 처짐)입니다. 기본 시간축은 최근 두 가진 주기를 확대하고, 전체 시간파형은 4초를 보여 줍니다. 최대값 읽음은 전체 4초 계산 결과입니다. 진폭비 곡선은 60에서 자릅니다."
+      footer={tr`m = 1 kg, fₙ = 5 Hz, 힘의 크기는 X_st = F₀/k = 10 mm가 되도록 고정. 주황 선은 힘을 k로 나눠 mm로 그린 것(그 힘을 천천히 걸었을 때의 처짐)입니다. 기본 시간축은 최근 두 가진 주기를 확대하고, 전체 시간파형은 4초를 보여 줍니다. 최대값 읽음은 전체 4초 계산 결과입니다. 진폭비 곡선은 60에서 자릅니다.`}
     >
-      <p role="status">{display==='steady'?'정상상태: 힘과 변위의 위상 지연을 비교합니다.':'과도 포함: 처음 정지한 질량에서 응답이 차오릅니다. 위상 비교는 정상상태를 선택하세요.'} T/4는 가진력의 한 주기를 네 등분한 시간입니다. 재생 속도는 화면에서 흐르는 시간만 바꿉니다.</p>
-      <svg viewBox="0 0 520 240" role="img" aria-label="가진력과 질량 변위가 같은 시각에 움직이는 질량·스프링·댐퍼" style={{display:'block',width:'100%',maxWidth:700,margin:'0 auto',background:'var(--surface-2)',borderRadius:'var(--radius)'}}>
+      <p role="status">{display==='steady'?tr`정상상태: 힘과 변위의 위상 지연을 비교합니다.`:tr`과도 포함: 처음 정지한 질량에서 응답이 차오릅니다. 위상 비교는 정상상태를 선택하세요.`} {tr`T/4는 가진력의 한 주기를 네 등분한 시간입니다. 재생 속도는 화면에서 흐르는 시간만 바꿉니다.`}</p>
+      <svg viewBox="0 0 520 240" role="img" aria-label={tr`가진력과 질량 변위가 같은 시각에 움직이는 질량·스프링·댐퍼`} style={{display:'block',width:'100%',maxWidth:700,margin:'0 auto',background:'var(--surface-2)',borderRadius:'var(--radius)'}}>
         <defs><marker id={arrowId} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--plot-2)"/></marker></defs>
         <line x1={52} y1={35} x2={52} y2={180} stroke="var(--text-muted)" strokeWidth={4}/>
         {Array.from({length:11},(_,i)=><line key={i} x1={30} y1={43+i*13} x2={52} y2={31+i*13} stroke="var(--text-muted)"/>)}
-        <text x={350} y={225} textAnchor="middle" fontSize={14} fill="var(--text-muted)">평형 x=0</text>
+        <text x={350} y={225} textAnchor="middle" fontSize={14} fill="var(--text-muted)">{tr`평형 x=0`}</text>
         <path d={springPath(52,massX-42,88)} fill="none" stroke="var(--plot-1)" strokeWidth={3}/>
-        <text x={170} y={63} textAnchor="middle" fontSize={14} fill="var(--text-muted)">스프링 k</text>
+        <text x={170} y={63} textAnchor="middle" fontSize={14} fill="var(--text-muted)">{tr`스프링 k`}</text>
         <line x1={52} y1={147} x2={88} y2={147} stroke="var(--plot-3)" strokeWidth={3}/>
         <rect x={88} y={133} width={150} height={28} fill="none" stroke="var(--plot-3)" strokeWidth={2}/>
         <line data-frc-piston="true" x1={pistonX} y1={136} x2={pistonX} y2={158} stroke="var(--plot-3)" strokeWidth={3}/>
         <line x1={pistonX} y1={147} x2={massX-42} y2={147} stroke="var(--plot-3)" strokeWidth={3}/>
-        <text x={163} y={190} textAnchor="middle" fontSize={14} fill="var(--text-muted)">감쇠 c</text>
+        <text x={163} y={190} textAnchor="middle" fontSize={14} fill="var(--text-muted)">{tr`감쇠 c`}</text>
         <rect data-frc-mass="true" x={massX-42} y={65} width={84} height={112} rx={7} fill="var(--accent-soft)" stroke="var(--plot-1)" strokeWidth={3}/>
         <text x={massX} y={123} textAnchor="middle" fontSize={21} fontWeight={700} fill="var(--text)">m</text>
         {Math.abs(scene.force)>.002&&<line data-frc-force="true" x1={massX} y1={38} x2={forceEnd} y2={38} stroke="var(--plot-2)" strokeWidth={3} markerEnd={`url(#${arrowId})`}/>}
-        <text x={Math.abs(scene.force)>.002?(massX+forceEnd)/2:massX} y={24} textAnchor="middle" fontSize={14} fill="var(--plot-2)">가진력 F(t)</text>
+        <text x={Math.abs(scene.force)>.002?(massX+forceEnd)/2:massX} y={24} textAnchor="middle" fontSize={14} fill="var(--plot-2)">{tr`가진력 F(t)`}</text>
         <rect data-frc-ghost="true" x={ghostX-42} y={65} width={84} height={112} rx={7} fill="none" stroke="var(--plot-2)" strokeWidth={2} strokeDasharray="6 4"/>
-        <text x={ghostX} y={198} textAnchor="middle" fontSize={13} fill="var(--plot-2)">F/k 자리</text>
+        <text x={ghostX} y={198} textAnchor="middle" fontSize={13} fill="var(--plot-2)">{tr`F/k 자리`}</text>
         <line x1={350} y1={28} x2={350} y2={205} stroke="var(--text-muted)" strokeDasharray="5 5" opacity={0.7}/>
         <text x={505} y={225} textAnchor="end" fontSize={13} fill="var(--text-muted)">+x →</text>
       </svg>
-      <p className="lab-note">파랑은 질량 변위, 주황은 외부 가진력입니다. 점선 주황 상자는 같은 힘을 아주 천천히 걸었을 때 질량이 갈 자리(F/k)입니다 — 질량이 이 상자보다 얼마나 멀리 가는지가 진폭비, 얼마나 늦게 따라가는지가 위상 지연입니다. 장치 그림의 축척은 조건마다 ±{(yLimit/1.1).toFixed(2)} mm에 맞추고, 질량과 상자는 같은 축척입니다.</p>
+      <p className="lab-note">{tr`파랑은 질량 변위, 주황은 외부 가진력입니다. 점선 주황 상자는 같은 힘을 아주 천천히 걸었을 때 질량이 갈 자리(F/k)입니다 — 질량이 이 상자보다 얼마나 멀리 가는지가 진폭비, 얼마나 늦게 따라가는지가 위상 지연입니다. 장치 그림의 축척은 조건마다 ±${(yLimit/1.1).toFixed(2)} mm에 맞추고, 질량과 상자는 같은 축척입니다.`}</p>
       <Plot
         series={timeSeries}
-        x={{ label: '시간 t [s]', range: timeRange }}
-        y={{ label: '변위 x [mm]', range: [-yLimit, yLimit] }}
+        x={{ label: tr`시간 t [s]`, range: timeRange }}
+        y={{ label: tr`변위 x [mm]`, range: [-yLimit, yLimit] }}
         height={300}
-        ariaLabel="가진력과 변위의 시간파형. 과도 응답이 줄어들며 가진 주파수의 정상상태로 수렴한다"
+        ariaLabel={tr`가진력과 변위의 시간파형. 과도 응답이 줄어들며 가진 주파수의 정상상태로 수렴한다`}
       />
       <Plot
         series={amplitudeSeries}
-        x={{ label: '진동수비 r = f/fₙ', range: [0, R_MAX] }}
-        y={{ label: '진폭비 X/X_st', range: [0, ampMax] }}
+        x={{ label: tr`진동수비 r = f/fₙ`, range: [0, R_MAX] }}
+        y={{ label: tr`진폭비 X/X_st`, range: [0, ampMax] }}
         height={240}
-        ariaLabel="진동수비에 따른 진폭비 곡선과 현재 가진 주파수의 점"
+        ariaLabel={tr`진동수비에 따른 진폭비 곡선과 현재 가진 주파수의 점`}
       />
       <Plot
         series={phaseSeries}
-        x={{ label: '진동수비 r = f/fₙ', range: [0, R_MAX] }}
-        y={{ label: '위상 지연 φ [°]', range: [0, 185] }}
+        x={{ label: tr`진동수비 r = f/fₙ`, range: [0, R_MAX] }}
+        y={{ label: tr`위상 지연 φ [°]`, range: [0, 185] }}
         height={220}
-        ariaLabel="진동수비에 따른 위상 지연 곡선과 현재 가진 주파수의 점"
+        ariaLabel={tr`진동수비에 따른 위상 지연 곡선과 현재 가진 주파수의 점`}
       />
     </LabFrame>
   );

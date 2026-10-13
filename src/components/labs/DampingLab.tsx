@@ -8,6 +8,9 @@ import Plot, { type PlotSeries } from '../ui/Plot';
 import ReadoutTable from '../ui/ReadoutTable';
 import { texNumber } from '../../lib/format';
 import { freeResponse, freeResponseAt, sdofProperties } from '../../lib/mck';
+import type { Lang } from '../../i18n';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/DampingLab';
 
 const DURATION = 2;
 const POINTS = 1601;
@@ -17,7 +20,8 @@ function clean(value: number): number {
   return Math.abs(value) < 1e-12 ? 0 : value;
 }
 
-export default function DampingLab() {
+export default function DampingLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [zeta, setZeta] = useState(0.05);
   const [playSpeed, setPlaySpeed] = useState(1);
   const [frequencyHz, setFrequencyHz] = useState(5);
@@ -59,24 +63,24 @@ export default function DampingLab() {
   const halfCycles = hasTwoPeaks ? (measuredDelta === 0 ? Number.POSITIVE_INFINITY : Math.log(2) / measuredDelta) : Number.NaN;
   const frequencyRatio = underdamped ? (properties.omegaD as number) / properties.omegaN : Number.NaN;
   const regimeName = properties.regime === 'undamped'
-    ? '감쇠 없음'
+    ? tr`감쇠 없음`
     : properties.regime === 'underdamped'
-      ? '부족감쇠: 진동하며 복귀'
+      ? tr`부족감쇠: 진동하며 복귀`
       : properties.regime === 'critical'
-        ? '임계감쇠: 진동 없이 가장 빠르게 복귀'
-        : '과감쇠: 진동 없이 천천히 복귀';
+        ? tr`임계감쇠: 진동 없이 가장 빠르게 복귀`
+        : tr`과감쇠: 진동 없이 천천히 복귀`;
 
   const series = useMemo<PlotSeries[]>(() => [
-    { x: time, y: displacement, name: '변위 x(t)', color: 'var(--plot-1)', width: 2.4 },
-    { x: [0, DURATION], y: [0, 0], name: '평형 위치', color: '#94a3b8', dash: 'dash', width: 1.2 },
+    { x: time, y: displacement, name: tr`변위 x(t)`, color: 'var(--plot-1)', width: 2.4 },
+    { x: [0, DURATION], y: [0, 0], name: tr`평형 위치`, color: '#94a3b8', dash: 'dash', width: 1.2 },
     ...(showEnvelope && underdamped ? [
-      { x: time, y: envelope, name: '위쪽 포락선', color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4 },
-      { x: time, y: envelope.map((value) => -value), name: '아래쪽 포락선', color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4, hideInLegend: true },
+      { x: time, y: envelope, name: tr`위쪽 포락선`, color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4 },
+      { x: time, y: envelope.map((value) => -value), name: tr`아래쪽 포락선`, color: 'var(--text-muted)', dash: 'dash' as const, width: 1.4, hideInLegend: true },
     ] : []),
     ...(showPeaks && underdamped ? [
-      { x: peakData.t, y: peakData.x, name: '같은 방향의 피크', color: 'var(--plot-2)', mode: 'markers' as const, markerSize: 8 },
+      { x: peakData.t, y: peakData.x, name: tr`같은 방향의 피크`, color: 'var(--plot-2)', mode: 'markers' as const, markerSize: 8 },
     ] : []),
-  ], [envelope, peakData, displacement, showEnvelope, showPeaks, time, underdamped]);
+  ], [envelope, peakData, displacement, showEnvelope, showPeaks, time, underdamped, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const yLimit = underdamped && showEnvelope
     ? Math.max(x0Mm, phaseAmplitude * 1000) * 1.12
@@ -85,14 +89,15 @@ export default function DampingLab() {
   return (
     <LabFrame
       id="LAB-DAMP-01"
-      title="감쇠는 몇 주기 동안 진동을 남길까?"
+      lang={lang}
+      title={tr`감쇠는 몇 주기 동안 진동을 남길까?`}
       controls={
         <>
-          <ParamSlider label="감쇠비 ζ" value={zeta} min={0} max={1.5} step={0.01} format={(value) => value.toFixed(2)} onChange={setZeta} />
-          <ParamSlider label="고유진동수 fₙ" value={frequencyHz} min={1} max={20} step={0.5} unit="Hz" onChange={setFrequencyHz} />
-          <ParamSlider label="처음 변위 x₀" value={x0Mm} min={2} max={20} step={1} unit="mm" onChange={setX0Mm} />
-          <ParamToggle label="포락선 표시" checked={showEnvelope} disabled={!underdamped} onChange={setShowEnvelope} />
-          <ParamToggle label="같은 방향 피크 표시" checked={showPeaks} disabled={!underdamped} onChange={setShowPeaks} />
+          <ParamSlider label={tr`감쇠비 ζ`} value={zeta} min={0} max={1.5} step={0.01} format={(value) => value.toFixed(2)} onChange={setZeta} />
+          <ParamSlider label={tr`고유진동수 fₙ`} value={frequencyHz} min={1} max={20} step={0.5} unit="Hz" onChange={setFrequencyHz} />
+          <ParamSlider label={tr`처음 변위 x₀`} value={x0Mm} min={2} max={20} step={1} unit="mm" onChange={setX0Mm} />
+          <ParamToggle label={tr`포락선 표시`} checked={showEnvelope} disabled={!underdamped} onChange={setShowEnvelope} />
+          <ParamToggle label={tr`같은 방향 피크 표시`} checked={showPeaks} disabled={!underdamped} onChange={setShowPeaks} />
         </>
       }
       formulas={
@@ -104,51 +109,51 @@ export default function DampingLab() {
               <Formula display tex={`\\delta = \\ln\\!\\left(\\dfrac{x_i}{x_{i+1}}\\right) = \\dfrac{2\\pi\\zeta}{\\sqrt{1-\\zeta^2}} = ${texNumber(logDecrement)}`} />
             </>
           ) : (
-            <Formula display tex={`\\zeta = ${texNumber(zeta, 3)} \\ge 1\\quad\\Rightarrow\\quad \\text{진동하지 않고 평형으로 복귀}`} />
+            <Formula display tex={`\\zeta = ${texNumber(zeta, 3)} \\ge 1\\quad\\Rightarrow\\quad \\text{${tr`진동하지 않고 평형으로 복귀`}}`} />
           )}
-          <p style={{ margin: 0 }}><strong>현재 상태:</strong> {regimeName}</p>
+          <p style={{ margin: 0 }}><strong>{tr`현재 상태:`}</strong> {regimeName}</p>
         </>
       }
       readouts={
         <ReadoutTable
-          caption="전체 2초 파형에서 읽은 박자와 줄어드는 속도"
+          caption={tr`전체 2초 파형에서 읽은 박자와 줄어드는 속도`}
           rows={[
-            { label: '감쇠 주파수비 ωd/ωₙ', value: frequencyRatio, sig: 5 },
-            { label: '다음/이전 양의 피크 (파형)', value: measuredPeakRatio, theory: underdamped ? Math.exp(-logDecrement) : undefined, sig: 4 },
-            { label: '대수감쇠율 δ (파형)', value: measuredDelta, theory: underdamped ? logDecrement : undefined, sig: 5 },
-            { label: 'δ로 추정한 ζ', value: estimatedZeta, theory: underdamped ? zeta : undefined, sig: 4 },
-            { label: '진폭 반감까지', value: halfCycles, unit: Number.isNaN(halfCycles) ? undefined : '주기', sig: 4 },
+            { label: tr`감쇠 주파수비 ωd/ωₙ`, value: frequencyRatio, sig: 5 },
+            { label: tr`다음/이전 양의 피크 (파형)`, value: measuredPeakRatio, theory: underdamped ? Math.exp(-logDecrement) : undefined, sig: 4 },
+            { label: tr`대수감쇠율 δ (파형)`, value: measuredDelta, theory: underdamped ? logDecrement : undefined, sig: 5 },
+            { label: tr`δ로 추정한 ζ`, value: estimatedZeta, theory: underdamped ? zeta : undefined, sig: 4 },
+            { label: tr`진폭 반감까지`, value: halfCycles, unit: Number.isNaN(halfCycles) ? undefined : tr`주기`, sig: 4 },
           ]}
         />
       }
       tasks={[
         {
-          question: 'ζ = 0.05에서 첫 양의 피크 1.00에 대한 다음 양의 피크의 비와 반감 주기 수는 얼마인가요?',
-          answer: '다음/이전 피크는 약 0.730, 대수감쇠율은 0.3146, 반감까지는 약 2.20주기입니다.',
+          question: tr`ζ = 0.05에서 첫 양의 피크 1.00에 대한 다음 양의 피크의 비와 반감 주기 수는 얼마인가요?`,
+          answer: tr`다음/이전 피크는 약 0.730, 대수감쇠율은 0.3146, 반감까지는 약 2.20주기입니다.`,
         },
         {
-          question: 'ζ를 0.05에서 0.20으로 올리면 박자와 진폭 감소 중 무엇이 더 크게 달라지나요?',
-          answer: '진폭 감소가 훨씬 크게 달라집니다. ωd/ωₙ은 약 0.999에서 0.980으로 조금 줄지만, 진폭은 매 주기 훨씬 빠르게 감소합니다.',
+          question: tr`ζ를 0.05에서 0.20으로 올리면 박자와 진폭 감소 중 무엇이 더 크게 달라지나요?`,
+          answer: tr`진폭 감소가 훨씬 크게 달라집니다. ωd/ωₙ은 약 0.999에서 0.980으로 조금 줄지만, 진폭은 매 주기 훨씬 빠르게 감소합니다.`,
         },
         {
-          question: 'fₙ을 5 Hz에서 10 Hz로 올리면 반감 주기 수와 반감 시간은 각각 어떻게 되나요?',
-          answer: 'ζ가 같으면 반감 주기 수는 같습니다. 하지만 한 주기가 절반으로 짧아지므로 초 단위 반감 시간도 절반이 됩니다.',
+          question: tr`fₙ을 5 Hz에서 10 Hz로 올리면 반감 주기 수와 반감 시간은 각각 어떻게 되나요?`,
+          answer: tr`ζ가 같으면 반감 주기 수는 같습니다. 하지만 한 주기가 절반으로 짧아지므로 초 단위 반감 시간도 절반이 됩니다.`,
         },
         {
-          question: 'ζ를 1.00과 1.50으로 올리면 평형을 지나 반대쪽으로 넘어가나요?',
-          answer: '넘어가지 않습니다. 임계감쇠와 과감쇠 모두 진동 없이 같은 쪽에서 평형으로 돌아옵니다.',
+          question: tr`ζ를 1.00과 1.50으로 올리면 평형을 지나 반대쪽으로 넘어가나요?`,
+          answer: tr`넘어가지 않습니다. 임계감쇠와 과감쇠 모두 진동 없이 같은 쪽에서 평형으로 돌아옵니다.`,
         },
       ]}
-      footer="m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. 피크 비·δ는 그려진 파형의 첫 두 양의 피크에서 재고, 이론은 δ = 2πζ/√(1−ζ²)입니다. ζ ≥ 1이거나 2초 안에 같은 방향 피크가 둘 없으면 읽음값을 —로 표시합니다."
+      footer={tr`m = 1 kg, v₀ = 0인 점성 감쇠 1자유도계. 피크 비·δ는 그려진 파형의 첫 두 양의 피크에서 재고, 이론은 δ = 2πζ/√(1−ζ²)입니다. ζ ≥ 1이거나 2초 안에 같은 방향 피크가 둘 없으면 읽음값을 —로 표시합니다.`}
     >
       <DampingMotion key={`${zeta}:${frequencyHz}:${x0Mm}`} system={system} x0Mm={x0Mm} time={time} displacement={displacement} envelope={envelope} peaks={peakData} yLimit={yLimit} showEnvelope={showEnvelope && underdamped} showPeaks={showPeaks && underdamped} speed={playSpeed} onSpeed={setPlaySpeed} />
-      <p className="lab-note">아래는 전체 2초 파형입니다. 피크 비·대수감쇠율은 재생 시각과 관계없이 이 전체 구간의 첫 두 양의 피크에서 계산합니다.</p>
+      <p className="lab-note">{tr`아래는 전체 2초 파형입니다. 피크 비·대수감쇠율은 재생 시각과 관계없이 이 전체 구간의 첫 두 양의 피크에서 계산합니다.`}</p>
       <Plot
         series={series}
-        x={{ label: '시간 t [s]', range: [0, DURATION] }}
-        y={{ label: '변위 x [mm]', range: [-yLimit, yLimit] }}
+        x={{ label: tr`시간 t [s]`, range: [0, DURATION] }}
+        y={{ label: tr`변위 x [mm]`, range: [-yLimit, yLimit] }}
         height={340}
-        ariaLabel="감쇠비에 따라 줄어드는 자유진동 변위와 포락선, 같은 방향의 연속 피크"
+        ariaLabel={tr`감쇠비에 따라 줄어드는 자유진동 변위와 포락선, 같은 방향의 연속 피크`}
       />
     </LabFrame>
   );

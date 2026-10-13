@@ -1,0 +1,271 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 'P1-9 From response back to cause: diagnosis is an inverse problem'
+description: 'The sum of several responses recorded by a sensor, forward and inverse problems, different causes of the same 1X amplitude, the five pieces of evidence, the cause-synthesis lab, and a map from Part 1 to measurements and plots'
+sectionId: P1-9
+source: p1-9.mdx
+sourceHash: b243c6239f
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SourceSynthesisLab from '../../components/labs/SourceSynthesisLab';
+import * as F from '../../figures/p1-9';
+import { withBase } from '../../lib/site';
+
+# 1-9 From response back to cause: diagnosis is an inverse problem
+
+You have attached one sensor to a pump. The screen shows a single ragged waveform. How do you tell the shaking caused by unbalance from the shaking caused by the blades?
+
+In <a href={withBase('/en/p1-8/')}>P1-8</a> we looked at the machine elements and predicted frequencies. This time we turn the direction around. **Estimating the cause from the measured response** is the starting point of vibration diagnostics.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain that the single line from a sensor is the sum of several responses.
+2. You know why several candidate causes remain even for the same frequency and amplitude.
+3. You can cross-check five pieces of evidence: frequency, amplitude, phase, direction and operating condition.
+4. You can explain why we need a tool that splits a summed waveform into components, and which measurements the Part 1 concepts lead to.
+
+</Callout>
+
+---
+
+## 1. The sensor does not stamp a cause label on the signal
+
+Consider a pump with 12 blades running at 3000 rpm. The rotation frequency is 50 Hz, the component that appears twice per turn is 100 Hz, and blade pass is 600 Hz. These are the counting rules from the previous page.
+
+But the sensor does not record these three separately. It records the shaking that happened at that position, added together.
+
+<Figure {...F.mixedResponse} />
+
+The top three lines in Figure 1 are the **responses** of each cause, not the forces themselves. The same force produces a response of a different size depending on mass, damping, stiffness and the sensor position (P1-4, P1-5). The bottom line is the sum of the three values above it at the same instant.
+
+In a linear system, responses can be added like this (superposition in P1-5). The notation for combining sinusoidal responses and noise is:
+
+$$
+x(t)=\sum_i A_i\cos(2\pi f_i t+\phi_i)+n(t)
+$$
+
+- $i$: the index of the component being added
+- $A_i$, $f_i$, $\phi_i$: the amplitude [m], frequency [Hz] and starting phase [rad] of that component
+- $n(t)$: noise. Here, irregular variation that we do not model separately
+
+A response whose size shrinks with time, like a ring-down, cannot be written as a single sinusoid with fixed $A_i$. Even then, if the system is linear, the principle is the same: **you add the instantaneous values of the responses**.
+
+<Callout type="term" title="Signal / Component">
+
+A signal is a record of the quantity measured by the sensor over time. A component is one part of that signal used to explain it. One component does not necessarily correspond to exactly one physical cause.
+
+</Callout>
+
+<Callout type="warn" title="2X is not a label that says misalignment">
+
+2X can appear with misalignment (the centerlines of two shafts are offset), but other causes such as looseness also create harmonics. The blade-pass component is present even in normal operation. **A component being there is not the same as a fault verdict.**
+
+</Callout>
+
+---
+
+## 2. Solved backwards, the answer is not unique
+
+So far we chose the mass, spring, damping and applied force, and calculated the response. In diagnosis it is the other way around: we know the sensor response and ask which force and machine state produced it.
+
+<Figure {...F.forwardInverse} />
+
+<Callout type="term" title="Forward / Inverse problem">
+
+A forward problem gives the cause and the properties of the system and asks for the result. An inverse problem estimates the cause or the properties of the system from the result. If different combinations produce the same result, the result alone cannot pick one combination.
+
+</Callout>
+
+Look at the equation from P1-4 again. The steady-state displacement amplitude is the **product** of the force and the amplifying property of the machine.
+
+$$
+A=\frac{F_0}{k}H(r),\qquad
+H(r)=\frac{1}{\sqrt{(1-r^2)^2+(2\zeta r)^2}},\qquad r=\frac{f}{f_n}
+$$
+
+Here $F_0$ is the force amplitude [N], $k$ is the stiffness [N/m], and $H$ is the amplitude ratio relative to the static deflection. A large force × small amplification and a small force × large amplification can produce the same $A$.
+
+<Figure {...F.sameAmplitude} />
+
+<Callout type="example" title="If both are 50 Hz and 40 µm">
+
+This example takes stiffness $k$ = 10⁶ N/m and damping ratio $\zeta$ = 0.05, and changes the natural frequency.
+
+- $f_n$ = 100 Hz: $r$ = 0.5, $H$ = 1.330 → **30.1 N** produces 40 µm.
+- $f_n$ = 50 Hz: $r$ = 1, $H$ = 10 → **4 N** alone gives 40 µm.
+
+These are two systems with the same stiffness and different mass. The measured frequency and amplitude alone cannot determine the size of the force. In the figure, the two systems were given forces with the same starting phase, so the response phases differ.
+
+</Callout>
+
+The same holds for the unbalance response (P1-7). Whether 1X is large because the unbalance is large, or because resonance amplified a small unbalance, is hard to separate from frequency and amplitude alone. A bent shaft (a shaft that is not straight) and misalignment also remain candidates for a 1X cause.
+
+<Callout type="warn" title="Resonance is not a separate periodic force">
+
+Resonance is the property that the machine **responds strongly to the frequency of the input force**. For example, if a 1X force is close to the natural frequency, the 1X response is amplified. In another case, the free ringing after an impact appears near the natural frequency of the structure. Do not count the two as independent causes of the same kind.
+
+</Callout>
+
+---
+
+## 3. Match the five pieces of evidence against each other
+
+Instead of drawing a conclusion from one feature, check whether a candidate also explains the other evidence. The five items below are the questions this site will use again and again.
+
+| Evidence | Question to ask | Condition to keep when comparing |
+|---|---|---|
+| Frequency | How many Hz, how many X? Does it match the position of a machine element? | Record the actual rotation speed with it |
+| Amplitude | How large is it, and how has it changed from before? | Keep the measured quantity, unit, size notation and position the same |
+| Phase | How far apart is the rhythm of the two signals? | Compare at the same frequency and against the same reference |
+| Direction | Which is largest: horizontal, vertical or axial? | Record the position and the sensor direction together |
+| Operating-condition dependence | How does it change with speed, load, temperature and time? | Record the changed condition and, where possible, compare one change at a time |
+
+Phase is the starting timing we saw in P1-2. You can compare it between two sensors, or against a rotation reference signal. In P3-3 later, you will learn how to set the reference for one turn of the shaft.
+
+<Figure {...F.phaseChanges} />
+
+Figure 4 shows why phase must not be left out. Even when the component amplitudes are the same, a different adding timing changes the waveform shape and the instantaneous size. You cannot say right away that the force grew just because the waveform changed.
+
+<Callout type="field" title="Write down direction and position together">
+
+Axial is along the length of the shaft; horizontal and vertical are across it. Like the mode shape in P1-5, the response differs from position to position even on one machine. A small shake at one point does not mean the whole machine shakes little. When positions differ, a direction comparison also mixes in that difference.
+
+</Callout>
+
+<Figure {...F.speedEvidence} />
+
+The 120 Hz component at 3600 rpm may be 2X, or it may be the electromagnetic force $2f_L$ of the 60 Hz power supply. As in Figure 5, looking at how the frequency changes with speed lets you compare the candidates. However, in an operation that also changes the supply frequency, the electrical component moves as well.
+
+<Callout type="warn" title="Changing operating conditions is observation, not an arbitrary test instruction">
+
+Use data recorded for speed and load changes within permitted operating procedures. Do not disable protection settings for diagnosis, or run the machine near resonance on your own. And collecting five pieces of evidence does not automatically fix the right answer.
+
+</Callout>
+
+---
+
+## 4. How do we split the summed waveform again?
+
+In the summed waveform of Figure 1 you can see fast ripples, but it is hard to read their frequency and size accurately by eye. What if we stood up the size of each frequency separately?
+
+<Figure {...F.spectrumPreview} />
+
+A plot with frequency on the horizontal axis and component size on the vertical axis is a <strong>spectrum</strong>. The frequency map in P1-8 only marked the positions of the lines. Here, **the height also means something.** The calculation principle and the measurement settings come in Part 2; for now we only look at why we split it up.
+
+<Callout type="idea" title="Splitting it up is a step that narrows the candidates">
+
+If the 600 Hz component matches the information of 12 blades at 3000 rpm, you have grounds to examine the blade-pass response. Even so, telling normal pressure pulsation from an abnormal state needs additional evidence such as earlier amplitude and load. **A spectrum is a table of components, not a list of fault names.**
+
+</Callout>
+
+<Figure {...F.repeatedRing} />
+
+As in Figure 7, when the ringing after an impact repeats, even a single response creates several bars. Noise also spreads over many frequencies. Conversely, two different causes can overlap at the same frequency. So **number of bars = number of causes** is wrong.
+
+<Callout type="try" title="Hide the causes, then check how much you can still tell">
+
+1. Compare the per-cause waveforms and the summed waveform in the initial state. 1X, 2X and blade pass are 50, 100 and 600 Hz.
+2. Turn on "Hide causes" and look only at the summed waveform. Predict how many components there are, then press "Split it up".
+3. Unhide the causes and switch off the blade-pass response. Check whether the fast ripples and the 600 Hz bar disappear.
+4. Switch the blade response back on and change the speed to 3600 rpm. Then switch on the structural ring and noise. Can you count the bars as the number of causes?
+
+</Callout>
+
+<SourceSynthesisLab client:visible lang="en" />
+
+In the initial setting of step 2, there are 50, 100 and 600 Hz components, and the central bars are 40, 20 and 10 µm. The lab also shows small bars around the centers that arise during the calculation. Do not count these as separate causes either (covered in P2-5). In step 3 the 600 Hz component is removed, so the fast ripples disappear. In step 4 the three rotation-related lines move to **60, 120 and 720 Hz**, but the 85 Hz of the structural ring stays where it is.
+
+<Callout type="warn" title="The amplitudes in this lab are values set directly for the responses">
+
+Even if you change the rpm, the amplitude settings stay fixed. This is not a lab that predicts a real run-up where resonance makes the response grow (that is P1-7). The structural ring is also just an example of 85 Hz, a 25 ms decay time constant and an impact every 100 ms; it does not reproduce a specific machine fault.
+
+</Callout>
+
+---
+
+## 5. Which measurements do the Part 1 concepts lead to?
+
+We started with masses and springs, but the same concepts return later as measurements and plots with other names. Below is a map for finding where you will learn them. **You do not need to memorize the names you do not know yet.**
+
+| Concept learned in Part 1 | Measurements and plots you will see later | Section that follows |
+|---|---|---|
+| Natural frequency (P1-2) | Rotor critical speeds, structural resonances of casing, foundation and piping | P4-1·P9-1 |
+| Mode shape (P1-5) | Phase comparison between bearings, Polar (the trajectory of a vector), ODS (operating deflection shape) | P8-1·P9-1 |
+| Damping ratio (P1-3) | Estimating damping from AF (amplification factor), half-power width and logarithmic decrement | P4-1·P4-4 |
+| FRF (P1-4) | Impact/bump test (comparing the striking force with the response), run-up data analysis | P5-3·P9-1 |
+| Forced response · unbalance (P1-4·P1-7) | Unbalance response, 1X vector (the size and phase of one component) | P3-3·P4-1 |
+| Decay of free vibration (P1-3) | Stability (does the shaking die down or grow), oil-film whirl below 1X | P4-4 |
+| Superposition (P1-5) | Separating components with a spectrum. For the nonlinear response of rub (the shaft touching) and looseness, also consider harmonics and subharmonics (fractions of 1X) | P2-2·P7-3 |
+| Symmetric mass and stiffness relations (P1-5) | Cross-coupling (motion in one direction creates force in another), gyroscopic effect (direction coupling by rotating inertia), forward/backward whirl | P4-2·P4-4 |
+
+<Callout type="field" title="Even when the measurements differ, the questions connect">
+
+"Why is it large only at this speed?" is a question about natural frequency and forced response; "why do the two bearings shake in opposite directions?" is about the mode shape; "why does the shaking not die down?" is about damping and stability. Start from **which physical question you are trying to answer** rather than from the plot name.
+
+</Callout>
+
+---
+
+## 6. Summary
+
+| Topic | What to remember |
+|---|---|
+| Sensor signal | It is the sum of several responses. The sensor does not record the name of a cause |
+| Forward · inverse problem | Cause → response is calculation; response → cause is estimation. Different combinations can produce the same result |
+| Amplitude | The force and the response property of the machine decide it together. A large 1X does not confirm unbalance |
+| Five pieces of evidence | Cross-check frequency, amplitude, phase, direction and operating-condition dependence |
+| Spectrum | It shows the frequency and size of each component. It is neither a list of fault names nor the number of causes |
+| Connection to what follows | Physics of Part 1 → signal separation in Part 2 → sensors, plots and fault-by-fault diagnosis |
+
+## 7. Check your understanding
+
+<details>
+<summary><strong>Q1. For a pump with 12 blades at 3000 rpm, how many Hz are 1X, 2X and blade pass?</strong></summary>
+
+The rotation frequency is 3000 ÷ 60 = **50 Hz**, 2X is **100 Hz**, and blade pass is 12 × 50 = **600 Hz**.
+</details>
+
+<details>
+<summary><strong>Q2. The 1X amplitude is large. Can you conclude it is unbalance? Name two other candidates.</strong></summary>
+
+You cannot. Resonance may have amplified a small unbalance, and a bent shaft or misalignment are also 1X candidates. You need to look further at phase, direction and operating condition.
+</details>
+
+<details>
+<summary><strong>Q3. What are calculating the waveform from a known force, and estimating the force from the waveform, respectively?</strong></summary>
+
+The first is the **forward problem** and the second is the **inverse problem**. In the second, the force and the properties of the machine can both be unknown, so it is hard to fix one combination.
+</details>
+
+<details>
+<summary><strong>Q4. The component amplitudes are unchanged, but the summed waveform changed. What may have changed?</strong></summary>
+
+The **phase** between the components may have changed. The values at the instant of adding change, so the waveform shape and the instantaneous size change. You should also check whether a frequency has changed.
+</details>
+
+<details>
+<summary><strong>Q5. If a spectrum has five bars, are there five causes?</strong></summary>
+
+No. Even one repeated-impact response creates several frequency components, and noise spreads widely. Different causes at the same frequency overlap at one position. Small bars around the center can also arise during the calculation.
+</details>
+
+<details>
+<summary><strong>Q6. The 120 Hz component stays the same when you change the speed. What else do you check?</strong></summary>
+
+It is hard to explain with rotation-related 2X alone. Check whether the supply frequency stayed at 60 Hz, whether the electromagnetic force or a structural response fits as a candidate, and look together at amplitude, direction and load changes. If the operation changes the supply frequency along with the speed, the comparison conditions are different.
+</details>
+
+---
+
+On the next page, <a href={withBase('/en/p2-1/')}>P2-1 Signal and spectrum basics</a>, you will learn the quantities a sensor records, size notations, and the relation between the spectrum and the measurement time.
+
+## References
+
+<References items={[
+  ['R-03', 'Linking measured evidence to diagnosis'],
+  ['R-02', 'Rotating-machinery diagnosis that looks at response, phase and operating condition together'],
+  ['R-01', 'Signal processing that separates components from a combined signal'],
+]} />
