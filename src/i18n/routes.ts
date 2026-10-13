@@ -3,7 +3,7 @@
  * - 절 페이지: src/pages/en/p{Part}-{절}.mdx가 있으면 영어판이 있다 (파일 목록을 빌드 때 읽음)
  * - 랩 단독 페이지: EN_LAB_COMPONENTS에 든 랩 (화면 문자열을 t로 감싸고 영어 사전을 갖춘 랩)
  * - 홈·Part 목차·랩 모음: 늘 있다
- * - 레퍼런스: src/pages/en/reference/{이름}.astro가 있는 쪽만 (index → /reference/). 용어집은 M12.16까지 한국어로 간다
+ * - 레퍼런스: src/pages/en/reference/{이름}.astro가 있는 쪽만 (index → /reference/). M12.16부터 네 쪽 모두
  */
 import type { Section } from '../data/curriculum';
 import { LABS } from '../data/labs';

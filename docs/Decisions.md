@@ -3,7 +3,7 @@
 > 되돌리기 어려운 선택을 기록한다 (ADR 형식). **추가만** 한다. 결정을 바꿀 때는 새 결정을 쓰고 이전 결정을 `대체됨 → D-xxx`로 표시한다.
 > 상태: `제안`(사용자 확인 전) · `확정` · `폐기` · `대체됨`
 > `대체됨`·`폐기`가 된 결정은 본문을 `archive/Decisions.md`로 옮긴다 (D-030). 보관: **D-001, D-013, D-016, D-024, D-048**. 일부만 대체된 결정은 여기 둔다.
-> **다음 번호: D-058**
+> **다음 번호: D-059**
 > **번호 주의**: D-038까지의 본문은 옛 번호(Part 0 ~ 10, 절 0부터), D-039 본문은 그 다음 번호로 쓰였다. 지금 번호와의 대응은 D-039 표 → D-040 표 순서로 따라간다.
 
 ## 요약
@@ -64,6 +64,7 @@
 | D-055 | 구축 단계 문서 보관 (Curriculum·Contents 척추·기준값·Roadmap 세부·Progress 핸드오프 → archive), Progress 60줄 | 확정 | 2026-10-12 | 사용자 지시 / Claude |
 | D-056 | M12.7 Part 3 영어판을 Codex에 배정 | 확정 | 2026-10-13 | 사용자 / Codex |
 | D-057 | M12.11 Part 8 영어판을 Codex에 배정 (Part 7은 Claude와 동시 진행) | 확정 | 2026-10-13 | 사용자 / Claude |
+| D-058 | 용어집 영어: Glossary.md는 한국어 원본 그대로, 영어는 행마다 `src/i18n/en/glossary/*` | 확정 | 2026-10-13 | 사용자 지시 / Claude |
 
 ---
 
@@ -658,3 +659,11 @@
 - 담당: 트랙 B(Codex)가 기존 worktree에서 수행하고, 같은 때 트랙 A(Claude)는 M12.10 Part 7을 한다. D-054의 언어·번역·검색 원칙은 그대로.
 - 겹치는 곳: `src/i18n/labsReady.ts`·`src/pages/en/lab/[slug].astro`는 두 트랙이 한 줄씩 더하므로 rebase 충돌 때 양쪽 줄을 모두 살린다. `relink.mjs`는 origin을 받은 뒤 마지막에 돌린다(Part 7 영어 페이지의 옛 P8 링크도 바뀜). GearTsaLab 변환이 origin에 들어오기 전에는 P8-4 영어판을 push하지 않는다.
 - 완료: Part 8 전체와 랩 4개 영어화, 한국어 출력·수식·숫자 유지, check·test·build·verify:i18n·verify:links·한/영 그림 비교·verify:page 후 main push와 Actions 성공 확인.
+
+## D-058 용어집 영어: Glossary.md는 한국어 원본 그대로, 영어는 행마다 `src/i18n/en/glossary/*`
+
+- 상태: **확정** · 2026-10-13 · 사용자 지시 / Claude
+- 근거: 사용자 — "레퍼런스 작업을 2단계로 쪼개서" → 2단계(M12.16) 용어집. 약 520행이라 영어를 둘 곳과 한국어 표와 맞추는 법을 먼저 정한다.
+- 결정: `docs/Glossary.md`는 한국어 4열 표 그대로(사람·에이전트가 읽는 문서, 사이트가 빌드 때 읽음). 영어는 `src/i18n/en/glossary/`의 Part 묶음 파일 넷(part1·part2·part3-5·part6-11)에 행마다 `{ term, meaning, symbol?, first? }`. 키 = 한국어 용어 칸, 같은 용어가 두 줄이면 `용어 · 처음 나오는 곳`(`glossaryKeys`). symbol·first는 한국어 칸에 한글이 있을 때만 두고 first의 절 ID는 한국어와 같은 순서.
+- 검사: `src/i18n/en/glossary.test.ts` — 빠진 행·남는 키·한글·절 ID 어긋남은 실패(그림 사전처럼 새 행을 더하면 영어도 함께). 한국어 행의 내용이 바뀐 뒤 영어를 손보지 않은 것은 `npm run i18n:status`가 알림(행 해시 `src/i18n/en/glossary-source.json`, 고친 뒤 `-- --stamp-glossary`).
+- 영향: 레퍼런스 영어판이 모두 생겨(M12.15·M12.16) 영어 화면의 KO 표시는 레퍼런스에서 없어진다.

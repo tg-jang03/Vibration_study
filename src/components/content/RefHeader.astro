@@ -19,7 +19,7 @@ const { current, title, lead } = Astro.props;
 const lang = langOfUrl(Astro.url);
 const t = UI[lang];
 const PATHS: Record<RefTab, string> = { home: '/reference/', sources: '/reference/sources/', glossary: '/reference/glossary/', formulas: '/reference/formulas/' };
-/** 영어 탭: 영어판이 있는 쪽은 /en/, 아직 없는 쪽(용어집, M12.16까지)은 한국어로 가며 KO 표시 */
+/** 영어 탭: 영어판이 있는 쪽은 /en/, 아직 없는 쪽은 한국어로 가며 KO 표시 (M12.16부터 네 쪽 모두 영어판이 있다) */
 const TABS = (Object.keys(PATHS) as RefTab[]).map((id) => ({
   id,
   label: t.refTabs[id],
