@@ -7,7 +7,7 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.5 Part 5 완료(영어 18절) → M12.6 Part 1 진행 중 | 진행 중 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054) — M12.5 Part 5 push 완료(영어 18절) → **M12.6 Part 1 작업 중 (커밋 전)** | 진행 중 |
 | **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
@@ -26,6 +26,11 @@
 - **M12.3 완료 (2026-10-13)**: 영어 P2-3 · P2-5 · P4-2 · P5-6 · P6-3, 랩 13개(SMP·WIN·JEF·ENV·SK·ORB). 고침: Plot 범례 끝 잘림(Plotly 글꼴 이름), `translateDeep`이 Float64Array(그림 heatmap z)를 평범한 객체로 바꾸던 것. 확인법: 한·영 그림의 도형 수 비교(5절 모두 같음).
 - **M12.4 완료 (2026-10-13)**: Part 2 전부(영어 P2-1 ~ P2-9), 랩 13개 더(BAS-02·FOU-01 셋·RES·ZOOM·AVG 둘·SPC 둘·UNIT·MOD·SBX). 등록은 `node scripts/i18n/register-lab.mjs <랩>`. `lib/`의 한국어 라벨(sandbox 판정·목적, orbit 모양)은 랩 안에서 `k()` 목록 + `tr`로 옮김 — `lib`의 글을 바꾸면 그 랩 사전도. 한국어 "준비 중" 남은 것 5곳 정리(P2-7·P2-8·P2-9·P8-2·P10-3).
 - **M12.5 완료 (2026-10-13)**: Part 5 전부(영어 P5-1 ~ P5-7), 랩 9개 더(FLT·INT·STFT·XCH·FULL·ORD·FLT-02·CEP·FEAT). **다음 M12.6 ~**: 번호 순서 Part 1(진행 중) → 3 → 4 → 6 → 7 → 8 → 9 → 10 → 11 (사용자 지적: 영어 "Start here"가 P2-1로 가는 등 읽는 흐름이 깨짐).
+- **인계 (2026-10-13, 세션 한도로 새 세션에 넘김)** — M12.6 Part 1, **작업 트리에만 있고 커밋 안 됨**:
+  - 끝남·등록함: P1-1(MassSpringLab), P1-2(SineBasicsLab) — `en/p1-1·p1-2.mdx`, 그림 사전, 랩 사전, `labsReady.ts`·`en/lab/[slug].astro` 등록.
+  - 에이전트가 하던 중(결과 미확인): P1-3(DampingLab + 하위 DampingMotion), P1-4(ForcedVibrationLab). 새 세션은 `node scripts/i18n/scan-lab.mjs <랩> --check`와 `npx vitest run src/i18n/figures.test.ts`로 상태를 보고 남은 것만 이어서(지시문 `archive/TranslationBrief.md`).
+  - 남은 Part 1: P1-5(TwoDofModeLab) · P1-6(SupportStiffnessLab, 링크 /p1-7·/p1-8·/p3-1·/p3-2·/p4-1) · P1-7(UnbalanceLab) · P1-8(FrequencyMapLab) · P1-9(SourceSynthesisLab, 링크 /p1-8·/p2-1). 링크 규칙: 영어판이 있거나 만드는 중인 절(P1-x·P2-x·P4-2·P5-x·P6-3)은 `/en/`(앵커 뺌), 나머지는 한국어 그대로.
+  - 절차: Sonnet 에이전트(`model: "sonnet"`) 4개 동시 → 끝나는 대로 다음 → `scan-lab --check` ✓ 확인 → `node scripts/i18n/register-lab.mjs <랩>` → Part 다 되면 check·test·build·`verify:i18n`·`verify:links`·한·영 그림 도형 수 비교·`verify:page`(미리보기 서버가 옛 파일 목록을 들고 있으면 `--base`로 다른 서버) → Part 커밋·push·Actions 확인. 진행 중인 다른 Part 파일이 섞이면 그 Part 파일만 `git add`하고 깨끗한 worktree에서 검증(node_modules는 junction, 지울 때 junction 먼저 `rmdir`).
 
 ## 핸드오프 — 트랙 B (Codex)
 - 배정 없음. M0.15 모바일 그림 대응 완료(D-053), 사용자 모바일 검토 대기. 영어판(M12) 파일은 Claude 단독이라 건드리지 않는다.
