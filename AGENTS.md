@@ -34,8 +34,8 @@
 
   | 트랙 | 지금 | 담당 | 작업 폴더 | 최신 받기 → push |
   |---|---|---|---|---|
-  | A | **M12 영어판·검색 노출 (D-054, Part 3은 B 담당 → D-056)** | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
-  | B | 배정 없음 (**M12.7 Part 3 영어판 완료**, D-056) | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
+  | A | **M12 영어판·검색 노출 (D-054, Part 3·8은 B 담당 → D-056·D-057)** | Claude | `진동공부` (`main`) | `git pull --rebase` → `git push` |
+  | B | **M12.11 Part 8 영어판** (D-057, M12.7 Part 3 완료) | Codex | `../진동공부-Codex` (worktree, detached) | `git fetch origin` → `git rebase origin/main` → `git push origin HEAD:main` |
 
 - **파일 소유** (D-029 외): A = `p2-2 ~ p2-9`·`p3-*`·`p5-*`·`p7-*`(P7-9 제외)·`p9-*`·`p11-*`, B = `p1-*`·`p2-1`·`p4-*`·`p6-*`·`p7-9`·`p8-*`·`p10-*` — 각각 그 `figures/`·랩·계산 모듈 포함. **M12는 기본 Claude 담당, Part 3 영어판(M12.7)만 Codex 담당** (D-054·D-056). **공유**는 자기 줄만: `curriculum.ts`의 자기 Part, **`src/data/labs.ts`와 `pages/lab/[slug].astro`의 자기 랩 줄**(새 랩은 두 곳에 한 줄씩 — `labs.test.ts`가 잡는다), 문서의 자기 트랙 행·절. **공용 코어**(`lib/figure.ts`, `components/content`·`ui`, `layouts`, `global.css`, `lib/labRefs.ts`, `lib/site.ts`)는 하위 호환으로만 고치고 핸드오프에 적는다.
 - 순서: 최신 받기 → 작업 → 커밋 → 다시 최신 받기 → 검사 → push (거절되면 자기 커밋만 rebase). rebase 충돌은 문서에서만 난다 → **양쪽 내용을 모두 살린다**, 다른 트랙의 행·절은 origin 쪽 그대로 (I-026). 새 D·I 번호는 push 직전 origin 확인, 겹치면 나중 쪽이 올린다.
