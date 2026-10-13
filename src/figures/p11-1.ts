@@ -315,7 +315,8 @@ export const mortonFig: FigureSpec = {
         text(0, 42.5, '0°', { color: 'muted' }),
         text(44, -3, '90°', { anchor: 'end', color: 'muted' }),
         ...[10, 20, 30, 40].map((r): FigAnnotation => text(-1.5, r + 1, `${r}`, { anchor: 'end', color: 'muted' })),
-        { type: 'point', x: MBX, y: MBY, color: 'muted', label: '기계 벡터', dy: 14 },
+        // 라벨은 점 아래, 1X 고리 안쪽 (오른쪽 아래로 두면 고리 선·"지금" 라벨과 겹침)
+        { type: 'point', x: MBX, y: MBY, color: 'muted', label: '기계 벡터', dx: -28, dy: 20 },
         { type: 'point', x: MT_PTS.at(-1)![0], y: MT_PTS.at(-1)![1], color: 'c1', label: '지금', dx: 8 },
       ],
     },

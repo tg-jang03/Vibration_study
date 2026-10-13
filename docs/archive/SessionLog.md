@@ -1,5 +1,11 @@
 # Session Log — 지난 세션 기록 (보관)
 
+### 2026-10-13 · Claude · M12.13 Part 10 영어판 (Sonnet 에이전트 3개)
+- 요청: 사용자 — 위 M12.12와 같은 지시의 뒤 절반 (Part 10)
+- 산출: 영어 P10-1 ~ P10-3 + 그림 사전 3 + 랩 3개(Severity·SeparationMargin·Diagnosis) 변환·등록, Part 8 영어판(e2ea243) 위로 rebase(공유 등록 양쪽 보존) 뒤 relink 3곳(P10-1 → P8-4·P8-5, P10-2 → P8-1)
+- 고침: 영어만 넘친 그림 라벨 6곳 줄임(P10-1 그림 5 알람, P10-2 그림 2·6, P10-3 그림 2·5·6), P10-1 그림 5 캡션 문장
+- 검증: check 0·test 1498·빌드 309쪽·verify:i18n 영어 148쪽 한글 0·링크 10005개 문제 0·P9·P10 그림 도형 수 같음·영어에만 있는 숫자 0·verify:page 영어 7쪽 OK(모바일 3폭)·severity smoke 한국어 14항목 OK·한·영 PC 캡처 비교
+- 다음: M12.14 Part 11 (지시 대기). 미룬 것: 영어 제목 대소문자 통일(M12 끝)
 ### 2026-10-13 · Claude · M12.12 Part 9 영어판 (Sonnet 에이전트 3개, Part 7 세션과 같은 폴더에서 동시)
 - 요청: 사용자 — "M12 영어판 이어서: Part 9(M12.12) → Part 10(M12.13)"
 - 산출: 영어 P9-1 ~ P9-3 + 그림 사전 3 + 랩 3개(Impact·Balance·Alignment) 변환·등록. 영어 쪽에서 Part 9로 가는 옛 링크 없음(relink 0곳)

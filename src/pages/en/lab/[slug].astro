@@ -85,6 +85,9 @@ import SteamLoadLab from '../../../components/labs/SteamLoadLab';
 import SeverityLab from '../../../components/labs/SeverityLab';
 import SeparationMarginLab from '../../../components/labs/SeparationMarginLab';
 import DiagnosisLab from '../../../components/labs/DiagnosisLab';
+import CaseLab from '../../../components/labs/CaseLab';
+import FileLab from '../../../components/labs/FileLab';
+import ReviewLab from '../../../components/labs/ReviewLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -174,4 +177,7 @@ const c = lab.component;
   {c === 'SeverityLab' && <SeverityLab client:load lang="en" />}
   {c === 'SeparationMarginLab' && <SeparationMarginLab client:load lang="en" />}
   {c === 'DiagnosisLab' && <DiagnosisLab client:load lang="en" />}
+  {c === 'CaseLab' && <CaseLab client:load lang="en" />}
+  {c === 'FileLab' && <FileLab client:load lang="en" />}
+  {c === 'ReviewLab' && <ReviewLab client:load lang="en" />}
 </LabPageShell>

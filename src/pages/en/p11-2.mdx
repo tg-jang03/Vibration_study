@@ -1,0 +1,266 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P11-2 Hands-on with Public Datasets
+description: Test conditions and terms of use of the public bearing datasets (CWRU, Paderborn, IMS), what to check first when you open a file (f_s, channels, speed; confirming f_s from 1X, CWRU normal records at 48 kHz), the order waveform → average spectrum → kurtogram → envelope → defect-frequency comparison, reading sidebands, FTF and accidental coincidences, what to do when the kurtogram picks bearing-unrelated spikes or an empty band, and diagnosing a measured record in LAB-DATA-01, which opens files only inside your browser, then comparing with the label
+sectionId: P11-2
+source: p11-2.mdx
+sourceHash: bde7e6af8f
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import FileLab from '../../components/labs/FileLab';
+import * as F from '../../figures/p11-2';
+
+# 11-2 Hands-on with Public Datasets: Finding Bearing Faults in Measured Signals
+
+In P5-6 and P7-5 you practiced envelope analysis on signals this site generated. Whoever builds a signal knows the answer, so the defect lines always stood exactly where they were calculated. Real records are different. A file may not say what its sampling frequency was, every test rig has its own lines, and in a record labeled "ball fault" the ball-defect line may never appear at all.
+
+On this page you open measured records from public bearing datasets yourself, diagnose them, and compare your result with the label the data's creators attached. The public data files are not hosted on this site. The lab reads a file you downloaded from the original site **only inside this browser** and never sends it to a server. So that you can follow along without a file, you first learn the procedure on five synthetic examples that imitate the same test rig.
+
+<Callout type="idea" title="After reading this page">
+
+1. You know how the CWRU, Paderborn and IMS datasets create faults, what they measured, and what their terms of use are.
+2. When you open a file, you check f_s, channels and speed first, and you can verify f_s from the 1X position.
+3. You can judge a measured record with the sequence waveform → average spectrum → kurtogram → envelope → defect-frequency comparison.
+4. In the comparison table, you can tell sidebands and FTF from accidentally coinciding cells.
+5. You know what to suspect when the kurtogram's band has no defect line, and when the result disagrees with the label.
+
+</Callout>
+
+---
+
+## 1. Public datasets: who measured what, and how
+
+Even among "bearing fault data," what you can practice depends on how the faults were made and under what conditions the data was measured. Start with the most widely used one, the CWRU test rig.
+
+<Figure {...F.rig} />
+
+On the rig in Figure 1, the fault is a small hole drilled in one bearing by <strong>electro-discharge machining (EDM)</strong>. The diameter is varied from 0.007 to 0.040 inch (0.18 to 1.0 mm), and holes were made separately in the inner race, ball and outer race<Cite ids={['R-10']} />. Because it is a single-point defect set by a person, the fault impacts are clear and every fault has an unambiguous label. Side by side with the other two datasets<Cite ids={['R-92', 'R-93', 'R-94', 'R-95']} />, it looks like this.
+
+| | CWRU | Paderborn | IMS |
+|---|---|---|---|
+| Fault | One hole made by EDM | 6 normal, 12 artificial damages, 14 real damages from accelerated life tests | Damage that developed by itself while running to failure |
+| Bearing | 6205 (drive end) · 6203 (fan end) | 6203 | Four double-row ZA-2115 bearings |
+| Operation | 1797 to 1730 rpm (load 0 to 3 hp) | 1500 · 900 rpm, two levels each of torque and radial load (4 conditions) | 2000 rpm, radial load 6000 lb |
+| Record | Acceleration, 12 kHz for about 10 s (48 kHz too for drive-end faults) | Vibration 64 kHz for 4 s, 20 files per condition | 20 kHz for 1 s, about every 10 minutes |
+| File | MAT, 3 to 4 MB each | MAT struct, 150 to 180 MB compressed per bearing | Text, a zip bundling three test runs |
+| Terms of use | Not stated on the page | CC BY-NC 4.0, credit and paper citation required | US government work (data.gov), cite the original paper |
+
+The three datasets are good for practicing different things. CWRU has a clean record for each fault type, so it suits learning to find defect frequencies. Paderborn lets you compare damage that actually grew in life tests with artificial damage. IMS is a record from normal operation through failure, so it fits practicing feature trends (P5-7). This page does the defect-frequency search with the first two.
+
+<Callout type="field" title="Terms of use and how this site handles them">
+
+Even for public data, the terms of use differ by dataset. Paderborn allows only non-commercial academic use and asks you to cite the paper, while the CWRU download page states no terms. So this site re-uploads no file and only names the sources. The lab reads the file you downloaded only in the browser's memory, so a file that must not leave your machine, such as a company record, can be opened the same way (P11-3).
+
+</Callout>
+
+---
+
+## 2. When you open a file, first: f_s · channels · speed
+
+Open the CWRU file 105.mat and you find four arrays: X105_DE_time (drive-end acceleration), X105_FE_time (fan-end), X105_BA_time (base), and a single number, X105RPM. **The sampling frequency is nowhere in it.** f_s appears only in the table heading on the download page ("12k Drive End …").
+
+What goes wrong if you enter the wrong f_s? Every frequency is wrong by the same ratio.
+
+<Figure {...F.fsCheck} />
+
+As in Figure 2, the easiest way to check f_s is to see **whether a line stands at the 1X position calculated from the speed**. At the 1797 rpm written in the file, 1X is 29.95 Hz. If you open a 12 kHz record as 48 kHz, 1X is empty and the same line stands near 120 Hz, four times higher. Carry that through to the envelope and the comparison table also shows the wrong cells standing; we come back to this in §5.
+
+<Callout type="warn" title="'All CWRU files are 12 kHz'">
+
+The CWRU normal records (97 to 100.mat) have no f_s on the download page, so it is easy to read them as 12 kHz, but they were recorded at 48 kHz. The way this site confirmed it follows the same idea as Figure 2. The 12 kHz fault records from this rig always show fixed lines (147.8 · 161.7 · 191.5 · 360 Hz), and only when the normal record is viewed at 48 kHz do all four lines stand at the same positions, at about 50 to 140 times the floor. Viewed at 12 kHz, none of them stands. If you read the normal record as 12 kHz and compare it with the fault records, you are comparing against a wrong baseline with every frequency reduced to a quarter.
+
+</Callout>
+
+The lab knows the CWRU file numbers and the Paderborn file-name rules, so when you open such a file it sets f_s, the channel (the sensor on the faulty side) and the bearing dimensions for you. What it used is shown in a note in the lab. For other files, enter f_s yourself and check it with 1X as in Figure 2.
+
+---
+
+## 3. The diagnosis sequence: waveform → average spectrum → kurtogram → envelope
+
+The lab follows the sequence of P5-6 as it is. Using synthetic example B (drive-end 6205, 1797 rpm, 12 kHz), let us go through what to look at at each step.
+
+<Figure {...F.steps} />
+
+In the waveform of Figure 3 ①, short ringing is visible every few ms. If the kurtosis (P5-6) is 8.1, above the 3 of normal noise, it means **rare, spiky impacts** are mixed in. The average spectrum in ② is the power average of P2-6 (Hann window, 8192-point frames overlapped by half, 31 of them). Here the defect-frequency lines are even smaller than 1X and barely visible. Instead, a broad hump stands near 3.2 kHz. It is where the housing resonance rings after each impact the defect makes.
+
+<Figure {...F.kurtogramFig} />
+
+<Figure {...F.envelopeFig} />
+
+The kurtogram in Figure 4 picks 1.5 to 4.5 kHz, which contains that hump, and in the envelope spectrum of that band (Figure 5, top) BPFO and its multiples stand. In a band that avoids the resonance, as below, the same fault shows up only at 25 times the floor. The envelope result depends heavily on **which band you chose**.
+
+<Callout type="example" title="Defect-frequency positions for example B (1797 rpm, 6205)">
+
+1. 1X = 1797 / 60 = 29.95 Hz
+2. Multiply by the multipliers CWRU published for the 6205: BPFO 3.5848 × 29.95 = 107.4 Hz, BPFI 5.4152 × 29.95 = 162.2 Hz, ball 4.7135 × 29.95 = 141.2 Hz, FTF 0.39828 × 29.95 = 11.93 Hz
+3. If the slip (P7-5) is 1 %, BPFO stands a little lower, at 106.3 Hz. So the lab's comparison table looks for the highest peak within ± 2 % of the calculated position and divides its height by the envelope floor (the median).
+
+</Callout>
+
+The "ball" multiplier 4.7135 in the CWRU table is the rhythm at which the ball touches the inner and outer race once each per rotation of the ball, that is, 2×BSF (P7-5). Some datasets use BSF once and others twice, so check the definition in the multiplier table first.
+
+---
+
+## 4. Working it through together: synthetic example B
+
+The example names (A to E) are set up so that the name alone does not tell you what the fault is. First we solve example B together.
+
+<Callout type="try">
+
+1. In the initial state (synthetic example B, drive end DE, record of 131,072 points), read the kurtosis of waveform 1 and the position of the hump in spectrum 2.
+2. Check the band the kurtogram (3) picked, and in envelope spectrum 4 find where the dotted lines (the calculated defect-frequency positions) and the lines match. What is the top row of the defect comparison table?
+3. Change "Envelope band" to "Set manually" and enter 300 to 900 Hz. By how much does the floor ratio of the top row drop?
+4. After you settle on a judgment, turn on "Show answer label."
+
+</Callout>
+
+<FileLab client:visible lang="en" />
+
+In 1, the kurtosis is 8.1 and the hump is at 3 to 3.4 kHz. In 2, the kurtogram picks 1.5 to 4.5 kHz (SK 3.83), and the top of the comparison table is BPFO — the 106.3 Hz peak is about 200 times the floor, and the 2× and 3× positions stand at around 100 times. That it is 1 % lower than the calculated 107.4 Hz is the slip. With the band set to 300 to 900 Hz as in 3, it drops to 25 times. The label in 4 is an outer-race fault. Solve examples A, C, D, E and the fan-end sensor in the exercises below the lab.
+
+---
+
+## 5. Reading the comparison table: sidebands · FTF · accidental coincidences
+
+The defect comparison table only shows "at which calculated positions did a line stand." The pattern of lines differs by fault, and different positions sometimes coincide by accident.
+
+<Figure {...F.innerBallFig} />
+
+There are two things to look for in Figure 6. An inner-race fault (C) carries **sidebands spaced at 1X** on both sides of the BPFI line, and a ball fault (D) shows **FTF** along with the ball position. The inner-race flaw turns with the shaft and passes in and out of the load zone once per turn, while the ball goes around the load zone at FTF together with the cage (P7-5). You can be confident only when this pairing matches, not just a single defect line.
+
+<Callout type="warn" title="'The biggest cell in the table = the defect'">
+
+In example C's table, the BPFO 3× cell is also large, at about 80 times the floor. This is a coincidence: BPFI 2× (326.5 Hz) falls within the ±2 % tolerance of the BPFO 3× position (322.1 Hz). In example B with f_s wrongly entered as 4 times, the real BPFO 4× (425 Hz) lands on the ball 3× position (423.5 Hz), and only the ball 3× cell stands, at 180 times. **If the 1× position does not stand and only one multiple cell is large**, first suspect that it is a multiple of another fault overlapping.
+
+</Callout>
+
+---
+
+## 6. When the kurtogram picks the wrong band
+
+The kurtogram looks for "the band whose envelope spikes most rarely" (P5-6). It does not know whether that spiking came from the bearing.
+
+<Figure {...F.spikyFig} />
+
+Example E in Figure 7 is the same outer-race fault as example B with a few short bearing-unrelated spikes mixed in per second. The fault impacts come densely, 106 times a second, and the ringing is long, so in the envelope they actually fluctuate "evenly." Because the few spikes are rarer, the kurtogram picks that side (SK about 33). In the envelope of that band no defect position stands, and if you pick 2.5 to 4.5 kHz yourself by looking at the hump in the spectrum, BPFO stands at about 200 times.
+
+The same happens in measured records. If you open one Paderborn outer-race damage record (KA04, 1500 rpm) in the lab, the kurtogram picks 14 to 18 kHz (SK about 19), and in that band the BPFO position is as high as the floor. This record has a flat floor above 12 kHz with rare spikes mixed in. If you pick 0.5 to 2 kHz yourself, where lines are spaced at the BPFO interval in the spectrum, BPFO (76.2 Hz) stands at about 140 times the floor and the 2× and 3× follow. When the kurtogram band has a large SK but no defect position exceeds 6 times the floor, the lab points this out.
+
+<Callout type="field" title="A false SK in a band with no signal">
+
+If you feed a CWRU normal record taken at 48 kHz straight into the kurtogram, the 23 to 24 kHz cell comes out with an SK of about 400. It is a cell where the recorder's AAF (P2-3) had already cut the signal, with a power density 57 dB below the average, and a few leftover spikes alone made the SK large. The lab does not choose cells whose power density is more than 40 dB below the record average, and tells you how many cells it left out.
+
+</Callout>
+
+---
+
+## 7. With your own files: opening CWRU and Paderborn records
+
+Now for the real files. Download them in the order below and open them with "Open my file" at the top of the lab. For each file, write down a one-line conclusion before you look at the label.
+
+<Callout type="try">
+
+1. From the CWRU download page<Cite ids={['R-10']} />, get 130.mat (outer race, 0 hp) and 105.mat (inner race, 0 hp) from "12k Drive End Bearing Fault Data," and 97.mat from "Normal Baseline Data." Each is 3 to 4 MB.
+2. Open 130.mat. In the note, check what f_s, the channel and the bearing were set from, and in spectrum 2 see whether the 1X line is at the calculated position (about 29.9 Hz). Read the top row of the defect comparison table and its 2× and 3×, and write your conclusion.
+3. Look at 105.mat and 97.mat in the same order, then turn on the label and compare.
+4. From the same page, get 118.mat (ball, 0.007″) and 222.mat (ball, 0.021″) and open them. Do the ball position and FTF stand?
+
+</Callout>
+
+The values this site got when opening them with the default settings (record 65,536 points, kurtogram band) are below. Only the cells that served as the basis of the judgment are listed.
+
+| File (label) | Kurtogram band · SK | What stood in the comparison table |
+|---|---|---|
+| 130 (outer race 0.007″) | 4.875 to 5.625 kHz · 3.7 | BPFO 107.7 Hz about 150×, 2 · 3× |
+| 234 (outer race 0.021″) | 2.25 to 3.75 kHz · 13 | BPFO 107.5 Hz about 110×, 2 · 3× |
+| 105 (inner race 0.007″) | 1.5 to 4.5 kHz · 1.7 | BPFI 161.7 Hz about 190×, ±1X sidebands |
+| 169 (inner race 0.014″) | 2.25 to 3 kHz · 14 | BPFI 162.0 Hz about 120×, ±1X sidebands about 70× |
+| 97 (normal, 48 kHz) | 9.75 to 10.5 kHz · 0.4 | No 1× position above 3× the floor |
+| 118 (ball 0.007″) | 1.5 to 2.25 kHz · 0.4 | Ball position about 3× — not standing |
+| 222 (ball 0.021″) | 2.25 to 3 kHz · 5.1 | Ball position about 5× — not distinct |
+
+The outer-race and inner-race records split in the same pattern as the synthetic examples. Because they are measured, the lines are slightly off from the calculated values (BPFI 162.2 → 161.7 Hz), possibly because the speed in the file is an approximate value written by hand. The two ball-fault records, on the other hand, show a ball position that is hard to tell from the floor. A benchmark study that analyzed the whole CWRU collection with the same methods also reports that in a good share of the ball-fault records it could not find a clear sign of the ball fault<Cite ids={['R-91']} />. The reason is that the ball spins, so the moment the flaw touches the raceway is not constant, and it goes in and out of the load zone with the cage, so the impacts grow weaker and stronger (P7-5).
+
+<Callout type="warn" title="'If it differs from the label, my analysis is wrong'">
+
+The label says "where the fault was made," not "what is visible in the record." Even if a hole was made in the ball, the record may hold no evidence of a ball fault. In the report, write it as the evidence shows, for example "no sign of a ball fault found in this record — checked the kurtogram band and the resonance band" (P10-3). If you keep changing the band and tolerance to match the label, something will stand in any record.
+
+</Callout>
+
+Paderborn records can be opened with the same lab. One bearing's archive is 150 to 180 MB, and unpacked it gives 80 four-second MAT files (4 conditions × 20 files). The signals inside the file are in a struct, and the lab unfolds them under names such as vibration_1. N15 · N09 in the file name are the speed (1500 · 900 rpm), KA · KI · KB in the bearing code mean outer race · inner race · both, and a code starting with K0 is normal. Whether the damage is artificial or real, check in the dataset's table.
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Datasets | CWRU = EDM single-point faults (a record per type), Paderborn = artificial + real damage, IMS = trend up to failure. Check the terms of use and never re-upload files |
+| Checking f_s | If it is not in the file, enter it from the description at the source, and see whether 1X stands at its calculated position. If wrong, every frequency is wrong by the same ratio. CWRU normal records are 48 kHz |
+| Sequence | Waveform (kurtosis) → average spectrum (resonance hump) → kurtogram (band) → envelope → compare with defect positions ± 2 % |
+| Matching pairs | Inner race = BPFI + ±1X sidebands, ball = 2×BSF + FTF, outer race = BPFO and multiples. If only one multiple cell is large without the 1×, suspect an overlap |
+| Band | The band with the largest SK is not necessarily the defect band. If no lines stand, pick one yourself by looking at the hump in the spectrum. Do not trust the SK of a cell with no signal |
+| Label | The label is where the fault was made. With no evidence, write "not found." Many CWRU ball-fault records are not distinct |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. A CWRU file recorded at 48 kHz was wrongly opened as 12 kHz (1797 rpm). Where in the spectrum do 1X and BPFO appear?</strong></summary>
+
+Every frequency is read as a quarter. 1X 29.95 Hz appears at 7.49 Hz, and BPFO 107.4 Hz at 26.8 Hz. So if there is no line at the 1X calculated position (29.95 Hz) and it is at a quarter of that, you can tell that f_s is off by a factor of 4.
+</details>
+
+<details>
+<summary><strong>Q2. For a CWRU drive-end file at load 2 hp (1750 rpm), what are the calculated BPFI and the tolerance range of the comparison table?</strong></summary>
+
+1X = 1750 / 60 = 29.17 Hz, BPFI = 5.4152 × 29.17 = 157.9 Hz. The ±2 % tolerance is ±3.2 Hz, so the highest peak within 154.8 to 161.1 Hz is searched for. The 162.2 Hz of the 1797 rpm record falls outside this range, so you must re-enter the speed for each file.
+</details>
+
+<details>
+<summary><strong>Q3. In the comparison table the BPFO 3× cell is 80 times the floor, but the BPFO 1× is 2 times and the 2× cell only 3 times. Is it an outer-race fault?</strong></summary>
+
+Not from that alone. If the 1× and 2× do not stand and only the 3× position is large, check whether a multiple of another fault is overlapping. In the 6205, BPFI 2× (324 Hz) is within ±2 % of BPFO 3× (322 Hz), so with an inner-race fault this cell is large. Check whether BPFI 1× and the ±1X sidebands stand.
+</details>
+
+<details>
+<summary><strong>Q4. The kurtogram picked 14 to 18 kHz (SK 19), and in the envelope of that band no defect position stands. Can I report "normal"?</strong></summary>
+
+Not yet. SK only looks for rare spikes, so it may have picked spikes unrelated to the bearing (electrical noise and the like). In the average spectrum, find a band with a resonance hump or with lines spaced at the defect frequency, and do the envelope on it yourself. In the Paderborn KA04 record, BPFO stood at about 140 times in 0.5 to 2 kHz.
+</details>
+
+<details>
+<summary><strong>Q5. The label says ball fault, but even after trying two bands the ball position and FTF do not stand. How do I write the conclusion?</strong></summary>
+
+Write "no sign of a ball fault found in this record," and attach the bands and numbers you checked as evidence. Ball-fault impacts are weak and irregular, so they often do not show up in measurements, and the CWRU benchmark reported the same result. Do not keep changing the settings to match the label.
+</details>
+
+<details>
+<summary><strong>Q6. Which dataset suits practicing how the kurtosis and RMS trends change as a fault starts and grows?</strong></summary>
+
+IMS. It ran the same bearing to failure and recorded about every 10 minutes, so you can see the trend normal → fault onset → failure (P5-7). CWRU and Paderborn are records measured separately for each condition, so they have no trend.
+</details>
+
+On the next page (P11-3), you open your own start-up and shut-down records in the browser in the same way, redraw the 1X vector and the Bode and cascade plots, and compare them with the judgment made at the time.
+
+## References
+
+<References items={[
+  ['R-10', 'CWRU test rig setup, fault records, the 6205 and 6203 defect-frequency multipliers, and the file-number list'],
+  ['R-91', 'Diagnostic benchmark over the whole CWRU collection — ball-fault records are hard to diagnose'],
+  ['R-92', 'Paderborn dataset structure, operating conditions and terms of use'],
+  ['R-93', 'The paper to cite when using the Paderborn dataset'],
+  ['R-94', 'IMS bearing life-test data'],
+  ['R-95', 'The paper to cite when using the IMS data'],
+  ['R-11', 'Choosing the envelope band with the kurtogram'],
+  ['R-20', 'Defect-frequency formulas, slip, and load-zone modulation'],
+]}>
+
+The synthetic examples in the figures and the lab are made-up signals that imitate the CWRU test rig (`lib/datafile/example.ts`). The measured numbers in §2, §6 and §7 are values this site got by opening the public files with the same calculations as the lab (2026-10-12), not values published by the dataset providers.
+
+</References>
