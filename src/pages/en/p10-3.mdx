@@ -1,0 +1,258 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P10-3 Diagnostic Procedure and Reporting
+description: One hypothetical case ties together valid measurement → comparison → hypotheses and the five evidence elements → data that discriminates the hypotheses (coastdown amplitude and phase) → a report that leads with summary and recommendation → the limits of prognosis and re-verification.
+sectionId: P10-3
+source: p10-3.mdx
+sourceHash: ceb344c727
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import DiagnosisLab from '../../components/labs/DiagnosisLab';
+import * as F from '../../figures/p10-3';
+import { withBase } from '../../lib/site';
+
+# 10-3 Diagnostic Procedure and Reporting: Start with What Changed
+
+The shaft 1X vibration of a hypothetical machine running at 3000 rpm has risen from 20 µm p-p to 40 µm p-p in two months. Can you write "unbalance increased, balancing needed" in the report? Several causes raise the same 1X. The excitation may have grown, the support may have weakened so that resonance moved closer, or the measurement may have changed.
+
+This page follows this one case through **valid data → comparison → hypotheses → discriminating data → report → re-verification**. The machine and all numbers are hypothetical, calculated with the rotor and support simplified to one degree of freedom.
+
+<Callout type="idea" title="When you finish this page">
+
+1. You can check machine information, operating history and measurement validity before picking a cause.
+2. You can write down, for each candidate, the five evidence elements as supporting, disconfirming or unchecked.
+3. You can choose data in which two hypotheses make different predictions (amplitude and phase versus speed) and use it to tell them apart.
+4. You can write a report that leads with the summary and recommendation and separates observation, judgment and confidence.
+5. You can distinguish a trend extension from a prognosis and plan re-verification after an action.
+
+</Callout>
+
+---
+
+## 1. The diagnostic cycle: data before answers
+
+Anomaly detection and cause diagnosis are different steps. Start from the observation that a value has changed, check the conditions of comparison, and keep competing hypotheses open.
+
+<Figure {...F.loop} />
+
+Figure 1 is the cycle this site built by connecting the earlier Parts. ISO 13373-1 gives procedures for measurement and data collection in vibration condition monitoring, 13373-3 a structured approach to vibration diagnosis, and ISO 17359 general guidelines for setting up a condition monitoring program. General guidelines for data interpretation and prognosis are in ISO 13379-1 and 13381-1 (both revised in 2025). <Cite ids={['R-80', 'R-81', 'R-82']} />
+
+<Callout type="term" title="Hypothesis testing loop">
+
+Write the possible causes down as hypotheses and **predict** what observations should appear if each cause is right. Compare them with the actual data to narrow down or replace the candidates. If a check result differs from the prediction, do not cling to the first cause.
+
+</Callout>
+
+If a protection alarm has already tripped, follow the approved plant response procedure before diagnosing, and preserve the raw data and operating state at that time.
+
+---
+
+## 2. Check first: is the measurement unchanged?
+
+Amplitude having doubled is only the first observation. First separate whether the shaft changed or the measurement changed.
+
+<Figure {...F.validity} />
+
+In Figure 2, the amplitude rose from 20 → 40 µm p-p over days 60 ~ 90, but the gap voltage of the same probe is unchanged. If the gap had moved along with it, as the gray dashed line shows, you would look at the probe, mounting and cable before the shaft (<a href={withBase('/en/p3-4/')}>P3-4</a>). In this case the slow roll vector was also the same as a year ago.
+
+The information to collect before diagnosis is below. Revisit the machine map in <a href={withBase('/en/p1-6/')}>P1-6</a> and the acquisition settings in <a href={withBase('/en/p2-9/')}>P2-9</a>.
+
+| Group | Information to keep | If missing |
+|---|---|---|
+| Machine configuration | Number of shafts, speed ratios, bearings, gear tooth counts, blade count, sensor map | Wrong orders for the lines and wrong place for the cause |
+| Operating state | Speed, load, temperature, valves, start-up/steady/shutdown | A change in conditions is mistaken for a change in condition |
+| History | Since when, maintenance, settings, process changes, the event just before | The time order of the change is missed |
+| Measurement path | Location, direction, mounting, calibration, band, RMS/Peak/p-p, gap and slow roll | The size comparison is invalid |
+
+<Callout type="warn" title="'I measured again and got the same value, so it is valid'">
+
+A loose sensor or a wrong scale gives the same value when you measure it the same way again. Checking repeatability and verifying the measurement path are different jobs. Check gap, calibration, units, clipping and keyphasor status separately.
+
+</Callout>
+
+---
+
+## 3. Five evidence elements: supporting, disconfirming or unchecked for each candidate
+
+Let us turn the <a href={withBase('/en/p1-9/')}>five evidence elements of P1-9</a> (frequency, amplitude, phase, direction, operating condition) into cells of a record. There are three candidates — H1 excitation increase (unbalance, bow), H2 natural frequency shift (support stiffness loss), H3 runout or measurement change.
+
+<Figure {...F.evidence} />
+
+In the upper panel of Figure 3, what we know now — 1X (50 Hz) doubled — supports all three candidates equally. **Having much support does not settle anything**. What discriminates is evidence that each candidate predicts differently. The lower panel is after looking at the gap and slow roll check of §2 and the coastdown data of §4. H3 is disconfirmed because the measurement path is unchanged, and H1 is disconfirmed by the phase and the response versus speed.
+
+<Callout type="term" title="Disconfirming evidence">
+
+An observation that is hard to get if the hypothesis is right. A cell you did not measure is "unchecked", not "normal". One piece of disconfirming evidence does not erase the possibility that another cause is also present.
+
+</Callout>
+
+---
+
+## 4. Data that discriminates the hypotheses: compare with the coastdown from a year ago
+
+Both hypotheses explain 40 µm p-p at 3000 rpm equally well. So where do they differ? At **other speeds and in phase**.
+
+- H1 excitation increase: if the critical speed is unchanged (3500 rpm) and only the unbalance grew, the whole curve rises by the same factor and the **phase is unchanged** (<a href={withBase('/en/p4-1/')}>P4-1</a>).
+- H2 natural frequency shift: if the support weakened and the critical speed came down toward the operating point, the 3000 rpm amplitude grows as it gets closer to resonance, and the **phase lag at the same speed increases**. Amplitude at lower speeds does not rise by a factor of two.
+
+The coastdown record left at every shutdown makes this comparison for you. No test that runs the machine above its operating speed is needed.
+
+<Figure {...F.bode} />
+
+What you can read in Figure 4:
+
+- The current record (blue dots) follows the green dashed H2. The 2500 rpm amplitude went 8.19 → 12.5 µm p-p, not a doubling, and the 3000 rpm phase grew from 27.3° to 56.4°.
+- Explained by H1 (orange dashed), the amplitude error is 3.0 µm p-p and the phase error 11.7°, far larger than the record scatter (0.39 µm p-p · 1.7°). The H2 error (0.37 µm p-p · 1.6°) is at the scatter level.
+- If H2 is right, the critical speed came down from 3500 → 3165 rpm. Support stiffness dropped by about 18 % ($N_c\propto\sqrt{k}$).
+
+<Callout type="try">
+
+1. Set the data to show to "one 3000 rpm amplitude" and change the hidden cause. Does the verdict change?
+2. Switch to "coastdown amplitude". When the hidden cause is support stiffness loss, what are the errors of the two hypotheses?
+3. Switch to "amplitude + phase" and see how the 3000 rpm phase differs from a year ago.
+4. Change the hidden cause to "a bit of both". Which hypothesis remains?
+
+</Callout>
+
+<DiagnosisLab client:visible lang="en" />
+
+In step 1, the errors of both hypotheses are 0 whatever the cause — a single point cannot discriminate the cause. Step 2 splits them, H2 0.37 µm and H1 3.0 µm p-p, and the phase in step 3 (27° → 56°) discriminates most clearly. In step 4, neither hypothesis falls within the scatter. It is a signal to drop an explanation that assumes a single cause and look for a hypothesis that considers excitation and stiffness together, or for another cause.
+
+The next checks are the <a href={withBase('/en/p9-1/')}>impact test of P9-1</a>, which measures the support natural frequency directly while stopped, and the soft foot and foundation bolt checks (P9-1 §7). If the excitation really increased, <a href={withBase('/en/p9-2/')}>balancing in P9-2</a> is next, and if the coupling side is suspected, alignment in P9-3 comes next.
+
+<Callout type="field" title="Four things to put in a confirmation test plan">
+
+Write before the test the expected result for each hypothesis, the operating and measurement conditions to hold, who is responsible and who approves, and the stop criteria. Preserve the raw data and record any conditions that changed during the test. Speed or load changes, power cuts, impacts and trial weight work are done within the approved procedures and limits of each plant.
+
+</Callout>
+
+<Callout type="warn" title="'Balancing reduced the value, so the cause is confirmed'">
+
+If H2 is the cause and you reduce 1X with a balance weight, the value drops for a while, but the support is still weak and resonance is still close. Distinguish the fact that the value decreased, the interpretation of why, and the conclusion that the cause is gone.
+
+</Callout>
+
+---
+
+## 5. The report: summary and recommendation first, observation and judgment separate
+
+The reader of a report must know what to do from the first box. At the same time, the next reviewer must be able to reach the same conclusion again.
+
+<Figure {...F.report} />
+
+Reading only the first box of Figure 5 tells you what changed and what to do. The boxes below give the basis (where the figures and raw data are), the confidence and its limits, and the next check, separately. "It rose to 40 µm p-p" is an observation and "it is consistent with the support-side natural frequency having come down" is a judgment — do not mix them in one sentence.
+
+<Callout type="term" title="Confidence">
+
+The strength of a judgment and the reason for it. Write "high, medium or low" based on whether the observation repeats, whether there is evidence that discriminates competing hypotheses, and whether the data is valid, and attach the reason. If there is no validated probability model, do not make up a number such as "80 %".
+
+</Callout>
+
+If you made a magnitude assessment, also write the applicable Part, classification and assessed quantity of P10-1; if the conclusion is for a test or acceptance, write the requirement → evidence → conclusion of P10-2.
+
+---
+
+## 6. Extending a trend is not prognosis
+
+If the amplitude keeps rising, when will it reach the action limit? Drawing a line through the observed points and extending it seems to give the answer.
+
+<Figure {...F.prognosis} />
+
+Fitting a straight line to the same 11 weekly points in Figure 6 reaches the hypothetical action limit of 80 µm p-p at 30.2 weeks, and fitting an exponential reaches it at 19.8 weeks. Within the observed range (10 weeks) the two lines nearly overlap, but dates beyond it are **decided by the model you chose**. <strong>Prognosis</strong> is a step you can speak of only when you have the degradation mechanism and its model, repeated observations, and the future operating conditions and uncertainty. <Cite ids={['R-82']} />
+
+After an action, measure again at the same location, sensor, band, speed, load and thermal state. Look at whether only 1X dropped, and how the other bearings, other components, orbit and temperature look; review the effect of the action and the possibility of recurrence, then decide whether to update the baseline (⑥ → ① in Figure 1).
+
+<Callout type="warn" title="'The value is low after the action, so make it the new baseline right away'">
+
+The operating conditions may have changed, or another component may have grown. Update the baseline after leaving a record that compares the conditions before and after the action and all the evidence, and preserve the old records as the history of the change.
+
+</Callout>
+
+---
+
+## 7. CAT I ~ IV: categories of analysts, not machine grades
+
+If a report says "CAT III analysis", does it mean a vibration zone of the machine? ISO 18436-2 treats the education, experience and assessment of vibration condition monitoring and diagnosis personnel in four categories. <Cite ids={['R-83']} />
+
+<Figure {...F.categories} />
+
+Figure 7 abbreviates the public category descriptions of the Vibration Institute. CAT I is measurement by set procedures and data quality, II is instrument setup and basic analysis, III is diagnosis, monitoring programs and design of confirmation tests, and IV is complex diagnosis, rotor dynamics, modal analysis and design improvement. The Vibration Institute runs certification in four categories aligned with ISO 18436-2. <Cite ids={['R-84']} />
+
+<Callout type="field" title="Qualification and work authority are different">
+
+Qualification is an assessment of a person's competence. The authority to change operation, protection settings or approve maintenance on a specific machine is set separately by the organization and plant procedures. Check the certification body's current guidance for examination, experience and renewal conditions.
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Step | Result to keep |
+|---|---|
+| Data check | Machine map, operating/maintenance history, measurement path (gap, slow roll) |
+| Comparison | Baseline under the same conditions, size/change, new components |
+| Hypotheses | Supporting, disconfirming or unchecked for the five evidence elements of each candidate |
+| Discriminating data | Data where each hypothesis predicts differently — amplitude and phase versus speed |
+| Report and recommendation | Summary and recommendation first, observation/judgment separated, confidence and reason |
+| Prognosis and re-verification | Model and uncertainty, re-measurement under the same conditions after the action |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. What are the 1X frequency at 3000 rpm and the size ratio of 20 → 40 µm p-p?</strong></summary>
+
+50 Hz and 2. These two numbers alone cannot discriminate the cause (Figure 3, top).
+</details>
+
+<details>
+<summary><strong>Q2. If the gap voltage also changed when the amplitude doubled, what do you look at first?</strong></summary>
+
+You look at the measurement path — probe, mounting, cable and driver — before the shaft.
+</details>
+
+<details>
+<summary><strong>Q3. If only the excitation doubled, what happens to the 1X phase at 3000 rpm?</strong></summary>
+
+It stays the same. If the critical speed is the same, the phase lag at the same speed is also the same. If it grew from 27° to 56° as in this case, that supports the natural frequency having moved.
+</details>
+
+<details>
+<summary><strong>Q4. If the critical speed came down from 3500 rpm to 3165 rpm, by what percentage did the support stiffness drop?</strong></summary>
+
+Since $N_c\propto\sqrt{k}$, $(3165/3500)^2\approx0.82$, so it dropped by about 18 %.
+</details>
+
+<details>
+<summary><strong>Q5. Fitting a straight line and an exponential to the same observed points gave 30.2 weeks and 19.8 weeks. What do you write in the report?</strong></summary>
+
+Do not write a failure date. Write that beyond the observed range the model decides, the additional data needed (degradation mechanism, repeated observations) and the plan for the next measurement.
+</details>
+
+<details>
+<summary><strong>Q6. Does a CAT IV qualification also give the authority to change protection settings?</strong></summary>
+
+No. Personnel qualification and the authority for plant work and protection changes are set separately.
+</details>
+
+In Part 11 you will connect measurement, comparison, hypotheses and recommendations yourself from start to finish in cases of several hypothetical machines (<a href={withBase('/p11-1/')}>P11-1</a>).
+
+## References
+
+<References items={[
+  ['R-80', 'Procedures for measurement, data collection and operating conditions in vibration condition monitoring'],
+  ['R-81', 'A structured approach to diagnosing the cause of vibration'],
+  ['R-82', 'General guidelines for condition monitoring programs: the flow of detection → diagnosis → prognosis → action'],
+  ['R-83', 'The four categories of vibration condition monitoring and diagnosis personnel'],
+  ['R-84', "The certification body's public guidance on the role of each category"],
+]}>
+
+The procedure figures, report layout and case are this site's reconstruction for learning, and the numbers in the case are hypothetical values made with a one-degree-of-freedom model. No text or tables of the standards have been copied.
+
+</References>

@@ -1,0 +1,42 @@
+import type { Dict } from '../../translate';
+
+/** LAB-SM-01 SeparationMarginLab 영어 (D-054). 키 = 소스의 한국어 원문 — 뼈대는 node scripts/i18n/scan-lab.mjs SeparationMarginLab */
+const EN: Dict = {
+  '해석이 예측한 응답': 'Response predicted by analysis',
+  '실제 응답 (예측 오차 반영)': 'Actual response (with prediction error)',
+  '운전 회전수 3600 rpm': 'Operating speed 3600 rpm',
+  '운전점 (예측)': 'Operating point (predicted)',
+  '운전점 (실제)': 'Operating point (actual)',
+  'AF가 크면 왜 분리여유를 더 두나': 'Why leave more separation margin when AF is large',
+  '증폭계수 AF (≈ 1/(2ζ))': 'Amplification factor AF (≈ 1/(2ζ))',
+  '해석이 예측한 분리여유 SM': 'Separation margin SM predicted by analysis',
+  '임계속도 위치': 'Critical speed location',
+  '운전점 아래 (P4-1 예시 로터)': 'Below operating speed (P4-1 example rotor)',
+  '운전점 위': 'Above operating speed',
+  '임계속도 예측 오차': 'Critical speed prediction error',
+  '초기화': 'Reset',
+  '실제': 'actual',
+  '예측': 'pred.',
+  '예측 임계속도': 'Predicted critical speed',
+  '실제 임계속도': 'Actual critical speed',
+  '실제 분리여유': 'Actual separation margin',
+  '운전점 응답 X/e (예측)': 'Operating-point response X/e (predicted)',
+  '운전점 응답 X/e (실제)': 'Operating-point response X/e (actual)',
+  '실제 / 예측': 'Actual / predicted',
+  '배': '×',
+  '기본값(P4-1 로터: AF 10, 임계속도 3000 rpm, SM 16.7 %)에서 실제 임계속도가 10 % 높게(3300 rpm) 나왔다면 운전점 응답은?': 'With the defaults (P4-1 rotor: AF 10, critical speed 3000 rpm, SM 16.7 %), if the actual critical speed came out 10 % higher (3300 rpm), what is the operating-point response?',
+  'X/e가 3.16 → 5.43으로 1.72배가 됩니다. 실제 분리여유는 8.3 %입니다.': 'X/e goes from 3.16 to 5.43, a factor of 1.72. The actual separation margin is 8.3 %.',
+  'AF만 2.5로 바꾸면?': 'If you change only AF to 2.5?',
+  '같은 10 % 오차에도 2.21 → 2.50, 1.13배입니다. 봉우리가 펑퍼짐하면 임계속도가 조금 옮겨도 운전점 응답이 크게 바뀌지 않습니다.': 'Even with the same 10 % error it goes 2.21 → 2.50, a factor of 1.13. With a flat peak, the operating-point response does not change much when the critical speed shifts a little.',
+  'AF 10에서 같은 오차의 영향을 1.13배로 묶으려면 SM을 얼마나 둬야 하나요?': 'At AF 10, how much SM is needed to hold the effect of the same error to 1.13 times?',
+  'SM을 40 %까지 늘려야 1.13배가 됩니다(30 %에서 1.24배). 같은 안심을 얻는 데 필요한 분리여유가 AF에 따라 달라지는 이유입니다.': 'SM must be increased to 40 % to reach 1.13 times (1.24 times at 30 %). This is why the separation margin needed for the same reassurance depends on AF.',
+  '오차를 +20 %로 올리면?': 'If you raise the error to +20 %?',
+  '실제 임계속도가 3600 rpm, 곧 운전점에 올라탑니다. 응답이 봉우리 높이(≈ AF = 10)가 되어 예측의 3.2배입니다.': 'The actual critical speed becomes 3600 rpm, right on the operating point. The response reaches the peak height (≈ AF = 10), 3.2 times the prediction.',
+  '1자유도 불평형 응답의 학습 모델입니다. 규격의 AF 구분이나 요구 분리여유 값은 넣지 않았습니다 — 적용 장비 규격과 판본에서 확인합니다.': 'A learning model of single-degree-of-freedom unbalance response. No AF classes or required separation margin values from the standards are included — check them in the equipment standard and edition that applies.',
+  '실제 임계속도 {0} rpm · 운전점 응답이 예측의 {1}배': 'Actual critical speed {0} rpm · operating-point response is {1}× the prediction',
+  '회전수 [rpm]': 'Speed [rpm]',
+  '진폭 / 편심 X/e [무차원]': 'Amplitude / eccentricity X/e [dimensionless]',
+  '예측 응답과 실제 응답, 운전 회전수의 응답': 'Predicted and actual response, and the response at operating speed',
+};
+
+export default EN;

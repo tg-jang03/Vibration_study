@@ -82,6 +82,9 @@ import GeneratorFieldLab from '../../../components/labs/GeneratorFieldLab';
 import MultiModeBodeLab from '../../../components/labs/MultiModeBodeLab';
 import GasPressureLab from '../../../components/labs/GasPressureLab';
 import SteamLoadLab from '../../../components/labs/SteamLoadLab';
+import SeverityLab from '../../../components/labs/SeverityLab';
+import SeparationMarginLab from '../../../components/labs/SeparationMarginLab';
+import DiagnosisLab from '../../../components/labs/DiagnosisLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -168,4 +171,7 @@ const c = lab.component;
   {c === 'MultiModeBodeLab' && <MultiModeBodeLab client:load lang="en" />}
   {c === 'GasPressureLab' && <GasPressureLab client:load lang="en" />}
   {c === 'SteamLoadLab' && <SteamLoadLab client:load lang="en" />}
+  {c === 'SeverityLab' && <SeverityLab client:load lang="en" />}
+  {c === 'SeparationMarginLab' && <SeparationMarginLab client:load lang="en" />}
+  {c === 'DiagnosisLab' && <DiagnosisLab client:load lang="en" />}
 </LabPageShell>

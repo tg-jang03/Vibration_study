@@ -1,0 +1,299 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P10-1 Vibration Evaluation Standards
+description: Pick the right ISO 20816 Part from the machine, tell non-rotating-part velocity RMS apart from shaft relative displacement p-p, and read the Zone (magnitude), the change from a baseline, the principles of setting alarms and trips, and the 1X vector change separately.
+sectionId: P10-1
+source: p10-1.mdx
+sourceHash: 562a17cbbe
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import SeverityLab from '../../components/labs/SeverityLab';
+import * as F from '../../figures/p10-1';
+import { withBase } from '../../lib/site';
+
+# 10-1 Vibration Evaluation Standards: Magnitude and Change Are Read Separately
+
+Until last month, the overall housing vibration hovered around 2.5. This week it rose to 4. Yet the evaluation screen still says "B". Does that mean everything is fine? On the next screen the shaft vibration reads 30 µm p-p. Can these two numbers go into the same table?
+
+This page first pins down **which machine and which measured quantity** you are dealing with, then splits magnitude and change into two separate questions. The standards' boundary values are not reproduced here, so the boundaries in the figures and the lab (2, 5, 9, etc.) are all made-up values unrelated to any standard. For real boundaries, enter them into the lab yourself from the original text you hold.
+
+<Callout type="idea" title="After reading this page">
+
+1. Starting from the machine, you can pick the Part of ISO 20816 and explain how it relates to the older 10816 and 7919.
+2. You can explain why non-rotating-part velocity RMS and shaft relative displacement p-p are evaluated separately.
+3. You can state what Zones A to D mean and show that the same value can land in a different zone depending on the machine class.
+4. You can calculate the change from a baseline by dividing by the B/C boundary, and explain the principles of setting alarms and trips.
+5. You can tell apart what the overall value cannot capture, such as the 1X vector change and new components in the spectrum.
+
+</Callout>
+
+---
+
+## 1. Which Part do you open: start from the machine
+
+ISO 20816 is not one table of numbers but a **series made of a general guideline and machine-specific Parts**. Appearing one after another from 2016, the Parts each merged ISO 10816, which dealt with non-rotating-part (bearing housing, pedestal) vibration, and ISO 7919, which dealt with rotating-shaft vibration. If an old report or an instrument screen shows "10816-3" or "7919-2", that is the older edition of what is now 20816-3 or -2. <Cite ids={['R-08', 'R-72', 'R-73']} />
+
+<Figure {...F.scope} />
+
+What you can read in Figure 1:
+
+- **20816-1** at the top is the common foundation that defines the measurement method and the two criteria (magnitude and change). The machine-specific boundaries come from the Parts below.
+- You ask from the top down. Onshore GTs, STs and generators above 40 MW with oil-film bearings and a rated speed of 1500, 1800, 3000 or 3600 rpm go to **-2**; oil-film-bearing GTs above 3 MW (excluding aero-derivative types and those covered by -2) go to **-4**; hydro and pumped-storage plants go to **-5**; industrial machines above 15 kW running at 120 to 30 000 rpm go to **-3**.
+- The order matters. A large power-generation GT also meets the conditions of -4, but -2 takes it first. Some machines have their own Part, such as reciprocating compressors (-8), gear units (-9) and wind turbines (-21). <Cite ids={['R-72', 'R-73', 'R-74', 'R-75']} />
+
+<Callout type="term" title="Scope and exclusions">
+
+The range of machines, measurements and operating conditions that a document targets. Even within one Part, some things are left out. For example, -2 does not cover the 2×LF vibration of a generator stator, aero-derivative GTs, or the evaluation of combustion vibration. You can use that Part's boundaries only after checking the exclusions too.
+
+</Callout>
+
+Record the following together with every evaluation.
+
+| What to check | What to record |
+|---|---|
+| Machine | Power, rated speed, bearing type, shaft-train configuration |
+| Classification | The applicable Part and the machine group and support condition within it |
+| Measurement | Location, direction, sensor, band, evaluated quantity (RMS/p-p) |
+| Operation | Whether it is in steady state or during start-up, shutdown or a load change |
+| Document | Edition, applicable clause, contract or manufacturer conditions |
+
+<Callout type="warn" title="'The latest edition is all you need'">
+
+The edition fixed by the plant contract may differ from the latest edition. When checked on 2026-10-12, revised editions of -1 and -3 were in progress. Write down which edition you used together with the evaluation result, so that the next person can repeat the same evaluation.
+
+</Callout>
+
+---
+
+## 2. mm/s and µm: what is measured, relative to what
+
+Before comparing the two numbers, look at **what** the sensor measures the motion relative to. Recall <a href={withBase('/en/p3-1/')}>sensor selection in P3-1</a> and <a href={withBase('/en/p3-2/')}>the probe reference in P3-2</a>.
+
+<Figure {...F.quantities} />
+
+What you can read in Figure 2:
+
+- A velocity sensor on the housing measures the housing's motion relative to space (absolute vibration); a probe fixed to the housing measures the shaft's motion relative to the bearing (relative vibration). The references differ.
+- Housing velocity is read as a broadband **RMS** (middle, 1.56 mm/s), and shaft displacement as **p-p** (bottom, 43.3 µm). The statistics differ too.
+
+There is a reason the evaluated quantities split this way. In <a href={withBase('/en/p2-7/')}>P2-7</a> you saw that for the same velocity, displacement is inversely proportional to frequency and acceleration is proportional to it. The experience that, over a wide frequency range, the **velocity** in between is the most even way to express the degree of damage as a single number is the basis of non-rotating-part evaluation.
+
+For shaft vibration, the concern is how far the shaft moves inside the bearing clearance, so **displacement p-p**, which can be compared directly with the clearance, is used. Even for the same displacement, a faster-spinning shaft has larger velocity and force, so the allowed shaft displacement is set smaller at higher speeds. That is why -2 sets shaft vibration boundaries separately for each rated speed. <Cite ids={['R-72']} />
+
+<Callout type="example" title="3 mm/s and 30 µm: which one is worse?">
+
+Housing 3 mm/s RMS and shaft 30 µm p-p differ in location, reference, statistic and unit. That 30 is bigger than 3 means nothing. Each goes into the boundaries of its own evaluated quantity and is evaluated separately. For a broadband signal, the conversion ratio differs at every frequency, so you cannot move from one to the other with a single constant either.
+
+</Callout>
+
+<Callout type="field" title="Trends too, only under the same conditions">
+
+If you move the measurement point or change the band or the sensor mounting, what it means to compare with the baseline changes. Group data taken at different speeds, loads and thermal states by condition before comparing. The overall value and the 1X component are also different evaluated quantities.
+
+</Callout>
+
+---
+
+## 3. Zones A to D: ranges of magnitude, not causes
+
+When the conditions match, you compare the measured magnitude with the boundaries. An <strong>evaluation zone (Zone)</strong> is a category that divides vibration magnitude into four from the viewpoint of suitability for operation. In this site's words, they are as follows. <Cite ids={['R-08']} />
+
+| Zone | Meaning |
+|---|---|
+| A | The level expected of a newly installed machine |
+| B | A level acceptable for unrestricted long-term operation |
+| C | Not suitable for long-term continuous operation — run with restrictions until the cause is found and corrected |
+| D | A level that can cause damage to the machine |
+
+<Figure {...F.zones} />
+
+In Figure 3, the same magnitude 3 is B in machine class X and C in class Y. The meaning of the zones is the same, but **the boundaries differ with the machine class and the evaluated quantity**. -3 splits machines into groups by power and size, and then splits again by whether the support is rigid or flexible. If the lowest natural frequency of the machine plus its support, seen in the measurement direction, is sufficiently higher than the operating frequency, the support is rigid; otherwise it is flexible. <a href={withBase('/en/p9-1/')}>Identifying structural resonance in P9-1</a> is exactly what underlies this classification. <Cite ids={['R-73']} />
+
+<Callout type="warn" title="'B means no fault, and D means unbalance'">
+
+A zone speaks only about magnitude. It tells you neither the kind of fault nor the remaining life. Even inside the same B, a new bearing component, a phase change or an orbit distortion can appear (§6 to 7). Narrow down the cause separately with the evidence of Part 7.
+
+</Callout>
+
+<Callout type="term" title="A value exactly on a boundary">
+
+Whether a value exactly at a boundary falls into the upper or the lower zone is something to check in the original text. The made-up example in the lab below puts the equality into the upper zone, and the user-input mode only displays "boundary".
+
+</Callout>
+
+---
+
+## 4. Even when the zone stays the same: look at the change from the baseline
+
+Back to the opening scene. The value rose from 2.5 to 4, yet the zone stayed at B. **Magnitude and change are different questions**, and ISO 20816-1 also keeps the two criteria separate. <Cite ids={['R-08']} />
+
+<Figure {...F.changes} />
+
+What you can read in Figure 4:
+
+- The values stay inside zone B (2 to 5) for all 60 days. Looking at magnitude alone, nothing has happened.
+- On day 30 the value jumps from the baseline 2.5 to near 4, and leaves the purple dashed **change band** (1.5 to 3.5) that very day.
+
+For change, you divide the difference from the baseline by the **B/C boundary**.
+
+$$
+\Delta x=x-x_0,\qquad p=100\,\frac{\lvert\Delta x\rvert}{b_{BC}}\ \%
+$$
+
+$x$ is the current magnitude, $x_0$ is a healthy baseline under the same conditions, and $b_{BC}$ is the B/C boundary. Why not divide by the baseline? For a machine whose baseline is as small as 0.5, even 0.5 → 1.0 would be a 100 % increase and trigger a false alarm. Dividing by the B/C boundary, the magnitude scale of the machine group, makes the size of a "meaningful change" the same within the same machine group regardless of the baseline. What percentage to treat as a meaningful change is something to check in the original text of the applicable Part.
+
+<Callout type="example" title="Zone B, but a 30.8 % change">
+
+1. The current magnitude is the mean of the last 5 days, 4.04 (daily values scatter, so we use the mean).
+2. $\Delta x=4.04-2.5=1.54$, $p=100\times1.54/5=30.8\ \%$.
+3. It exceeds the example comparison ratio of 20 %. The magnitude is still B.
+
+</Callout>
+
+<Callout type="try">
+
+1. With the defaults (step increase, baseline 2.5 → 4), see when the zone and the change verdict in the status line each change.
+2. Set the event to "gradual increase" and the post-event value to 6. Which crosses first, the change band or zone C, and by how many days?
+3. Set the event to "sudden decrease", with baseline 3 and post-event value 1.5. The zone got better, but what about the change?
+4. Go back to the step increase and set the comparison ratio to 2 % and 50 %. What are you trading off?
+
+</Callout>
+
+<SeverityLab client:visible lang="en" />
+
+In 1, the zone stays B to the end and the change leaves the band on day 30. In 2, the change band is crossed on day 39 and zone C on day 51, so the change verdict flags the same trend 12 days earlier. In 3, it looks better, B → A, but Δx ≈ −1.49 (29.7 %) is a change. In 4, at 2 % the band half-width ±0.1 equals the daily scatter, so it leaves the band from day 1, before the event (a false alarm), and at 50 % it misses the step to the very end.
+
+<Callout type="warn" title="'It went down, so it's fine'">
+
+A value that went down, as in 3, is also a change. The load may have dropped, but the sensor may also have come off or the signal path may have changed. Check the sign, the operating conditions and the measurement path together.
+
+</Callout>
+
+---
+
+## 5. Alarms and trips: they start from the baseline
+
+Then, should a condition-monitoring alarm just be set at the B/C boundary? For the machine in Figure 4, no alarm would sound even when it jumps to 4. Alarms and trips have different starting points.
+
+<Figure {...F.limits} />
+
+What you can read in Figure 5:
+
+- An **alarm** starts from that machine's own baseline and adds a margin proportional to the upper limit of zone B. The alarm for machine P, with baseline 1.0, is 2.0; for machine Q, with 4.6, it is 5.6. Even in the same class, the alarm differs from machine to machine.
+- However, a cap is set so that an alarm, like Q's with an already high baseline, does not exceed the magnitude boundary by much (the example cuts it at B/C = 5).
+- A **trip** is for machine protection. It is usually set within zones C and D from manufacturer data and experience, and during a start-up that passes through a critical speed it is raised for a short time by <a href={withBase('/en/p3-5/')}>the trip multiplier in P3-5</a>.
+
+This principle comes from the guidance on setting operating limits in the 20816 series (the general guideline in -1, machine-specific Parts such as -3), and the actual size of the margin and the cap is checked in the applicable Part. Acceptance evaluation under a contract is yet another purpose — it is evaluated with the test condition and the evaluated quantity that the contract specifies (P10-2 §6). <Cite ids={['R-08', 'R-72', 'R-73']} />
+
+<Callout type="field" title="The reason for a setting, next to the setting">
+
+For every channel, record the unit, direction and band, the alarm and trip values and their basis (baseline period, margin, applicable edition), and the delay, voting and start-up handling. If the baseline was reset after maintenance, record the reason and the approval too.
+
+</Callout>
+
+---
+
+## 6. The 1X vector: the magnitude can be the same and still have changed
+
+The change evaluation compares magnitude (a scalar). But 1X was a vector with magnitude and phase (<a href={withBase('/en/p3-3/')}>P3-3</a>). What happens if only the phase turns?
+
+<Figure {...F.vector} />
+
+In Figure 6, the 1X turned only in phase by 90°, from 3 ∠ 30° to 3 ∠ 120°. The amplitude change is 0, but the vector difference is $\lvert\Delta V\rvert=3\sqrt2\approx4.24$, larger than the amplitude. If the phase has turned this much at the same speed and load, something in the rotor has changed: unbalance distribution, bow or a crack. <a href={withBase('/en/p6-4/')}>The vector trend and APHT in P6-4</a> are the tools for watching this change.
+
+<Callout type="term" title="Vector change">
+
+The magnitude of the difference $\Delta V=V-V_0$ between two 1X vectors measured under the same conditions. It differs from the amplitude change $\lvert V\rvert-\lvert V_0\rvert$ and is always greater than or equal to it.
+
+</Callout>
+
+---
+
+## 7. What the overall value cannot capture
+
+Can one broadband overall value show every change? Even with the same overall value, the inside can differ.
+
+<Figure {...F.overall} />
+
+The two spectra in Figure 7 have exactly the same overall value, 2.78 mm/s RMS. But in the lower one, an outer-race fault line of a rolling-element bearing has appeared at 237 Hz and its multiples. The 1X dropped a little, and the new lines fill the gap, so the overall value stays the same. How to locate the fault and see it with the envelope was covered in <a href={withBase('/en/p7-5/')}>P7-5</a>.
+
+Some phenomena are outside the evaluation range from the start. GT combustion dynamics (<a href={withBase('/en/p8-4/')}>P8-4</a>) and generator-stator 2×LF vibration (<a href={withBase('/en/p8-5/')}>P8-5</a>) are excluded from the evaluation in -2, and torsional vibration (<a href={withBase('/en/p7-9/')}>P7-9</a>) and axial shaft vibration are outside the scope of -1. Phenomena with a different measured quantity and purpose are measured separately. <Cite ids={['R-08', 'R-72']} />
+
+<Callout type="warn" title="'One zone decides permission to operate and the life'">
+
+A zone evaluation is one answer about magnitude. Look together at the change, the 1X vector, new components, sensor validity, temperature, pressure and operating history, and the approved protection procedures. Ways of speaking about the future condition are covered in P10-3 §6.
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Question | What you must check |
+|---|---|
+| Which Part | Machine conditions (power, speed, bearings), exclusions, edition, the correspondence with the old 10816 and 7919 |
+| Which value | Non-rotating-part velocity RMS or shaft relative displacement p-p; location, direction, band |
+| How big is the magnitude | The zone A to D against the boundaries of the machine class |
+| What changed | A same-condition baseline, $p=100\lvert\Delta x\rvert/b_{BC}$, a decrease is also a change |
+| Alarms and trips | Alarm = baseline + margin (with a cap), trip = protection and manufacturer data |
+| Beyond the overall value | 1X vector change, new components in the spectrum, phenomena outside the evaluation range |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. An old report says "ISO 10816-3 Zone B". Which document do you open now?</strong></summary>
+
+ISO 20816-3. 10816-3, which dealt with non-rotating parts, and 7919-3, which dealt with shafts, were merged into 20816-3. Write down both the edition in the report and the edition you apply now.
+</details>
+
+<details>
+<summary><strong>Q2. With made-up boundaries 2, 5, 9, a baseline of 2.5 and a current value of 4, what are the zone and the change ratio?</strong></summary>
+
+Zone B, $\Delta x=1.5$, $p=100\times1.5/5=30\ \%$. Even when the zone stays the same, the change is evaluated separately.
+</details>
+
+<details>
+<summary><strong>Q3. Housing 3 mm/s RMS and shaft 30 µm p-p: which one is worse?</strong></summary>
+
+You cannot compare them as numbers. The reference (space vs. bearing), the statistic (RMS vs. p-p) and the unit differ, so each goes into the boundaries of its own evaluated quantity.
+</details>
+
+<details>
+<summary><strong>Q4. What if you set the same alarm of 4 on machine P (baseline 1.0) and machine Q (baseline 4.6)?</strong></summary>
+
+P would not sound until it reached 4 times its baseline, which is far too late. For Q, the baseline 4.6 is already above 4, so it would sound all the time. An alarm is set for each machine, starting from its baseline.
+</details>
+
+<details>
+<summary><strong>Q5. Under the same conditions, 1X changed from 3 ∠ 30° to 3 ∠ 120°. What is the change?</strong></summary>
+
+The amplitude change is 0, but the vector change is $3\sqrt2\approx4.24$. Investigate what has changed in the rotor (P6-4).
+</details>
+
+<details>
+<summary><strong>Q6. The overall value is unchanged, but lines have newly appeared at 237 Hz and its multiples. The zone is B, so is it fine?</strong></summary>
+
+No. Even with the same overall value, a new component can be evidence of a fault. Confirm it with the bearing defect frequencies and the envelope (P7-5).
+</details>
+
+On the next page (P10-2), you will look up API documents along the machine's life — design analysis, factory test, protection system.
+
+## References
+
+<References items={[
+  ['R-08', 'General guideline of the 20816 series: the two criteria (magnitude and change), the meaning of Zones, setting operating limits, exclusion of torsional and axial vibration'],
+  ['R-72', 'Onshore GTs, STs, generators: scope (above 40 MW, rated speeds), shaft and housing evaluated quantities, shaft vibration boundaries by speed, exclusions'],
+  ['R-73', 'Industrial machines: scope, machine groups and rigid/flexible support classification, principles of setting alarms and trips, replacement of 10816-3 and 7919-3'],
+  ['R-74', 'Oil-film-bearing GTs: scope and exclusions'],
+  ['R-75', 'Hydro and pumped-storage plants: scope'],
+]}>
+
+The official public summaries (scope) were checked on 2026-10-12. The standards' tables, boundary values and body sentences have not been reproduced. The boundaries and comparison ratios in the figures and the lab are made-up values for teaching.
+
+</References>

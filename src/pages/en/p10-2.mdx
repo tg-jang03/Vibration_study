@@ -1,0 +1,260 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P10-2 API Standards at a Glance
+description: Tell apart when API 670, 684 and 612/616/617 are used in a machine's life, then read the protection path, the link between AF and separation margin (prediction error), Level I/II stability analysis, the mechanical running test and conformity traceability.
+sectionId: P10-2
+source: p10-2.mdx
+sourceHash: 279410d6d8
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import SeparationMarginLab from '../../components/labs/SeparationMarginLab';
+import * as F from '../../figures/p10-2';
+import { withBase } from '../../lib/site';
+
+# 10-2 API Standards at a Glance: Finding the Document in the Machine's Life
+
+The test report cites API 617, the protection system drawing cites API 670, and the rotor analysis report cites API 684. Why so many documents for looking at one vibration? Each document answers a **different question at a different time** in the machine's life.
+
+Instead of memorizing document numbers, this page follows those questions and the thinking behind them. Allowable values and boundary values from the standards are not reproduced, so the calculation examples use the learning models of P4-1 and P4-4.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can say when the API equipment standards (617·612·616), 684 and 670 are used in a machine's life.
+2. You can follow a protection system specification from sensor to trip output and pick what to check.
+3. You can explain, through critical speed prediction error, why a larger AF calls for a larger separation margin.
+4. You can explain the thinking behind Level I and II stability analysis (cross-coupling, logarithmic decrement, margin).
+5. You know the flow of a mechanical running test and can leave a conformity record as requirement → evidence → conclusion.
+
+</Callout>
+
+---
+
+## 1. When Is Each Document Used?
+
+API publishes documents for equipment in the petroleum, chemical and gas industries. Three kinds relate to the vibration of rotating machinery: equipment standards, an analysis tutorial and a protection system standard. <Cite ids={['R-79']} />
+
+<Figure {...F.purposes} />
+
+What you can read from Figure 1:
+
+- **Equipment standards** — API 617 (axial and centrifugal compressors, expander-compressors), 612 (special-purpose steam turbines) and 616 (gas turbines) hold the analysis requirements of the design stage (critical speed, unbalance response, stability) and the requirements of the shop test. This is where a separation margin or stability criterion is actually "required".
+- **API 684** is a tutorial on how to carry out and read that analysis (RP 684, TR 684-1 since 2019). It is not a requirement clause itself.
+- **API 670** is the standard for the machinery protection system after installation — sensors, monitors, trips. Evaluating magnitude and change during operation is the job of ISO 20816 in P10-1.
+
+<Callout type="term" title="Standard, Recommended Practice, Technical Report">
+
+API documents come in different kinds: Standard, Recommended Practice (RP) and Technical Report (TR). Do not read the explanations in a tutorial (684) with the same weight as the acceptance clauses of an equipment standard. The current editions confirmed on 2026-10-12 are API 670 6th edition (2025), 617 9th edition (2022), 612 8th edition (2020) and 616 6th edition (2022).
+
+</Callout>
+
+<Callout type="warn" title="One line saying 'per API'">
+
+Without which document, which edition, and what the contract adopted or took exception to, there is nothing to review. If the edition at the time the plant was built differs from the current one, write both.
+
+</Callout>
+
+---
+
+## 2. API 670: Follow It from Sensor to Trip Output
+
+In <a href={withBase('/en/p3-5/')}>P3-5</a> you operated Alert and Danger, time delay, voting, the trip multiplier during startup, and Not OK yourself. Here we connect, in one line, where those functions sit in the specification.
+
+<Figure {...F.protection} />
+
+What you can read from Figure 2:
+
+- The signal goes sensor → driver (proximitor) → monitor channel → relay output → machine stop. The "Check" under each box is what to look at in that box.
+- The monitor's **buffered output** branches off to condition monitoring and diagnostic equipment. The structure ensures that connecting or removing diagnostic equipment does not interfere with the protection function.
+- Without the **function test** and the **bypass record** in the last box, you cannot know whether protection actually works even when the sensors are healthy.
+
+<Callout type="field" title="Basis to attach to the setting table">
+
+For each channel, tie together the unit, direction and evaluated quantity; the Alert and Danger values and their basis (baseline and margin from P10-1 §5); delay, voting and startup handling; the edition applied; and change approval, all under the same channel number. Attach the function test result to that number too.
+
+</Callout>
+
+---
+
+## 3. Reading AF and Separation Margin
+
+If an analysis report says "AF 9.84, SM 16.7 %", what should you read? Let us look at the two numbers again with the example rotor of <a href={withBase('/en/p4-1/')}>P4-1</a>.
+
+<Figure {...F.peak} />
+
+The peak in Figure 3 is at 3000 rpm, and the 0.707 points are at 2866.5 and 3171.5 rpm.
+
+$$
+AF=\frac{N_c}{N_2-N_1}=\frac{3000}{3171.5-2866.5}\approx9.84,\qquad
+SM=100\,\frac{\lvert N_{op}-N_c\rvert}{N_{op}}=100\times\frac{600}{3600}\approx16.7\ \%
+$$
+
+$N_c$ is the peak speed, $N_1$ and $N_2$ are the 0.707 points on either side of the peak, and $N_{op}$ is the operating speed. In a real report, also look at **which mode, which sensor, and what excitation, temperature and support conditions** these numbers came from, and whether the separation margin was measured at the upper or the lower end of the operating range. Equipment standards define the separation margin at the ends of the operating range. <Cite ids={['R-07']} />
+
+<Callout type="warn" title="'There is only one peak, so half-power is enough'">
+
+If two close modes overlap, or the sensor is near a node of the mode, the width of the peak does not tell the real damping. Look at phase and several sensors together, as in <a href={withBase('/en/p8-1/')}>the multi-mode response of P8-1</a>.
+
+</Callout>
+
+---
+
+## 4. Why Leave More Separation Margin When AF Is Large?
+
+Equipment standards ask for different separation margins depending on AF. A mode whose AF is small enough (well damped) is not asked for a separation margin, and the larger the AF, the wider the margin that is asked for. Why? Because the critical speed the analysis predicted **can be wrong**. <Cite ids={['R-07', 'R-85']} />
+
+<Figure {...F.uncertainty} />
+
+Figure 4 compares the operating-point response for the same layout (predicted critical speed 3000 rpm, operating speed 3600 rpm), assuming the actual critical speed turned out 10 % higher, at 3300 rpm.
+
+- At the sharp AF 10, the operating-point response goes from 3.16 times the eccentricity to 5.43 times, a factor of **1.72**.
+- At the flat AF 2.5, it goes from 2.21 times to 2.50 times, a factor of **1.13**.
+
+The same prediction error spreads far more at a sharp peak. So the larger the AF, the farther the operating point is placed, so that even with the error it stays on the foot of the peak.
+
+<Callout type="try">
+
+1. With the defaults (AF 10, SM 16.7 %, error +10 %), read how many times the prediction the operating-point response is.
+2. Change only AF to 2.5. What happens to the effect of the same error?
+3. Return AF to 10 and find how far SM must be increased to hold it to 1.13 times.
+4. Raise the error to +20 %. Where is the actual critical speed?
+
+</Callout>
+
+<SeparationMarginLab client:visible lang="en" />
+
+Item 1 gives 1.72 times and item 2 gives 1.13 times. In item 3, AF 10 needs SM increased to 40 % to reach 1.13 times (even at 30 % it is 1.24 times). The reassurance that AF 2.5 gets with 16.7 % costs AF 10 more than twice that margin. In item 4 the actual critical speed sits right on the operating point at 3600 rpm and the response reaches the peak height (≈ AF = 10). The equations for the required separation margin and the AF classes are to be checked in the equipment standard that applies.
+
+---
+
+## 5. Stability Analysis: Level I and Level II
+
+Even far from a critical speed, a subsynchronous vibration could still grow. In <a href={withBase('/en/p4-4/')}>P4-4</a> you saw that as the cross-coupling $q$ grows, the damping of the forward mode drops, and the point where the logarithmic decrement $\delta$ reaches 0 is the stability limit.
+
+<Figure {...F.stability} />
+
+Figure 5 shows $\delta$ as $q$ is increased in the learning model of P4-4. At $q=0$, $\delta=0.315$, and when $q$ reaches 10 % of the stiffness $k$ ($q_0$), $\delta=0$.
+
+Since its 7th edition (2002), API 617 writes this thinking in two levels. <strong>Level I</strong> is a simplified analysis that puts in the aerodynamic cross-coupling produced by impellers and blades through estimating equations. It looks at the logarithmic decrement of the first forward mode and at how much larger the cross-coupling $q_0$ at which $\delta=0$ is than the expected value $q_a$. For the hypothetical $q_a$ in Figure 5 (4 % of k), $\delta=0.189$ and the margin is $q_0/q_a=2.5$. A machine that does not pass this simplified check, or that falls into the applicable category, goes to <strong>Level II</strong> — a detailed analysis that includes every element that changes cross-coupling and damping, such as seals and balance pistons. The acceptance criteria are checked in the edition that applies. <Cite ids={['R-90', 'R-85']} />
+
+<Callout type="term" title="Sensitivity study">
+
+A study of how much the conclusion changes when an input assumption changes. You vary the possible range of bearing load, seal coefficients and support stiffness and see how the logarithmic decrement and the response move. For a machine whose margin shrinks if the curve in Figure 5 shifts only a little to the left, this sensitivity is more important information than the conclusion.
+
+</Callout>
+
+| Report item | Question to ask |
+|---|---|
+| Model | What was included: shaft, bearings, seals, coupled equipment? |
+| Operating point | What are the speed, load, temperature and bearing load conditions? |
+| Response | What are the excitation location and size, and the sensor location and clearance reference? |
+| Stability | How far was it done, Level I or II; logarithmic decrement per mode; where do the input coefficients come from? |
+| Verification | Sensitivity; differences from the test and their explanation |
+
+---
+
+## 6. Shop Test: The Flow of the Mechanical Running Test
+
+Analysis is a prediction, and the shop test is the first place where that prediction is checked. To read a test value, you first need to know under what state it was measured.
+
+<Figure {...F.acceptance} />
+
+What you can read from Figure 6:
+
+- The <strong>mechanical running test</strong> runs the machine up to the maximum continuous speed (MCS), waits for bearing temperatures to stabilize, briefly checks the trip speed, and then runs continuously at MCS for a set time while evaluating vibration and temperature.
+- From the Bode recorded during deceleration you measure the critical speed and AF and compare them with the analysis of §3 and §4. If the difference is large, revisit the support and bearing assumptions of the model.
+- The <strong>performance test</strong> is separate and checks whether the equipment delivers the specified performance. Segment lengths and acceptance items are checked in the equipment standard and the contract. <Cite ids={['R-79']} />
+
+<Callout type="warn" title="'Using the shop test value as the field baseline as is'">
+
+The shop's test stand differs from the field's foundation, piping and coupled shaft line. Take the field baseline anew after installation under the same operating conditions, and explain the difference from the shop test separately.
+
+</Callout>
+
+---
+
+## 7. Conformity Conclusion: From Requirement to Evidence
+
+Even when a reviewer rereads the report, they should reach the same conclusion. Behind the document number, let us connect which requirement was checked with what data.
+
+<Figure {...F.trace} />
+
+Figure 7 is <strong>traceability</strong>, a record that keeps the path between requirement, evidence and conclusion. The conclusion is one of met, not met or unconfirmed. A condition that could not be confirmed is left as "unconfirmed", with the reason and the plan for the next test attached. Unconfirmed is never changed to met.
+
+<Callout type="example" title="A review statement written without numbers">
+
+"We reviewed the mechanical running test items of the 617 edition adopted by the contract. The test conditions and channel table are on page 3 of the test record, and the raw data is in the designated folder. The first critical speed on the deceleration Bode was 4 % lower than the analysis, and we explained that difference with the support stiffness assumption. The field hot condition is left as unconfirmed, and we recommend checking it at commissioning."
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Document / topic | Question to remember |
+|---|---|
+| 617·612·616 | Which edition and which item holds this machine's analysis and test requirements? |
+| 684 | How do you read the analysis — the requirement clauses are in the equipment standard |
+| 670 | Sensor → monitor → output; what about the function test and bypass record? |
+| AF·SM | A large AF makes the same prediction error spread more → a larger margin |
+| Level I·II | Logarithmic decrement and margin at the estimated cross-coupling; if not passed, a detailed analysis |
+| Test · conclusion | Read with the test state matched; requirement → evidence → conclusion (including unconfirmed) |
+
+---
+
+## 9. Check Questions
+
+<details>
+<summary><strong>Q1. For a compressor, is the separation margin "requirement" in API 684 or 617?</strong></summary>
+
+In the equipment standard, 617. 684 is the tutorial that explains that analysis.
+</details>
+
+<details>
+<summary><strong>Q2. Peak 3000 rpm, 0.707 points 2866.5 and 3171.5 rpm, operating speed 3600 rpm: what are AF and SM?</strong></summary>
+
+$AF=3000/305.0\approx9.84$, $SM=100\times600/3600\approx16.7\ \%$. These are read values, not allowable values.
+</details>
+
+<details>
+<summary><strong>Q3. With the same SM, if the critical speed prediction is 10 % off, which is riskier, AF 10 or AF 2.5?</strong></summary>
+
+AF 10. The operating-point response jumps by a factor of 1.72 (1.13 for AF 2.5). That is why a larger AF calls for a larger separation margin.
+</details>
+
+<details>
+<summary><strong>Q4. In Figure 5, if the expected cross-coupling is 4 % of k, what is the Level I margin $q_0/q_a$?</strong></summary>
+
+Since $q_0$ is 10 % of k, it is $10/4=2.5$. The logarithmic decrement then is 0.189. Comparison with the criterion is done in the edition that applies.
+</details>
+
+<details>
+<summary><strong>Q5. Why connect diagnostic equipment to the monitor's buffered output?</strong></summary>
+
+So that connecting or disconnecting the diagnostic equipment does not interfere with the protection path (monitor → relay → trip).
+</details>
+
+<details>
+<summary><strong>Q6. How does a report treat a hot condition that could not be tested?</strong></summary>
+
+Leave it as "unconfirmed" and write the reason and the plan for the next check. Do not change it to met.
+</details>
+
+In the next page (P10-3), with a hypothetical case where a machine's 1X doubled, we narrow hypotheses from the data and connect the confirmation test and recommendation into a report.
+
+## References
+
+<References items={[
+  ['R-79', 'API official document list: document kinds, role per equipment, checking the current edition'],
+  ['R-53', 'Scope of machinery protection systems: sensors, monitors, outputs, tests'],
+  ['R-07', 'Tutorial on critical speed, unbalance response, separation margin and stability analysis'],
+  ['R-90', 'Flow of API 617 Level I and II stability analysis'],
+  ['R-85', 'Open study on stability analysis and separation margin in API 617 8th edition'],
+]}>
+
+Tables, allowable values and text of the standards are not reproduced. The numbers for AF, SM and logarithmic decrement are calculated values of the P4-1 and P4-4 learning models, not required values.
+
+</References>
