@@ -18,6 +18,20 @@ import EnvelopeLab from '../../../components/labs/EnvelopeLab';
 import KurtogramLab from '../../../components/labs/KurtogramLab';
 import OrbitLab from '../../../components/labs/OrbitLab';
 import SamplingLab from '../../../components/labs/SamplingLab';
+import AmplitudeMeasuresLab from '../../../components/labs/AmplitudeMeasuresLab';
+import FourierHarmonicsLab from '../../../components/labs/FourierHarmonicsLab';
+import DftCorrelationLab from '../../../components/labs/DftCorrelationLab';
+import ZeroPaddingLab from '../../../components/labs/ZeroPaddingLab';
+import ResolutionLab from '../../../components/labs/ResolutionLab';
+import SmearingLab from '../../../components/labs/SmearingLab';
+import ZoomLab from '../../../components/labs/ZoomLab';
+import AveragingLab from '../../../components/labs/AveragingLab';
+import TsaLab from '../../../components/labs/TsaLab';
+import SpectrumScalingLab from '../../../components/labs/SpectrumScalingLab';
+import AmplitudeScaleLab from '../../../components/labs/AmplitudeScaleLab';
+import UnitConverterLab from '../../../components/labs/UnitConverterLab';
+import ModulationLab from '../../../components/labs/ModulationLab';
+import SandboxLab from '../../../components/labs/SandboxLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -40,4 +54,18 @@ const c = lab.component;
   {c === 'EnvelopeLab' && <EnvelopeLab client:load lang="en" />}
   {c === 'KurtogramLab' && <KurtogramLab client:load lang="en" />}
   {c === 'OrbitLab' && <OrbitLab client:load lang="en" />}
+  {c === 'AmplitudeMeasuresLab' && <AmplitudeMeasuresLab client:load lang="en" />}
+  {c === 'FourierHarmonicsLab' && <FourierHarmonicsLab client:load lang="en" />}
+  {c === 'DftCorrelationLab' && <DftCorrelationLab client:load lang="en" />}
+  {c === 'ZeroPaddingLab' && <ZeroPaddingLab client:load lang="en" />}
+  {c === 'ResolutionLab' && <ResolutionLab client:load lang="en" />}
+  {c === 'SmearingLab' && <SmearingLab client:load lang="en" />}
+  {c === 'ZoomLab' && <ZoomLab client:load lang="en" />}
+  {c === 'AveragingLab' && <AveragingLab client:load lang="en" />}
+  {c === 'TsaLab' && <TsaLab client:load lang="en" />}
+  {c === 'SpectrumScalingLab' && <SpectrumScalingLab client:load lang="en" />}
+  {c === 'AmplitudeScaleLab' && <AmplitudeScaleLab client:load lang="en" />}
+  {c === 'UnitConverterLab' && <UnitConverterLab client:load lang="en" />}
+  {c === 'ModulationLab' && <ModulationLab client:load lang="en" />}
+  {c === 'SandboxLab' && <SandboxLab client:load lang="en" />}
 </LabPageShell>

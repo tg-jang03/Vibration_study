@@ -19,7 +19,8 @@ Working directory: `C:\Users\AX\Desktop\ATG\업무\진동공부` (Astro site, Ko
 - Frontmatter: `layout: ../../layouts/MdxLayout.astro`, English `title` (keep the leading `PX-Y `), English `description`, same `sectionId`, `source: pX-Y.mdx`, `sourceHash: 0000000000` (placeholder) — then run `npm run i18n:status -- --stamp pX-Y` to write the real hash.
 - Imports use `../../`. Same components, same order, same figures (`<Figure {...F.name} />` unchanged). Labs get `lang="en"` and keep their client directive and other props.
 - Translate everything: headings, prose, lists, tables, Callout titles (types unchanged), `<details>` questions/answers, Korean inside KaTeX `\text{}`. Math, numbers, symbols and units stay exactly as they are. "그림 N" → "Figure N". Section references like "(P2-1 §6)" stay.
-- Internal links: targets that have (or are getting) English pages — P2-3, P2-5, P4-2, P5-6, P6-3 — use `withBase('/en/pX-Y/')`; all other targets keep the Korean URL unchanged. Drop `#anchor`s on links that now point to English pages (Korean heading slugs do not exist there); keep anchors on links to Korean pages.
+- Internal links: targets that have (or are getting) English pages — the list is in your assignment — use `withBase('/en/pX-Y/')` (labs: `withBase('/en/lab/<slug>/')` only if your assignment says that lab gets English); all other targets keep the Korean URL unchanged. Drop `#anchor`s on links that now point to English pages (Korean heading slugs do not exist there); keep anchors on links to Korean pages.
+- Save each file as soon as it is done (sessions can be cut off by usage limits); if a file already exists when you start, continue from it.
 - `<References items={[['R-xx', 'English note'], …]} />` — translate the note; `<Cite ids={…} />` unchanged.
 - Tone: the Korean is conversational and question-driven; keep that in clear, natural technical English for vibration engineers and students (see the P2-3 pair). No embellishment, no added claims.
 

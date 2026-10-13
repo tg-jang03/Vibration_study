@@ -1,0 +1,252 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-4 Resolution · Measurement Time · Zoom FFT
+description: How long you must measure to separate two close components (Δf = 1/T), smearing when the speed changes during a measurement, and zoom FFT, which looks closely at only a narrow band
+sectionId: P2-4
+source: p2-4.mdx
+sourceHash: 34e352f98d
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import ResolutionLab from '../../components/labs/ResolutionLab';
+import SmearingLab from '../../components/labs/SmearingLab';
+import ZoomLab from '../../components/labs/ZoomLab';
+import * as F from '../../figures/p2-4';
+
+# 2-4 Resolution · Measurement Time · Zoom FFT
+
+Sometimes one bar in a spectrum looks unusually thick. It may really be two very close components lying on top of each other. What do you have to change on the analyzer to pull them apart?
+
+The answer is one sentence — **measure for longer.** This page covers why, the cases where measuring longer is not the answer, and how to look closely at only the band you need.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain with a figure why $\Delta f = 1/T$ holds.
+2. Given the spacing of two components, you can calculate the number of lines and the measurement time needed to separate them.
+3. You know why the spectrum spreads when the speed changes during a measurement (smearing), and what to do about it.
+4. You know what zoom FFT does for you and what it cannot do.
+
+</Callout>
+
+---
+
+## 1. Why measure longer: Δf = 1/T
+
+In P2-1 and P2-2 you saw that the spacing of the spectrum grid (the bin spacing) is $\Delta f = 1/T$. Looking at the time waveform makes it clear why this relation exists.
+
+<Figure {...F.beatTime} />
+
+When you add two sine waves with slightly different frequencies, they alternately add up in the same direction and cancel in opposite directions, and the amplitude slowly swells and fades. This is called a <strong>beat</strong>, and its period is $1/(f_2 - f_1)$.
+If the two components differ by 1 Hz, the swelling has a period of 1 second, so **if you measure for much less than 1 second you cannot see the swelling**, and you cannot tell there are two components. Therefore
+
+$$
+\Delta f = \frac{1}{T} = \frac{F_{max}}{\mathrm{LOR}}
+$$
+
+To separate components $\Delta f$ apart, you must measure for at least $T = 1/\Delta f$ seconds. No change in the calculation gets around this relation (the same was true of zero padding in P2-2).
+
+<Callout type="example" title="Number of lines and measurement time for a maximum frequency of 1000 Hz">
+
+| Number of lines | $\Delta f$ | Measurement time $T$ |
+|---|---|---|
+| 400 | 2.5 Hz | 0.4 s |
+| 1600 | 0.625 Hz | 1.6 s |
+| 3200 | 0.3125 Hz | 3.2 s |
+| 6400 | 0.156 Hz | 6.4 s |
+
+Quadrupling the number of lines makes the grid 4 times finer, and the measurement time 4 times longer. If you also average (P2-6), this time is multiplied again.
+
+</Callout>
+
+---
+
+## 2. Separating two close components
+
+### 2.1 Is it enough for the bars to be spaced right?
+
+Components do not separate just because their spacing equals $\Delta f$. As you saw in P2-2 §4, one component is drawn not as a single bin but as a **hump with a width**. The two humps must be far enough apart for a valley to form between them.
+
+<Callout type="term" title="Hann window (preview)">
+
+Most analyzers turn on a process called the <strong>Hann window</strong> by default. With it, the width of one component's hump becomes twice (about $4/T$) what it is without a window (about $2/T$). You get something in return, which is the subject of P2-5. The figures and labs on this page are calculated with Hann, the analyzer default.
+
+</Callout>
+
+<Figure {...F.twoTonesVsT} />
+
+This site uses the following criteria for the spacing needed to separate two components (a rule of thumb that varies somewhat with phase and amplitude difference).
+
+| Window | Spacing needed | To separate a 1 Hz difference |
+|---|---|---|
+| No window | about 2 bins | $\Delta f \le 0.5$ Hz, $T \ge 2$ s |
+| Hann (analyzer default) | about 3.5 bins | $\Delta f \le 0.29$ Hz, $T \ge 3.5$ s |
+| Flat top (for amplitude measurement) | about 8 bins | $\Delta f \le 0.125$ Hz, $T \ge 8$ s |
+
+In short, **the measurement time needed ≈ (number of bins needed) ÷ (spacing of the two components)**.
+
+### 2.2 A common field example: 2X and twice the line frequency
+
+<Callout type="term" title="Twice the line frequency (2LF)">
+
+The magnetic force inside motors and generators grows and weakens twice during one cycle of the line power. So vibration of electrical origin appears at **twice** the line frequency (LF). On a 60 Hz grid, <strong>2LF = 120 Hz</strong>.
+
+</Callout>
+
+- **2-pole induction motor**: the rotor turns slightly slower than the magnetic field (this difference is called slip). So 1X is about 59.5 Hz, not 60 Hz, and 2X is about 119 Hz. The mechanical 2X (119 Hz) and the electrical 2LF (120 Hz) sit **1 Hz apart**, so separating them is a classic resolution problem.
+- **2-pole synchronous machine**: the rotor turns exactly with the field, so 1X = 60 Hz and 2X = 120 Hz = 2LF. **Because the frequencies are exactly equal**, no measurement time, however long, can separate them. In that case you use a different test: the part that disappears the moment the motor's power is cut is electrical in origin, and the part that fades gradually with the speed is mechanical.
+
+<Callout type="try">
+
+1. In the initial state (preset (a), spacing 3.6 Hz, 400 lines), see whether the two components merge into one. Compare "spacing … bins" and "needed … bins" in the formula box.
+2. Raise the number of lines from 800 to 1600. From how many lines do they separate? What is the measurement time then?
+3. Choose preset (b) (119 Hz and 120 Hz) and raise the number of lines to separate them. How many lines are needed at $F_{max}$ = 500 Hz?
+4. In preset (c), raise the number of lines up to 6400 and confirm that there is still a single bar.
+
+</Callout>
+
+<ResolutionLab lang="en" client:load />
+
+In step 3, at $F_{max}$ = 500 Hz, 1600 lines ($\Delta f$ = 0.3125 Hz, spacing 3.2 bins) falls a little short, and they separate clearly at 3200 lines (0.156 Hz, 6.4 bins). The price is a measurement time of 6.4 seconds. If you can lower $F_{max}$ to 200 Hz, the same 3200 lines give $\Delta f$ = 0.0625 Hz, but the measurement time becomes a longer 16 seconds — **resolution is, in the end, bought only with measurement time.**
+
+---
+
+## 3. When you cannot measure for long: smearing
+
+### 3.1 When the speed changes during the measurement
+
+For a machine running at constant speed, the longer you measure the better. But during a start-up, or while it slows gradually by inertia after shutdown (coast-down), 1X moves while you measure.
+
+<Figure {...F.sweepFrames} />
+
+The FFT computes the whole frame at once, so every frequency 1X passed through during the frame gets drawn.
+
+<Figure {...F.smearing} />
+
+This spreading and lowering of the bar is called <strong>smearing</strong>. If the rate of speed change is $a$ [rpm/s],
+
+$$
+\text{width 1X moves during a frame} = \frac{a}{60}\,T\ [\mathrm{Hz}],\qquad
+\text{number of bins smeared} = \frac{a T / 60}{\Delta f} = \frac{a}{60}\,T^2
+$$
+
+**The number of bins smeared is proportional to $T^2$.** If you double $T$, the width 1X moves doubles, and at the same time the bins become twice as fine, so the same width spans twice as many bins.
+
+<Callout type="example" title="Deceleration rate 60 rpm/s (slowing by 1 Hz every second)">
+
+- $T$ = 0.5 s: 1X moves 0.5 Hz, $\Delta f$ = 2 Hz → 0.25 bin. One clear bar.
+- $T$ = 4 s: 1X moves 4 Hz, $\Delta f$ = 0.25 Hz → 16 bins. It spreads wide and the tallest bar drops to half (Figure 4).
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (deceleration 60 rpm/s, 1600 lines), compare with "Steady-speed overlay" and see how much the bar has spread and dropped.
+2. Lower the number of lines from 3200 to 400. How does the number of bins smeared change? (If $T$ is 1/8, the number of bins is 1/64)
+3. Alternate between the presets **"Steady speed"** and **"Fast deceleration"**.
+
+</Callout>
+
+<SmearingLab lang="en" client:load />
+
+<Callout type="field" title="When measuring during start-up and shutdown">
+
+- While the speed is changing, **lower the number of lines to shorten the frame**. The grid gets coarser, but the bar does not spread.
+- To view the whole range where the speed changes a lot, use order tracking (P5-4), which **samples in step with the angle the shaft has turned** instead of with time. 1X always stays in the same "order" bin and does not smear.
+
+</Callout>
+
+---
+
+## 4. Looking closely at only the band you need: zoom FFT
+
+Suppose you need to view a wide range ($F_{max}$ = 2000 Hz), but want a detailed look at only the area near 1200 Hz with 0.6 Hz spacing. A regular FFT over the whole 0 to 2000 Hz at 0.6 Hz spacing needs 3200 lines or more, and most of that is a band you do not care about.
+
+<Figure {...F.zoomIdea} />
+
+<Callout type="term" title="Sideband">
+
+A small component attached on both sides of another component at a fixed spacing. It appears when the vibration amplitude changes periodically, just as the meshing of a gear strengthens and weakens a little with each turn of the gear. The spacing tells you the period of that change (P2-8).
+
+</Callout>
+
+<strong>Zoom FFT</strong> picks only the band you want and computes it finely. It does four steps.
+
+1. **Shift**: shift the frequency of the whole signal so that the center frequency of the band of interest (for example 1200 Hz) lands at 0 Hz.
+2. **Trim**: with a digital filter, keep only the narrow band near 0 Hz (for example ±125 Hz) and cut the rest.
+3. **Decimate**: since the remaining band is narrow, the samples can be that much sparser (the sampling theorem of P2-3). Keep only one sample out of every $Z$.
+4. **Regular FFT**: an FFT of ordinary size (for example 400 lines) on the decimated data shows the narrow band on a grid $Z$ times finer.
+
+<Callout type="warn" title="Zoom FFT does not shorten the measurement time either">
+
+If you magnify 8 times, $\Delta f$ becomes 1/8, so you need **8 times the measurement time** (0.2 s → 1.6 s). Because step 3 throws samples away, filling the same 400 lines requires receiving the original signal 8 times longer. What zoom FFT reduces is computation and memory; $\Delta f \cdot T = 1$ stays the same.
+
+</Callout>
+
+<Callout type="try">
+
+1. With the preset **"No zoom"**, see how the area around 1200 Hz looks.
+2. Raise the zoom factor 2 → 4 → 8. From what factor does it separate into three bars?
+3. Each time you raise the factor, watch how "Zoom measurement time needed" in the readout table changes.
+
+</Callout>
+
+<ZoomLab lang="en" client:load />
+
+---
+
+## 5. Summary
+
+| Topic | What to remember |
+|---|---|
+| Resolution | $\Delta f = 1/T = F_{max}/\mathrm{LOR}$. To look finely, measure longer |
+| Beat | Two components spaced $\Delta$ apart swell and fade with a period of $1/\Delta$ seconds → you must watch at least that long to tell them apart |
+| Separation condition | Spacing ≥ about 2 bins (no window) · 3.5 bins (Hann) · 8 bins (flat top) |
+| Measurement time needed | ≈ number of bins needed ÷ spacing of the two components |
+| Same frequency | Cannot be separated however long you measure → another test (for example cutting the power) |
+| Smearing | If the speed changes, the number of bins smeared $= (a/60)\,T^2$. Shorten the frame, or use order tracking |
+| Zoom FFT | Looks at a narrow band $Z$ times finer. Less computation, but the measurement time is $Z$ times longer |
+
+---
+
+## 6. Review questions
+
+<details>
+<summary><strong>Q1. With F_max 1000 Hz and 1600 lines, what are the measurement time and the resolution?</strong></summary>
+
+$\Delta f = 1000/1600 = 0.625\ \mathrm{Hz}$, $T = 1/\Delta f = 1.6\ \mathrm{s}$.
+</details>
+
+<details>
+<summary><strong>Q2. You want to separate two components 0.5 Hz apart with a Hann window. With F_max 500 Hz, how many lines at least?</strong></summary>
+
+Measurement time needed ≈ 3.5 bins ÷ 0.5 Hz = 7 s, that is, $\Delta f \le 1/7 \approx 0.143$ Hz. Number of lines ≥ $F_{max}/\Delta f$ = 500 × 7 = 3500, so use 6400 lines (3200 lines gives $\Delta f$ = 0.156 Hz, which falls a little short). The measurement time is 12.8 seconds.
+</details>
+
+<details>
+<summary><strong>Q3. You measured a turbine that was shutting down with 3200 lines, and the 1X bar came out wide and lower than usual. What is the cause, and what is the remedy?</strong></summary>
+
+It is smearing: while the speed was falling, the measurement time ($T$ = 3.2 s or more) was long enough for 1X to pass through several bins. Lower the number of lines to shorten the frame, or use order tracking (P5-4), which samples in step with the shaft's rotation angle. Do not conclude that vibration decreased just because the bar got lower.
+</details>
+
+<details>
+<summary><strong>Q4. Can you get the same resolution in a shorter time by using zoom ×16?</strong></summary>
+
+No. If you cut $\Delta f$ to 1/16 with zoom FFT, you need 16 times the measurement time. What shrinks is computation and memory.
+</details>
+
+<details>
+<summary><strong>Q5. On a 2-pole induction motor the 119 Hz and 120 Hz bars look joined. What is each one likely to be, and why can this distinction not be made on a synchronous machine?</strong></summary>
+
+119 Hz is likely the mechanical 2X (1X ≈ 59.5 Hz, a little below 60 Hz because of slip), and 120 Hz the electrical component at twice the line frequency (2LF). On a synchronous machine 1X is exactly 60 Hz, so 2X and 2LF coincide at the same 120 Hz and do not separate however long you measure.
+</details>
+
+The next page (P2-5) covers what the **Hann window** previewed here actually is. You will see for yourself why a bar spreads and reads the wrong height when a component lies between bins (leakage), and how a window reduces that.
+
+## References
+
+<References items={[
+  ['R-01', 'Frequency resolution and zoom analysis'],
+  ['R-05', 'Bin spacing, measurement time and spectrum normalization'],
+]} />

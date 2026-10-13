@@ -13,6 +13,9 @@ import { createRng } from '../../lib/dsp/random';
 import { acquire } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import { createWindow, type WindowType } from '../../lib/dsp/window';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/AveragingLab';
 
 /**
  * LAB-AVG-01 평균화 (P2-6, Contents §5-1).
@@ -29,19 +32,19 @@ const AMP = 0.000025; // 속도 [m/s], 표시 변환만 mm/s
 const TONE2 = 70;
 const AMP2 = 0.00007;
 const MODE_OPTIONS: { value: Mode; label: string }[] = [
-  { value: 'linear', label: '파워(RMS) 평균' },
-  { value: 'exponential', label: '지수 평균' },
-  { value: 'peakHold', label: '피크 홀드' },
-  { value: 'vector', label: '벡터 평균' },
+  { value: 'linear', label: k('파워(RMS) 평균') },
+  { value: 'exponential', label: k('지수 평균') },
+  { value: 'peakHold', label: k('피크 홀드') },
+  { value: 'vector', label: k('벡터 평균') },
 ];
 const SCENARIOS: { value: Scenario; label: string }[] = [
-  { value: 'steady', label: '일정: 70·32 Hz 성분 + 잡음' },
-  { value: 'changing', label: '32 Hz가 서서히 커짐' },
-  { value: 'transient', label: '92 Hz가 잠깐 커짐' },
-  { value: 'runup', label: '회전수 올리기 (20→120 Hz)' },
+  { value: 'steady', label: k('일정: 70·32 Hz 성분 + 잡음') },
+  { value: 'changing', label: k('32 Hz가 서서히 커짐') },
+  { value: 'transient', label: k('92 Hz가 잠깐 커짐') },
+  { value: 'runup', label: k('회전수 올리기 (20→120 Hz)') },
 ];
 const WINDOWS: { value: WindowType; label: string }[] = [
-  { value: 'hann', label: 'Hann' }, { value: 'uniform', label: '윈도우 없음 (Uniform)' },
+  { value: 'hann', label: 'Hann' }, { value: 'uniform', label: k('윈도우 없음 (Uniform)') },
   { value: 'flatTop', label: 'Flat top' }, { value: 'blackmanHarris', label: 'Blackman-Harris' },
 ];
 const clean = (value: number) => Math.abs(value) < 1e-12 ? 0 : value;
@@ -139,9 +142,11 @@ export interface AveragingLabProps {
   initialScenario?: Scenario;
   initialCount?: number;
   initialOverlap?: 0 | 0.5 | 0.75;
+  lang?: Lang;
 }
 
-export default function AveragingLab({ initialMode = 'linear', initialScenario = 'steady', initialCount = 64, initialOverlap = 0 }: AveragingLabProps) {
+export default function AveragingLab({ initialMode = 'linear', initialScenario = 'steady', initialCount = 64, initialOverlap = 0, lang = 'ko' }: AveragingLabProps) {
+  const tr = makeT(lang, EN);
   const [mode, setMode] = useState<Mode>(initialMode);
   const [target, setTarget] = useState(initialCount);
   const [overlap, setOverlap] = useState<number>(initialOverlap);
@@ -174,29 +179,29 @@ export default function AveragingLab({ initialMode = 'linear', initialScenario =
     const normalize = (x: number) => data.noisePower > 0 ? x / data.noisePower : 0;
     const theoryLevel = mode === 'vector' ? points.map((m) => 1 / m) : points.map(() => 1);
     const levelSeries: PlotSeries[] = [
-      { x: points, y: measured.map((s) => normalize(s.mean)), name: '잰 값', mode: 'lines+markers' },
+      { x: points, y: measured.map((s) => normalize(s.mean)), name: tr`잰 값`, mode: 'lines+markers' },
     ];
-    if (mode !== 'peakHold') levelSeries.push({ x: points, y: theoryLevel, name: mode === 'vector' ? '이론: 1/M로 내려감' : '이론: 1에 머묾', dash: 'dash' });
+    if (mode !== 'peakHold') levelSeries.push({ x: points, y: theoryLevel, name: mode === 'vector' ? tr`이론: 1/M로 내려감` : tr`이론: 1에 머묾`, dash: 'dash' });
     const stdSeries: PlotSeries[] = [
-      { x: points, y: measured.map((s) => normalize(s.std)), name: '잰 값', mode: 'lines+markers' },
-      { x: points, y: points.map((m) => 1 / Math.sqrt(m)), name: '겹치지 않은 프레임의 이론 1/√M', dash: 'dash' },
+      { x: points, y: measured.map((s) => normalize(s.std)), name: tr`잰 값`, mode: 'lines+markers' },
+      { x: points, y: points.map((m) => 1 / Math.sqrt(m)), name: tr`겹치지 않은 프레임의 이론 1/√M`, dash: 'dash' },
     ];
     if (mode === 'linear' && overlap > 0) stdSeries.push({
-      x: points, y: points.map((m) => overlapPowerCv(data.window, m, data.hop)), name: '겹친 프레임의 이론', dash: 'dot',
+      x: points, y: points.map((m) => overlapPowerCv(data.window, m, data.hop)), name: tr`겹친 프레임의 이론`, dash: 'dot',
     });
     if (mode === 'vector' || mode === 'exponential') stdSeries.push({
-      x: points, y: points.map((m) => independentStd(mode, m, alpha)), name: '이 평균 방식의 이론', dash: 'dot',
+      x: points, y: points.map((m) => independentStd(mode, m, alpha)), name: tr`이 평균 방식의 이론`, dash: 'dot',
     });
     return {
       noise, levelSeries, stdSeries,
       tone: Math.sqrt(averaged[TONE]) * 1000,
       tone2: Math.sqrt(averaged[TONE2]) * 1000,
       spectrumSeries: [
-        { x: data.frequency, y: mmAmplitude(current), name: '지금 프레임', opacity: 0.55, width: 1 },
-        { x: data.frequency, y: mmAmplitude(averaged), name: String(shown) + '개 프레임 평균', width: 2 },
+        { x: data.frequency, y: mmAmplitude(current), name: tr`지금 프레임`, opacity: 0.55, width: 1 },
+        { x: data.frequency, y: mmAmplitude(averaged), name: tr`${shown}개 프레임 평균`, width: 2 },
       ] as PlotSeries[],
     };
-  }, [data, shown, mode, alpha, overlap]);
+  }, [data, shown, mode, alpha, overlap, lang]);
 
   const duration = frameLayout(N, shown, overlap).totalSamples / FS;
   const modeFormula = mode === 'linear'
@@ -210,68 +215,69 @@ export default function AveragingLab({ initialMode = 'linear', initialScenario =
   const steadyClean = scenario === 'steady' && sigmaMm === 0 && (mode !== 'vector' || triggered);
 
   return (
-    <LabFrame id="LAB-AVG-01" title="평균화: 잡음 바닥의 높이와 흔들림"
+    <LabFrame id="LAB-AVG-01" title={tr`평균화: 잡음 바닥의 높이와 흔들림`}
+      lang={lang}
       controls={<>
-        <ParamSelect label="평균 방식" value={mode} options={MODE_OPTIONS} onChange={setMode} />
-        <ParamSelect label="신호" value={scenario} options={SCENARIOS} onChange={setScenario} />
-        <ParamSlider label="평균할 프레임 수 M" value={target} min={1} max={256} step={1} onChange={setTarget} />
-        <ParamSelect label="오버랩 r" value={overlap}
-          options={[{ value: 0, label: '0 % (겹치지 않음)' }, { value: 0.5, label: '50 %' }, { value: 0.75, label: '75 %' }]} onChange={setOverlap} />
-        <ParamSelect label="윈도우" value={windowType} options={WINDOWS} onChange={setWindow} />
-        <ParamSlider label="잡음 크기 σ" value={sigmaMm} min={0} max={1} step={0.05} unit="mm/s RMS" format={(v) => v.toFixed(2)} onChange={setSigma} />
-        <ParamToggle label="프레임 시작을 회전에 맞춤 (트리거)" checked={triggered} onChange={setTriggered}
-          disabled={mode !== 'vector'} hint="벡터 평균에서만 의미가 있습니다. 끄면 프레임마다 시작 시각이 제각각입니다." />
+        <ParamSelect label={tr`평균 방식`} value={mode} options={MODE_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setMode} />
+        <ParamSelect label={tr`신호`} value={scenario} options={SCENARIOS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setScenario} />
+        <ParamSlider label={tr`평균할 프레임 수 M`} value={target} min={1} max={256} step={1} onChange={setTarget} />
+        <ParamSelect label={tr`오버랩 r`} value={overlap}
+          options={[{ value: 0, label: tr`0 % (겹치지 않음)` }, { value: 0.5, label: '50 %' }, { value: 0.75, label: '75 %' }]} onChange={setOverlap} />
+        <ParamSelect label={tr`윈도우`} value={windowType} options={WINDOWS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setWindow} />
+        <ParamSlider label={tr`잡음 크기 σ`} value={sigmaMm} min={0} max={1} step={0.05} unit="mm/s RMS" format={(v) => v.toFixed(2)} onChange={setSigma} />
+        <ParamToggle label={tr`프레임 시작을 회전에 맞춤 (트리거)`} checked={triggered} onChange={setTriggered}
+          disabled={mode !== 'vector'} hint={tr`벡터 평균에서만 의미가 있습니다. 끄면 프레임마다 시작 시각이 제각각입니다.`} />
         <div className="param">
-          <span>프레임 재생 (지금 {shown}/{target})</span>
+          <span>{tr`프레임 재생 (지금 ${shown}/${target})`}</span>
           <button className="lab-button" type="button" onClick={() => {
             if (playing) setPlaying(false);
             else { if (shown >= target) setCount(1); setPlaying(true); }
-          }}>{playing ? '일시정지' : shown < target ? '재생 계속' : '처음부터 재생'}</button>
-          <button className="lab-button" type="button" onClick={() => { setPlaying(false); setCount(target); }}>전체 결과 보기</button>
+          }}>{playing ? tr`일시정지` : shown < target ? tr`재생 계속` : tr`처음부터 재생`}</button>
+          <button className="lab-button" type="button" onClick={() => { setPlaying(false); setCount(target); }}>{tr`전체 결과 보기`}</button>
         </div>
       </>}
       formulas={<>
         <Formula display tex={modeFormula} />
         {mode === 'vector' && <Formula display tex={'A_{rms,k}=\\lvert\\bar X_k\\rvert'} />}
         <Formula display tex={'T_{tot}=T[1+(M-1)(1-r)] = 1\\times[1+(' + shown + '-1)(1-' + overlap + ')] = ' + texNumber(duration) + '\\ \\mathrm{s}'} />
-        <p>S는 bin 하나의 파워(RMS 진폭의 제곱), X는 크기와 위상을 함께 담은 값(화살표)입니다. 표시할 때는 제곱근을 취해 mm/s RMS로 바꿉니다.</p>
+        <p>{tr`S는 bin 하나의 파워(RMS 진폭의 제곱), X는 크기와 위상을 함께 담은 값(화살표)입니다. 표시할 때는 제곱근을 취해 mm/s RMS로 바꿉니다.`}</p>
       </>}
-      readouts={<ReadoutTable caption="읽음값" rows={[
-        { label: '평균한 프레임 수', value: shown },
-        { label: '총 측정 시간', value: duration, unit: 's' },
-        { label: '70 Hz 읽음값', value: clean(view.tone2), unit: 'mm/s RMS',
+      readouts={<ReadoutTable caption={tr`읽음값`} rows={[
+        { label: tr`평균한 프레임 수`, value: shown },
+        { label: tr`총 측정 시간`, value: duration, unit: 's' },
+        { label: tr`70 Hz 읽음값`, value: clean(view.tone2), unit: 'mm/s RMS',
           theory: steadyClean ? clean(AMP2 * 1000 / Math.SQRT2) : undefined },
-        { label: '32 Hz 읽음값', value: clean(view.tone), unit: 'mm/s RMS',
+        { label: tr`32 Hz 읽음값`, value: clean(view.tone), unit: 'mm/s RMS',
           theory: steadyClean ? clean(AMP * 1000 / Math.SQRT2) : undefined },
-        { label: '잡음 바닥의 평균 높이 (파워)', value: clean(view.noise.mean * 1e6), unit: '(mm/s)²' },
-        { label: '잡음 바닥의 흔들림 (표준편차 ÷ 평균)', value: view.noise.mean > 0 ? clean(view.noise.std / view.noise.mean) : NaN, theory: sigmaMm > 0 ? cvTheory : undefined },
-        ...(cvTheory === undefined ? [] : [{ label: '같은 흔들림을 내는 독립 프레임 수', value: 1 / cvTheory ** 2 }]),
+        { label: tr`잡음 바닥의 평균 높이 (파워)`, value: clean(view.noise.mean * 1e6), unit: '(mm/s)²' },
+        { label: tr`잡음 바닥의 흔들림 (표준편차 ÷ 평균)`, value: view.noise.mean > 0 ? clean(view.noise.std / view.noise.mean) : NaN, theory: sigmaMm > 0 ? cvTheory : undefined },
+        ...(cvTheory === undefined ? [] : [{ label: tr`같은 흔들림을 내는 독립 프레임 수`, value: 1 / cvTheory ** 2 }]),
       ]} />}
       tasks={[
-        { question: '파워 평균에서 M = 1 → 64로 바꾸면 잡음 바닥이 내려갈까요?',
-          answer: '바닥의 평균 높이는 그대로이고 흔들림만 1 → 약 0.125로 줄어듭니다. 그래서 바닥보다 조금 큰 70 Hz는 또렷해지지만, 바닥보다 작은 32 Hz는 끝내 드러나지 않습니다.' },
-        { question: '벡터 평균으로 바꾼 뒤 트리거를 끄면 성분은 어떻게 될까요?',
-          answer: '트리거가 있으면 잡음 바닥이 약 1/8(M = 64)로 내려가 32 Hz가 드러납니다. 끄면 성분의 방향도 프레임마다 달라져 성분까지 상쇄됩니다.' },
-        { question: 'M = 16, Hann에서 오버랩을 0 → 75 %로 바꾸면 총 측정 시간과 흔들림은?',
-          answer: '총 측정 시간은 16 s → 4.75 s입니다. 흔들림은 겹치지 않은 16개(0.25)보다 조금 큰 약 0.34로, 겹치지 않은 독립 프레임 약 8.6개에 해당합니다.' },
-        { question: '회전수 올리기 신호에서 피크 홀드를 고르면 무엇이 남을까요?',
-          answer: '1X가 지나간 주파수마다 가장 컸던 값이 남아 20 ~ 120 Hz에 걸친 띠가 됩니다. 지나간 최대값이지 지금 값이 아닙니다. 잡음이 우연히 컸던 순간도 함께 붙잡습니다.' },
+        { question: tr`파워 평균에서 M = 1 → 64로 바꾸면 잡음 바닥이 내려갈까요?`,
+          answer: tr`바닥의 평균 높이는 그대로이고 흔들림만 1 → 약 0.125로 줄어듭니다. 그래서 바닥보다 조금 큰 70 Hz는 또렷해지지만, 바닥보다 작은 32 Hz는 끝내 드러나지 않습니다.` },
+        { question: tr`벡터 평균으로 바꾼 뒤 트리거를 끄면 성분은 어떻게 될까요?`,
+          answer: tr`트리거가 있으면 잡음 바닥이 약 1/8(M = 64)로 내려가 32 Hz가 드러납니다. 끄면 성분의 방향도 프레임마다 달라져 성분까지 상쇄됩니다.` },
+        { question: tr`M = 16, Hann에서 오버랩을 0 → 75 %로 바꾸면 총 측정 시간과 흔들림은?`,
+          answer: tr`총 측정 시간은 16 s → 4.75 s입니다. 흔들림은 겹치지 않은 16개(0.25)보다 조금 큰 약 0.34로, 겹치지 않은 독립 프레임 약 8.6개에 해당합니다.` },
+        { question: tr`회전수 올리기 신호에서 피크 홀드를 고르면 무엇이 남을까요?`,
+          answer: tr`1X가 지나간 주파수마다 가장 컸던 값이 남아 20 ~ 120 Hz에 걸친 띠가 됩니다. 지나간 최대값이지 지금 값이 아닙니다. 잡음이 우연히 컸던 순간도 함께 붙잡습니다.` },
       ]}
       footer={<>
-        <p>프레임 하나 = 1초 (N = 512, f_s = 512 Hz, Δf = 1 Hz). 잡음은 시드가 고정되어 같은 설정은 같은 결과입니다. 잡음 통계는 신호에서 떼어 낸 잡음만으로 60 ~ 240 Hz를 5 bin 간격으로 읽은 값이라, 이론선과 조금 어긋납니다.</p>
-        <p>{mode === 'vector' && !triggered ? '트리거 해제: 프레임마다 시작 시각이 흩어진 수집을 흉내 냅니다. 성분도 평균에서 줄어듭니다.' : scenario === 'runup' ? '회전수 올리기: 1X가 20 → 120 Hz로 움직입니다. 트리거가 있어도 주파수가 바뀌는 성분은 매번 같은 화살표가 아닙니다.' : '70 Hz와 32 Hz 성분은 1초 프레임에 정수 주기가 들어가 프레임 시작에 동기입니다.'}
-          {' '}겹치지 않은 프레임의 이론 흔들림 1/√M = {formatNumber(1 / Math.sqrt(shown))}.</p>
+        <p>{tr`프레임 하나 = 1초 (N = 512, f_s = 512 Hz, Δf = 1 Hz). 잡음은 시드가 고정되어 같은 설정은 같은 결과입니다. 잡음 통계는 신호에서 떼어 낸 잡음만으로 60 ~ 240 Hz를 5 bin 간격으로 읽은 값이라, 이론선과 조금 어긋납니다.`}</p>
+        <p>{mode === 'vector' && !triggered ? tr`트리거 해제: 프레임마다 시작 시각이 흩어진 수집을 흉내 냅니다. 성분도 평균에서 줄어듭니다.` : scenario === 'runup' ? tr`회전수 올리기: 1X가 20 → 120 Hz로 움직입니다. 트리거가 있어도 주파수가 바뀌는 성분은 매번 같은 화살표가 아닙니다.` : tr`70 Hz와 32 Hz 성분은 1초 프레임에 정수 주기가 들어가 프레임 시작에 동기입니다.`}
+          {' '}{tr`겹치지 않은 프레임의 이론 흔들림 1/√M = ${formatNumber(1 / Math.sqrt(shown))}.`}</p>
       </>}
     >
-      <h4>지금 프레임 vs 평균 스펙트럼</h4>
-      <Plot series={view.spectrumSeries} x={{ label: '주파수 [Hz]', range: [0, 180] }}
-        y={{ label: '진폭 [mm/s RMS]' }} height={310} ariaLabel="지금 프레임과 평균 스펙트럼" />
-      <h4>잡음 바닥의 평균 높이 (처음 = 1)</h4>
-      <Plot series={view.levelSeries} x={{ label: '평균한 프레임 수 M' }}
-        y={{ label: '평균 높이 (파워)', range: mode === 'peakHold' ? undefined : [0, 1.5] }} height={250} ariaLabel="평균 횟수에 따른 잡음 바닥의 평균 높이" />
-      <h4>잡음 바닥의 흔들림 (처음 = 1)</h4>
-      <Plot series={view.stdSeries} x={{ label: '평균한 프레임 수 M' }}
-        y={{ label: '흔들림 (표준편차 ÷ 처음 평균)' }} height={250} ariaLabel="평균 횟수에 따른 잡음 바닥의 흔들림" />
+      <h4>{tr`지금 프레임 vs 평균 스펙트럼`}</h4>
+      <Plot series={view.spectrumSeries} x={{ label: tr`주파수 [Hz]`, range: [0, 180] }}
+        y={{ label: tr`진폭 [mm/s RMS]` }} height={310} ariaLabel={tr`지금 프레임과 평균 스펙트럼`} />
+      <h4>{tr`잡음 바닥의 평균 높이 (처음 = 1)`}</h4>
+      <Plot series={view.levelSeries} x={{ label: tr`평균한 프레임 수 M` }}
+        y={{ label: tr`평균 높이 (파워)`, range: mode === 'peakHold' ? undefined : [0, 1.5] }} height={250} ariaLabel={tr`평균 횟수에 따른 잡음 바닥의 평균 높이`} />
+      <h4>{tr`잡음 바닥의 흔들림 (처음 = 1)`}</h4>
+      <Plot series={view.stdSeries} x={{ label: tr`평균한 프레임 수 M` }}
+        y={{ label: tr`흔들림 (표준편차 ÷ 처음 평균)` }} height={250} ariaLabel={tr`평균 횟수에 따른 잡음 바닥의 흔들림`} />
     </LabFrame>
   );
 }

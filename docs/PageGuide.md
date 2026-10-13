@@ -400,7 +400,7 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 | 남은 절·낡은 번역 보기 | `npm run i18n:status` (다시 옮긴 뒤 `-- --stamp p2-3`로 해시 갱신) |
 | 본문 | `src/pages/en/pX-Y.mdx`: 한국어 파일과 같은 뼈대, `layout: ../../layouts/MdxLayout.astro`, 같은 `sectionId`, `source`·`sourceHash`, import는 `../../`. 랩은 `<SamplingLab client:load lang="en" />` |
 | 그림 | 그림 코드는 그대로. 제목·라벨·캡션은 `src/i18n/en/figures/pX-Y.ts` 사전(키 = 한국어 원문). 빠진 키는 `npx vitest run src/i18n/figures.test.ts`가 그대로 보여 준다 |
-| 랩 | 화면 문자열을 `tr`로 감싼다 (`t`는 시간 변수라 피함): ``tr`…${x}…` ``, 모듈 맨 위 글은 `k('…')` → 렌더 때 `tr(o.label)`, KaTeX는 ``\\text{${tr`…`}}``. 하위 컴포넌트는 `useLang()`. 사전 `src/i18n/en/labs/<파일>.ts` — 뼈대는 `node scripts/i18n/scan-lab.mjs <랩>`. 다 되면 `src/i18n/labsReady.ts`와 `src/pages/en/lab/[slug].astro`에 한 줄씩 (테스트가 잡는다) |
+| 랩 | 화면 문자열을 `tr`로 감싼다 (`t`는 시간 변수라 피함): ``tr`…${x}…` ``, 모듈 맨 위 글은 `k('…')` → 렌더 때 `tr(o.label)`, KaTeX는 ``\\text{${tr`…`}}``. 하위 컴포넌트는 `useLang()`. 사전 `src/i18n/en/labs/<파일>.ts` — 뼈대는 `node scripts/i18n/scan-lab.mjs <랩>`. 검사 `node scripts/i18n/scan-lab.mjs <랩> --check`, 다 되면 등록 `node scripts/i18n/register-lab.mjs <랩>` (`labsReady.ts`·`en/lab/[slug].astro`에 한 줄씩, 테스트가 빠진 줄을 잡는다) |
 | 참고자료 | 쓴 곳 메모는 영어 MDX에 영어로. `references.ts`의 한국어 서지는 `src/i18n/en/references.ts` |
 | 화면 틀 문구 | `src/i18n/ui.ts` (한·영 같은 키, 타입이 잡는다). 목차·랩 모음 영어는 `src/i18n/en/curriculum.ts`·`labs.ts` |
 | 문체 | 뜻을 옮기고 말투는 질문에서 출발하는 설명조 그대로. 용어는 `Glossary.md`의 영문, 숫자·기호·단위는 손대지 않는다. "그림 3" → "Figure 3" |

@@ -1,0 +1,339 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-2 Fourier Basics
+description: Building a waveform by stacking sinusoids (harmonics), picking out components by multiplying with a template (DFT), the single-sided spectrum, the truth about zero padding, and the FFT
+sectionId: P2-2
+source: p2-2.mdx
+sourceHash: 68aa194983
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import FourierHarmonicsLab from '../../components/labs/FourierHarmonicsLab';
+import DftCorrelationLab from '../../components/labs/DftCorrelationLab';
+import ZeroPaddingLab from '../../components/labs/ZeroPaddingLab';
+import * as F from '../../figures/p2-2';
+
+# 2-2 Fourier basics: how to see a signal in frequency
+
+In P2-1 we called the spectrum **a table of components that says "how much of which frequency of sinusoid is in the signal."** Two questions come up, though.
+
+1. Can a square-cornered waveform, or a sharp impact, really be written as a sum of smooth sinusoids?
+2. How does an analyzer calculate that table of components from nothing but a list of sample numbers (the $x[n]$ of P2-1)?
+
+This page answers the two in turn. The first half **stacks** sinusoids to build a shape; the second half goes the other way and **picks** sinusoids out of a signal.
+
+<Callout type="idea" title="After reading this page you can">
+
+1. Explain with a figure that a periodic signal is a sum of a fundamental and harmonics.
+2. Say why two waveforms can differ even when their amplitude spectra are the same (phase).
+3. Say that the DFT means "multiply by a template sinusoid and add up," and know what a bin is.
+4. Say why an analyzer shows only 0 to $f_s/2$ and doubles the amplitude.
+5. Say why zero padding cannot separate two components that are close together.
+
+</Callout>
+
+---
+
+## 1. Stacking sinusoids to build a shape: harmonics
+
+### 1.1 Periodic signals and harmonics
+
+A signal whose shape repeats every fixed time $T_0$ is called a <strong>periodic signal</strong>. The number of repeats per second, $f_0 = 1/T_0$, is the <strong>fundamental frequency</strong>.
+
+The 19th-century mathematician Fourier showed that **a periodic signal, whatever its shape, can be written as a sum of sinusoids at $f_0$ and its integer multiples**. This is called the <strong>Fourier series</strong>.
+
+$$
+x(t) = A_0 + \sum_{n=1}^{\infty} A_n \cos(2\pi n f_0 t + \varphi_n)
+$$
+
+- $A_0$: the mean value (DC, P2-1 §4)
+- The $n = 1$ component: the <strong>fundamental</strong>, at frequency $f_0$
+- The $n = 2, 3, \dots$ components: the <strong>$n$th harmonic</strong>, at frequency $n f_0$
+
+<Callout type="term" title="Harmonics and 1X">
+
+In a rotating machine, if the same shake repeats every time the shaft makes one turn, the fundamental frequency is the rotating frequency 1X. Then the 2nd harmonic = 2X and the 3rd harmonic = 3X (P2-1 §3).
+
+</Callout>
+
+### 1.2 Building a square wave
+
+Let us try the squarest shape there is, the square wave. Add sinusoids of the 1st, 3rd, 5th, … order to a 10 Hz square wave, each at a suitable size, one after another, and this is what happens.
+
+<Figure {...F.squareBuild} />
+
+Draw "how much" was added at each order as a bar and you get the square wave's recipe, that is, its amplitude spectrum.
+
+<Figure {...F.squareRecipe} />
+
+**Why there are no even orders**: a square wave is exactly upside-down half a period later. An odd-order sinusoid also flips upside down after half a period, but an even-order sinusoid comes back to the same shape after half a period. If even orders were mixed in even slightly, this symmetry would break, so the square wave's recipe cannot contain any.
+
+You can also watch the adding in motion. In P1-2 we drew one sinusoid as "the height of the tip of a rotating arrow." The $n$th harmonic is an arrow of length $A_n$ that turns $n f_0$ times per second. Attach the tail of the 3rd-order arrow to the tip of the 1st-order arrow, the 5th to the end of that, and so on, and **the height of the chain's end is the sum of all the components**, because adding heights is exactly adding sinusoids.
+
+<Callout type="try" title="Stack them yourself in the lab below">
+
+1. Set the waveform to "square wave" and start with **highest order N** at 1. You see one 10 Hz sinusoid and one bar.
+2. Raise N to 3, then 5, then 15. Watch the top become flat.
+3. At N = 5, read the **"components added now"** line under the lab. You added up to the 5th order, yet there are only three components, 1st, 3rd and 5th, because the 2nd and 4th have amplitude 0.
+4. Turn on "show each component (dotted)" and check that the sum (thick line) is the dotted lines added together.
+5. Press **play** on the arrow chain at the top of the lab and watch the shape the chain's end draws at N = 3 and 15. Also switch the waveform to "sawtooth wave" and look again.
+
+</Callout>
+
+<FourierHarmonicsLab client:load lang="en" />
+
+In step 5, the square wave's chain is a big 1st-order arrow turning slowly, with small 3rd and 5th arrows on its tip turning 3 and 5 times faster and shaking the end up and down. Near the top the higher arrows point in opposite directions, so the height stays flat; when the 1st arrow passes the side, the higher arrows all line up on the same side and the end jumps quickly across. That is the corner. The sawtooth wave has arrows at every order, so the end climbs slowly and then drops in one step.
+
+The lab's "highest order N" is **how far up in order to add**, and the number of components actually added differs by waveform. The sawtooth wave has every order at $2/(n\pi)$; the square wave has only the odd orders, at $4/(n\pi)$.
+Even if you raise N to 15, the small horn beside the corner does not go away; it only gets narrower. This means that making a sharp corner exactly takes very high orders.
+
+<Callout type="field" title="If harmonics stand in a row in the spectrum">
+
+If the shaking is one smooth sinusoid, the spectrum has just one 1X bar. The more the time waveform is distorted away from a sinusoid, the more 2X, 3X, … harmonics appear with it.
+For example, if the shaft touches something slightly once per turn (rub), the shaking is clipped so that it is no longer smooth, and integer multiples of 1X appear in a row. How to tell what distorted the waveform is covered in Part 7.
+
+</Callout>
+
+### 1.3 Phase: same bars, different shape
+
+The amplitude spectrum draws **only the size** of each component and throws away the phase. So the same amplitude spectrum can produce waveforms of completely different shapes.
+
+<Figure {...F.phaseMatters} />
+
+The RMS, however, is the same whatever the phase. Two sinusoids of different frequencies average to zero when multiplied (we say they are <strong>orthogonal</strong>), so the total energy equals the component energies simply added. This is <strong>Parseval's theorem</strong>.
+
+$$
+x_{rms}^2 = A_0^2 + \sum_{n=1}^{\infty} \frac{A_n^2}{2}
+$$
+
+The RMS² of one sinusoid is $A^2/2$ (P2-1 §4), so it says to add that value for each component. If you turn on "shuffle phases" in the lab above, the RMS readout stays the same and only Peak and Crest factor change.
+
+<Callout type="idea">
+
+**From the amplitude spectrum alone you cannot know the shape of the waveform.** Whether short impacts are mixed in, or whether it is clipped on one side, you check in the time waveform. That is why diagnosis looks at the spectrum and the time waveform together (Part 6).
+
+</Callout>
+
+### 1.4 Short in time means wide in frequency
+
+Change the width of a pulse (a signal that switches on briefly and off again) and the width of the spectrum changes the opposite way.
+
+<Figure {...F.pulseWidth} />
+
+When the pulse width becomes 4 times narrower, the range over which the spectrum spreads becomes 4 times wider. In the lab above, set the waveform to "pulse train" and reduce the duty ratio from 0.5 to 0.05 to check.
+Because of this property, if you strike a structure briefly with a hammer, a wide frequency range is shaken at once, and from the response you can find several natural frequencies in one go (impact test, P9-1).
+
+---
+
+## 2. The other way: picking components out of a signal — the DFT
+
+Now the opposite direction. All the analyzer has is $N$ samples (P2-1 §6). How do we ask this list of numbers, "how much 4 Hz component is in you?"
+All the examples below read $N = 32$ samples at $f_s = 32\ \mathrm{Hz}$. The measurement time is $T = N/f_s = 1\ \mathrm{s}$.
+
+### 2.1 Multiply by a template and add
+
+The method is simple. **Multiply a sinusoid at the frequency you want to find (the template) with the signal sample by sample, and add everything up.**
+
+<Figure {...F.correlationIdea} />
+
+- If the signal has that frequency: the two waveforms always move in the same direction, so the products are zero or above and the sum becomes large.
+- If it does not: the products swing between + and − and cancel, so the sum becomes 0.
+
+The size of the sum is proportional to the component's amplitude. For a component of amplitude $A$ the sum is $A \times N/2$, so conversely, **dividing the sum by $N/2$ gives the amplitude**. Measuring "how much alike" by multiplying and adding is called <strong>correlation</strong>.
+
+<Callout type="term" title="bin">
+
+The DFT does not set the template at just any frequency; it uses only **templates that repeat exactly $k$ times within the measurement time $T$** ($k = 0, 1, 2, \dots$). This $k$th template, or the one bar it produces, is called a <strong>bin</strong>.
+The frequency of the $k$th bin is $k/T = k\,\Delta f$. In the example above $T = 1\ \mathrm{s}$, so bin $k$ = $k$ Hz. The resolution $\Delta f = 1/T$ that we saw in P2-1 is exactly the **spacing between bins**.
+Because the template repeats a whole number of times within $T$, if the signal is also at a bin frequency that repeats a whole number of times, the sum of its product with any other bin is exactly 0.
+
+</Callout>
+
+### 2.2 We do not know the phase, so use a sin template too
+
+But the phase of the signal cannot be known beforehand. Even at the same 4 Hz, if the start is off by a quarter period, the cos template cannot find it.
+
+<Figure {...F.sinTemplate} />
+
+So for each bin the DFT multiplies and adds with **both a cos template and a sin template**. Calling the two sums $\mathrm{Re}$ and $\mathrm{Im}$, the component's size and phase are
+
+$$
+\lvert X[k] \rvert = \sqrt{\mathrm{Re}^2 + \mathrm{Im}^2},\qquad A_k = \frac{2\,\lvert X[k] \rvert}{N},\qquad \varphi_k = \operatorname{atan2}(\mathrm{Im}, \mathrm{Re})
+$$
+
+Writing these two sums in one line gives the <strong>DFT (Discrete Fourier Transform)</strong>.
+
+$$
+X[k] = \sum_{n=0}^{N-1} x[n]\, e^{-j 2\pi k n / N}
+$$
+
+<Callout type="term" title="If e^{−jθ} looks unfamiliar">
+
+Using Euler's formula $e^{-j\theta} = \cos\theta - j\sin\theta$, the equation above only means "put the sum with the cos template in the real part and the sum with the sin template (with the sign flipped) in the imaginary part." You can think of a complex number as a container that carries the two sums together as one number.
+$2\pi k n / N$ is $2\pi \times (k\,\Delta f) \times (n\,\Delta t)$, that is, the bin frequency × the sample time converted to an angle.
+
+</Callout>
+
+<Callout type="try">
+
+1. Set the signal frequency $f_1$ = 4 Hz and the template $k$ = 4. Check whether the product bars are all zero or above, and whether the amplitude readout is 1.
+2. Change $k$ to 5. See whether the running sum rises and falls and returns to 0 at the end.
+3. Put $k$ back to 4 and set the phase $\varphi_1$ to 90°. Switch the template between cos and sin and see which sum becomes large.
+4. Change $f_1$ to 4.5 Hz (between two bins). In the bottom graph, see what happens to the integer bins (dots).
+
+</Callout>
+
+<DftCorrelationLab client:load lang="en" />
+
+As you saw in step 4, if the signal frequency lies between bins, it matches no template exactly, so it **shows up spread over several bins, and even the largest bin's amplitude comes out lower than the true value**. This is called <strong>spectral leakage</strong>, and P2-5 covers windows that reduce this problem.
+The smooth curve at the bottom of the lab is drawn by moving the template frequency $k$ continuously through non-integer values. The curve that zero padding draws in §4 is exactly this.
+
+---
+
+## 3. Why does the analyzer show only 0 to $f_s/2$ and double the amplitude?
+
+If you calculate the DFT as it is, a single sinusoid appears **half at $+f$ and half at $-f$**.
+
+<Figure {...F.twoSided} />
+
+<Callout type="term" title="Negative frequency">
+
+A sinusoid $\cos(2\pi f t)$ can be written as the sum of two rotating arrows (length 1/2) turning in opposite directions.
+
+$$
+\cos(2\pi f t) = \frac{1}{2}e^{\,j 2\pi f t} + \frac{1}{2}e^{-j 2\pi f t}
+$$
+
+We simply call the one turning counterclockwise $+f$ and the one turning clockwise $-f$; physically it does not mean shaking a "negative number" of times. The vertical components of the two arrows cancel and only the horizontal components remain, giving a real signal.
+
+</Callout>
+
+A signal measured by a sensor is real, so the $-f$ side is always a mirror image of the $+f$ side and carries no new information. So the analyzer **discards the $-f$ side and doubles the $+f$ side**, showing only $0 \sim f_s/2$. This is the <strong>single-sided spectrum</strong>, and the 2 in $A_k = 2\lvert X[k] \rvert / N$ above is this doubling.
+That the upper end is $f_s/2$ is the same story as the Nyquist frequency in P2-1 — a bin higher than that merely shows the negative frequencies again.
+
+<Callout type="warn" title="Two bars not doubled, and a meaningless phase">
+
+- The 0 Hz (DC) and $f_s/2$ (Nyquist) bars have no mirror partner, so they are not doubled.
+- Phase is calculated at every bin, but **the phase of a bin with a very small amplitude (a bin with only noise) is a random value** and means nothing. Read phase only at bins with a clear component. The reference is the time of the frame's first sample.
+
+</Callout>
+
+---
+
+## 4. Will adding zeros show it better: the truth about zero padding
+
+When two components in a spectrum are so close that they look like one lump, you may think, **"if I attach lots of zeros after the data and enlarge the FFT size (zero padding), the bars become denser and won't they separate?"**
+First, let us see what shape **one** component is drawn as in the spectrum.
+
+<Figure {...F.humpWidth} />
+
+A single sinusoid measured for $T$ seconds is drawn not as a one-bin bar but as **a hump about $2/T$ wide** (the original bins are just a few points on that hump). Zero padding only draws this hump more densely; it cannot change the width. What sets the width is the measurement time $T$.
+Then what happens if two components are close enough that their humps overlap a lot?
+
+<Figure {...F.zeroPadding} />
+
+<Callout type="try">
+
+1. With tone spacing Δ = 0.5 Hz and N = 32 (1 second), raise the zero-padding factor from ×1 to ×16. Does the "visible peak count" become 2?
+2. Leave the padding as it is and change N to 128 (4 seconds).
+3. Set Δ = 1 Hz, N = 32 and padding ×16. Does it look like two peaks? Do the peak positions match the real tone positions (gray dotted lines)?
+
+</Callout>
+
+<ZeroPaddingLab client:load lang="en" />
+
+As in step 3, when the spacing is near $1/T$, a valley forms in the padded curve and it may look like two peaks. But the peak positions are off from the real ones, and whether the valley forms depends on the phases of the two components, so this is a borderline state.
+
+<Callout type="warn" title="Zero padding does not raise the resolution">
+
+- Zero padding is an **interpolation** that draws the spectrum of data you already measured more densely, even between bins. No new information is created.
+- To separate two close components reliably, **lengthen the measurement time $T$.** For a rectangular window (no window), roughly, they separate regardless of phase once the spacing is at least $2/T$. With a window the criterion changes (P2-4, P2-5).
+- Where zero padding is useful: reading the frequency and amplitude of a single peak more accurately between bins, showing the shape smoothly, and setting the FFT size to a power of 2.
+
+</Callout>
+
+---
+
+## 5. The FFT is just a fast DFT
+
+The <strong>FFT (Fast Fourier Transform)</strong> is an algorithm that gives **exactly the same result** as the DFT with far less calculation. It is not a different transform.
+
+Calculating the DFT directly from its equation multiplies and adds $N$ samples for each of $N$ bins, so about $N^2$ multiplications are needed. The FFT repeatedly splits the data in half and cuts this to about $N\log_2 N$.
+
+| Number of samples $N$ | DFT as written ($N^2$) | FFT ($N\log_2 N$) | How many times faster |
+|---|---|---|---|
+| 1,024 | about 1.05 million | about 10 thousand | about 100× |
+| 4,096 | about 16.78 million | about 49 thousand | about 340× |
+| 16,384 | about 270 million | about 230 thousand | about 1,170× |
+
+Because it works by halving, $N$ is usually a **power of 2** such as 1024, 2048 or 4096. This is why an analyzer can update the spectrum in real time.
+
+---
+
+## 6. Summary
+
+| Topic | What to remember |
+|---|---|
+| Fourier series | Periodic signal = sum of mean (DC) + fundamental ($f_0$) + harmonics ($n f_0$) |
+| Square wave | Odd orders only, amplitude $4/(n\pi)$. Even orders are 0 because of half-period symmetry |
+| Phase | The amplitude spectrum throws phase away → same bars, different waveform. RMS is the same (Parseval) |
+| Short ↔ wide | The narrower the pulse width $\tau$, the wider the spectrum (first zero at $1/\tau$) |
+| DFT | For each bin, multiply by cos and sin templates and add. $A_k = 2\lvert X[k] \rvert / N$ |
+| bin | A template that repeats exactly $k$ times in $T$. Frequency $k/T$, spacing $\Delta f = 1/T$ |
+| Single-sided | Discard the $-f$ side and double. 0 Hz and $f_s/2$ are not doubled |
+| Zero padding | Only draws more densely; resolution stays the same. To separate, lengthen $T$ |
+| FFT | Same result as the DFT, with the cost $N^2 \to N\log_2 N$ |
+
+---
+
+## 7. Check questions
+
+<details>
+<summary><strong>Q1. If you view the spectrum of a 50 Hz square wave over 0 to 400 Hz, at which frequencies do bars stand, and what are their size ratios?</strong></summary>
+
+Since only odd orders are present, 50, 150, 250 and 350 Hz. The sizes are in the ratio $1 : \tfrac13 : \tfrac15 : \tfrac17$ (for a square wave of amplitude 1, 1.27, 0.42, 0.25 and 0.18).
+</details>
+
+<details>
+<summary><strong>Q2. A machine with 1X at 30 Hz has bars lined up at 30, 60, 90 and 120 Hz in its spectrum. What shape is the time waveform?</strong></summary>
+
+Since 1X and its harmonics (2X, 3X, 4X) are present together, the time waveform repeats at 30 Hz but is **a distorted shape, not a smooth sinusoid**. Exactly how it is distorted depends on the phases, so the spectrum alone cannot tell you; you have to look at the time waveform directly.
+</details>
+
+<details>
+<summary><strong>Q3. You measured with a sampling frequency of 2048 Hz and 1024 samples. What are the bin spacing, the frequency of the 100th bin, and the highest frequency shown on screen?</strong></summary>
+
+- $T = 1024/2048 = 0.5\ \mathrm{s}$ → bin spacing $\Delta f = 1/T = 2\ \mathrm{Hz}$
+- 100th bin: $100 \times 2 = 200\ \mathrm{Hz}$
+- Highest frequency: $f_s/2 = 1024\ \mathrm{Hz}$ (the $N/2 = 512$th bin)
+</details>
+
+<details>
+<summary><strong>Q4. Two signals have exactly the same amplitude spectrum, but their Crest factors differ, 1.2 and 2.1. Is that possible?</strong></summary>
+
+It is possible. The amplitude spectrum holds only the size of each component and discards the phase. If the components' phases differ, how much the crests overlap differs, so the Peak differs. RMS is set by the amplitudes alone (Parseval), so it is the same, and therefore Crest factor = Peak/RMS differs (Figure 3).
+</details>
+
+<details>
+<summary><strong>Q5. You measured for 0.5 seconds and two components 1 Hz apart look like one lump. Will ×8 zero padding do it? What should you do?</strong></summary>
+
+Zero padding will not work. With a 0.5-second measurement the hump of one component is $2/T = 4\ \mathrm{Hz}$ wide, so a 1 Hz difference overlaps completely. You have to lengthen the measurement time; to separate them regardless of phase without a window you need roughly $T \ge 2/\Delta = 2\ \mathrm{s}$ (longer with a window, P2-4 and P2-5).
+</details>
+
+<details>
+<summary><strong>Q6. The phase of a noise-only bin changes a lot every time I measure. Is something wrong with the machine?</strong></summary>
+
+No. The phase of a bin with a very small amplitude is a random value set by the noise, so it has no meaning to begin with. Interpret phase only at bins with a clear component (for example 1X).
+</details>
+
+In the next page (P2-3) we return to the question we only tasted in P2-1 §6 — when a component higher than $f_s/2$ comes in, what shows up in the spectrum, and how does the analyzer prevent it?
+
+## References
+
+<References items={[
+  ['R-16', 'DFT, properties of the Fourier transform, and the FFT (chapters 8 to 12)'],
+  ['R-12', 'DFT sign convention, bin order and normalization — the reference used to check this site\'s FFT calculation'],
+  ['R-01', 'Frequency analysis of vibration signals'],
+]} />

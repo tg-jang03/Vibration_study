@@ -1,0 +1,350 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-1 Signal and Spectrum Basics
+description: Reading the time waveform a sensor recorded by its quantity, unit and amplitude convention, and connecting the spectrum to the sampling settings
+sectionId: P2-1
+source: p2-1.mdx
+sourceHash: f4ed1f088a
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import AmplitudeMeasuresLab from '../../components/labs/AmplitudeMeasuresLab';
+import * as F from '../../figures/p2-1';
+import { withBase } from '../../lib/site';
+
+# 2-1 Signal and Spectrum Basics
+
+Part 1 showed why machines vibrate, and how the responses to several causes get mixed into one waveform.
+Now let us move to the analyzer screen. Next to a moving line you see "4.2 mm/s rms", "50 µm p-p" and "1X 60 Hz". What should you read from each?
+
+This page is where we sort out <strong>what the measured numbers mean</strong>.
+We will not explain the physics of the sine wave or the principle of unbalance at length again; we take them from <a href={withBase('/p1-2/')}>P1-2</a> and <a href={withBase('/p1-7/')}>P1-7</a> and recap them briefly.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can read the axes and units of a time waveform and tell what was measured, and where.
+2. You can tell Peak, Pk-Pk and RMS apart, and judge when the sine-wave conversion goes wrong.
+3. You can read the bars of a spectrum without concluding the cause from the biggest bar alone.
+4. You can connect the sampling frequency, the number of samples, the measurement time and the frequency spacing.
+
+</Callout>
+
+---
+
+## 1. Time waveform: the instantaneous values a sensor recorded
+
+A sensor turns the motion of a machine surface or shaft into an electrical signal. The analyzer reads it at regular intervals and, depending on the sensor sensitivity and the display settings, shows it as a displacement, velocity or acceleration value.
+A <strong>signal</strong> is a value that changes with time like this, and a <strong>time waveform</strong> is the graph with time on the horizontal axis and the value at that instant on the vertical axis.
+
+<Figure {...F.machineWaveform} />
+
+In Figure 1 you read three things.
+
+- Horizontal axis: what shape repeats during 0.1 s? You can see about six large waves.
+- Vertical axis: the unit is mm/s, so this line shows velocity.
+- Shape: small waves and irregular shaking are present too, so a single sine wave does not explain it.
+
+This figure is a made-up signal that adds several components and noise. From the repetition of the large wave alone it is hard to read every frequency and size. The tool that splits it into its components is the spectrum in Section 5.
+
+<Callout type="warn" title="A time waveform has also been through the measurement chain">
+
+A time waveform is not an unlimited record of the machine's motion. What it contains depends on the sensor's response range, the filters and the sampling settings.
+A smooth look does not prove that there are no impacts. We follow the effect of the measurement chain in Part 3.
+
+</Callout>
+
+---
+
+## 2. Read the unit and the reference first, even for the same shaking
+
+### 2.1 What do displacement, velocity and acceleration show?
+
+The displacement we saw in Part 1 is the distance away from the reference position, the velocity is how fast the displacement changes, and the acceleration is how fast the velocity changes.
+On a measurement screen they are read in these units.
+
+| Quantity | Common display unit | Example of what is measured |
+|---|---|---|
+| Displacement $d$ | µm, mm | Change in the distance between shaft and sensor |
+| Velocity $v$ | mm/s | Shaking of a bearing housing |
+| Acceleration $a$ | m/s², g | Fast vibration and impacts transmitted to the casing |
+
+1 µm is 0.001 mm, and the unit g is based on the standard gravity of about 9.81 m/s².
+<strong>The same quantity does not make it the same measurement.</strong> You have to distinguish the relative change in distance between shaft and sensor from the motion of the casing itself.
+
+<Figure {...F.threeMeasures} />
+
+Figure 2 shows the same motion in three quantities. The relative sizes of the slow 60 Hz component and the fast 600 Hz component change with the quantity displayed.
+
+<Callout type="example" title="Reading the sizes in Figure 2 together with their units">
+
+If the displacement Peak of a single sine component is $d_{pk}$, the velocity and acceleration Peaks are $v_{pk}=2\pi f d_{pk}$ and $a_{pk}=(2\pi f)^2d_{pk}$.
+
+1. The displacement of the 60 Hz component is 50 µm Peak.
+2. In SI units the velocity is $2\pi\times60\times50\times10^{-6}\approx0.0188$ m/s, that is, 18.8 mm/s Peak.
+3. The acceleration is about 7.11 m/s² Peak. The 600 Hz component has a displacement of 0.5 µm Peak, one hundredth as large, yet its acceleration is the same, about 7.11 m/s² Peak.
+
+</Callout>
+
+This calculation is a relation between the <strong>sizes of individual sine components</strong>. It is not a formula for converting the overall RMS of a waveform with many frequencies mixed in using one arbitrary frequency.
+When you change the quantity, the weight of each frequency changes too. Velocity does not show every frequency with equal weight. We look at the conversion more closely in <a href={withBase('/en/p2-7/')}>P2-7</a>.
+
+### 2.2 The sine wave is recapped in Part 1
+
+The sine wave you varied in <a href={withBase('/p1-2/#21-정현파의-세-숫자를-직접-바꾸기')}>LAB-BAS-01 of P1-2</a> is $x(t)=A\cos(2\pi ft+\varphi)$.
+$A$ is the amplitude, $f$ the frequency and $\varphi$ the phase. The period is $1/f$ and the angular frequency is $2\pi f$. You can review the meaning of the three numbers and the phase difference on that page.
+
+---
+
+## 3. Rotating frequency and order: reading the frequency reference
+
+In <a href={withBase('/p1-7/')}>P1-7</a> we converted 3600 rpm to 60 Hz. The rotating frequency $f_r=\mathrm{rpm}/60$ is 1X, and twice that is 2X.
+The <strong>order</strong> is the ratio $f/f_r$ of the measured frequency to the rotating frequency. At 3600 rpm, 120 Hz is 2X.
+
+<Callout type="term" title="Components below 1X: sub-synchronous">
+
+<strong>Sub-synchronous</strong> means a vibration component lower than the rotating frequency. When 1X is 60 Hz, 30 Hz is 0.5X.
+This name only says where the frequency lies; it does not settle the cause.
+
+</Callout>
+
+A component that moves together with the rotating speed can keep a constant order, but a fixed 120 Hz component changes order when the speed changes.
+How to check whether a component follows the rotation was covered in <a href={withBase('/p1-8/')}>P1-8 Frequencies Produced by Machine Elements</a>.
+
+---
+
+## 4. One number for the size: Peak, Pk-Pk and RMS
+
+"Vibration 5" alone cannot be compared. You need to know what was measured, where, and with which unit and amplitude convention.
+First let us read a zero-mean sine wave in three ways.
+
+<Figure {...F.amplitudeMeasures} caption="Figure 3. The same sine wave of amplitude 1, marked with Peak, Pk-Pk and RMS. The height of the top is 1, the full width from bottom to top is 2, and the RMS is about 0.707. The three values are not different signals but different amplitude conventions of the same signal." />
+
+| Convention | What it measures | Zero-mean sine wave (amplitude $A$) |
+|---|---|---|
+| Peak (0-Peak, pk) | Absolute value of the point farthest from the zero reference | $A$ |
+| Pk-Pk (Peak-to-Peak, p-p) | Maximum minus minimum, the full width | $2A$ |
+| RMS (Root Mean Square) | Square the values, average, then take the square root | $A/\sqrt{2}\approx0.707A$ |
+
+### 4.1 Tell RMS and the mean (DC) apart
+
+If you simply average a sine wave, the positive and negative values cancel each other. RMS squares first, so the signs do not cancel.
+With $N$ samples it is calculated as follows.
+
+$$
+x_{rms}=\sqrt{\frac{1}{N}\sum_{n=0}^{N-1}x[n]^2}
+$$
+
+$x[n]$ is the $n$-th value read. Because we square and then take the square root, the unit of RMS is the same as that of the original signal. For a velocity signal it is mm/s, not J, the unit of energy.
+RMS expresses the size over the whole recorded interval, and even a large impact affects it only in proportion to its share of that interval.
+
+<Callout type="term" title="Mean (DC) and vibration size">
+
+The <strong>DC component</strong> (direct-current component, 0 Hz component) is the mean of the signal, that is, how far the whole signal is shifted to one side.
+The formula above includes the DC. An RMS computed after subtracting the mean shows only the shaking around that mean.
+Why the mean gap of a sensor and the vibration component are looked at separately continues in Part 3.
+
+</Callout>
+
+### 4.2 Conditions for the sine-wave conversion, and the crest factor
+
+For a single zero-mean sine wave, RMS is the Peak divided by $\sqrt{2}$.
+<strong>You cannot apply this conversion as it is to signals of other shapes.</strong>
+
+<Callout type="example" title="Reading 50 µm p-p in another convention">
+
+1. Confirm that the signal is a zero-mean sine wave.
+2. The Peak is $50/2=25$ µm.
+3. The RMS is $25/\sqrt{2}\approx17.7$ µm. The original unit stays; only the amplitude convention changed.
+
+</Callout>
+
+The <strong>crest factor (CF)</strong> is the ratio of Peak to RMS.
+
+$$
+CF=\frac{\mathrm{Peak}}{\mathrm{RMS}},\qquad
+CF_{\text{sine}}=\sqrt{2}\approx1.41
+$$
+
+Here we compare a Peak and an RMS calculated with the same reference and the same recording interval. CF has no unit.
+
+<Figure {...F.crestFactorFigure} caption="Figure 4. Both signals have an RMS of exactly 1. The sine wave on top has Peak 1.41 → crest factor 1.41. Below, a signal with a short impact mixed in every 0.1 s has Peak 6.87 → crest factor 6.87. By RMS alone they are the same size, but the shapes are completely different — the crest factor catches this difference." />
+
+The two signals in Figure 4 have the same RMS of 1. The lower signal has a larger Peak and CF because of short spikes.
+So RMS alone cannot tell you the shape of the waveform. Conversely, a large CF alone cannot confirm a bearing defect either.
+
+<Callout type="try">
+
+1. Set the signal shape to "single sine wave" and the amplitude scale to 1. Read whether Peak is 1, RMS about 0.707 and CF about 1.41.
+2. Keep scale 1 and switch to the other three shapes. With the same Peak, how do RMS and the conversion error change?
+3. For "repeated short impacts", divide the Peak/√2 conversion value by the actual RMS. Then change the scale to 2: what happens to RMS and CF?
+
+</Callout>
+
+<AmplitudeMeasuresLab client:load lang="en" />
+
+In step 2, the sum of two sine waves has RMS about 0.516 and CF about 1.94, and the square wave has RMS 1 and CF 1.
+The impact signal has RMS about 0.136 and CF about 7.36. All have Peak 1, and all differ from the 0.707 you get by assuming a sine wave.
+
+For the impact signal in step 3 the ratio is $0.707/0.136\approx5.2$. That means the converted value is about 420% larger than the actual RMS, not 420 times larger.
+When you change the scale to 2, Peak and RMS double, while CF and the conversion error stay the same. These numbers are for this lab's made-up signals, not common values for all impact signals.
+
+<Callout type="field" title="Record a measured value together with its unit and amplitude convention">
+
+You often see combinations such as µm p-p for shaft displacement and mm/s rms for casing velocity. Acceleration is also shown as Peak or RMS depending on the purpose. Do not guess the combination from memory; check the tag next to the number.
+You also have to tell whether the RMS was calculated directly or converted by assuming a sine wave. We treat this in detail in <a href={withBase('/en/p2-7/')}>Units and Scaling in P2-7</a>.
+
+</Callout>
+
+---
+
+## 5. Spectrum: reading one waveform frequency by frequency
+
+In the <a href={withBase('/p1-9/')}>cause-synthesis lab of P1-9</a> we added several responses to build one waveform.
+This time let us read that waveform as a component list: "which frequency components are in it, and how large?"
+
+<Figure {...F.mixToSpectrum} caption="Figure 5. (Top) The time waveform of three sine waves added together — it is hard to find the components from this alone. (Middle) Split into components, the same signal is three sine waves at 60, 120 and 180 Hz. (Bottom) The spectrum is a graph of this component list: horizontal axis = frequency of each component, vertical axis = its amplitude (Peak)." />
+
+A graph with frequency on the horizontal axis and the size of that component on the vertical axis is a <strong>spectrum</strong>. Figure 5 shows the sine components of a made-up unitless signal on a Peak basis.
+The size at 60 Hz is 5, at 120 Hz it is 2, and at 180 Hz it is 1. If 1X is 60 Hz, these are 1X, 2X and 3X.
+
+- The time waveform and the spectrum show the same signal in different ways. Neither is always more accurate.
+- This amplitude spectrum has no phase, so it alone cannot fully restore the shape of the time waveform.
+- The calculation that converts a signal into frequency components is the Fourier transform, and its fast algorithm is the FFT (Fast Fourier Transform). In <a href={withBase('/en/p2-2/')}>P2-2</a> we stack and split components by hand.
+
+<Callout type="warn" title="A big spectrum bar is not the same as a big force">
+
+The FRF (frequency response function) in <a href={withBase('/p1-4/')}>P1-4</a> is the ratio of response to force, a property of the system. A spectrum is the component list of the signal measured now.
+A response bar may be large because the force is large, or because the structure responds well at that frequency. A single response spectrum is neither the FRF nor a fault verdict table.
+
+</Callout>
+
+---
+
+## 6. Sampling: how often, and for how long, do we collect numbers?
+
+The analyzer reads a continuous signal at regular time intervals and stores it as a list of numbers.
+This is called <strong>sampling</strong>, and a single value read is a <strong>sample</strong>.
+
+<Figure {...F.samplesFigure} caption="Figure 6. The analyzer reads a continuous signal (gray line) at regular intervals Δt and stores it as numbers (dots). This example reads 100 times a second, so the sampling frequency is f_s = 100 Hz and the sample interval is Δt = 1/f_s = 0.01 s. The n-th sample is written x[n]." />
+
+In Figure 6 a 10 Hz signal is read every 0.01 s. It is read 100 times per second, so the sampling frequency is 100 Hz.
+<strong>The frequency of the signal and the sampling frequency are different.</strong> The former is how fast it shakes, the latter how fast it is read.
+
+| Symbol | Name | Meaning and relation |
+|---|---|---|
+| $f_s$ | Sampling frequency | Number of readings per second [Hz] |
+| $\Delta t$ | Sample interval | $\Delta t=1/f_s$ [s] |
+| $N$ | Number of samples | How many numbers are analyzed at one time. This bundle is called a frame |
+| $T$ | Measurement time | Time covered by one frame, $T=N/f_s$ [s] |
+| $\Delta f$ | Frequency spacing | When transforming the $N$ values as they are, $\Delta f=1/T=f_s/N$ [Hz] |
+
+Here $T$ is not the length of one period of the signal but <strong>the length of the recording interval being analyzed</strong>.
+The samples sit at $0,\Delta t,\ldots,(N-1)\Delta t$, but the frame length is written as $N\Delta t$, corresponding to $N$ sample intervals.
+
+<Callout type="example" title="Reading 1024 samples at a sampling frequency of 2560 Hz">
+
+1. The sample interval is $1/2560\approx0.391$ ms.
+2. The measurement time is $1024/2560=0.4$ s.
+3. The frequency spacing is $1/0.4=2.5$ Hz. The basic grid is 0, 2.5, 5, 7.5 … Hz.
+
+</Callout>
+
+If you record for longer, the basic frequency grid gets finer. However, the ability to actually separate two components close to the grid spacing does not mean exactly the same thing.
+We look at that difference and the resolution in <a href={withBase('/en/p2-4/')}>P2-4</a>.
+
+### 6.1 Read too rarely, and it looks like another frequency
+
+<Figure {...F.enoughSamples} caption="Figure 7. The same 10 Hz signal read at two rates. Top: reading 100 times a second (10 per period), the original shape survives when you connect the dots. Bottom: reading only 12 times a second (1.2 per period), the dots draw a slow 2 Hz wave (dotted line) — aliasing, where a frequency that is not really there appears. You need more than 2 samples per period (details in P2-3)." />
+
+In the lower part of Figure 7 a real 10 Hz signal was read at 12 Hz, and you can also draw a 2 Hz wave through the same points.
+This phenomenon, where a high frequency appears folded down to a low one, is <strong>aliasing</strong>. From the stored points alone you cannot tell the two signals apart.
+
+<Callout type="warn" title="Is it enough to match the sampling limit exactly?">
+
+Under the condition that you must read at more than twice the highest frequency in the signal, the <strong>Nyquist frequency</strong> is $f_N=f_s/2$.
+Reading at 2560 Hz puts the boundary at 1280 Hz. A sine wave sitting exactly on the boundary can also be missed depending on its phase, so this does not mean "everything up to 1280 Hz is accurate without exception".
+We experiment with the real settings, including the filter that limits components above the boundary beforehand, in <a href={withBase('/en/p2-3/')}>P2-3</a>.
+
+</Callout>
+
+---
+
+## 7. Summary
+
+| What to check on the screen | How to read it |
+|---|---|
+| Time waveform | Time on the horizontal axis, instantaneous value on the vertical. A signal that has passed the sensor and the measurement settings |
+| Quantity and unit | Distinguish displacement, velocity and acceleration, and the measurement location and reference |
+| Hz and order | 1X is the rotating frequency. Order is $f/f_r$ |
+| Amplitude convention | Record Peak, Pk-Pk and RMS together. For the sine-wave conversion, check the shape and DC conditions |
+| CF | Peak/RMS on the same reference. The ratio stays constant when you rescale the size |
+| Spectrum | The frequency-component list of a signal. Do not conclude excitation force, resonance or a fault from a big bar alone |
+| Sampling settings | $T=N/f_s$, basic $\Delta f=1/T$, $f_N=f_s/2$ |
+
+---
+
+## 8. Review questions
+
+<details>
+<summary><strong>Q1. What are the Peak and RMS of a zero-mean sine wave of 50 µm p-p?</strong></summary>
+
+The Peak is 25 µm and the RMS is about 17.7 µm. If the waveform is not a sine wave, you cannot use this conversion as it is.
+
+</details>
+
+<details>
+<summary><strong>Q2. Write a zero-mean sine wave of 10 mm/s Peak velocity as RMS and as p-p.</strong></summary>
+
+About 7.07 mm/s RMS and 20 mm/s p-p. The unit is the same; only the amplitude convention changes.
+
+</details>
+
+<details>
+<summary><strong>Q3. Two signals with the same RMS have CF of 1.5 and 4.8. What is the ratio of their Peaks? Can this also confirm a fault?</strong></summary>
+
+Since Peak = CF × RMS, the second Peak is $4.8/1.5=3.2$ times the first.
+You get a clue that sharper values exist, but the cause has to be checked against the measurement conditions and other evidence.
+
+</details>
+
+<details>
+<summary><strong>Q4. Can I compare the shaft's 50 µm p-p and the casing's 4.2 mm/s RMS directly?</strong></summary>
+
+No. The quantity, location, reference and amplitude convention are different. Changing the unit alone does not make them the same measurement.
+If several components are mixed, it is also not appropriate to convert the overall RMS using a single rotating frequency.
+
+</details>
+
+<details>
+<summary><strong>Q5. With a sampling frequency of 2560 Hz and 1024 samples, what are the measurement time, the basic frequency spacing and the Nyquist frequency?</strong></summary>
+
+0.4 s, 2.5 Hz and 1280 Hz. The last value is the sampling boundary, not the band an analyzer guarantees once its filter is included.
+
+</details>
+
+<details>
+<summary><strong>Q6. If you keep the number of samples and double the sampling frequency, what happens to the measurement time and the spacing?</strong></summary>
+
+The measurement time is halved to 0.2 s, and the basic spacing doubles to 5 Hz.
+You changed how fast the sensor reads, so the machine's own rotating frequency does not double.
+
+</details>
+
+<details>
+<summary><strong>Q7. If the 1X spectrum bar got bigger, does the unbalance excitation force necessarily get bigger?</strong></summary>
+
+It may, but you cannot say so for certain. The response characteristics of the structure or the measurement conditions may have changed.
+As in P1-9, check the speed, phase, location, operating conditions and so on together.
+
+</details>
+
+Next, in <a href={withBase('/en/p2-2/')}>P2-2 Fourier Basics</a> we add sine waves and split the sum back into frequency components.
+
+## References
+
+<References items={[
+  ['R-03', 'Fundamentals of vibration quantities and analyzer displays'],
+  ['R-01', 'Time signals and frequency analysis'],
+]} />

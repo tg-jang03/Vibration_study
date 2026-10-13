@@ -1,0 +1,380 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-7 Spectrum Scaling and Vibration Units
+description: Why changing the number of lines leaves the tone alone and moves only the noise floor, choosing among amplitude, power and PSD, getting the overall level (band RMS) from a spectrum and the ENBW, √2 × RMS versus the true peak, converting µm pp, mm/s rms, in/s pk and g, and dB with its reference value
+sectionId: P2-7
+source: p2-7.mdx
+sourceHash: f8a295370c
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SpectrumScalingLab from '../../components/labs/SpectrumScalingLab';
+import AmplitudeScaleLab from '../../components/labs/AmplitudeScaleLab';
+import UnitConverterLab from '../../components/labs/UnitConverterLab';
+import * as F from '../../figures/p2-7';
+
+# 2-7 Spectrum Scaling and Vibration Units
+
+To get better resolution you raise the number of lines from 400 to 3200 and measure again. The 50 Hz bar is exactly as tall as before, but the spectrum floor has dropped by 9 dB. Did the machine get quieter?
+
+There are also two reports. One says the same pump runs at "0.25 in/s pk", the other says "3.2 mm/s rms". Which one is larger? This page covers **what the numbers on the vertical axis of a spectrum mean** and **how to convert between vibration units**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why changing the number of lines leaves a sine bar alone and moves only the noise floor.
+2. You can pick the vertical axis (amplitude, power or PSD) that suits the kind of signal.
+3. You can compute the overall level (band RMS) from a spectrum, and you know how far off you are if you forget to divide by the ENBW.
+4. You can tell whether an analyzer's "Peak" is the true peak or √2 × RMS.
+5. You can convert between µm pp, mm/s rms, in/s pk and g, and find small components with dB.
+
+</Callout>
+
+---
+
+## 1. We raised the number of lines and the floor dropped
+
+<Figure {...F.linesVsFloor} />
+
+Figure 1 shows the same signal measured twice. It is a 50 Hz sine (tone) of 1 mm/s RMS plus white noise (P2-6) of 1 mm/s RMS spread evenly over 0 – 640 Hz. The vertical axis is the dB of P2-3, with 0 dB set to 1 mm/s.
+
+What you can read from Figure 1:
+
+- **The 50 Hz bar**: about 0 dB (1 mm/s) at 400 lines and at 3200 lines alike.
+- **The noise floor**: it dropped from −25.3 dB to −34.3 dB, about 9 dB. In power that is a factor of 1/8, in amplitude about 1/2.8.
+
+The signal did not change, only the height of the floor. The reason is that with 8 times as many lines, Δf (P2-4) became 1/8 as large, from 1.25 Hz to 0.156 Hz. The next section shows why that matters.
+
+---
+
+## 2. A bin is a basket Δf wide: noise by the width, a tone all at once
+
+### 2.1 A bin collects noise in proportion to its width
+
+<Figure {...F.binBasket} />
+
+In P2-5 we saw that a bin collects the components near its own frequency over a width of **ENBW × Δf** (1.5 bins for Hann). Figure 2 gives an easy picture. Noise lies evenly along the frequency axis, and a bin is a basket placed on top of it.
+
+- **Noise**: a wide basket collects more, a narrow one less. With 8 times as many lines the basket is 1/8 as wide, so the noise power in one bin is also 1/8. But there are 8 times as many baskets, so the total within 10 Hz stays the same (Figure 2: 0.0213 and 0.0227 (mm/s)²).
+- **Tone**: it sits at a single frequency, so it falls into one bin whole, whatever the basket width. That is why the bar height does not change.
+
+<Callout type="term" title="Power Spectrum">
+
+A spectrum that plots the square of the RMS amplitude (the power of P2-6) for each bin. Its unit is the "square of an amplitude unit", such as (mm/s)². It carries the same information as the amplitude spectrum; only the vertical axis is squared. The symbol is $PS_k$.
+
+</Callout>
+
+<Callout type="example" title="Calculating the height of the noise floor">
+
+If noise of 1 mm/s RMS is spread evenly over 0 – 640 Hz, every 1 Hz of width holds $1^2 / 640 \approx 0.00156$ (mm/s)².
+
+1. 400 lines (Δf = 1.25 Hz, Hann): one bin collects a width of $1.5 \times 1.25 = 1.875$ Hz → $0.00156 \times 1.875 \approx 0.00293$ (mm/s)² → amplitude $\sqrt{0.00293} \approx 0.054$ mm/s → $20\log_{10} 0.054 \approx -25.3$ dB
+2. 3200 lines (Δf = 0.156 Hz): the width is 1/8 → 0.000366 (mm/s)² → 0.019 mm/s → −34.3 dB
+
+These match the two floors in Figure 1.
+
+</Callout>
+
+<Callout type="warn" title="'The floor dropped' does not mean 'the vibration decreased'">
+
+Do not compare the noise floors of two spectra taken with a different number of lines (or measurement time). The floor moves just because the bin width changed, even when the machine is the same. When you compare two measurements, first match the number of lines, F_max and the window.
+
+</Callout>
+
+---
+
+## 3. PSD: reading the size of noise independently of Δf
+
+### 3.1 Power per 1 Hz of width
+
+To state the size of noise independently of the measurement setup, divide the bin's power by the width that bin collects. This is the <strong>PSD (Power Spectral Density)</strong>.
+
+$$
+PSD_k = \frac{PS_k}{\mathrm{ENBW}\cdot\Delta f}
+$$
+
+$PS_k$ is the power of the $k$-th bin, ENBW is the equivalent noise bandwidth of the window (in bins, P2-5), and $\Delta f$ is the bin spacing. The unit is (mm/s)²/Hz. Its square root, $\sqrt{PSD}$, is called the <strong>ASD (Amplitude Spectral Density)</strong>, with the unit mm/s/√Hz.
+
+<Figure {...F.psdView} />
+
+Figure 3 draws the same measurement as Figure 1 as a PSD. This time it is the other way round.
+
+- **Noise floor**: about −28 dB (0.00156 (mm/s)²/Hz) in both cases, because we divided by the basket width.
+- **Tone**: it grew by 9 dB, from −2.6 dB to +6.4 dB, because the power of a tone packed into one bin was divided by an ever narrower width.
+
+**Look at sine components (bars such as 1X and 2X) in amplitude or power, and at broadly spread noise (random vibration) in PSD.** Each time you pick the one that does not depend on Δf.
+
+<Callout type="field" title="Where PSD is used">
+
+PSD is used for vibration spread over a wide frequency range. For example, the specification curve of a random vibration test is given in g²/Hz, and the noise specification of a sensor such as an accelerometer is written in µg/√Hz (ASD). When you read bars such as 1X and 2X on rotating machinery, you use the amplitude spectrum.
+
+</Callout>
+
+### 3.2 Lab: four vertical axes while changing the number of lines
+
+<Callout type="try">
+
+1. In the initial state (amplitude RMS, dB view, 400 lines, Hann), read the height of the 50 Hz bar and of the orange dashed line (the noise floor).
+2. Raise the number of lines 800 → 1600 → 3200. How do the tone height and the noise floor in the graph below each move?
+3. Switch the vertical axis to PSD and repeat step 2. Which one moves this time?
+4. Set the vertical axis to power, turn the dB view off, and use the readouts to check what fraction of the 400-line floor the 3200-line floor is.
+
+</Callout>
+
+<SpectrumScalingLab lang="en" client:visible />
+
+In step 2, in amplitude (RMS) the tone stays at 0 dB, and the noise floor drops 3 dB each time the number of lines doubles, 9 dB in all at 3200 lines. In the PSD of step 3 the floor stays at −28 dB and the tone rises 3 dB at a time. In step 4 the power floor is 1/8, from 0.0029 to 0.00037 (mm/s)². The floor is an average of 8 frames, so it can differ from the theoretical value by a few percent.
+
+---
+
+## 4. Getting the overall level from a spectrum: add the power and divide by the ENBW
+
+### 4.1 Band RMS
+
+A vibration meter sometimes shows the overall level as a single number, such as "overall 4.2 mm/s rms". You can also get the RMS of the time waveform (P2-1) from the spectrum. By Parseval's theorem (P2-2), **adding the power of the components gives the total power**. If you add only the frequency range you want, you get the level of that band, which is called the <strong>Band RMS</strong>.
+
+$$
+\text{Band RMS} = \sqrt{\frac{\sum_{k} PS_k}{\mathrm{ENBW}}}
+$$
+
+When a window is used you must divide by the ENBW. The window scales up the spectrum so that the sine bar height comes out right (the amplitude correction of P2-5), and in doing so it also spreads a share to the neighboring bins, so the sum swells by a factor of ENBW.
+
+<Figure {...F.overallFromSpectrum} />
+
+<Callout type="example" title="One 1 mm/s RMS tone measured with Hann">
+
+A tone sitting at a bin center spreads over three bins with a Hann window. The center bin has a power of 1 (mm/s)², and each neighbor has 0.25 (mm/s)² (the main lobe of P2-5).
+
+1. Add the power of the three bins: $0.25 + 1 + 0.25 = 1.5$
+2. Divide by the ENBW: $1.5 / 1.5 = 1$ (mm/s)²
+3. Square root: 1 mm/s RMS, the same as the original level
+
+Without the division you get $\sqrt{1.5} \approx 1.22$ mm/s, 22 % too large.
+
+</Callout>
+
+<Callout type="warn" title="'Just add the bar heights to get the overall' is wrong">
+
+There are two common mistakes. First, you must not add amplitudes; you add the **power (the square of the amplitude) and then take the square root** (1 and 3 mm/s combine to $\sqrt{1 + 9} \approx 3.16$, not 4). Second, if a window was used, you must divide by the ENBW.
+
+</Callout>
+
+---
+
+## 5. Which Peak is "Peak"? √2 × RMS versus the true peak
+
+### 5.1 The Peak of a spectrum and the Peak of the overall
+
+When you display a spectrum as Peak, the analyzer multiplies the RMS of each bin by √2. A bin holds a single sine component, so this value is **exactly the Peak of that component**.
+
+The problem is the overall level. Many vibration meters compute the overall RMS and multiply it by √2 to display a "Peak". This is called the <strong>derived peak</strong>. It is a different number from the <strong>true peak</strong>, the largest value that actually occurs in the time waveform. As we saw in P2-1, RMS × √2 = Peak holds only for a single sine.
+
+<Figure {...F.derivedPeak} />
+
+The acceleration in Figure 5 is a 1X sine mixed with short impacts at 107 per second. The true peak is 6.41 m/s², while √2 × RMS is 1.70 m/s², only 27 % of the true value. The reason is that the crest factor (P2-1), 5.32, is far larger than the 1.41 of a sine.
+
+<Callout type="try">
+
+1. In the initial state (acceleration with impacts, linear axis), compare the three lines in the graph above: the true peak (orange), √2 × RMS (green) and RMS (gray).
+2. Look at the error column of the "√2 × RMS" row in the readout table. By what percentage is it smaller than the true peak?
+3. Switch the signal to "machine velocity". How close do the two peaks get without impacts?
+
+</Callout>
+
+<AmplitudeScaleLab lang="en" client:visible initialSignal="impact" initialScale="linear" />
+
+In step 2, √2 × RMS is about 73 % smaller than the true peak. The machine velocity signal of step 3 is mostly 1X, so its crest factor is close to that of a sine and the gap between the two peaks is much smaller. The more impacts are mixed in, the larger the gap.
+
+<Callout type="warn" title="What to check when comparing Peaks">
+
+If one instrument shows the true peak and another shows √2 × RMS as "Peak", the numbers differ a lot even for the same machine. When you compare or record Peak values, write down how the instrument displays it (true peak or derived peak).
+
+</Callout>
+
+---
+
+## 6. Vibration units: what to record in which unit, and how to convert
+
+### 6.1 Common units and notation
+
+In P2-1 you learned displacement, velocity and acceleration, and Peak, Peak-Peak and RMS. Real reports have conventions that pair the two, and the units also differ by country and industry.
+
+| What is measured | Common notation (SI) | Common notation (inch units) | Reason |
+|---|---|---|---|
+| Shaft displacement (non-contact displacement probe) | µm Peak-Peak | mil Peak-Peak | the full width of the shaft motion is compared with the bearing clearance |
+| Casing velocity | mm/s RMS | in/s Peak | the size of vibration over a wide frequency range in a single number |
+| Acceleration | m/s² or g (both Peak and RMS are used) | g | high-frequency impacts and friction |
+
+<Callout type="term" title="mil, in/s, g">
+
+**mil** is 1/1000 inch = 25.4 µm, and **in/s** is inch/s = 25.4 mm/s. **g** is the standard gravitational acceleration, 9.80665 m/s². Changing only the unit is a single multiplication, but mistakes become frequent when Peak ↔ RMS (a factor of √2) and displacement ↔ velocity ↔ acceleration (which needs the frequency) get mixed in.
+
+</Callout>
+
+### 6.2 Conversion: notation, unit, then quantity
+
+For a single sine, convert in three steps.
+
+1. **Notation**: Peak = √2 × RMS = Peak-Peak ÷ 2
+2. **Unit**: 1 mil = 25.4 µm, 1 in/s = 25.4 mm/s, 1 g = 9.80665 m/s²
+3. **Quantity**: $v = 2\pi f\, d$, $a = 2\pi f\, v$ (P2-1) — this needs the frequency
+
+<Callout type="example" title="Two conversions">
+
+**25 Hz, 50 µm Peak-Peak to mm/s RMS**: Peak 25 µm → $v = 2\pi \times 25 \times 0.025\ \mathrm{mm} \approx 3.93$ mm/s Peak → ÷ √2 ≈ <strong>2.78 mm/s RMS</strong>
+
+**1 in/s Peak to mm/s RMS**: 25.4 mm/s Peak → ÷ √2 ≈ <strong>17.96 mm/s RMS</strong> (both are velocities, so no frequency is needed)
+
+So the "0.25 in/s pk" of the opening question is $0.25 \times 17.96 \approx 4.49$ mm/s RMS, larger than "3.2 mm/s rms".
+
+</Callout>
+
+<Figure {...F.sameVelocity} />
+
+Figure 6 shows that the same vibration gives very different numbers depending on frequency. Displacement is inversely proportional to frequency and acceleration is proportional to it. So **look at low frequencies (such as the 1X of a shaft) in displacement, and high frequencies (impacts from rolling bearings and gears) in acceleration**, and even small changes show up well in the numbers. Velocity sits between them and shows a wide range fairly evenly.
+
+<Callout type="try">
+
+1. In the initial state (25 Hz, 50 µm Peak-Peak), check that the "velocity mm/s RMS" row of the table reads 2.78.
+2. Change the unit to "velocity in/s" and set the value to 1.00 in/s Peak. What does the "velocity mm/s RMS" row read? Does this row change when you change the frequency?
+3. Set the unit to "velocity mm/s", the value to 5 mm/s RMS, and move the frequency from 10 Hz to 1000 Hz. How does the orange dot in the graph below move along the displacement and acceleration curves?
+
+</Callout>
+
+<UnitConverterLab lang="en" client:visible />
+
+Step 1 gives 2.78 mm/s RMS. In step 2, 1 in/s Peak is 17.96 mm/s RMS, and since it is a velocity-to-velocity conversion it does not change with frequency. In step 3, the displacement goes from 225 µm to 2.25 µm Peak-Peak, 1/100, and the acceleration goes from 0.045 g to 4.5 g Peak, 100 times.
+
+<Callout type="warn" title="This conversion is correct only for a single sine">
+
+Applying $v = 2\pi f d$ or √2 as it is to a number that mixes several components, such as an overall value, gives a wrong result. There is no single frequency, and the crest factor is not √2 either. Convert component by component, for each bar of the spectrum.
+
+</Callout>
+
+---
+
+## 7. dB and log axes: small components on one screen
+
+### 7.1 Components you cannot see on a linear axis
+
+<Figure {...F.linearVsDb} />
+
+The 147 Hz component in Figure 7 is about 1/180 of 1X. On a linear axis its bar is less than one pixel and invisible, but in dB it stands out clearly at −38.4 dB, 45 dB below 1X (+6.5 dB). To see components that differ in size by hundreds of times together, you need dB or a log axis. A log axis spaces the ticks equally for every factor of 10, and shows the same picture as the dB axis with ticks in the plain numbers.
+
+### 7.2 Amplitude is 20 log, power is 10 log
+
+In P2-3 the dB of an amplitude ratio $r$ was $20\log_{10} r$. A power ratio is written with $10\log_{10}$. Power is the square of amplitude, so in the same situation the two dB values agree.
+
+- Amplitude 1/10 → $20\log_{10} 0.1 = -20$ dB
+- Power 1/100 → $10\log_{10} 0.01 = -20$ dB
+
+So whether you view the same spectrum in amplitude dB or power dB, the differences between components are the same. Between Peak and RMS, however, there is a difference of $20\log_{10}\sqrt{2} \approx 3.01$ dB, so write the notation as well.
+
+### 7.3 A dB value needs a reference
+
+A dB is a ratio, so "−38 dB" alone tells you no size. You must also state <strong>what 0 dB is (the reference value)</strong>. The figures on this page set 1 mm/s as 0 dB.
+
+<Callout type="example" title="The same level, different references">
+
+Writing 1 mm/s RMS in dB:
+
+- Reference 1 mm/s → $20\log_{10}(1/1) = 0$ dB
+- Reference 1 nm/s → $20\log_{10}(10^{-3}/10^{-9}) = 120$ dB
+
+The international standard ISO 1683 recommends 1 nm/s for velocity and 1 µm/s² for acceleration as the reference values of a vibration level. Some instruments use another reference (for example, the largest component = 0 dB), so check the "dB re …" label on the screen.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (machine velocity, dB, reference 1 mm/s), find the 147 Hz and 294 Hz components. How many dB is each?
+2. Switch the vertical axis to linear and see whether the same components are visible.
+3. Change the dB reference to 1 nm/s. By how many dB do the graph and the readouts move?
+4. Change the notation from Peak to RMS. Do all components go down by the same amount?
+
+</Callout>
+
+<AmplitudeScaleLab lang="en" client:visible initialSignal="machine" initialScale="db" />
+
+In step 1, 147 Hz is about −35 dB and 294 Hz about −43 dB (Peak), visible above the noise floor. In step 2 neither is visible on the linear axis. In step 3 every value rises by 120 dB but the shape stays the same, and in step 4 every component goes down by 3.01 dB. The differences between components do not change in any of these cases.
+
+---
+
+## 8. Summary
+
+| What you want to do | Vertical axis · notation | Also check |
+|---|---|---|
+| Read the size of a sine component such as 1X or 2X | amplitude (Peak or RMS) | notation (Peak or RMS), window (P2-5) |
+| The size of broadly spread noise or random vibration | PSD (or ASD) | unit (mm/s)²/Hz, whether you divided by the ENBW |
+| Overall level (overall, band) | band RMS = √(Σpower ÷ ENBW) | the band range, the window |
+| Find small components | dB or a log axis | the reference value (dB re …) |
+| Compare with another report | convert to the same quantity, unit and notation | the conversion is right only for a single sine |
+
+| Topic | What to remember |
+|---|---|
+| Number of lines and the floor | more lines make the bins narrower, so the noise floor drops (8 times → −9 dB). The tone stays the same |
+| PSD | power ÷ (ENBW × Δf). Noise does not depend on Δf, a tone does |
+| Band RMS | add the power, divide by the ENBW, then take the square root. Without the division it is 22 % too large for Hann |
+| Peak | the Peak of a spectrum bar is exact; the "Peak" of the overall may be √2 × RMS |
+| Units | 1 mil = 25.4 µm, 1 in/s pk = 17.96 mm/s rms, $v = 2\pi f d$ |
+| dB | amplitude 20 log, power 10 log. Always write the reference |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. You raised the number of lines from 800 to 3200 (F_max unchanged). By how many dB do the noise floor and the 1X bar of the amplitude spectrum each move?</strong></summary>
+
+With 4 times as many lines the bin width is 1/4, so the noise floor power drops to 1/4, $10\log_{10}(1/4) \approx -6$ dB. The 1X bar stays the same. The machine did not get quieter.
+</details>
+
+<details>
+<summary><strong>Q2. How does the answer to Q1 change if you view the same measurement as a PSD?</strong></summary>
+
+The noise floor stays the same, and the 1X bar grows 4 times (+6 dB). The PSD is the bin power divided by the bin width, so it does not depend on Δf for noise, but it does not suit a sine packed into one bin.
+</details>
+
+<details>
+<summary><strong>Q3. In a spectrum measured with a Hann window, the power summed over 10 – 1000 Hz is 12 (mm/s)². What is the RMS of this band?</strong></summary>
+
+$\sqrt{12 / 1.5} = \sqrt{8} \approx 2.83$ mm/s RMS. If you skip the ENBW and write $\sqrt{12} \approx 3.46$, you report a value 22 % too large.
+</details>
+
+<details>
+<summary><strong>Q4. How many mm/s RMS is a sine vibration of 25 Hz, 50 µm Peak-Peak?</strong></summary>
+
+Peak 25 µm → $2\pi \times 25 \times 25\ \mu\mathrm{m} \approx 3.93$ mm/s Peak → ÷ √2 ≈ 2.78 mm/s RMS.
+</details>
+
+<details>
+<summary><strong>Q5. Which is larger, "0.25 in/s pk" or "3.2 mm/s rms"?</strong></summary>
+
+1 in/s Peak = 17.96 mm/s RMS, so 0.25 in/s Peak ≈ 4.49 mm/s RMS. The 0.25 in/s pk is about 1.4 times larger. Comparing the numbers without matching the unit and notation gives the wrong answer.
+</details>
+
+<details>
+<summary><strong>Q6. You attached an accelerometer to check a bearing, and the vibration meter shows an overall 2 g "Peak". Can you assume the true maximum of the waveform is also near 2 g?</strong></summary>
+
+Not if the instrument displays √2 × RMS (derived peak). Acceleration with impacts has a large crest factor, so the true peak can be much larger (about 3.8 times in Figure 5). Check with the maximum of the time waveform or the instrument's true peak setting.
+</details>
+
+<details>
+<summary><strong>Q7. A report says only "147 Hz component −38 dB". What is missing?</strong></summary>
+
+The reference (what 0 dB is) and the notation (Peak or RMS). With a reference of 1 mm/s RMS it is about 0.012 mm/s RMS, but with a reference of 1 nm/s it is a completely different size. Write it as "−38 dB re 1 mm/s RMS".
+</details>
+
+The next page (P2-8) covers why small components line up on both sides of a large one in a spectrum (modulation and sidebands), and the beating that appears when two frequencies are close.
+
+## References
+
+<References items={[
+  ['R-05', 'Power spectrum and PSD normalization, and the ENBW'],
+  ['R-54', 'dB reference values'],
+]}>
+
+The ISO 1683 reference values are still being checked against the original text.
+
+</References>

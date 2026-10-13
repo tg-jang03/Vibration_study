@@ -1,0 +1,486 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-6 Averaging and TSA
+description: Why the noise floor of a single spectrum is ragged, power averaging (smoother but not lower) and vector averaging (noise cancels when there is a trigger), exponential averaging and peak hold, overlap and total measurement time, and TSA (time synchronous averaging) for picking out one shaft's components and locating a fault
+sectionId: P2-6
+source: p2-6.mdx
+sourceHash: bbc9046026
+---
+
+import Figure from '../../components/content/Figure.astro';
+import { withBase } from '../../lib/site';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import AveragingLab from '../../components/labs/AveragingLab';
+import TsaLab from '../../components/labs/TsaLab';
+import * as F from '../../figures/p2-6';
+
+# 2-6 Averaging and TSA: handling the noise floor, looking at one shaft only
+
+A small bar is barely visible on the floor of the spectrum. Measure again and it is gone, and the next time a similar bar stands somewhere else. Is it a real component, or did the noise just happen to spike?
+
+This is when you switch on the analyzer's **averaging** function. But does averaging lower the noise floor? The answer is "it depends on the averaging method." This page uses figures and labs to check what shrinks and what stays the same for each method. In the last section, the same idea is applied to the time waveform, and we look at TSA, which picks out the components of one shaft in a machine where several shafts turn together.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why the noise floor of a single measurement is ragged, and why power averaging only smooths the floor without lowering it.
+2. You know the principle by which vector averaging lowers the floor, and why it needs a trigger.
+3. You can choose exponential averaging when the state is changing, and peak hold when you need the maximum that has passed.
+4. You can calculate the total measurement time from the number of averages and the overlap.
+5. You can read what TSA keeps (only the components tied to one shaft), how much of the rest it removes, and the angle of a fault impact.
+
+</Callout>
+
+---
+
+## 1. Why is the noise floor ragged?
+
+<Callout type="term" title="Random Noise">
+
+Fluctuation whose value changes irregularly from moment to moment. Its causes are fluid flow, neighboring machines, electrical noise and so on. Noise spread evenly over all frequencies is called <strong>White Noise</strong>. The quantization noise in P2-3 is one kind of such noise.
+
+</Callout>
+
+If you cut random noise into 1-second frames and draw the spectrum of each, the noise magnitude in each bin also differs from frame to frame. In P2-2 we said the phase of a noise-only bin is random; the magnitude is likewise different every time.
+
+<Figure {...F.jaggedFloor} />
+
+Figure 1 contains two components. The 70 Hz component is a little larger than the noise floor, and the 32 Hz component is smaller than the floor. From a single measurement alone, even the 70 Hz component is hard to tell apart from a noise peak. Now let us collect several frames and average them.
+
+On this page we treat the size of one bin as **power**. Power is the square of that bin's RMS amplitude (in P2-1, RMS was "the square root of the mean of the squares"). If it is 2 mm/s RMS, the power is 4 (mm/s)².
+
+---
+
+## 2. Power averaging: smoother, but not lower
+
+### 2.1 Square, then average
+
+<strong>Power averaging</strong> collects the power of each bin over the frames, averages it, and then takes the square root to display an amplitude. Depending on the analyzer it is also called "RMS averaging" or "linear averaging."
+
+<Callout type="example" title="Power-averaging amplitudes 1 and 3">
+
+1. Square: powers 1 and 9 (mm/s)²
+2. Average: $(1 + 9)/2 = 5$ (mm/s)²
+3. Return to amplitude: $\sqrt{5} \approx 2.24$ mm/s RMS
+
+This differs from simply averaging the amplitudes, $(1 + 3)/2 = 2$, because we averaged the power (energy).
+
+</Callout>
+
+$$
+\bar S_k = \frac{1}{M}\sum_{m=1}^{M} S_{m,k},\qquad A_k = \sqrt{\bar S_k}
+$$
+
+$S_{m,k}$ is the power of frame $m$, bin $k$; $M$ is the number of frames averaged; $A_k$ is the displayed RMS amplitude.
+
+### 2.2 What shrinks
+
+<Figure {...F.powerAverageSteps} />
+
+<Figure {...F.levelVsSpread} />
+
+Figures 2 and 3 are the heart of this section.
+
+- **The average height of the floor stays the same.** Noise enters in every frame, so averaging does not remove it.
+- **The ragged variation of the floor shrinks.** The variation (the standard deviation, which tells how far values stray from the mean, divided by the mean) shrinks as $1/\sqrt{M}$. With $M$ = 4 it is 1/2, with 16 it is 1/4, with 64 it is 1/8.
+
+Once the floor is smooth, **a component that is even slightly larger than the floor** stands out clearly (70 Hz). But **a component smaller than the floor** does not show up no matter how much you average (32 Hz).
+
+<Callout type="example" title="How many averages are enough?">
+
+Expressed in dB, the variation is roughly $\pm 4.3/\sqrt{M}$ dB.
+
+- $M$ = 16 → about ±1.1 dB
+- $M$ = 19 → about ±1.0 dB
+- $M$ = 64 → about ±0.5 dB
+
+To halve the variation you need 4 times as many averages, and the measurement time is also 4 times longer.
+
+</Callout>
+
+<Callout type="try">
+
+1. From the initial state (power averaging, M = 64, overlap 0 %), press "Show full result" and "Replay from start" to watch the average build up.
+2. Change M from 1 → 4 → 16 → 64. From which M does the 70 Hz bar become clear? And the 32 Hz bar?
+3. In the two graphs below, check whether the average height of the floor stays near 1, and whether the variation falls along the dotted $1/\sqrt{M}$ line.
+4. Lower the noise level σ to 0. Check that the readout values for 70 Hz and 32 Hz match the theoretical values (0.0495 and 0.0177 mm/s).
+
+</Callout>
+
+<AveragingLab lang="en" client:visible />
+
+In step 2, the 70 Hz component stands clearly above the smoothed floor after only a few averages, but the 32 Hz component cannot be told apart from the floor even after 64 averages. When you remove the noise as in step 4, the 32 Hz component reads exactly 0.0177 mm/s, so you can see it was not absent — it was buried in the floor.
+
+<Callout type="warn" title="&quot;Smoother&quot; is not &quot;the floor is lower&quot;">
+
+Even if the spectrum looks clean after power averaging, the height of the noise floor is unchanged. The ratio of component size to noise is the same as before averaging. To dig out a component smaller than the floor you need the method in the next section.
+
+</Callout>
+
+---
+
+## 3. Vector averaging: average the phase too, and the noise cancels
+
+### 3.1 Seeing a bin value as an arrow
+
+In P2-2, the DFT computed two numbers for each bin: the sum with the cos template and the sum with the sin template. Put these two numbers as horizontal and vertical coordinates and a bin value becomes an **arrow**. The arrow length is the magnitude and its direction is the phase. Power averaging averages only the (squared) length and throws away the direction.
+
+<strong>Vector averaging</strong> averages the arrows with their directions intact. You average the horizontal coordinates among themselves and the vertical coordinates among themselves.
+
+<Figure {...F.phasorAverage} />
+
+<Callout type="example" title="Two arrows pointing in opposite directions">
+
+Average an arrow of length 1 and phase 0° with an arrow of length 1 and phase 180°:
+
+- Vector average: they cancel each other, length 0
+- Power average: both powers are 1, so the amplitude is 1
+
+With the same data the results are completely different. Only a component whose direction is the same every time survives vector averaging.
+
+</Callout>
+
+$$
+\bar X_k = \frac{1}{M}\sum_{m=1}^{M} X_{m,k}
+$$
+
+$X_{m,k}$ is the arrow (a complex number) of frame $m$, bin $k$. For display we use the length of the averaged arrow.
+
+### 3.2 The trigger that aligns the direction of a component
+
+For a component to survive vector averaging, its arrow must point in the **same direction in every frame**. For that, you must not start frames at arbitrary moments but when the shaft is at the same angle.
+
+<Callout type="term" title="Trigger">
+
+The signal that starts the measurement of a frame. In a rotating machine, a once-per-revolution marker sensor (such as a Keyphasor, P3-3) that emits one pulse each time the shaft turns is used as the trigger. Then 1X and its integer multiples start at the same phase in every frame, so their arrows point the same way. A component tied to the rotation like this is called a <strong>Synchronous Component</strong>.
+
+</Callout>
+
+<Figure {...F.vectorVsPower} />
+
+If you align the trigger and vector-average $M$ frames, the noise power falls to $1/M$ and the amplitude to $1/\sqrt{M}$. With $M$ = 64 the noise floor drops to 1/8 (−18 dB), and the 32 Hz component that stayed buried under power averaging appears (Figure 5, middle).
+
+<Callout type="try">
+
+1. From the initial state (vector averaging, trigger on, M = 64), look at the noise floor and the 32 Hz bar. What is the readout value of 32 Hz?
+2. Switch the averaging method to power averaging and back to vector averaging, and see how different the floor height is for the same data.
+3. Turn the trigger off. Check whether not only the noise but also the 70 Hz and 32 Hz components shrink.
+4. Turn the trigger back on and change M from 1 → 64. Check whether the graph of the average floor height goes down along the dotted $1/M$ line.
+
+</Callout>
+
+<AveragingLab lang="en" client:visible initialMode="vector" />
+
+In step 1, 32 Hz reads about 0.012 mm/s. The difference from the original 0.0177 mm/s is due to noise that was not fully cancelled (about 0.004 mm/s); increasing M brings it closer to the original value. In step 3, turning the trigger off makes the direction of the component different every time, so the component is cancelled too.
+
+<Callout type="warn" title="If a bar got smaller under vector averaging">
+
+Before concluding that the vibration really decreased, check a few things. Did the trigger come in properly? Is that component really tied to the rotation? Vibration transmitted from a neighboring machine, or a component unrelated to the rotation speed, points in a different direction every time even if you align the trigger, and is cancelled in vector averaging.
+
+</Callout>
+
+<Callout type="field" title="Averaging aligned to the rotation angle (TSA)">
+
+Pushing the same principle further, the method of cutting the time waveform into one-revolution pieces of a shaft and averaging them is called <strong>TSA (Time Synchronous Averaging)</strong>. Only the components tied to that shaft remain, while the components of other shafts and the noise are cancelled, so it is widely used to look at a single shaft in a gearbox where several shafts turn together. We look at it in detail in Section 6.
+
+</Callout>
+
+---
+
+## 4. When the state changes, and the maximum that has passed
+
+### 4.1 Exponential averaging: more weight on recent values
+
+The power averaging of Section 2 adds all frames with equal weight from the first one. If the vibration grows during the measurement, old values keep mixing in and the average is slow to follow the new state.
+
+<strong>Exponential averaging</strong> gives the new frame a fixed weight $\alpha$ and gives the remaining $1-\alpha$ to the average so far.
+
+$$
+\bar S_m = (1-\alpha)\,\bar S_{m-1} + \alpha\, S_m
+$$
+
+<Callout type="example" title="When α = 0.25">
+
+If the average power so far is 1 and the power of the new frame is 5, then $0.75 \times 1 + 0.25 \times 5 = 2$. If the next frame is 9, then $0.75 \times 2 + 0.25 \times 9 = 3.75$. It moves 1/4 of the way toward the new value each time.
+
+</Callout>
+
+<Figure {...F.expTracking} />
+
+Analyzers commonly set $\alpha = 1/M$. With $M$ = 8, roughly the latest eight frames or so mainly decide the result. It is not the same as "averaging only the latest $M$ with equal weight," though; the influence of old values remains, getting smaller and smaller.
+
+### 4.2 Peak hold: keeping the maximum that has passed
+
+<strong>Peak Hold</strong> is not an average; for each bin it stores the largest value seen so far. If the power comes in as 1 → 4 → 2, the stored value is 1 → 4 → 4.
+
+$$
+\bar S_k = \max_{1\le m\le M} S_{m,k}
+$$
+
+When 1X keeps moving, as in an operation that raises the speed (<strong>Run-up</strong>), peak hold keeps the whole path that 1X has traveled.
+
+<Figure {...F.runupPeakHold} />
+
+<Callout type="warn" title="A peak-hold value is not the current value">
+
+Peak hold is "the maximum that has passed." It must not be reported as the vibration level of the present operating state. It also holds on to any moment when the noise happened to spike, so the longer you leave it on, the higher the floor gets.
+
+</Callout>
+
+<Callout type="try">
+
+1. From the initial state (signal "32 Hz slowly grows", power averaging, M = 16), press "Replay from start" and watch the 32 Hz readout.
+2. Change the averaging method to exponential averaging and replay. How does the tracking speed change when you reduce M to 4?
+3. Change the signal to "92 Hz briefly grows" and compare power averaging with peak hold. Which one remains after the event is over?
+4. Change the signal to "Speed ramp (20→120 Hz)" and replay with peak hold. How do the current frame and the average curve differ?
+
+</Callout>
+
+<AveragingLab lang="en" client:visible initialScenario="changing" initialCount={16} />
+
+In step 2, exponential averaging follows the present state more closely than power averaging, and the smaller M is (the larger α is), the faster it is, but the variation grows by the same token. In step 3, power averaging dilutes the brief event to 1/16, whereas peak hold keeps the size of the event as it is.
+
+---
+
+## 5. Overlap: more frames in the same time
+
+### 5.1 Cutting frames so that they overlap
+
+Increasing the number of averages lengthens the measurement time. Collecting 16 one-second frames without overlap takes 16 seconds. But the Hann window shrinks both ends of a frame to nearly zero, so the data at the ends is hardly used. If you start the next frame so that it overlaps part of the previous one, you get more frames in the same time and also reuse the data that was being discarded.
+
+<strong>Overlap r</strong> is the fraction by which neighboring frames overlap. If the frame length is $T$, the next frame starts $T(1-r)$ later, and the total measurement time to collect $M$ frames is
+
+$$
+T_{tot} = T\,[\,1 + (M-1)(1-r)\,]
+$$
+
+The first frame takes the full $T$, and each remaining one adds only the start interval.
+
+| Overlap $r$ | Until next frame | Total time for 16 one-second frames |
+|---|---|---|
+| 0 % | 1 s | 16 s |
+| 50 % | 0.5 s | 8.5 s |
+| 75 % | 0.25 s | 4.75 s |
+
+<Figure {...F.overlapLayout} />
+
+### 5.2 Overlapping frames are not completely new information
+
+Overlapping frames share part of their data, so they cannot reduce the variation as much as $M$ independent, non-overlapping frames. It is therefore easier to compare if we express the reduction in variation as "equal to how many independent non-overlapping frames."
+
+| Hann, 16 frames | Total time | Variation | Independent frames giving the same variation |
+|---|---|---|---|
+| Overlap 0 % | 16 s | 0.25 | 16 |
+| Overlap 50 % | 8.5 s | 0.26 | about 15.2 |
+| Overlap 75 % | 4.75 s | 0.34 | about 8.6 |
+
+With 50 % overlap the time is nearly halved while the effect is almost unchanged. With 75 % the effect drops to 8.6 frames' worth, but that is more than twice the frames (4) you could collect without overlap in the same 4.75 s. This is why 50 to 75 % overlap is widely used with the Hann window. With no window (Uniform) the ends are used as they are, so the overlapped part is effectively used twice and the gain is smaller (about 10.9 frames' worth at 50 %). It is still not zero.
+
+<Callout type="try">
+
+1. From the initial state (power averaging, M = 16, overlap 0 %), look at the total measurement time and the variation readout.
+2. Change the overlap to 50 % → 75 %. Does the total measurement time drop 16 → 8.5 → 4.75 s?
+3. Check whether "independent frames giving the same variation" then changes 16 → 15.2 → 8.6.
+4. Change the window to "No window" and repeat 2 and 3. Is the gain smaller than with Hann?
+
+</Callout>
+
+<AveragingLab lang="en" client:visible initialCount={16} />
+
+The variation readout is calculated from one measurement of noise, so it may differ slightly from the theoretical values (0.25, 0.26, 0.34). Read it together with the theoretical-value column of the readout table.
+
+---
+
+## 6. TSA: cut one revolution at a time and average
+
+### 6.1 A machine with several shafts turning
+
+Inside a <strong>Gearbox</strong>, several shafts with different speeds turn. A single accelerometer on the casing receives the vibration of all the shafts at once. If one gear tooth on shaft A is damaged, can we look at the signal of shaft A alone?
+
+<Callout type="term" title="Gear Mesh Frequency">
+
+As gears turn, their teeth mesh one after another and exchange force. A gear with $z$ teeth turning at $f_r$ meshes $z f_r$ times per second, so a component appears at that frequency. With 15 teeth at 20 Hz (1200 rpm) it is 300 Hz, which is 15 times the shaft rotation frequency (the 15th order). If one tooth is damaged, an impact occurs at the moment that tooth meshes, that is, once per revolution. The relation between the speeds of two meshing gears and the frequencies of other machine elements are counted in <a href={withBase('/p1-8/#2-날개와-기어-지나가는-수-맞물리는-수')}>P1-8 Frequencies produced by machine elements</a>.
+
+</Callout>
+
+<Figure {...F.tsaMixture} />
+
+Two things to see in Figure 9. The components of shaft A (the mesh and the fault impact) return to the same place with the same shape between the dotted Keyphasor lines. The component of shaft B, on the other hand, oscillates 13.4 times while shaft A turns once, so on the next revolution it starts at a place shifted by 0.4 of a cycle. TSA uses this difference.
+
+### 6.2 Average the same angles together
+
+<strong>TSA (time synchronous averaging)</strong> works like this.
+
+1. Cut the time waveform one revolution at a time, from one Keyphasor pulse of shaft A to the next.
+2. Replace the horizontal axis, instead of time, with the rotation angle of shaft A (0 to 360°).
+3. Stack $M$ revolutions and average the values at the same angle.
+
+$$
+\bar x(\theta) = \frac{1}{M}\sum_{m=0}^{M-1} x(\theta + 2\pi m)
+$$
+
+$\theta$ is the rotation angle of shaft A, $x(\theta + 2\pi m)$ is the value at the same angle $m$ revolutions later, and $M$ is the number of revolutions averaged.
+
+<Figure {...F.tsaStack} />
+
+A component tied to shaft A has the same value at the same angle every revolution, so it remains after averaging. The shaft B component starts at a different place each revolution, so its + and − values mix and cancel, and the noise RMS shrinks as $1/\sqrt{M}$, like the vector averaging in Section 3. The difference from the true value shrinking 1.04 → 0.45 → 0.10 m/s² in Figure 10 is the result.
+
+**Where vector averaging averaged the arrows bin by bin, TSA averages the time waveform angle by angle.** What survives is the same: the components tied to the rotation.
+
+### 6.3 How much is removed: the comb shape
+
+How much of the shaft B component remains is set by how many times shaft A's rotation frequency its frequency is ($\rho$).
+
+$$
+\lvert H\rvert = \left\lvert \frac{\sin(\pi M\rho)}{M\sin(\pi\rho)} \right\rvert
+$$
+
+$\lvert H\rvert$ is the fraction remaining after TSA (1 means unchanged, 0 means completely removed).
+
+<Figure {...F.tsaComb} />
+
+- If $\rho$ is an integer (a harmonic of shaft A), $\lvert H\rvert = 1$ and it remains as it is. TSA is a comb-shaped filter that passes only the harmonics of shaft A.
+- If $\rho$ is far from an integer, only about $1/M$ remains.
+- If $\rho$ is close to an integer, it lasts longer. It shifts only a little each revolution, so you must average many revolutions before it has gone all the way around and cancelled.
+
+<Callout type="example" title="Averaging 16 revolutions at 13.4 times and at 13.05 times">
+
+- $\rho$ = 13.4: it shifts by 0.4 revolution (144°) each revolution. Averaging 16 revolutions leaves only $1/16 = 0.0625$.
+- $\rho$ = 13.05: it shifts by only 0.05 revolution (18°) each revolution. Even after 16 revolutions 0.235 remains. To reach 0 you need $M = 1/0.05 = 20$ revolutions, and with 64 revolutions it is 0.059.
+
+</Callout>
+
+The time TSA takes is the number of revolutions ÷ the rotation frequency. At 1200 rpm (20 Hz), 64 revolutions take 3.2 seconds, but for a slow shaft turning at 60 rpm it takes 64 seconds.
+
+<Callout type="try">
+
+1. From the initial state (M = 1, ρ = 13.40, σ = 0.8 m/s²), compare the blue line (TSA result) in the middle graph with the gray dotted line (the true value of the shaft A component alone).
+2. Increase M to 4 → 16 → 64. How close does the blue line get to the true value? Check whether the "residual noise" in the readout follows the theoretical value σ/√M.
+3. In the order spectrum below (horizontal axis = multiples of shaft A's rotation frequency), compare the gray (one revolution only) and blue (TSA) bars. What happens to the shaft B component near orders 13 and 14?
+4. At M = 16, change ρ from 13.40 to 13.05. Does "fraction of the shaft B component remaining" grow from 0.0625 to 0.235? And with M = 20?
+
+</Callout>
+
+<TsaLab lang="en" client:visible />
+
+In step 2, at M = 64 the residual noise falls to 0.1 m/s² and the blue line almost overlaps the true value. In step 3, the gray bar measured over one revolution has the shaft B component spread across orders 13 and 14, but in the TSA bars it almost disappears, and only orders 1, 15 and 30 of shaft A remain clearly. As in step 4, when $\rho$ is close to an integer, much more of shaft B remains at the same M, and it first becomes 0 at M = 20.
+
+### 6.4 Finding the fault in what remains
+
+The TSA result still contains large regular components of shaft A (1X, the mesh), so a small fault impact shows up only as a slight distortion of the waveform. So we look at **what remains after subtracting the regular components** from the TSA result. In gear diagnosis this is called the <strong>Residual signal</strong>.
+
+The way to subtract is simple. The TSA result is a waveform that repeats every revolution, so like the Fourier series of P2-2 it can be written as a sum of harmonics 1, 2, 3, and so on. You just delete the terms of orders 1, 15 and 30.
+
+<Figure {...F.tsaResidual} />
+
+Below Figure 12, the ringing is only at the 120° position. Since the position is visible as an angle within one revolution, you can even point to "which tooth." One tooth spans 24°, so counting from 0° it is the sixth tooth (120° to 144°).
+
+<Callout type="try">
+
+1. From the initial state (M = 1, "Show without the regular components" on), look at the middle graph. Can you distinguish the ringing at 120°?
+2. Increase M 4 → 16 → 64 and see from which M the ringing at 120° becomes clear.
+3. Turn off "Fault impact of the tooth at 120°" and look again at M = 64. What remains?
+
+</Callout>
+
+<TsaLab lang="en" client:visible initialResidual />
+
+With one revolution alone, the fault ringing (about 1 m/s² at most) is buried in the noise (0.8 m/s² RMS) and hard to distinguish. From about 16 revolutions the noise falls to 0.2 m/s² and the ringing at 120° becomes clear. When you turn the fault off, all that remains is the noise left over after averaging.
+
+<Callout type="warn" title="TSA shows only &quot;the chosen shaft&quot;">
+
+TSA keeps only the components tied to shaft A, which has the Keyphasor, and cancels the rest. A fault on shaft B is in fact cancelled in the TSA of shaft A. To look at shaft B you must run a separate TSA with a reference aligned to shaft B's rotation (shaft B's Keyphasor, or shaft B's angle calculated from the gear ratio).
+
+Also, a real machine's speed wobbles a little, so the number of samples per revolution differs every time. So each revolution is re-divided into the same number of angle points before averaging (sampling aligned to the rotation angle, P2-4 §3 → in detail P5-4).
+
+</Callout>
+
+<Callout type="field" title="The basic tool of gearbox diagnosis">
+
+TSA is the basic tool for examining the condition of each shaft separately in a machine such as a gearbox where several shafts turn together. Besides the Residual, a few other signals are viewed together, such as the signal with only the mesh components kept; they are covered again in fault diagnosis (P7-6 Gears).
+
+</Callout>
+
+---
+
+## 7. Choosing an averaging method
+
+| What you want to do | Averaging method | What to check along with it |
+|---|---|---|
+| See a stable spectrum of a steady operating state | Power averaging | Is the operating state steady during averaging? |
+| Dig out a rotation-synchronous component smaller than the floor | Vector averaging | Is there a trigger, and is the component tied to the rotation? |
+| Follow a slowly changing state | Exponential averaging | Response speed and variation depending on $\alpha$ (or M) |
+| Keep the maximum of a passing component or a brief event | Peak hold | Report it separately from the current value |
+| More averages in the same time | Overlap 50 to 75 % (Hann) | Look at the total measurement time and the number of independent frames together |
+| See only one shaft's components among several, find the angle of a fault | TSA | That shaft's Keyphasor, other components near an integer, measurement time = revolutions ÷ rotation frequency |
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Noise floor | A single measurement has a different magnitude in each bin, so it is ragged |
+| Power averaging | Average height unchanged, only the variation shrinks as $1/\sqrt{M}$. Components smaller than the floor do not show up |
+| Vector averaging | Averages arrows with their directions. With a trigger the noise amplitude falls as $1/\sqrt{M}$ while synchronous components are kept |
+| Exponential averaging | Weight $\alpha$ on the new value. It follows a changing state |
+| Peak hold | The maximum that has passed in each bin. It is not the current value |
+| Overlap | $T_{tot} = T[1+(M-1)(1-r)]$. Overlapping frames are less effective than independent ones |
+| TSA | Cut one revolution at a time and average the same angles. Only that shaft's harmonics remain, other components by $\lvert H\rvert$, noise by $1/\sqrt{M}$. Subtract the regular components and the angle of the fault shows |
+
+---
+
+## 9. Check yourself
+
+<details>
+<summary><strong>Q1. The amplitude of the same bin in two frames was 1 and 3 mm/s RMS. What amplitude does power averaging display?</strong></summary>
+
+$(1^2 + 3^2)/2 = 5$ (mm/s)², and taking the square root gives $\sqrt{5} \approx 2.24$ mm/s RMS. It is not the simple average of the amplitudes, 2.
+</details>
+
+<details>
+<summary><strong>Q2. To lower the noise floor you raised the number of power averages from 16 to 64. How much does the floor go down?</strong></summary>
+
+It does not go down. The average height stays the same, and the variation shrinks from 1/4 to 1/8, so the floor just becomes smoother. To lower the floor you need vector averaging with an aligned trigger.
+</details>
+
+<details>
+<summary><strong>Q3. You vector-averaged with a Keyphasor trigger, and 1X stayed while another bar nearby disappeared. What was that bar most likely?</strong></summary>
+
+A component not tied to the shaft rotation. It may be noise, or a component whose phase changes in every frame, such as vibration transmitted from a neighboring machine with a different speed. Conversely, if the component you must see is unrelated to the rotation, you must not use vector averaging.
+</details>
+
+<details>
+<summary><strong>Q4. What is the total measurement time for 1-second frames, M = 16, overlap 75 %?</strong></summary>
+
+$1 \times [1 + 15 \times 0.25] = 4.75$ s. However, the variation-reducing effect is about 8.6 frames' worth, not 16 independent frames.
+</details>
+
+<details>
+<summary><strong>Q5. In a spectrum measured with peak hold during start-up, 1X was 3 mm/s. May you report that 1X at rated speed is 3 mm/s?</strong></summary>
+
+No. Peak hold is the maximum over all the speeds passed during start-up. It could be a value that grew while passing a resonance on the way. The value at rated speed must be measured separately in that state.
+</details>
+
+<details>
+<summary><strong>Q6. You run TSA with the Keyphasor of shaft A (1200 rpm). A neighboring shaft has components at 9.5 and 9.02 times the rotation frequency of shaft A. After averaging 32 revolutions, which one remains more? What is the measurement time?</strong></summary>
+
+The 9.02 one. The 9.5 one shifts half a revolution each revolution and cancels exactly every two revolutions (with 32 revolutions the remaining fraction is 0), so almost nothing remains. The 9.02 one shifts only 0.02 revolution each revolution, so it needs $1/0.02 = 50$ revolutions to cancel. At 32 revolutions $\lvert\sin(0.64\pi)\rvert / (32\sin(0.02\pi)) \approx 0.45$ remains. The measurement time is 32 ÷ 20 Hz = 1.6 seconds.
+</details>
+
+<details>
+<summary><strong>Q7. The Residual of the TSA of shaft A showed nothing abnormal. May we say the whole gearbox is normal?</strong></summary>
+
+No. The TSA of shaft A keeps only the components tied to shaft A, so a fault in a shaft B gear is in fact cancelled. Shaft B must be run through TSA separately with a reference aligned to its own rotation. Also, other components near an integer can remain when the number of averages is small and look like a fault.
+</details>
+
+In the next page (P2-7) we cover which unit the vertical axis of a spectrum is drawn in, and why a sine wave and noise are shown in different ways (amplitude spectrum and PSD).
+
+## References
+
+<References items={[
+  ['R-01', 'TSA, the Residual signal of gears'],
+  ['R-05', 'Windows and averaging, normalization of overlap'],
+  ['R-13', 'RMS, peak hold, vector averaging and trigger conditions'],
+  ['R-14', 'Welch power averaging and overlap'],
+]} />

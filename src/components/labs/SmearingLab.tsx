@@ -14,6 +14,9 @@ import {
 import { acquire } from '../../lib/dsp/sampling';
 import { singleSidedSpectrum } from '../../lib/dsp/spectrum';
 import type { WindowType } from '../../lib/dsp/window';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/SmearingLab';
 
 /**
  * LAB-RES-02 Smearing: 변하는 회전수 (P2-4, Contents §5-1).
@@ -27,11 +30,11 @@ import type { WindowType } from '../../lib/dsp/window';
 type PresetKey = 'default60' | 'heavy120' | 'gentle20' | 'steady0' | 'custom';
 
 const PRESET_OPTIONS: ParamOption<PresetKey>[] = [
-  { value: 'default60', label: '감속 중 측정 (60 rpm/s = 1초에 1 Hz씩 느려짐, LOR 1600)' },
-  { value: 'heavy120', label: '빠른 감속 (120 rpm/s)' },
-  { value: 'gentle20', label: '느린 감속 (20 rpm/s)' },
-  { value: 'steady0', label: '정속 운전 (0 rpm/s, 비교 기준)' },
-  { value: 'custom', label: '직접 조작' },
+  { value: 'default60', label: k('감속 중 측정 (60 rpm/s = 1초에 1 Hz씩 느려짐, LOR 1600)') },
+  { value: 'heavy120', label: k('빠른 감속 (120 rpm/s)') },
+  { value: 'gentle20', label: k('느린 감속 (20 rpm/s)') },
+  { value: 'steady0', label: k('정속 운전 (0 rpm/s, 비교 기준)') },
+  { value: 'custom', label: k('직접 조작') },
 ];
 
 const FMAX_OPTIONS: ParamOption<number>[] = [
@@ -41,19 +44,20 @@ const FMAX_OPTIONS: ParamOption<number>[] = [
 ];
 
 const LOR_OPTIONS: ParamOption<number>[] = [
-  { value: 400, label: '400 line (T 짧음 → 번짐 작음)' },
+  { value: 400, label: k('400 line (T 짧음 → 번짐 작음)') },
   { value: 800, label: '800 line' },
   { value: 1600, label: '1600 line' },
-  { value: 3200, label: '3200 line (T 김 → 번짐 큼)' },
+  { value: 3200, label: k('3200 line (T 김 → 번짐 큼)') },
 ];
 
 const WINDOW_OPTIONS: ParamOption<WindowType>[] = [
-  { value: 'hann', label: 'Hann (분석기 기본값)' },
-  { value: 'uniform', label: '윈도우 없음' },
+  { value: 'hann', label: k('Hann (분석기 기본값)') },
+  { value: 'uniform', label: k('윈도우 없음') },
   { value: 'flatTop', label: 'Flat top' },
 ];
 
-export default function SmearingLab() {
+export default function SmearingLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [preset, setPreset] = useState<PresetKey>('default60');
   const [rpm0, setRpm0] = useState(3600); // 초기 회전수 (60 Hz)
   const [rateRpm, setRateRpm] = useState(60); // 감속률 a [rpm/s]
@@ -169,7 +173,7 @@ export default function SmearingLab() {
       {
         x: specChirp.frequency,
         y: specChirp.amplitude,
-        name: `감속 중 신호 (${rateRpm} rpm/s)`,
+        name: tr`감속 중 신호 (${rateRpm} rpm/s)`,
         mode: 'lines',
         color: '#dc2626', // red
         width: 2.2,
@@ -180,7 +184,7 @@ export default function SmearingLab() {
       list.push({
         x: specSteady.frequency,
         y: specSteady.amplitude,
-        name: '정속 운전 기준 (a = 0 rpm/s)',
+        name: tr`정속 운전 기준 (a = 0 rpm/s)`,
         mode: 'lines',
         color: '#2563eb', // blue
         dash: 'dash',
@@ -192,7 +196,7 @@ export default function SmearingLab() {
     list.push({
       x: [f0, f0],
       y: [0, 1.15],
-      name: `시작 f0 (${formatNumber(f0, 4)} Hz)`,
+      name: tr`시작 f0 (${formatNumber(f0, 4)} Hz)`,
       mode: 'lines',
       color: '#16a34a',
       dash: 'dot',
@@ -203,7 +207,7 @@ export default function SmearingLab() {
       list.push({
         x: [fEnd, fEnd],
         y: [0, 1.15],
-        name: `종료 f_end (${formatNumber(fEnd, 4)} Hz)`,
+        name: tr`종료 f_end (${formatNumber(fEnd, 4)} Hz)`,
         mode: 'lines',
         color: '#f97316',
         dash: 'dot',
@@ -221,17 +225,18 @@ export default function SmearingLab() {
   return (
     <LabFrame
       id="LAB-RES-02"
-      title="스미어링(Smearing): 측정 중에 회전수가 변하면"
+      lang={lang}
+      title={tr`스미어링(Smearing): 측정 중에 회전수가 변하면`}
       controls={
         <>
           <ParamSelect
-            label="실험 프리셋"
+            label={tr`실험 프리셋`}
             value={preset}
-            options={PRESET_OPTIONS}
+            options={PRESET_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={applyPreset}
           />
           <ParamSlider
-            label="측정 시작 회전수"
+            label={tr`측정 시작 회전수`}
             value={rpm0}
             min={1800}
             max={7200}
@@ -243,7 +248,7 @@ export default function SmearingLab() {
             }}
           />
           <ParamSlider
-            label="감속률 a"
+            label={tr`감속률 a`}
             value={rateRpm}
             min={0}
             max={150}
@@ -255,27 +260,27 @@ export default function SmearingLab() {
             }}
           />
           <ParamSelect
-            label="스펙트럼 라인 수 LOR"
+            label={tr`스펙트럼 라인 수 LOR`}
             value={lor}
-            options={LOR_OPTIONS}
+            options={LOR_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={(v) => {
               setLor(v);
               setPreset('custom');
             }}
           />
           <ParamSelect
-            label="분석 최대 주파수 F_max"
+            label={tr`분석 최대 주파수 F_max`}
             value={fmax}
-            options={FMAX_OPTIONS}
+            options={FMAX_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={(v) => {
               setFmax(v);
               setPreset('custom');
             }}
           />
           <ParamSelect
-            label="윈도우 함수"
+            label={tr`윈도우 함수`}
             value={windowType}
-            options={WINDOW_OPTIONS}
+            options={WINDOW_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))}
             onChange={(v) => {
               setWindowType(v);
               setPreset('custom');
@@ -283,7 +288,7 @@ export default function SmearingLab() {
           />
           <div style={{ marginTop: '0.5rem' }}>
             <ParamToggle
-              label="정속 운전(a = 0) 기준 피크 겹쳐보기"
+              label={tr`정속 운전(a = 0) 기준 피크 겹쳐보기`}
               checked={showSteadyRef}
               onChange={setShowSteadyRef}
             />
@@ -302,38 +307,38 @@ export default function SmearingLab() {
           />
           <Formula
             display
-            tex={`\\text{퍼진 bin 수} = \\dfrac{\\Delta f_{1X}}{\\Delta f} = \\dfrac{a}{60} T^2 = \\dfrac{${rateRpm}}{60} \\times (${texNumber(res.duration, 2)})^2 = \\mathbf{${texNumber(smearing.smearedBins, 2)}\\ \\text{bin}}\\quad (${rateRpm > 0 ? '\\text{피크 진폭 ' + texNumber(ampDropPercent, 4) + '\\% 감소}' : '\\text{정속 운전}'})`}
+            tex={`\\text{${tr`퍼진 bin 수`}} = \\dfrac{\\Delta f_{1X}}{\\Delta f} = \\dfrac{a}{60} T^2 = \\dfrac{${rateRpm}}{60} \\times (${texNumber(res.duration, 2)})^2 = \\mathbf{${texNumber(smearing.smearedBins, 2)}\\ \\text{bin}}\\quad (${rateRpm > 0 ? `\\text{${tr`피크 진폭`} ` + texNumber(ampDropPercent, 4) + `\\% ${tr`감소`}}` : `\\text{${tr`정속 운전`}}`})`}
           />
         </>
       }
       readouts={
         <ReadoutTable
           rows={[
-            { label: '초기 회전주파수 f0', value: f0, unit: 'Hz', sig: 3 },
-            { label: '측정 시간 T', value: res.duration, unit: 's', sig: 3 },
-            { label: '주파수 분해능 Δf', value: res.deltaF, unit: 'Hz', sig: 4 },
+            { label: tr`초기 회전주파수 f0`, value: f0, unit: 'Hz', sig: 3 },
+            { label: tr`측정 시간 T`, value: res.duration, unit: 's', sig: 3 },
+            { label: tr`주파수 분해능 Δf`, value: res.deltaF, unit: 'Hz', sig: 4 },
             {
-              label: '프레임 동안 1X 주파수 이동폭',
+              label: tr`프레임 동안 1X 주파수 이동폭`,
               value: smearing.deltaF1X,
               theory: (rateRpm / 60) * res.duration,
               unit: 'Hz',
               sig: 3,
             },
             {
-              label: '스미어링 번짐 bin 수',
+              label: tr`스미어링 번짐 bin 수`,
               value: smearing.smearedBins,
               theory: (rateRpm / 60) * res.duration * res.duration,
               unit: 'bin',
               sig: 3,
             },
             {
-              label: '측정된 피크 진폭',
+              label: tr`측정된 피크 진폭`,
               value: peakChirpAmp,
               unit: 'Pk',
               sig: 3,
             },
             {
-              label: '정속 대비 진폭 감소율',
+              label: tr`정속 대비 진폭 감소율`,
               value: ampDropPercent,
               unit: '%',
               sig: 2,
@@ -344,24 +349,24 @@ export default function SmearingLab() {
       tasks={[
         {
           question:
-            'F_max = 1000 Hz, LOR = 3200 line (T = 3.2 s)에서 감속률 a = 60 rpm/s로 코스트다운하면 1X 주파수는 프레임 동안 몇 Hz 변하고 몇 bin에 걸쳐 퍼지나요?',
+            tr`F_max = 1000 Hz, LOR = 3200 line (T = 3.2 s)에서 감속률 a = 60 rpm/s로 코스트다운하면 1X 주파수는 프레임 동안 몇 Hz 변하고 몇 bin에 걸쳐 퍼지나요?`,
           answer:
-            '1X가 (60/60) × 3.2 = 3.2 Hz 움직이고, Δf = 0.3125 Hz이므로 약 10 bin에 걸쳐 넓게 번집니다. 날카로운 막대가 넓은 둔덕이 되고, 에너지가 여러 bin에 나뉘어 가장 높은 막대의 진폭도 크게 낮아집니다(읽음값의 진폭 감소율 확인).',
+            tr`1X가 (60/60) × 3.2 = 3.2 Hz 움직이고, Δf = 0.3125 Hz이므로 약 10 bin에 걸쳐 넓게 번집니다. 날카로운 막대가 넓은 둔덕이 되고, 에너지가 여러 bin에 나뉘어 가장 높은 막대의 진폭도 크게 낮아집니다(읽음값의 진폭 감소율 확인).`,
         },
         {
           question:
-            'LOR을 400 line (T = 0.4 s)으로 대폭 낮추면 스미어링 bin 수는 어떻게 변하나요? 왜 그럴까요?',
+            tr`LOR을 400 line (T = 0.4 s)으로 대폭 낮추면 스미어링 bin 수는 어떻게 변하나요? 왜 그럴까요?`,
           answer:
-            '번진 bin 수는 T²에 비례합니다. T가 3.2 s → 0.4 s로 8배 줄면 번짐은 8² = 64배 줄어 약 0.16 bin이 됩니다. 회전수가 변하는 동안에는 라인 수를 낮춰 T를 짧게 하거나, 회전 각도에 맞춰 샘플링하는 차수 추적(Order Tracking, P5-4)을 씁니다.',
+            tr`번진 bin 수는 T²에 비례합니다. T가 3.2 s → 0.4 s로 8배 줄면 번짐은 8² = 64배 줄어 약 0.16 bin이 됩니다. 회전수가 변하는 동안에는 라인 수를 낮춰 T를 짧게 하거나, 회전 각도에 맞춰 샘플링하는 차수 추적(Order Tracking, P5-4)을 씁니다.`,
         },
       ]}
     >
       <Plot
         series={plotSeries}
-        x={{ label: '주파수 [Hz]', range: xRange }}
-        y={{ label: '진폭 [Pk]', range: [0, 1.25] }}
+        x={{ label: tr`주파수 [Hz]`, range: xRange }}
+        y={{ label: tr`진폭 [Pk]`, range: [0, 1.25] }}
         height={300}
-        ariaLabel="회전수 변동에 따른 1X 피크 스미어링"
+        ariaLabel={tr`회전수 변동에 따른 1X 피크 스미어링`}
       />
     </LabFrame>
   );

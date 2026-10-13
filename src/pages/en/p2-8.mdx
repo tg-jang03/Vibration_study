@@ -1,0 +1,315 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P2-8 Modulation · Sidebands · Beating
+description: Why a vibration whose amplitude rises and falls (AM) puts sidebands on both sides of the carrier, how the sideband spacing points to the causing shaft, frequency-modulated vibration (FM) and Bessel functions, the asymmetry when AM and FM are present together, and telling sidebands from beating
+sectionId: P2-8
+source: p2-8.mdx
+sourceHash: d9b5e3094e
+---
+
+import Figure from '../../components/content/Figure.astro';
+import { withBase } from '../../lib/site';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import ModulationLab from '../../components/labs/ModulationLab';
+import * as F from '../../figures/p2-8';
+
+# 2-8 Modulation · Sidebands · Beating
+
+In the Zoom FFT of P2-4 we saw small bars attached at regular spacing on both sides of a large bar. That spacing was exactly the rotation frequency of one shaft. Why do the bars appear there, and what does the spacing tell you?
+
+When neighboring machines run together, the vibration level sometimes swells and fades with a period of a few seconds. This looks similar, but the cause is completely different. This page is about reading **the small bars that stand on both sides of a large bar in the spectrum**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why a vibration whose amplitude rises and falls periodically (AM) puts sidebands on both sides of the carrier.
+2. You can read the frequency of the cause (which shaft) from the sideband spacing, and the size of the fluctuation from the sideband height.
+3. You know that a vibration whose frequency fluctuates (FM) makes several pairs of sidebands, and what β means.
+4. You know that sidebands of unequal height on the two sides mean AM and FM are present together.
+5. You can tell sidebands from beating in the spectrum, and calculate the difference of two frequencies from the beat period.
+
+</Callout>
+
+---
+
+## 1. Vibration whose size rises and falls: amplitude modulation (AM)
+
+Suppose a gear mesh gets a little stronger and weaker once per revolution. The fast vibration from the mesh stays as it is, but its **size** rises and falls with a period of one revolution.
+
+<Figure {...F.amWave} />
+
+What you can read in Figure 1:
+
+- The **fast-oscillating component** (100 Hz) looks the same in the upper and lower halves.
+- Only the **size** rises and falls between 0.5 and 1.5 mm/s, 5 times per second. The gray dashed line joining the peaks is called the <strong>envelope</strong>.
+
+The original fast-oscillating component is the <strong>carrier</strong>, the rate at which the size is shaken is the <strong>modulating frequency</strong> $f_m$, and a size that fluctuates like this is <strong>amplitude modulation (AM)</strong>.
+
+$$
+x(t) = A\,(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t
+$$
+
+$A$ is the carrier amplitude and $f_c$ the carrier frequency. $m$ is the <strong>modulation index</strong>: the size swings between $A(1 - m)$ and $A(1 + m)$. Figure 1 has $m = 0.5$.
+
+---
+
+## 2. The spectrum of AM: sidebands around the carrier
+
+### 2.1 There are three bars
+
+<Figure {...F.amSpectrum} />
+
+Since the size fluctuates at 5 Hz, you might expect a bar at 5 Hz, but Figure 2 has no 5 Hz bar. Instead, small bars stand at 95 Hz and 105 Hz, on both sides of 100 Hz. A trigonometric identity that turns a product into a sum shows why.
+
+$$
+A(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t = A\cos 2\pi f_c t + \frac{Am}{2}\cos 2\pi(f_c - f_m)t + \frac{Am}{2}\cos 2\pi(f_c + f_m)t
+$$
+
+An AM vibration is the sum of three sinusoids: $A$ at the carrier, and $Am/2$ at $f_c \pm f_m$ on both sides. The small bars beside the carrier were called <strong>sidebands</strong> in P2-4.
+
+- **Spacing** = modulating frequency $f_m$ → what is shaking the size
+- **Height** = $m/2$ times the carrier → how much it shakes
+
+<Callout type="example" title="Reading the fluctuation from the sideband height">
+
+- $m = 0.5$ → sideband 0.25 times → $20\log_{10} 0.25 \approx -12.0$ dB (Figure 2)
+- $m = 0.2$ → 0.1 times → −20 dB
+
+Conversely, if the sidebands are 26 dB below the carrier, they are 0.05 times → $m = 0.1$, meaning the size fluctuates by ±10 %. Small sidebands show up only on a dB axis (P2-7).
+
+</Callout>
+
+### 2.2 The spacing points to the cause
+
+<Figure {...F.spacingTellsCause} />
+
+A gearbox has several shafts turning (P2-6). If what shakes the size of the 300 Hz gear mesh is shaft A turning at 20 Hz, the sidebands are 20 Hz apart; if it is shaft B at 12.5 Hz, they are 12.5 Hz apart. **Measuring the sideband spacing lets you point to the causing shaft.**
+
+<Figure {...F.pulseModulation} />
+
+If the size change is not smooth like a sinusoid but grows **briefly** once per revolution, several pairs of sidebands appear, as in Figure 4. A brief change contains many integer multiples of $f_m$ (the same principle as the pulse train in P2-2). Even so, the spacing is always $f_m$.
+
+<Callout type="field" title="Where sidebands appear">
+
+- **Gears**: if a gear sits slightly crooked (eccentric) on its shaft, the mesh gets stronger once per revolution → gear mesh frequency (<a href={withBase('/p1-8/#2-날개와-기어-지나가는-수-맞물리는-수')}>P1-8</a>) ± 1X of that shaft. If one tooth is damaged, the mesh gets stronger only briefly, so several pairs of sidebands appear (looking at only that shaft with the TSA of P2-6 makes this clearer).
+- **Rolling bearings**: a defect on the inner ring turns with the shaft and passes the loaded bottom zone once per revolution → defect frequency ± 1X. For how to count the defect frequency (the rate at which a ball passes one point on the inner ring), see <a href={withBase('/p1-8/#3-구름베어링-1x의-정수배가-아닌-줄')}>P1-8</a>; telling defects apart is covered in Part 7.
+
+</Callout>
+
+The **rotating arrows** at the top of the lab draw each bar of the spectrum as one arrow (P1-2 · P2-2). The carrier arrow makes $f_c$ turns per second, the upper sideband $f_c + f_m$ turns, and the lower sideband $f_c - f_m$ turns. All three are far too fast, so the figure is viewed **rotating along with the carrier at the same speed**. It is like looking at the next horse from a horse on the carousel: it seems to stand still. Then the carrier arrow looks stationary, and only the two sideband arrows turn in opposite directions at $f_m$ turns per second from the tip of the carrier. In AM the sum of the two sidebands always points in the same direction as the carrier, so it only lengthens and shortens the carrier. **The length of the sum**, drawn on the right, **is the envelope**.
+
+<Callout type="try">
+
+1. In the initial state (size fluctuating, $f_c$ = 100 Hz, $f_m$ = 5 Hz, $m$ = 0.5), look at the three bars of the spectrum and the orange dots (theory). How many dB is the sideband in the readout?
+2. Lower $m$ from 0.5 to 0.2. How many dB is the sideband now? And the envelope?
+3. Change the example from "gear mesh 300 Hz shaken by shaft A (20 Hz)" to "shaft B (12.5 Hz)" and compare the sideband spacing.
+4. Reduce the measurement time T from 8 s to 1 s and lower $f_m$ to 1 Hz. Do the sidebands still look separate from the carrier?
+5. Press **Play** on the rotating arrows and raise $m$ to 1. What is the length of the sum when the two sideband arrows point the same way (up) and when they point opposite ways (down)?
+
+</Callout>
+
+<ModulationLab lang="en" client:visible initialMode="am" />
+
+In step 5, each sideband arrow has length $m/2$ = 0.5. When both point up the sum is 1 + 0.5 + 0.5 = 2, and when both point down it is 1 − 0.5 − 0.5 = 0, so the envelope falls all the way to 0. When they point sideways they cancel each other (they are opposite), so the length is 1. You can see that the bar height ($m/2$) and the width of the envelope ($1 \pm m$) come from the same two arrows.
+
+In step 1 the sideband is 0.25 mm/s, −12.0 dB below the carrier. In step 2 it drops to 0.1 mm/s, −20 dB, and the envelope narrows to 0.8 to 1.2. In step 3 the 300 Hz carrier stays the same while the sideband spacing changes from 20 Hz to 12.5 Hz. In step 4, with T = 1 s (Δf 1 Hz), sidebands 1 Hz apart are only 1 bin from the carrier and are buried in the Hann main lobe (±2 bins, P2-5).
+
+<Callout type="warn" title="'I can't see sidebands' does not mean 'there is no modulation'">
+
+To separate a sideband from the carrier, the spacing $f_m$ must be at least about 3.5 bins with Hann (P2-4). For $f_m$ = 1 Hz (a shaft turning at 60 rpm), that means Δf ≤ 0.29 Hz, i.e. a measurement of 3.5 s or longer. If the sidebands are small (−40 dB, etc.), they are invisible on a linear axis, so look in dB.
+
+</Callout>
+
+---
+
+## 3. Vibration whose frequency fluctuates: frequency modulation (FM)
+
+### 3.1 Same size, shaky beat
+
+This time the size is constant, but the **frequency** gets a little faster and slower. This happens when the shaft speed wobbles slightly within a revolution, or when uneven gear tooth spacing makes the mesh instants come earlier and later.
+
+<Figure {...F.fmWave} />
+
+This is <strong>frequency modulation (FM)</strong>. The size of the fluctuation is expressed by <strong>β (the FM modulation index)</strong>.
+
+$$
+\beta = \frac{\text{largest frequency deviation}}{f_m},\qquad x(t) = A\cos(2\pi f_c t + \beta\sin 2\pi f_m t)
+$$
+
+In Figure 5, 40 Hz swings by ±10 Hz and $f_m$ = 5 Hz, so $\beta = 10/5 = 2$.
+
+### 3.2 Several pairs of sidebands, heights given by Bessel functions
+
+<Figure {...F.fmSpectra} />
+
+FM also makes sidebands on both sides of the carrier at spacing $f_m$. Unlike AM, several pairs appear, and the $n$-th sideband has height $J_n(\beta)$ times the carrier.
+
+$$
+A\cos(2\pi f_c t + \beta\sin 2\pi f_m t) = A\sum_{n} J_n(\beta)\cos 2\pi(f_c + n f_m)t
+$$
+
+<Callout type="term" title="Bessel function Jₙ(β)">
+
+A mathematical function that sets the heights of the FM sidebands. You do not need to compute it; read it from a table or the lab. For β = 1, $J_0$ = 0.765 (carrier), $J_1$ = 0.440, $J_2$ = 0.115, $J_3$ = 0.020. Adding the power (square) of all bars always gives 1. The size does not change, so the total power is the same; it is only divided among the sidebands.
+
+</Callout>
+
+What to read in Figure 6:
+
+- **When β is small** (0.5), only the first pair of sidebands is visible, which is similar to AM.
+- **As β grows**, the number of significant sideband pairs rises to roughly β + 1 (β = 5 → about 6 pairs).
+- **Near β = 2.4** the carrier almost vanishes. "The carrier is gone" does not mean the component has disappeared.
+
+<Callout type="try">
+
+1. In the initial state (frequency fluctuating, $f_c$ = 100 Hz, $f_m$ = 5 Hz, β = 1), read the carrier and the first and second sidebands. Do they match $J_0$, $J_1$, $J_2$ in the formula box?
+2. Raise β from 0.5 to 2.4 to 5. How many pairs of sidebands appear, and what happens to the carrier?
+3. In the waveform plot above, check whether the envelope (gray dashed line) stays the same when you change β.
+4. Press **Play** on the rotating arrows and compare β = 0.5 and 2.4. Along what does the tip of the chain move, and how long is the carrier arrow?
+
+</Callout>
+
+<ModulationLab lang="en" client:visible initialMode="fm" />
+
+In step 1 the carrier is 0.765, the first sideband 0.440 and the second 0.115 mm/s, equal to $J_n(1)$. In step 2, at β = 2.4 the carrier almost vanishes at 0.003 mm/s, and at β = 5 about 6 pairs stand across 70 to 130 Hz. As in step 3, FM does not change the size, so the envelope is always 1 mm/s. It is hard to notice FM from the waveform alone; it shows up as sidebands in the spectrum. In the arrow chain of step 4, the tip only swings left and right along an arc of radius 1. The length (size) stays the same and only the direction leads and lags; that leading and lagging of direction is exactly the rotation speed, that is, the frequency, fluctuating. At β = 2.4 the carrier arrow has almost zero length, yet the sideband arrows chain together so that the tip still lies on radius 1. This is why "the carrier vanished" does not mean the signal got weaker.
+
+---
+
+## 4. AM and FM together: sidebands become asymmetric
+
+In real machines, the size and the frequency often fluctuate **together from the same cause**. When a gear is mounted eccentrically, both the strength and the timing of the mesh vary with a period of one revolution.
+
+<Figure {...F.amfmAsymmetry} />
+
+The sidebands made by AM and those made by FM stand at the same places, so on one side they add and on the other they cancel. As in the lower half of Figure 7, when the frequency is high while the size is large, the upper sideband is 0.48 and the lower one 0.10, very different. Which side grows depends on the phase difference between the two fluctuations.
+
+<Callout type="try">
+
+1. In the initial state (size and frequency together, $m$ = 0.4, β = 0.6, phase difference 0°), read the lower and upper sidebands.
+2. Change the phase difference to 90° and then 180°. How does the larger side change?
+3. Lower β to 0 so that only AM remains and check whether the two sides become equal again.
+
+</Callout>
+
+<ModulationLab lang="en" client:visible initialMode="amfm" />
+
+In step 1 the upper sideband is 0.48 and the lower 0.10 mm/s. In step 2, at 90° both sides are equal, and at 180° the lower side is larger. In step 3, with AM only, both sides are $m/2$ = 0.2 and equal.
+
+<Callout type="warn" title="Do not calculate m from asymmetric sidebands">
+
+If the two sidebands have different heights, it is not AM alone. Then calculating $m = 2 \times$ (sideband ÷ carrier) from one sideband is wrong. The spacing (the frequency of the cause) can still be trusted even when the sidebands are asymmetric.
+
+</Callout>
+
+---
+
+## 5. Beating: looks like sidebands but is something else
+
+### 5.1 Two components adding up and cancelling
+
+In P2-4 we said that adding two sinusoids of slightly different frequency makes the size swell with a period of $1/\lvert f_1 - f_2\rvert$ seconds (beating). Since the envelope rises and falls, it looks similar to AM.
+
+<Figure {...F.beatWave} />
+
+But the spectra differ.
+
+| | AM | Beating |
+|---|---|---|
+| Bars in the spectrum | Carrier in the middle + equal-height sidebands on both sides (three) | One at each frequency (two) |
+| Cause | The size of one component fluctuates at $f_m$ | Two components of slightly different frequency are present together |
+| Envelope | $A(1 - m)$ to $A(1 + m)$ | Difference to sum of the two sizes |
+| What to check | Is the spacing $f_m$ the rotation frequency of some shaft? | Where does each of the two bars come from? |
+
+<Callout type="field" title="Where beating is seen">
+
+- **Two neighboring machines** with slightly different speeds (two pumps, 1800 rpm and 1770 rpm): the vibration meter reading swells and fades with a period of a few seconds (Figure 8: 2 seconds).
+- In an induction motor, when twice the running speed (2X) and twice the line frequency (2LF, 120 Hz on a 60 Hz grid) are very close (P2-4).
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (two close frequencies, 30 Hz and 29.5 Hz, sizes 1 and 0.6), look at the envelope period and the number of bars in the spectrum.
+2. Reduce the difference to 0.25 Hz. What is the envelope period now?
+3. Reduce the measurement time T from 8 s to 2 s. Do the two bars look separate? Check "bins between the two bars" in the readout.
+4. Raise the size of f₂ to 1. Does the envelope fall to 0?
+5. Return the difference to 0.5 Hz and the size of f₂ to 0.6, and press **Play** on the rotating arrows. In which direction, and how many turns per second, does the f₂ arrow turn from the tip of f₁? What does it look like when you turn "View rotating with f₁" off?
+
+</Callout>
+
+<ModulationLab lang="en" client:visible initialMode="beat" />
+
+In step 1 the envelope swings between 0.4 and 1.6 mm/s with a 2-second period, and the spectrum has only two bars. In step 2 the period is 1/0.25 = 4 seconds. In step 3, with T = 2 s the 0.25 Hz difference is 0.5 bin, so the two bars merge into one; this is the state where the envelope swells and fades yet the spectrum has only a single bar. In step 4, when the two sizes are equal the envelope falls to 0 and the vibration seems to nearly stop and then grow again. In step 5 the f₂ arrow is 0.5 Hz slower than f₁, so viewed rotating with f₁ it turns **backwards** (clockwise) at 0.5 turn per second from the tip of f₁. The sum is 1.6 at the moment they point the same way and 0.4 when opposite, and one turn takes 2 seconds, so the beat period is 2 seconds. With the rotating view off, the two arrows turn at almost the same speed, drift apart little by little, and overlap again. This is the same principle as the strobe disk in P2-3. If you follow a fast rotation at the same speed, all that remains is the difference of the two speeds.
+
+<Callout type="warn" title="'The size swells and fades' does not mean 'a defect'">
+
+If the vibration level rises and falls periodically, first check in the spectrum whether there are two bars (beating) or three or more standing symmetrically (modulation). If the swelling disappears when a neighboring machine is stopped for a moment, it is beating. To separate the two bars, you must measure for several times $1/\lvert f_1 - f_2\rvert$ (about 3.5 times with Hann).
+
+</Callout>
+
+---
+
+## 6. Summary
+
+| What you see in the spectrum | What it might be | What to check |
+|---|---|---|
+| A pair of equal-height bars on both sides of a large bar | Size fluctuates sinusoidally (AM) | Spacing = rotation frequency of which shaft; height → $m$ |
+| Several pairs of sidebands at the same spacing | Size changes briefly, or the frequency fluctuates (FM) | Does the envelope of the waveform swell (AM) or stay constant (FM)? |
+| Unequal sideband heights on the two sides | AM and FM together | Trust the spacing; do not calculate $m$ from the height |
+| Two close bars, size swelling periodically | Beating (two components) | Where the two bars come from; stop the neighboring machine to test |
+
+| Topic | What to remember |
+|---|---|
+| AM | $A(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t$ → $A$ at $f_c$, $Am/2$ at $f_c \pm f_m$. No bar at $f_m$ |
+| Sidebands | Spacing = frequency of the cause, height = size of the fluctuation |
+| FM | β = maximum deviation ÷ $f_m$. Sideband height $J_n(\beta)$, about β + 1 pairs |
+| AM + FM | Sidebands asymmetric. Spacing unchanged |
+| Beating | Two bars, period $1/\lvert f_1 - f_2\rvert$. Measure much longer than that to separate them |
+
+---
+
+## 7. Check questions
+
+<details>
+<summary><strong>Q1. There are bars at 1195 Hz and 1205 Hz on both sides of the 1200 Hz bar, both 20 dB below 1200 Hz. What can you tell?</strong></summary>
+
+Spacing 5 Hz → the cause shaking the size is a shaft turning at 5 Hz (300 rpm). Height −20 dB = 0.1 times = $m/2$ → $m$ = 0.2, the size fluctuates by ±20 %. The two sides are equal, so it can be read as AM.
+</details>
+
+<details>
+<summary><strong>Q2. There are bars at 98 Hz, 100 Hz and 102 Hz but no bar at 2 Hz. Is the interpretation that the size fluctuates at 2 Hz wrong?</strong></summary>
+
+It is not wrong. AM does not make a bar at $f_m$; it makes sidebands only at $f_c \pm f_m$ on both sides of the carrier. To see the 2 Hz itself, you have to extract the envelope separately and draw its spectrum (envelope analysis, P5-6).
+</details>
+
+<details>
+<summary><strong>Q3. In FM with β = 1, how many dB below the carrier is the first sideband?</strong></summary>
+
+$J_1(1)/J_0(1) = 0.440/0.765 \approx 0.575$ → $20\log_{10} 0.575 \approx -4.8$ dB. Note that, unlike AM, the carrier itself also shrinks by $J_0$.
+</details>
+
+<details>
+<summary><strong>Q4. The sideband spacing is constant at 20 Hz, but the upper sideband is much larger than the lower one. Can you calculate m from the height of the lower one?</strong></summary>
+
+No. If the two sides differ in height, AM and FM are present together. The causing shaft (the one turning at 20 Hz) can be trusted from the spacing, but calculating $m$ from a single height is wrong.
+</details>
+
+<details>
+<summary><strong>Q5. The vibration meter reading rises and falls with a 4-second period. If it is beating, what is the difference of the two frequencies? How many seconds must you measure with a Hann window to separate the two bars?</strong></summary>
+
+The difference is 1/4 = 0.25 Hz. Separating with Hann needs about 3.5 bins, so Δf ≤ 0.25/3.5 ≈ 0.071 Hz → T ≥ 14 seconds.
+</details>
+
+<details>
+<summary><strong>Q6. A pump's vibration level swells and fades every few seconds. Can you report it as a bearing defect?</strong></summary>
+
+Check something first. If the spectrum has only two close bars (beating) and the swelling disappears when the neighboring pump is stopped for a moment, it is beating caused by the speed difference of the two machines. If symmetric sidebands stand on both sides of the carrier and their spacing is the 1X of this pump, suspect modulation.
+</details>
+
+The next page (P2-9) covers how to choose the settings learned in Part 2 — F_max, number of lines, window, averaging, units — all at once to fit the purpose.
+
+## References
+
+<References items={[
+  ['R-01', 'Interpreting sidebands and modulation in gear and bearing diagnostics'],
+]} />

@@ -28,6 +28,8 @@ for (const file of files) {
   let html = readFileSync(file, 'utf8');
   // lang="ko" 요소는 일부러 한국어다 (같은 태그가 안에 겹치지 않는 짧은 요소만 쓴다)
   html = html.replace(/<(\w+)\b[^>]*\blang="ko"[^>]*>[\s\S]*?<\/\1>/g, '');
+  // 링크 주소는 화면 글이 아니다: 한국어 페이지로 가는 링크의 앵커(#2-날개와-…)는 한글이 맞다
+  html = html.replace(/\bhref="[^"]*"/g, 'href=""');
   // 구조화 데이터의 다른 이름(alternateName: 한국어 사이트 이름)은 일부러 둔다
   html = html.replace(/"alternateName":"[^"]*"/g, '');
   const hits = [];
