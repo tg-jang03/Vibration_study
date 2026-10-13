@@ -6,14 +6,6 @@
   <b>한국어</b> · <a href="README.en.md">English</a>
 </p>
 
-<p align="center">
-  <a href="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml"><img src="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml/badge.svg" alt="Deploy"></a>
-  <img src="https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white" alt="Astro 7">
-  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React 19">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
-</p>
-
 <h3 align="center">
   <a href="https://tg-jang03.github.io/Vibration_study/">사이트 열기</a> &nbsp;·&nbsp;
   <a href="https://tg-jang03.github.io/Vibration_study/lab/">Signal Lab</a> &nbsp;·&nbsp;
@@ -24,8 +16,10 @@
 
 <br>
 
+**기계 진동 분석과 회전체 진단**을 처음부터 차례로 익히는 웹 학습서입니다. 진동의 물리와 신호처리부터 대형 회전기계(가스터빈·증기터빈, GT/ST)의 상태 진단까지, 그림과 수식, 직접 만져 보는 랩으로 하나의 흐름 안에서 배웁니다.
+
 > 진동 진단 책은 식만 많아 현장 플롯과 안 이어지거나, 판정표만 있고 **"왜 그렇게 보이나"** 가 빠져 있습니다.
-> 이 사이트는 그 사이를 잇습니다 — 질문에서 출발해, 필요한 개념만 쌓고, 슬라이더로 직접 확인합니다.
+> 이 학습서는 그 사이를 잇습니다 — 질문에서 출발해, 필요한 개념만 쌓고, 슬라이더로 직접 확인합니다.
 
 <table>
   <tr>
@@ -38,8 +32,8 @@
       개념마다 랩이 있고, 앞에는 따라 하기, 뒤에는 해석. 회전 원판·베어링·기어가 실제로 돕니다.
     </td>
     <td width="33%" valign="top">
-      <h3>✅ 믿을 수 있는 숫자</h3>
-      계산 모듈은 해석해·문헌값과 맞춰 보는 테스트로 확인합니다. 그림에 쓰인 숫자도 검사합니다.
+      <h3>🧭 질문에서 출발</h3>
+      절마다 질문 하나로 시작해, 앞에서 배운 개념만으로 답을 쌓아 갑니다. 개념마다 그림이 따라옵니다.
     </td>
   </tr>
 </table>
@@ -47,10 +41,34 @@
 ## 학습 경로
 
 <p align="center">
-  <img src=".github/readme/roadmap-ko.svg" alt="학습 경로: 한국어·영어로 공개된 4단계 11개 Part" width="100%">
+  <img src=".github/readme/roadmap-ko.svg" alt="학습 경로: 4단계 11개 Part" width="100%">
 </p>
 
-<p align="center"><sub>2026-10-13 기준 · 61절과 80개 랩 모두 한·영 공개 · <a href="https://tg-jang03.github.io/Vibration_study/">한국어 학습 지도</a> · <a href="https://tg-jang03.github.io/Vibration_study/en/">영어 학습 지도</a></sub></p>
+네 단계로 나뉜 11개 Part가 각자 하나의 질문에 답합니다. Part 이름을 누르면 그 Part의 절 목록이 열립니다.
+
+| Part | 이 Part가 답하는 질문 |
+|---|---|
+| **① 기초** — 흔들림 · 신호 · 센서 | |
+| [1 · 진동의 기초](https://tg-jang03.github.io/Vibration_study/parts/1/) | 기계는 왜, 어떻게 흔들리나? |
+| [2 · 신호처리 기초](https://tg-jang03.github.io/Vibration_study/parts/2/) | 분석기 설정 하나하나가 스펙트럼을 어떻게 바꾸나? |
+| [3 · 센서와 측정 체인](https://tg-jang03.github.io/Vibration_study/parts/3/) | 이 숫자는 무엇을, 얼마나 믿을 만하게 쟀나? |
+| **② 모델과 분석** — 로터 · 신호처리 확장 | |
+| [4 · 회전체 동역학 기초](https://tg-jang03.github.io/Vibration_study/parts/4/) | 회전체는 무엇이 다르고, 언제 스스로 흔들리나? |
+| [5 · 신호처리 확장](https://tg-jang03.github.io/Vibration_study/parts/5/) | 묻혀 있는 결함 신호를 어떻게 꺼내나? |
+| **③ 진단** — 플롯 · 결함 · GT/ST | |
+| [6 · 현장 플롯 읽기](https://tg-jang03.github.io/Vibration_study/parts/6/) | 각 플롯은 무엇을 보여주고 무엇을 숨기나? |
+| [7 · 결함별 진단](https://tg-jang03.github.io/Vibration_study/parts/7/) | 이 패턴은 어떤 결함 메커니즘을 가리키나? |
+| [8 · GT/ST 특화 현상](https://tg-jang03.github.io/Vibration_study/parts/8/) | 우리 기계의 기동·운전 중 현상을 어떻게 해석하나? |
+| **④ 조치와 종합** — 시험 · 규격 · 케이스 | |
+| [9 · 구조 시험 · 밸런싱 · 정렬](https://tg-jang03.github.io/Vibration_study/parts/9/) | 원인을 어떻게 확인하고 어떻게 고치나? |
+| [10 · 규격 · 판정 · 진단 절차](https://tg-jang03.github.io/Vibration_study/parts/10/) | 얼마나 나쁜가, 어떻게 판단하고 보고하나? |
+| [11 · 종합 진단 연습](https://tg-jang03.github.io/Vibration_study/parts/11/) | 처음 보는 데이터에서 결함을 찾을 수 있나? |
+
+## 이렇게 읽습니다
+
+- **처음이라면 Part 1부터 차례로.** 각 절은 앞 절까지 나온 개념만 쓰므로, 막히면 앞 절로 돌아가면 됩니다. 필요한 주제만 찾는다면 [학습 지도](https://tg-jang03.github.io/Vibration_study/)에서 바로 그 절로 가도 됩니다.
+- **질문 → 개념과 그림 → 랩 → 해석.** 한 절은 질문 하나에서 출발해 개념을 하나씩 그림과 함께 쌓고, 랩에서 직접 확인합니다. 랩 앞의 따라 하기가 무엇을 움직여 볼지, 랩 뒤의 해석이 무엇을 봤어야 하는지 알려 줍니다.
+- **모르는 말은 레퍼런스에서.** 처음 보는 용어는 용어집, 기호와 식은 기호·공식 카드에서 다시 찾고, 그 개념을 처음 설명한 절로 돌아갈 수 있습니다.
 
 ## Signal Lab — 직접 움직여 보는 랩
 
@@ -100,64 +118,6 @@
 ## 레퍼런스 — 배운 개념을 다시 찾기
 
 [레퍼런스 허브](https://tg-jang03.github.io/Vibration_study/reference/)에는 개념 개요, [참고 문헌 95개](https://tg-jang03.github.io/Vibration_study/reference/sources/), [용어집 520항목](https://tg-jang03.github.io/Vibration_study/reference/glossary/), [기호·공식 카드 41개](https://tg-jang03.github.io/Vibration_study/reference/formulas/)가 있습니다. 항목에서 관련 본문으로 돌아갈 수 있고, [영어 레퍼런스](https://tg-jang03.github.io/Vibration_study/en/reference/)도 같은 구성으로 제공합니다.
-
-## 만드는 원칙
-
-- **질문에서 출발** — 구어체로, 앞 페이지에서 배운 개념만 써서 설명합니다.
-- **개념마다 그림** — AI 이미지가 아니라 계산값으로 직접 그린 SVG. 그림 속 숫자도 테스트로 고정합니다.
-- **계산은 순수 함수** — `src/lib/`는 DOM·React와 무관한 순수 함수, 내부 단위 SI, 난수는 시드 고정.
-- **움직이는 그림의 약속** — 0°는 위, 회전은 반시계, 화살표 끝의 높이가 신호. 느리게 돌릴 땐 배율을 늘 보여 줍니다.
-- **공개 저장소답게** — ISO·API 규격 본문은 옮기지 않고 요약과 출처만. 회사 현장 데이터는 쓰지 않습니다.
-
-## 어떻게 만들어지나
-
-> **결정은 사람이, 구현은 AI 에이전트가.**
-
-저장소 주인(회전기계 진동 진단 엔지니어)이 무엇을 배울지, 무엇이 맞는지를 정하고, [Claude Code](https://claude.com/claude-code)와 Codex가 트랙을 나눠 같은 `main`에서 페이지·랩·그림을 만듭니다.
-작업 규칙·결정(`D-xxx`)·이슈(`I-xxx`)·인수인계는 작업 폴더의 문서(저장소에는 올리지 않음)에 남겨 서로의 기억으로 씁니다.
-push마다 GitHub Actions의 타입 검사·테스트·빌드·영어 누락 검사를 통과해야 배포됩니다. 별도의 헤드리스 브라우저 검사로 hydration·콘솔 오류·모바일 넘침·애니메이션 재생도 확인합니다.
-
-## 직접 돌려 보기
-
-```bash
-npm ci
-npm run dev        # http://localhost:4321/Vibration_study/
-```
-
-Node.js 22.12 이상이 필요하며, CI는 Node.js 24를 사용합니다. 영어 홈은 `http://localhost:4321/Vibration_study/en/`입니다.
-
-`npm run check`는 타입 검사, `npm test`는 Vitest, `npm run build`는 정적 사이트 빌드입니다. 빌드 뒤 `npm run verify:links`로 내부 링크를, `npm run verify:i18n`으로 영어 페이지에 남은 한글을 검사합니다. `npm run i18n:status`는 빠지거나 낡은 번역을 알려 줍니다.
-
-화면 검사는 다른 터미널에서 `npm run preview`를 켠 뒤 실행합니다.
-
-```bash
-npm run verify:page -- / /en/ /lab/frc-01/ /en/lab/frc-01/
-```
-
-<details>
-<summary><b>기술 스택 · 폴더 구성</b></summary>
-<br>
-
-| | |
-|---|---|
-| 사이트 | [Astro 7](https://astro.build) + MDX, GitHub Pages 정적 배포 |
-| 랩 | React 19 아일랜드 (`client:visible`) |
-| 플롯 · 수식 | Plotly (cartesian), KaTeX |
-| 계산 | TypeScript 순수 함수 — FFT·필터·로터 모델·결함 신호 합성 |
-| 검사 | Vitest, `astro check`, 헤드리스 Edge 페이지 점검, 링크 점검 |
-
-| 경로 | 내용 |
-|---|---|
-| `src/pages/p{Part}-{절}.mdx` · `src/pages/en/` | 한국어 본문과 영어 경로·본문 |
-| `src/pages/lab/[slug].astro` · `src/pages/en/lab/` | 한·영 랩 단독 페이지 (Signal Lab) |
-| `src/pages/reference/` · `src/components/site/` | 레퍼런스 경로와 공용 사이트 화면 |
-| `src/i18n/` · `src/i18n/en/` | 언어 경로·화면 문구·영어 랩·그림·용어집 사전 |
-| `src/components/labs/` · `ui/` | 랩 컴포넌트 · 공용 부품 (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
-| `src/lib/` | 계산 모듈 (`dsp`, `mck`, `rotor`, `faults`, `machine` …)과 테스트 |
-| `src/figures/` | 본문 SVG 그림 데이터와 테스트 |
-| `src/data/` | 목차(`curriculum.ts`) · 랩 목록 · 참고 문헌 · 용어집(`glossary.md`) |
-
-</details>
 
 <br>
 

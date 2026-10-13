@@ -6,14 +6,6 @@
   <a href="README.md">한국어</a> · <b>English</b>
 </p>
 
-<p align="center">
-  <a href="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml"><img src="https://github.com/tg-jang03/Vibration_study/actions/workflows/deploy.yml/badge.svg" alt="Deploy"></a>
-  <img src="https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white" alt="Astro 7">
-  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React 19">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/tested_with-Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest">
-</p>
-
 <h3 align="center">
   <a href="https://tg-jang03.github.io/Vibration_study/en/">Open the site</a> &nbsp;·&nbsp;
   <a href="https://tg-jang03.github.io/Vibration_study/en/lab/">Signal Lab</a> &nbsp;·&nbsp;
@@ -24,8 +16,10 @@
 
 <br>
 
+A web textbook for learning **machine vibration analysis and rotor diagnostics** step by step. It runs from the physics of vibration and signal processing to condition diagnosis of large rotating machinery (gas and steam turbines, GT/ST), using figures, equations and hands-on labs along one continuous thread.
+
 > Vibration-diagnosis books tend to fall into one of two camps: equations that never meet a real field plot, or severity tables with no word on **why the plot looks that way**.
-> This site bridges the two. It starts from a question, builds only the concepts it needs, and lets you check each one with a slider.
+> This textbook bridges the two. It starts from a question, builds only the concepts it needs, and lets you check each one with a slider.
 
 <table>
   <tr>
@@ -38,8 +32,8 @@
       Every concept has a lab, with a walkthrough before it and an interpretation after it. Strobed disks, bearings and gears actually spin.
     </td>
     <td width="33%" valign="top">
-      <h3>✅ Numbers you can trust</h3>
-      Calculation modules are checked against analytic solutions or reference values, including the numbers used in the figures.
+      <h3>🧭 Starts from a question</h3>
+      Each section opens with one question and builds the answer using only concepts from earlier sections, with a figure for every concept.
     </td>
   </tr>
 </table>
@@ -47,10 +41,34 @@
 ## Learning path
 
 <p align="center">
-  <img src=".github/readme/roadmap-en.svg" alt="Learning path: all eleven Parts published in Korean and English" width="100%">
+  <img src=".github/readme/roadmap-en.svg" alt="Learning path: four stages, eleven Parts" width="100%">
 </p>
 
-<p align="center"><sub>As of 2026-10-13: all 61 sections and 80 labs are published in both languages. Browse the <a href="https://tg-jang03.github.io/Vibration_study/en/">English learning map</a> or <a href="https://tg-jang03.github.io/Vibration_study/">Korean learning map</a>.</sub></p>
+Eleven Parts in four stages, each answering one question. Click a Part to see its sections.
+
+| Part | The question it answers |
+|---|---|
+| **① Foundations** — vibration · signals · sensors | |
+| [1 · Vibration basics](https://tg-jang03.github.io/Vibration_study/en/parts/1/) | Why and how do machines shake? |
+| [2 · Signal processing basics](https://tg-jang03.github.io/Vibration_study/en/parts/2/) | How does each analyzer setting change the spectrum? |
+| [3 · Sensors and the measurement chain](https://tg-jang03.github.io/Vibration_study/en/parts/3/) | What did this number measure, and can we trust it? |
+| **② Models & analysis** — rotors · advanced DSP | |
+| [4 · Rotor dynamics basics](https://tg-jang03.github.io/Vibration_study/en/parts/4/) | What sets rotors apart, and when do they shake on their own? |
+| [5 · Advanced signal processing](https://tg-jang03.github.io/Vibration_study/en/parts/5/) | How do we pull a buried fault signal out of the noise? |
+| **③ Diagnosis** — plots · faults · GT/ST | |
+| [6 · Reading field plots](https://tg-jang03.github.io/Vibration_study/en/parts/6/) | What does each plot show, and what does it hide? |
+| [7 · Diagnosis by fault type](https://tg-jang03.github.io/Vibration_study/en/parts/7/) | Which fault mechanism does this pattern point to? |
+| [8 · GT/ST-specific phenomena](https://tg-jang03.github.io/Vibration_study/en/parts/8/) | How do we read our machines during startup and operation? |
+| **④ Action & practice** — testing · standards · cases | |
+| [9 · Structural testing · balancing · alignment](https://tg-jang03.github.io/Vibration_study/en/parts/9/) | How do we confirm the cause, and how do we fix it? |
+| [10 · Standards · assessment · diagnostic procedure](https://tg-jang03.github.io/Vibration_study/en/parts/10/) | How bad is it, and how do we judge and report it? |
+| [11 · Integrated diagnostic practice](https://tg-jang03.github.io/Vibration_study/en/parts/11/) | Can you find the fault in data you have never seen? |
+
+## How to read it
+
+- **New to the subject? Start at Part 1 and go in order.** Each section uses only concepts from the sections before it, so if you get stuck, step back a section. Looking for one topic? Jump straight to it from the [learning map](https://tg-jang03.github.io/Vibration_study/en/).
+- **Question → concepts and figures → lab → interpretation.** A section starts from one question, builds the concepts one at a time with figures, and lets you check them in a lab. The walkthrough before each lab tells you what to try; the interpretation after it tells you what you should have seen.
+- **Look things up in the reference.** Find unfamiliar terms in the glossary and symbols and equations on the formula cards, then jump back to the section that first explained them.
 
 ## Signal Lab: labs you can play with
 
@@ -100,64 +118,6 @@ Build a virtual signal, change the settings, and use the formulas and readouts t
 ## Reference: connect the concepts
 
 The [reference hub](https://tg-jang03.github.io/Vibration_study/en/reference/) brings together a concept overview, [95 sources](https://tg-jang03.github.io/Vibration_study/en/reference/sources/), a [520-entry glossary](https://tg-jang03.github.io/Vibration_study/en/reference/glossary/) and [41 symbol and formula cards](https://tg-jang03.github.io/Vibration_study/en/reference/formulas/). Entries link back to the relevant course sections. The same reference pages are available in Korean.
-
-## Principles
-
-- **Start from a question.** Conversational text that only uses concepts from earlier pages.
-- **A figure for every concept.** Each one is SVG drawn from computed values, not an AI image, and the numbers inside it are pinned by tests.
-- **Pure functions for the math.** `src/lib/` has no DOM or React. It works in SI units internally and uses seeded random numbers.
-- **Rules for moving figures.** 0° is up, rotation is counter-clockwise, and the height of the arrow tip is the signal. When something runs slower than real time, the slow-down ratio stays on screen.
-- **Safe for a public repo.** ISO and API standards are summarized with citations, never reproduced. No company field data is used.
-
-## How it is built
-
-> **A human decides; AI agents build.**
-
-The repo owner, a rotating-machinery vibration diagnostics engineer, decides what to learn and what counts as correct. [Claude Code](https://claude.com/claude-code) and Codex split the work into tracks and build pages, labs and figures on the same `main` branch.
-They share one rulebook and use decision records (`D-xxx`), issues (`I-xxx`) and handoff notes as shared memory, kept as local working documents that are not committed to this repo.
-Every push must pass type checking, tests, a build and English-content checks in GitHub Actions before it deploys. Separate headless-browser checks cover hydration, console errors, mobile overflow and animation playback.
-
-## Run it locally
-
-```bash
-npm ci
-npm run dev        # http://localhost:4321/Vibration_study/
-```
-
-Requires Node.js 22.12 or newer; CI uses Node.js 24. The English home is at `http://localhost:4321/Vibration_study/en/`.
-
-`npm run check` checks types, `npm test` runs Vitest, and `npm run build` generates the static site. After building, `npm run verify:links` checks internal links and `npm run verify:i18n` checks English pages for untranslated Korean. `npm run i18n:status` reports missing or outdated translations.
-
-For browser checks, start `npm run preview` in another terminal, then run:
-
-```bash
-npm run verify:page -- / /en/ /lab/frc-01/ /en/lab/frc-01/
-```
-
-<details>
-<summary><b>Tech stack · repository layout</b></summary>
-<br>
-
-| | |
-|---|---|
-| Site | [Astro 7](https://astro.build) + MDX, static deploy to GitHub Pages |
-| Labs | React 19 islands (`client:visible`) |
-| Plots & math | Plotly (cartesian), KaTeX |
-| Computation | Pure TypeScript functions: FFT, filters, rotor models, fault-signal synthesis |
-| Checks | Vitest, `astro check`, headless-Edge page checks, link checks |
-
-| Path | Contents |
-|---|---|
-| `src/pages/p{Part}-{section}.mdx` · `src/pages/en/` | Korean course pages and English routes/pages |
-| `src/pages/lab/[slug].astro` · `src/pages/en/lab/` | Standalone labs in both languages (Signal Lab) |
-| `src/pages/reference/` · `src/components/site/` | Reference routes and shared site pages |
-| `src/i18n/` · `src/i18n/en/` | Language routing, UI strings, English lab/figure/glossary dictionaries |
-| `src/components/labs/` · `ui/` | Lab components · shared parts (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
-| `src/lib/` | Calculation modules (`dsp`, `mck`, `rotor`, `faults`, `machine` …) and tests |
-| `src/figures/` | SVG figure data for the pages, with tests |
-| `src/data/` | Course outline (`curriculum.ts`), lab list, references, glossary (`glossary.md`) |
-
-</details>
 
 <br>
 
