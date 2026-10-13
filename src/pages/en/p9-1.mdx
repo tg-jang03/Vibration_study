@@ -1,0 +1,319 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P9-1 Identifying Structural Resonance and the Impact Test
+description: Clues of structural resonance during operation and the speed-change test, the impact test (hammer tip and excitation bandwidth, trigger, force and exponential windows, averaging, coherence, double hit), reading damping ratio and Q from the FRF with the half-power method and its resolution condition, the running bump test (impact-synchronous time averaging), ODS, and checking soft foot, foundation and piping
+sectionId: P9-1
+source: p9-1.mdx
+sourceHash: 6ece328698
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import ImpactLab from '../../components/labs/ImpactLab';
+import * as F from '../../figures/p9-1';
+
+# 9-1 Identifying Structural Resonance and the Impact Test: Turning a Suspicion into a Test
+
+Look again at the machine of P7-2 §6. At 3000 rpm only the horizontal 1X of bearing 1 was large, while the vertical direction of the same bearing and bearing 2 were quiet. In the run-up record, a peak stood up only around 2850 rpm and the phase changed a lot. The suspicion was that the pedestal's natural frequency lies near the running speed. But you cannot reinforce a pedestal on a suspicion alone. How do you confirm that a natural frequency really exists, how many Hz it is, and how much damping it has?
+
+This page goes through those confirming tests in order: changing the speed while the machine runs, the **impact test** where you stop the machine and strike it with a hammer, the half-power method that reads the damping ratio from the measured FRF, the running bump test and ODS for when you cannot stop the machine, and finally the outside conditions that change the natural frequency (feet, foundation, piping).
+
+<Callout type="idea" title="After reading this page">
+
+1. You know the clues that make you suspect structural resonance in running data, and how to tell resonance from forced vibration by changing the speed.
+2. You can explain the procedure for measuring a trustworthy FRF with the hammer tip, trigger, force window, exponential window and averaging.
+3. You can read the damping ratio and Q from the FRF with the half-power method, and correct the errors caused by resolution and the exponential window.
+4. You know what the running bump test and ODS show.
+5. You know when and how to check soft foot, foundation and piping.
+
+</Callout>
+
+---
+
+## 1. A Clue While Running: Forced Vibration Follows the Speed, Resonance Stays Put
+
+If you can change the speed a little, there is a test you can do before stopping the machine.
+
+<Figure {...F.runningFig} />
+
+What you can read in Figure 1:
+
+- **The 1X (dot) moves with the speed.** The force that unbalance produces comes from the rotation, so that line always stands at the running-speed position. This is forced vibration (P1-4).
+- **The hump on the floor does not move.** The natural frequency is a property set by the pedestal's mass and stiffness, so it has nothing to do with the speed. Forces spread evenly over a wide band, such as flow, friction and neighboring machines, keep shaking that spot a little, so around 47.5 Hz it stands about 24 dB high.
+- **When the two overlap, it grows.** At 2850 rpm, where 1X comes to the hump, 1X is 2.21 mm/s, about 7 times the 0.31 mm/s at 2400 rpm. The unbalance share, which grows with the square of the speed (about 1.4 times), cannot explain it alone.
+
+Add two clues from P7-2 §6 and you have a diagnosis while running. **Is only one direction large?** (a one-direction mode of the pedestal) **Does the phase change a lot over a narrow speed range?** (passing through a resonance changes the phase by nearly 180°, P1-4). If changing the speed by a few percent moves amplitude and phase together a lot, suspect resonance; if the size moves only about with the square of the speed and the phase stays put, it is forced vibration away from resonance.
+
+<Callout type="warn" title="'1X is large, so a balance weight will reduce it'">
+
+Near resonance even a small unbalance looks large. If you reduce 1X with a balance weight the resonance is still there, so it grows again when the operating conditions change a little. First check whether it is resonance, and if it is, consider together moving the natural frequency (stiffness, mass) or keeping it away from the running speed.
+
+</Callout>
+
+<Callout type="field" title="When you cannot change the speed">
+
+A machine whose speed is fixed, such as a generator tied to the grid, makes the same judgment from start-up and shutdown records (coastdown Bode, P8-1). If you have none, keep the machine stopped and measure the natural frequency directly with the impact test of the next section.
+
+</Callout>
+
+---
+
+## 2. Why Does Hitting with a Hammer Show the Natural Frequency: A Short Impact Is a Wide-Band Force
+
+Running data only builds up suspicion. To get the natural frequency and damping as numbers, you have to put a known force into the structure and measure the response.
+
+<Figure {...F.setupFig} />
+
+<Callout type="term" title="Impact test and bump test">
+
+A test where you strike the structure briefly with a hammer that has a force sensor in its tip, record force (channel 1) and response (channel 2) together, and get the FRF. It is also called a hammer test. A quick test where you do not measure the force, just hit with a hammer and look only at the peaks of the response spectrum, is called a bump test. A bump test gives the position of the natural frequencies; an impact test also gives the magnitude and phase of the FRF and the damping.
+
+</Callout>
+
+In P2-2, even a sharp impulse could be expressed as a sum of sinusoids of many frequencies. The shorter the force lasts, the more evenly it carries force over a wider range of frequencies. One strike shakes all the natural frequencies a little at once, and the structure rings loudly at its natural frequencies (Figure 2, bottom). The analyzer computes $H_1 = G_{xy}/G_{xx}$ of P5-3 from the two channels. The force-sensor signal is clean and the response side is often the one that picks up noise, so $H_1$ is the default.
+
+### 2.1 The Harder the Tip, the Shorter the Contact and the Wider the Band
+
+<Figure {...F.tipFig} />
+
+You swap tips of rubber, plastic or steel onto the end of the hammer. Even with the same swing (the same impulse), a hard tip touches briefly and peaks higher. The shorter the contact time $t_c$, the farther the force spectrum stays flat. For the half-sine impact used on this page, the frequency where the force spectrum falls by 10 dB is
+
+$$
+f_{-10\,\text{dB}} \approx \frac{1.02}{t_c}
+$$
+
+Natural frequencies above that are not shaken well because the force is too small.
+
+<Callout type="example" title="Can a rubber tip (8 ms) hit a 290 Hz mode?">
+
+1. Excitation bandwidth: $1.02 / 0.008\ \text{s} \approx 127$ Hz
+2. At 141.6 Hz the force is 13 dB below the low-frequency level, and at 290 Hz it is 32 dB below (Figure 3 bottom, green).
+3. 32 dB means the force is about 1/40. With the same noise, the FRF at that frequency gets 40 times blurrier → to see up to 290 Hz, switch to the plastic tip (510 Hz).
+
+</Callout>
+
+That does not mean the hardest tip is always best. For the same impulse, the steel tip's peak force is 20 times the rubber's (19.6 kN), so the surface can be dented or the force channel can overload, and it also shakes high modes you do not care about and uses up the range of the response channel on them. That is why you choose **the softest tip that covers the band of interest**<Cite ids={['R-76']} />.
+
+---
+
+## 3. Recording One Strike Well: Trigger · Force Window · Exponential Window
+
+The moment of the hammer strike is decided by a person. When does the analyzer start recording?
+
+The analyzer sets the frame at **the moment the force channel crosses a threshold** (the trigger). A **pre-trigger** (10 ms on this page), which keeps a little of the record from before the threshold crossing, is needed so that the pulse is captured from its start. Then a different window is multiplied onto each of the two channels. These are the impact-specific windows whose names you only saw in P2-5 §5.
+
+- **Force window** (force channel): keeps only the neighborhood of the pulse at 1 and erases the rest to 0. The force exists only for a few ms, so the rest of the record is just sensor and cable noise.
+- **Exponential window** (both channels): when the response has not fully died out by the end of the frame, multiply by $e^{-t/\tau}$ to shrink the end.
+
+<Figure {...F.expFig} />
+
+The exponential window is needed for modes with very small damping. The second mode in Figure 4 still has 6.9 % of its initial ringing left after 1 s, so the frame cuts the ringing off in the middle. A truncated record produces the leakage of P2-5 and the peak gets distorted. Multiplying by the exponential window shrinks the end to 0, but in exchange the response looks as if it dies out faster than it really does. The window adds damping, so you subtract that much.
+
+$$
+\zeta_{\text{actual}} \approx \zeta_{\text{measured}} - \frac{1}{\tau\,\omega_n}
+$$
+
+<Callout type="example" title="The second mode of Figure 4 (τ = 0.1 s)">
+
+1. The share added by the window: $1/(0.1 \times 2\pi \times 142) = 0.0112$
+2. Subtract it from the half-power reading 0.0147: $0.0147 - 0.0112 = 0.0034$
+3. The true value is 0.003. That is much closer than the 0.0058 read without a window. The remaining difference is the share from the bin spacing (Δf = 1 Hz) (§5).
+
+</Callout>
+
+<Callout type="warn" title="'With an exponential window the damping comes out large'">
+
+The larger result is not an error but a share to correct. If you used an exponential window, write down τ along with the result and always subtract it. The shorter you make τ, the larger the added share and the more you rely on the correction (in Figure 4, 76 % of the measured value is the window's share), so if you can lengthen the frame so the ringing dies out completely, do that first.
+
+</Callout>
+
+---
+
+## 4. Is It a Trustworthy FRF: Averaging · Coherence · Double Hit
+
+Do not stop at one strike. Hit the same spot **3 to 5 times** and average $G_{xx}$ and $G_{xy}$ (P5-3). Averaging reduces the response-side noise in $H_1$, and the coherence $\gamma^2$ tells you how far to trust each frequency. At a natural-frequency peak, 0.99 or higher is normal. Low values where the response is small, like an antiresonance, are natural, but low at a peak means something went wrong.
+
+The most common cause is the **double hit**.
+
+<Figure {...F.doubleFig} />
+
+<Callout type="term" title="Double hit">
+
+The hammer bounces off the structure and strikes once more. Two pulses stand in the force record and a notch appears in the force spectrum. It happens easily when you hit a soft structure or withdraw the hammer late.
+
+</Callout>
+
+The second pulse was also measured by the force sensor, so in theory the FRF ought to be correct. In practice three things go wrong. In the notch of the force spectrum the force is small and noise wins, and the notch position differs with every hit, which smears the average. Above all, if the force window cuts off the second pulse, the response contains the result of two strikes while the force keeps only one. In Figure 5 the first peak was read 23 % high (58.5, true 47.6) and the second below half (131, true 278). In the same record the coherence at the peaks is 0.95 to 0.96, lower than normal (0.998 or higher). That is why most analyzers have **double-hit detection**, which picks out records with two pulses in the force channel; such records are not put in the average, and you strike again<Cite ids={['R-77']} />.
+
+<Callout type="field" title="How to strike">
+
+Hit briefly, flicking from the wrist, and withdraw the hammer at once. Hit the same spot in the same direction (parallel to the measurement direction). Leave the interval between hits until the response has died out. Attach the accelerometer close to the strike point and firmly (screw or adhesive base, the mounting resonance of P3-1).
+
+</Callout>
+
+---
+
+## 5. Reading ζ and Q with Half-Power: The Bins Must Be Denser than the Peak Width
+
+Now extract the damping ratio from the measured FRF. The method is exactly the half-power method seen in P1-4 §4 and P4-1 §4.
+
+<Figure {...F.halfPowerFig} />
+
+$$
+\zeta \approx \frac{f_b - f_a}{2 f_{peak}}, \qquad Q = \frac{1}{2\zeta}
+$$
+
+$f_a$ and $f_b$ are the two frequencies where the curve passes through $1/\sqrt{2}$ of the peak height, and $f_{peak}$ is the peak frequency. A measured FRF is not a continuous curve but points (bins) spaced Δf apart, so you guess $f_a$ and $f_b$ by joining two points with a straight line. So **how many bins fall inside the peak width $2\zeta f_n$** decides the accuracy. The number of bins inside the width is $2\zeta f_n / \Delta f = 2\zeta f_n T$, so if you want 4 or more,
+
+$$
+T \ge \frac{2}{\zeta f_n}
+$$
+
+<Callout type="example" title="The frame length needed for the first and second modes of the pedestal">
+
+1. First mode: $2/(0.035 \times 47.5) = 1.2$ s. The top of Figure 6 (T = 4 s, 13 bins) is more than enough, and the bottom (T = 0.25 s, about 1 bin) is not enough.
+2. Second mode: $2/(0.003 \times 141.6) = 4.7$ s. The smaller the damping, the longer you must measure.
+3. If you cannot measure for 4.7 s, or other vibration intrudes in the meantime, use an exponential window on a short frame to widen the peak and subtract the window's share as in §3.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (plastic tip, T 1 s, exponential window off, force window on, 5 averages, first peak), look at the bin dots in the zoomed plot at the bottom and the half-power ζ read from them (true value 0.035). What happens to the number of bins inside the peak width and to ζ when you change T to 0.25 s and 4 s?
+2. Set the peak to zoom on to the second mode and T to 1 s, and switch the exponential window from off to τ 0.1 s. What are the half-power ζ and the corrected ζ?
+3. Turn the exponential window off and change the hammer tip to rubber. Where does the force spectrum cross the −10 dB line? What are the coherence and peak height of the third mode (290 Hz)?
+4. Turn the tip back to plastic and switch on the double hit. What do you see in the time record, and how far off the true values are the first and second peak heights?
+
+</Callout>
+
+<ImpactLab client:visible lang="en" />
+
+In task 1, T 1 s gives 3.7 bins and ζ 0.0381 (9 % high), 0.25 s gives about 1 bin and 0.0404, and 4 s gives 13 bins and 0.0339. The remaining 3 % difference at 4 s is the share from response noise; with the noise removed it falls within 1 % of the true value. Task 2 is the same setting as Figure 4. The 0.0058 without a window (about twice the true value) becomes larger, 0.0147, at τ 0.1 s, but the corrected value after subtracting the window's share 0.0112 is 0.0034. In task 3, the rubber tip's excitation bandwidth is 127 Hz, so the force at 290 Hz is short by 32 dB. The coherence drops to 0.80 and the peak is read low at 84 (m/s²)/kN (true 156). In task 4 a second pulse is visible in the force, and as in Figure 5 the first peak is read high and the second below half.
+
+---
+
+## 6. Hitting While Running: The Bump Test and ODS
+
+What do you do when you cannot stop the machine? If you hit while running, operating vibration mixes into the response.
+
+### 6.1 Impact-Synchronous Time Averaging
+
+<Figure {...F.bumpFig} />
+
+The time-synchronous averaging (TSA) of P2-6 overlaid records on the keyphasor pulse to erase components that are not in rhythm with the rotation. The running bump test does the same thing **on the hammer strike**. The strike response starts with the same shape from the moment of impact every time, so it stays, while 1X and flow noise are not in rhythm with the strikes, so they are erased the more you overlay. If the strike times are unrelated to the rotation, the phase of 1X is random from record to record, so averaging $M$ times reduces its size by about $1/\sqrt{M}$. In the 16-average of Figure 7, the 50 Hz 1X dropped from 3.05 to 0.72 m/s² (about 1/4), and the buried 47.5 Hz peak appeared<Cite ids={['R-78']} />.
+
+If the rhythm of your strikes locks to the rotation (for example, hitting at the same angle every time), 1X is not erased. Deliberately make the interval between strikes irregular.
+
+### 6.2 ODS: How Does It Move at This Frequency While Running
+
+<Figure {...F.odsFig} />
+
+<Callout type="term" title="ODS (Operating Deflection Shape)">
+
+The shape you get by connecting the size and phase with which the various points of a structure move at one frequency (often 1X) during operation. Fix one reference sensor, move another sensor from point to point, and measure each point's amplitude and its phase relative to the reference (the 1X vector is in P3-3; for any frequency, the cross spectrum is in P5-3).
+
+</Callout>
+
+The three shapes of Figure 8 call for different remedies. If it grows toward the top and the foundation hardly moves (blue), it is a stiffness or resonance problem of the pedestal itself; if it is already large from the foundation up (orange), it is a foundation stiffness problem. If the amplitude jumps and the phase flips between two surfaces joined by bolts (green), that joint has come loose. What P7-3 called structural looseness, "an abrupt change of amplitude and phase on the two sides of a joint", has been confirmed here with five points.
+
+<Callout type="warn" title="'ODS is the mode shape'">
+
+A mode shape (P1-5) is a property of the structure, while the ODS is the motion produced by the real forces during operation. It is the result of several modes and the forced response mixed together, so far from a natural frequency it can differ from the mode shape. When the running frequency is very close to one natural frequency, the ODS resembles that mode shape.
+
+</Callout>
+
+---
+
+## 7. Feet · Foundation · Piping: Outside Conditions That Change the Natural Frequency
+
+The pedestal's natural frequency is not the pedestal's alone. It changes with how the feet sit on the floor, how stiff the foundation is, and how much the piping pulls.
+
+<Figure {...F.softFootFig} />
+
+<strong>Soft foot (P7-7)</strong> is checked by loosening the bolts one at a time. Put a dial gauge on the foot and see how much that foot lifts when only its bolt is loosened. If only one foot lifts noticeably (C in Figure 9), that foot is not sitting properly on the floor, and tightening its bolt twists the frame. Correct each foot's lift with shims and measure again. Catch soft foot before shaft alignment (P9-3). An alignment made on a twisted frame changes every time the bolts are loosened and tightened.
+
+| Check | How | What to look at |
+|---|---|---|
+| Soft foot | Loosen one bolt per foot + dial gauge | Does only one foot lift a lot; does the vibration (especially 2×LF, P7-7) change when it is tightened |
+| Foundation stiffness | ODS (Figure 8), inspect foundation, grout, anchor bolts | Does the foundation move as much as the pedestal; does the phase flip at a joint |
+| Pipe strain | Change in shaft position and alignment when the flange bolts are loosened | Does the machine move when the piping is disconnected (the piping pulls on the machine) |
+| Effect of the remedy | Impact test before and after reinforcement | Is the natural frequency far enough from the running speed |
+
+<Callout type="field" title="When resonance is confirmed: four directions">
+
+Raising the stiffness raises the natural frequency, and adding mass lowers it (P1-2). Adding damping lowers the peak (P1-4), and if you can move the running speed, you separate the two. Either way, after reinforcing, measure again with the same impact test whether the natural frequency really moved. How far apart they must be (the separation margin) is set by the machine type and the standard (P4-1, Part 10).
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Identification while running | Forced vibration follows the speed, and the natural-frequency hump stays put. If amplitude and phase move a lot together when the speed changes, it is resonance |
+| Hammer tip | The harder, the shorter the contact and the wider the band. Excitation bandwidth ≈ 1.02/t_c. The softest tip that covers the band of interest |
+| Recording | Trigger on force + pre-trigger, force window on the force channel, exponential window for a response that has not died out — if used, subtract 1/(τω_n) |
+| Trustworthy? | Average 3 to 5 times, peak coherence 0.99 or higher, discard double-hit records |
+| Half-power | ζ ≈ (f_b − f_a)/(2f_peak), Q = 1/(2ζ). At least 4 bins inside the peak width: T ≥ 2/(ζf_n) |
+| While running | Impact-synchronous time averaging reduces running components by about 1/√M. ODS is the shape of the motion while running (it may differ from the mode shape) |
+| Outside conditions | Check soft foot → foundation → piping in that order, and strike again after the remedy |
+
+---
+
+## 9. Review Questions
+
+<details>
+<summary><strong>Q1. When you lowered the speed from 3000 to 2900 rpm, the bearing's horizontal 1X grew from 4.1 to 6.3 mm/s and the phase changed by 40°. What should have happened with unbalance alone?</strong></summary>
+
+The unbalance force is proportional to the square of the speed, so if you are far from resonance it should have become a little smaller, $(2900/3000)^2 = 0.93$ times, about 3.8 mm/s, with the phase nearly unchanged. It grew instead and the phase moved a lot, so a natural frequency is likely near or just below 2900 rpm (48.3 Hz). Confirm with an impact test.
+</details>
+
+<details>
+<summary><strong>Q2. The band of interest is 0 to 300 Hz. Of tips with contact times of 8 ms and 2 ms, which do you choose?</strong></summary>
+
+The excitation bandwidths are $1.02/0.008 \approx 127$ Hz and $1.02/0.002 \approx 510$ Hz. The one that covers 300 Hz is the 2 ms tip. With the 8 ms tip the force near 300 Hz is short by tens of dB, so the FRF and coherence at that frequency get worse. An even harder tip (0.4 ms) also covers it, but its peak force is larger and it shakes high modes outside your interest, so choose the softest of those that cover it, the 2 ms tip.
+</details>
+
+<details>
+<summary><strong>Q3. You measured a 200 Hz mode with a τ = 0.5 s exponential window and got a half-power ζ = 0.0060. What is the actual damping ratio?</strong></summary>
+
+The window's share is $1/(0.5 \times 2\pi \times 200) = 0.0016$. $0.0060 - 0.0016 = 0.0044$. If you report it without subtracting, you see the damping about 1.4 times larger than the actual value.
+</details>
+
+<details>
+<summary><strong>Q4. You want to read, with half-power, a mode expected to have natural frequency 80 Hz and damping ratio 0.01. How long must the frame be at least?</strong></summary>
+
+The peak width is $2 \times 0.01 \times 80 = 1.6$ Hz. To fit 4 bins inside the width you need Δf ≤ 0.4 Hz, that is, $T \ge 2/(0.01 \times 80) = 2.5$ s. If you measure for 1 s (Δf 1 Hz), there are only 1.6 bins inside the width, so ζ is hard to trust.
+</details>
+
+<details>
+<summary><strong>Q5. In an impact test averaged over five strikes, the coherence at a natural-frequency peak was 0.93. What do you check first?</strong></summary>
+
+At a peak, 0.99 or higher is normal, so something went wrong. First look for a double hit in the force records, remove such records and strike again. Next check whether that frequency is inside the tip's excitation bandwidth, whether the frame is cutting the ringing (leakage, a lightly damped mode), and how the accelerometer is attached.
+</details>
+
+<details>
+<summary><strong>Q6. In the running 1X ODS, the base plate was 2.4 mm/s and the foundation just below it 0.3 mm/s (opposite phase). Will reinforcing the pedestal solve it?</strong></summary>
+
+Unlikely. The place where the amplitude jumps and the phase flips is the joint between the base plate and the foundation. The anchor bolts or grout have most likely come loose or cracked (structural looseness of P7-3), and that joint must be fixed first. If you only reinforce the pedestal, the motion is still produced at the joint.
+</details>
+
+---
+
+The next page (P9-2) is balancing — when it really is unbalance and not resonance, you measure the influence coefficient with a trial weight and calculate the correction weight.
+
+## References
+
+<References items={[
+  ['R-76', 'Hammer tip, windows and averaging in the impact test; reading the damping ratio from a measured FRF'],
+  ['R-77', 'Double-hit detection, exponential-window correction, coherence check, ODS and mode shapes'],
+  ['R-78', 'Impact-synchronous time averaging in the running impact test'],
+  ['R-18', 'H1 and coherence'],
+  ['R-52', 'Half-power width, damping ratio and Q'],
+  ['R-03', 'Identifying resonance while running, checking soft foot'],
+]}>
+The pedestal, hammer and noise in the figures are an example model of this page (`lib/fieldwork/impact.ts`). The numbers in the ODS and soft-foot figures are hypothetical values for explanation.
+</References>

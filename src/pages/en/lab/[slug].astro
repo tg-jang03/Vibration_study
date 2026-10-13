@@ -75,6 +75,9 @@ import BearingStageLab from '../../../components/labs/BearingStageLab';
 import GearSpectrumLab from '../../../components/labs/GearSpectrumLab';
 import GearTsaLab from '../../../components/labs/GearTsaLab';
 import ElectricLab from '../../../components/labs/ElectricLab';
+import ImpactLab from '../../../components/labs/ImpactLab';
+import BalanceLab from '../../../components/labs/BalanceLab';
+import AlignmentLab from '../../../components/labs/AlignmentLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -154,4 +157,7 @@ const c = lab.component;
   {c === 'GearSpectrumLab' && <GearSpectrumLab client:load lang="en" />}
   {c === 'GearTsaLab' && <GearTsaLab client:load lang="en" />}
   {c === 'ElectricLab' && <ElectricLab client:load lang="en" />}
+  {c === 'ImpactLab' && <ImpactLab client:load lang="en" />}
+  {c === 'BalanceLab' && <BalanceLab client:load lang="en" />}
+  {c === 'AlignmentLab' && <AlignmentLab client:load lang="en" />}
 </LabPageShell>

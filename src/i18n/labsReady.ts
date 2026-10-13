@@ -74,4 +74,7 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'GearSpectrumLab',
   'GearTsaLab',
   'ElectricLab',
+  'ImpactLab',
+  'BalanceLab',
+  'AlignmentLab',
 ]);

@@ -1,5 +1,11 @@
 # Session Log — 지난 세션 기록 (보관)
 
+### 2026-10-13 · Claude · M12.9 Part 6 영어판 (Sonnet 에이전트 3개)
+- 요청: 사용자 — "part6 ㄱㄱ"
+- 산출: 영어 P6-1 · P6-2 · P6-4 + 그림 사전 3 + 랩 3개(TimeWaveform·Waterfall·Trend) 변환·등록, 영어 P6-3의 옛 한국어 링크 4곳 relink
+- 고침: 터닝 → turning-gear, centre → center, 영어 라벨 잘림·겹침 2곳(워터폴 랩 y축 제목, P6-4 그림 4 "15 min")
+- 검증: check 0·test 1426·빌드 266쪽·verify:i18n 영어 105쪽 한글 0·링크 8617개 문제 0·P6 4절 그림 도형 수 같음·verify:page 영어 8쪽 OK(모바일 3폭), 조작 검사 한국어 3쪽 OK
+- 다음: M12.10 Part 7 (사용자 지시 대기)
 ### 2026-10-13 · Claude · M12.8 Part 4 영어판 (Sonnet 에이전트 3개)
 - 요청: 사용자 — "part3 codex 한테 시켜서함. part4 진행 ㄱㄱ"
 - 산출: 영어 P4-1 · P4-3 · P4-4 + 그림 사전 3 + 랩 3개(RunUpBode·ShaftCenterline·Stability) 변환·등록, 옛 한국어 링크 3곳 relink(P1-6·P4-2·P6-3)
