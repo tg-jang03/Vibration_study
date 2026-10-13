@@ -118,7 +118,7 @@ const fx = (f: number) => 26 + (f / 16) * 288;
                           <span>{num}</span>
                         </span>
                         <span class="part-text">
-                          <span class="part-title">{shortTitle(partTitle(part, lang))}</span>
+                          <span class="part-title">{shortTitle(partTitle(part, lang)).replace(/ · /g, ' · ')}</span>
                           <span class="part-q">{partQuestion(part, lang)}</span>
                         </span>
                       </a>
@@ -162,7 +162,7 @@ const fx = (f: number) => 26 + (f / 16) * 288;
       const a = document.getElementById('resume');
       if (last && last.href && a) {
         a.href = last.href;
-        a.textContent = resumeLabel + ' · ' + last.id + ' ' + String(last.title).split(':')[0];
+        a.textContent = resumeLabel + ' · ' + last.id + ' ' + String(last.title).replace(/\?\s.*$/, '?').split(':')[0];
         a.hidden = false;
       }
     } catch (e) {}
@@ -280,15 +280,15 @@ const fx = (f: number) => 26 + (f / 16) * 288;
     display: none;
   }
 
+  /* 숫자 상자 셋은 같은 폭 (영어 라벨이 길어도 들쭉날쭉하지 않게) */
   .hero-stats {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 10.5rem));
     gap: 0.75rem;
     margin: 0;
   }
 
   .hero-stats div {
-    min-width: 9rem;
     padding: 0.6rem 0.9rem;
     border-radius: var(--radius);
     background: var(--surface);
@@ -435,17 +435,41 @@ const fx = (f: number) => 26 + (f / 16) * 288;
     transition: box-shadow 0.15s ease, transform 0.15s ease;
   }
 
+  /* 같은 줄의 카드끼리 제목·질문 / 번호 칸 / 아랫줄 높이를 맞춘다 (제목·질문 줄 수가 달라도 번호 칸이 같은 높이) */
+  @supports (grid-template-rows: subgrid) {
+    .part-tile {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      row-gap: 0.75rem;
+    }
+
+    .cells {
+      align-self: start;
+    }
+
+    .part-meta {
+      align-self: end;
+    }
+  }
+
   .part-tile:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
   }
 
+  /* 머리(제목 + 질문) 높이를 지도 전체에서 같게: 한국어 제목 1줄 + 질문 2줄, 영어 제목 2줄 + 질문 2줄 */
   .part-head {
     display: flex;
     gap: 0.8rem;
     align-items: flex-start;
+    min-height: 4.1rem;
     color: inherit;
     text-decoration: none;
+  }
+
+  :global(html[lang='en']) .part-head {
+    min-height: 5.5rem;
   }
 
   .part-head:hover .part-title,
@@ -485,12 +509,14 @@ const fx = (f: number) => 26 + (f / 16) * 288;
     font-weight: 700;
     font-size: 1.02rem;
     line-height: 1.35;
+    text-wrap: balance;
   }
 
   .part-q {
     font-size: 0.86rem;
     color: var(--text-muted);
     line-height: 1.45;
+    text-wrap: pretty;
   }
 
   .cells {

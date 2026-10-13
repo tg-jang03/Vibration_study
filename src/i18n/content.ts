@@ -25,5 +25,5 @@ export const labText = (lab: Pick<LabEntry, 'slug' | 'title' | 'summary'>, lang:
 
 export const statusLabel = (status: SectionStatus, lang: Lang): string => ui(lang).status[status];
 
-/** 제목의 짧은 앞부분 ("감쇠: 흔들림은 …" → "감쇠") */
-export const shortTitle = (title: string): string => title.split(':')[0];
+/** 제목의 짧은 앞부분 ("감쇠: 흔들림은 …" → "감쇠", 영어 "What is vibration? Equilibrium …" → "What is vibration?") */
+export const shortTitle = (title: string): string => title.replace(/\?\s.*$/, '?').split(':')[0];

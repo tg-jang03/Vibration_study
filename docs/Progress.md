@@ -17,7 +17,7 @@
 - **문서 보관 (2026-10-12, M0.16·D-055)**: `Curriculum.md` → `archive/`, Contents 개념 척추·기준값 → `archive/ContentsBuild.md`, Roadmap 세부 표 → `archive/Milestones.md` 끝, Progress 구축 핸드오프 → `archive/Handoffs.md`. 지금 기준은 페이지·코드·테스트·`Glossary.md`·`PageGuide.md`.
 - **재사용 계산**: `lib/` 목록은 Roadmap §4-2 — 새 랩·그림은 있는 모듈부터 찾는다. 참고자료 **다음 번호 R-96** (`references.ts` 머리).
 - **영어판 뼈대 (2026-10-12, M12.2·D-054) — 공용 코어 변경**: `BaseLayout`·`MdxLayout`이 주소(/en/)로 언어를 정함(html lang·hreflang·언어 전환 버튼·KO 표시). 홈·Part·랩 모음·랩 단독 페이지 본문은 `components/site/*`(lang prop)로 옮기고 `pages/`·`pages/en/`은 얇은 껍데기. `LabFrame`에 `lang`·`slug`, 공용 UI(읽음값·재생 막대·Plot·Polar)는 `ui/lang.tsx`의 LangContext로 문구를 고름. `Figure`·`Callout`·`References`는 영어 페이지에서 사전으로 옮김. 한국어 화면은 그대로. 만드는 법 PageGuide §13.
-- **공용 코어 최근 추가**: `ui/Plot`의 `bands`(M10), `ResponsiveSvg`·`useMobileLayout`·QA `--visuals`/`--mobile-*`(M0.15, PageGuide §5-2). `Figure.astro` 모바일 제목 줄바꿈이 영어 낱말·숫자(`8.7|2 Hz`, `150 H|z`) 가운데서 자르지 않음(M12.6) — 한국어는 그런 제목이 있던 P1-5·P2-2·P2-9·P5-1·P5-7 모바일만 바뀜, PC 그대로.
+- **공용 코어 최근 추가**: `ui/Plot`의 `bands`(M10), `ResponsiveSvg`·`useMobileLayout`·QA `--visuals`/`--mobile-*`(M0.15, PageGuide §5-2). `Figure.astro` 모바일 제목 줄바꿈이 영어 낱말·숫자(`8.7|2 Hz`, `150 H|z`) 가운데서 자르지 않음(M12.6) — 한국어는 그런 제목이 있던 P1-5·P2-2·P2-9·P5-1·P5-7 모바일만 바뀜, PC 그대로. 홈(`site/HomePage.astro`, 2026-10-13): 학습 지도 카드는 CSS subgrid로 같은 줄끼리 머리·번호 칸·아랫줄을 맞추고 머리 최소 높이(한국어 4.1rem, 영어 5.5rem)로 지도 전체 카드 높이가 같음, 숫자 상자 셋 같은 폭, `shortTitle`은 영어 "…? …"도 "…?"까지 자름.
 - **함정**: 유효숫자 인자, 이론상 0 → 0 표시(hydration), MDX 함정 PageGuide §8. Node·gh는 PATH에 있음, Python 없음. rebase 충돌 때 다른 트랙의 행·절·로그는 origin 쪽 그대로 (I-026).
 
 ## 핸드오프 — 트랙 A (Claude)
@@ -34,18 +34,16 @@
 - **M12.11 완료 (2026-10-13, D-057)**: 영어 P8-1 ~ P8-5·그림 39개·BODE/ST/GT/GEN 랩 4개. Trend·GearTsa는 A 지원을 lang="en"으로 사용, lib 라벨은 랩 안 k() 사본 + tr(원문 변경 시 사본·사전도). 영어 Bode 범례·Polar 라벨 축약, 한·영 공통 P8-1 그림4의 1500 rpm 라벨 y만 이동. 739468e의 GearTsa 등록 확인, Part 9(7d9a800) 반영 뒤 rebase·공유 등록 양쪽 보존·relink 7곳. 원문 P8-3 그림4 캡션의 상·하향 화살표와 실제 상향만 있는 도형 차이는 미수정.
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
+### 2026-10-13 · Claude · 홈 화면 정리 (한·영 학습 지도 카드·숫자 상자)
+- 요청: 사용자 — "영어 홈 화면에 박스 크기도 뒤죽박죽 … 통일성 있어보이게 정리"
+- 고침: 시작 버튼이 영어 절 제목 전체를 달아 두 줄로 밀림 → 짧은 제목, 카드마다 제목·질문 줄 수가 달라 번호 칸 높이가 들쭉날쭉 → subgrid + 머리 최소 높이로 카드 11개 같은 높이(한·영), 숫자 상자 같은 폭, 영어 Part 질문 셋을 두 줄 안으로(P3·P4·P8), 제목 줄 앞에 "·"가 오지 않게
+- 검증: 카드 높이 영어 197px·한국어 175px 모두 같음, verify:page 홈 한·영 모바일 넘침 0, i18n 테스트 통과
 ### 2026-10-13 · Claude · M12.13 Part 10 영어판 (Sonnet 에이전트 3개)
 - 요청: 사용자 — 위 M12.12와 같은 지시의 뒤 절반 (Part 10)
 - 산출: 영어 P10-1 ~ P10-3 + 그림 사전 3 + 랩 3개(Severity·SeparationMargin·Diagnosis) 변환·등록, Part 8 영어판(e2ea243) 위로 rebase(공유 등록 양쪽 보존) 뒤 relink 3곳(P10-1 → P8-4·P8-5, P10-2 → P8-1)
 - 고침: 영어만 넘친 그림 라벨 6곳 줄임(P10-1 그림 5 알람, P10-2 그림 2·6, P10-3 그림 2·5·6), P10-1 그림 5 캡션 문장
 - 검증: check 0·test 1498·빌드 309쪽·verify:i18n 영어 148쪽 한글 0·링크 10005개 문제 0·P9·P10 그림 도형 수 같음·영어에만 있는 숫자 0·verify:page 영어 7쪽 OK(모바일 3폭)·severity smoke 한국어 14항목 OK·한·영 PC 캡처 비교
 - 다음: M12.14 Part 11 (지시 대기). 미룬 것: 영어 제목 대소문자 통일(M12 끝)
-### 2026-10-13 · Claude · M12.12 Part 9 영어판 (Sonnet 에이전트 3개, Part 7 세션과 같은 폴더에서 동시)
-- 요청: 사용자 — "M12 영어판 이어서: Part 9(M12.12) → Part 10(M12.13)"
-- 산출: 영어 P9-1 ~ P9-3 + 그림 사전 3 + 랩 3개(Impact·Balance·Alignment) 변환·등록. 영어 쪽에서 Part 9로 가는 옛 링크 없음(relink 0곳)
-- 고침: 영어만 넘친 2곳 줄임(정렬 랩 y축 제목, P9-2 그림 6 모드 세트 라벨), BalanceLab 런 이름 찾기를 `tr(q.label)`로 단순화
-- 검증: check 0·test 1476·빌드 294쪽(스크래치 outDir)·verify:i18n 영어 133쪽 한글 0·링크 9432개 문제 0·P9 3절 그림 도형 수 같음·verify:page 영어 7쪽 OK(모바일 3폭)·한·영 PC 캡처 38쌍 비교
-- 다음: M12.13 Part 10 (번역 끝, 검사 중)
 ## 세션 로그 — 트랙 B (Codex) · 최근 2개, 최신이 위
 ### 2026-10-13 · Codex · M12.11 Part 8 영어판
 - 산출: 영어 본문 5절·그림 사전 5·랩 4개(205키) 변환·등록, Trend·GearTsa는 영어 prop만 사용.

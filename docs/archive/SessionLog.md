@@ -1,5 +1,11 @@
 # Session Log — 지난 세션 기록 (보관)
 
+### 2026-10-13 · Claude · M12.12 Part 9 영어판 (Sonnet 에이전트 3개, Part 7 세션과 같은 폴더에서 동시)
+- 요청: 사용자 — "M12 영어판 이어서: Part 9(M12.12) → Part 10(M12.13)"
+- 산출: 영어 P9-1 ~ P9-3 + 그림 사전 3 + 랩 3개(Impact·Balance·Alignment) 변환·등록. 영어 쪽에서 Part 9로 가는 옛 링크 없음(relink 0곳)
+- 고침: 영어만 넘친 2곳 줄임(정렬 랩 y축 제목, P9-2 그림 6 모드 세트 라벨), BalanceLab 런 이름 찾기를 `tr(q.label)`로 단순화
+- 검증: check 0·test 1476·빌드 294쪽(스크래치 outDir)·verify:i18n 영어 133쪽 한글 0·링크 9432개 문제 0·P9 3절 그림 도형 수 같음·verify:page 영어 7쪽 OK(모바일 3폭)·한·영 PC 캡처 38쌍 비교
+- 다음: M12.13 Part 10 (번역 끝, 검사 중)
 ### 2026-10-13 · Claude · M12.10 Part 7 영어판 (Sonnet 에이전트 5개) + Part 8 Codex 배정
 - 요청: 사용자 — "part7 한번에 가자 그리고 part8은 codex 시킬거니까 시킬 멘트도" → 이어서 "part 9 10 다른 세션에다가 시키게 멘트"
 - 산출: 영어 P7-1 ~ P7-9 + 그림 사전 9 + 랩 13개(하위 3) 변환·등록, 결함 목록 영어 모듈 `i18n/en/faults.ts`, 옛 링크 relink 2곳(P6-3·P6-4), D-057(Part 8 → Codex)·Codex 지시문, Part 9·10 세션 지시문
