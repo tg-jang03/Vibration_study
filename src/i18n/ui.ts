@@ -93,6 +93,10 @@ const KO = {
 
   // 참고자료
   refSourceTitle: '레퍼런스 > 참고 문헌에서 보기',
+  // 레퍼런스 머리 (RefHeader)
+  refKicker: '레퍼런스',
+  refTabsLabel: '레퍼런스 메뉴',
+  refTabs: { home: '개요', sources: '참고 문헌', glossary: '용어집', formulas: '기호 · 공식' },
 
   // 랩 공용 UI (React)
   labOpen: '이 랩만 크게 보기 ↗',
@@ -201,6 +205,9 @@ const EN: UiStrings = {
   heatmapHigh: 'high',
 
   refSourceTitle: 'See it in Reference > Sources',
+  refKicker: 'Reference',
+  refTabsLabel: 'Reference menu',
+  refTabs: { home: 'Overview', sources: 'Sources', glossary: 'Glossary', formulas: 'Symbols · Formulas' },
 
   labOpen: 'Open this lab on its own ↗',
   labTasks: 'Experiments — predict first, then check by changing the controls',

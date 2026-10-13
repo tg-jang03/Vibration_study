@@ -1,0 +1,521 @@
+import Fx from '../../content/Fx.astro';
+import { withBase } from '../../../lib/site';
+import { availablePath } from '../../../i18n/routes';
+
+{/* Reference > Symbols · Formulas body, English (D-046, M12.15). Page frame lives in the English reference route. */}
+
+**Quick links**: <a href="#part-1-vibration-basics">Part 1</a> · <a href="#part-2-signal-processing-basics">Part 2</a> · <a href="#part-3-sensors-and-the-measurement-chain">Part 3</a> · <a href="#part-4-rotor-dynamics-basics">Part 4</a> · <a href="#part-5-advanced-signal-processing">Part 5</a> · <a href="#part-6-reading-field-plots">Part 6</a> · <a href="#part-7-diagnosis-by-fault-type">Part 7</a> · <a href="#part-8-gtst-specific-phenomena">Part 8</a> · <a href="#part-9-structural-testing--balancing--alignment">Part 9</a> · <a href="#part-10-standards--assessment--diagnostic-procedure">Part 10</a> · <a href="#part-11-integrated-diagnostic-practice">Part 11</a> · <a href="#frequently-used-symbols">Symbol table</a>
+
+## Part 1 Vibration basics
+
+<Fx name="Natural frequency" page="P1-2">
+
+$$
+\omega_n = \sqrt{\frac{k}{m}}, \qquad f_n = \frac{\omega_n}{2\pi} = \frac{1}{2\pi}\sqrt{\frac{k}{m}}
+$$
+
+$k$ stiffness [N/m], $m$ mass [kg]. Heavier is slower, stiffer is faster.
+
+</Fx>
+
+<Fx name="Damping ratio · damped natural frequency" page="P1-3">
+
+$$
+\zeta = \frac{c}{c_c} = \frac{c}{2\sqrt{km}}, \qquad \omega_d = \omega_n\sqrt{1-\zeta^2}
+$$
+
+$c$ viscous damping coefficient, $c_c$ critical damping. If $\zeta < 1$, the motion swings back and forth while dying out.
+
+</Fx>
+
+<Fx name="Logarithmic decrement" page="P1-3">
+
+$$
+\delta = \ln\frac{x_i}{x_{i+1}} = \frac{2\pi\zeta}{\sqrt{1-\zeta^2}} \approx 2\pi\zeta
+$$
+
+The ratio of two neighboring peaks gives the damping ratio.
+
+</Fx>
+
+<Fx name="Amplitude ratio and phase of forced vibration" page="P1-4">
+
+$$
+\frac{X}{X_{st}} = \frac{1}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}, \qquad r = \frac{f}{f_n}
+$$
+
+$$
+\varphi = \operatorname{atan2}(2\zeta r,\ 1-r^2)
+$$
+
+$X_{st} = F_0/k$. At resonance ($r = 1$) the amplitude ratio is $1/(2\zeta)$ and the phase lag is 90°.
+
+</Fx>
+
+<Fx name="Natural frequencies of several masses" page="P1-5">
+
+$$
+\det\left(\mathbf{K} - \omega^2\mathbf{M}\right) = 0
+$$
+
+$\mathbf{M}$ mass matrix, $\mathbf{K}$ stiffness matrix. There are as many natural frequencies and mode shapes as there are roots.
+
+</Fx>
+
+<Fx name="Series stiffness (shaft · bearing · support)" page="P1-6">
+
+$$
+\frac{1}{k_{eq}} = \frac{1}{k_{sh}} + \frac{1}{k_{br}} + \frac{1}{k_{sup}}
+$$
+
+The softest element sets the equivalent stiffness (a one-direction example that ignores the mass of the connections).
+
+</Fx>
+
+<Fx name="Rotating frequency and unbalance response" page="P1-7">
+
+$$
+f_r = \frac{\text{rpm}}{60}, \qquad F_u = m_u e\,\Omega^2
+$$
+
+$$
+\frac{X}{m_u e / M} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}
+$$
+
+$m_u e$ unbalance, $\Omega = 2\pi f_r$. Below the critical speed, the response grows with the square of the rotating speed.
+
+</Fx>
+
+<Fx name="Frequencies that machine elements produce" page="P1-8">
+
+$$
+f_{GM} = z\,f_r, \qquad f_{BP} = N_b\,f_r, \qquad f_{belt} = \frac{\pi D_p f_r}{L}
+$$
+
+$z$ number of teeth, $N_b$ number of blades, $D_p$ pulley diameter, $L$ belt length. For rolling bearings, see the P7-5 card.
+
+</Fx>
+
+## Part 2 Signal processing basics
+
+<Fx name="Sine wave and amplitude notation" page="P2-1">
+
+$$
+x(t) = A\cos(2\pi f t + \varphi)
+$$
+
+$$
+A_{rms} = \frac{A_{pk}}{\sqrt{2}}, \qquad A_{pp} = 2A_{pk}, \qquad CF = \frac{A_{pk}}{A_{rms}}
+$$
+
+These amplitude relations hold only for a single sine wave. Always state whether a value is Peak, RMS, or Pk-Pk.
+
+</Fx>
+
+<Fx name="DFT and single-sided amplitude" page="P2-2">
+
+$$
+X[k] = \sum_{n=0}^{N-1} w[n]\,x[n]\,e^{-j2\pi kn/N}
+$$
+
+$$
+A_k = \frac{2\,\lvert X[k]\rvert}{S_1}
+$$
+
+$w[n]$ window, $S_1 = \sum w[n]$. Do not multiply by 2 at $k = 0$ and $N/2$.
+
+</Fx>
+
+<Fx name="Nyquist and alias" page="P2-3">
+
+$$
+f_N = \frac{f_s}{2}, \qquad f_a = \lvert f - k f_s \rvert, \quad k = \operatorname{round}\!\left(\frac{f}{f_s}\right)
+$$
+
+Components above $f_N$ fold back in as $f_a$ and cannot be told apart from real ones.
+
+</Fx>
+
+<Fx name="ADC quantization" page="P2-3">
+
+$$
+1\ \mathrm{LSB} = \frac{2V_{fs}}{2^b}, \qquad \mathrm{SQNR} \approx 6.02\,b + 1.76\ \mathrm{dB}
+$$
+
+$b$ number of bits, $V_{fs}$ input range. About 6 dB per bit.
+
+</Fx>
+
+<Fx name="Three resolution equations" page="P2-4">
+
+$$
+\Delta f = \frac{f_s}{N} = \frac{F_{max}}{\mathrm{LOR}}, \qquad T = \frac{1}{\Delta f}, \qquad N = 2.56\,\mathrm{LOR}
+$$
+
+To separate two close lines, record longer. The measurement time sets the resolution.
+
+</Fx>
+
+<Fx name="Window coefficients" page="P2-5">
+
+$$
+CG = \frac{S_1}{N}, \qquad \mathrm{ACF} = \frac{N}{S_1}
+$$
+
+$$
+\mathrm{ECF} = \sqrt{\frac{N}{S_2}}, \qquad \mathrm{ENBW} = \frac{N S_2}{S_1^2}\ [\mathrm{bin}]
+$$
+
+$S_2 = \sum w[n]^2$. Correct line magnitudes with ACF and noise magnitudes with ECF.
+
+</Fx>
+
+<Fx name="Averaging" page="P2-6">
+
+$$
+\bar S_m = (1-\alpha)\,\bar S_{m-1} + \alpha\,S_m, \qquad T_{tot} = T\,[\,1 + (M-1)(1-r)\,]
+$$
+
+$\alpha = 1/M$ exponential averaging weight, $r$ overlap ratio. Power averaging only reduces the scatter; the floor level stays the same.
+
+</Fx>
+
+<Fx name="TSA (time synchronous averaging)" page="P2-6">
+
+$$
+\bar x(\theta) = \frac{1}{M}\sum_{m=0}^{M-1} x(\theta + 2\pi m)
+$$
+
+Overlay and add $M$ revolutions aligned to the keyphasor. Components not tied to that shaft get weaker.
+
+</Fx>
+
+<Fx name="Power spectrum · PSD · band RMS" page="P2-7">
+
+$$
+PS_k = \frac{2\,\lvert X[k]\rvert^2}{S_1^2}, \qquad PSD_k = \frac{PS_k}{\mathrm{ENBW}\cdot\Delta f}
+$$
+
+$$
+\text{band RMS} = \sqrt{\frac{\sum_k PS_k}{\mathrm{ENBW}}}
+$$
+
+Read sine waves from the amplitude spectrum and noise from the PSD.
+
+</Fx>
+
+<Fx name="Displacement · velocity · acceleration and dB" page="P2-7">
+
+$$
+v = 2\pi f\,d, \qquad a = (2\pi f)^2 d, \qquad L = 20\log_{10}\frac{A}{A_{ref}}
+$$
+
+The same vibration looks larger in acceleration at higher frequency. Always state the reference value with dB.
+
+</Fx>
+
+<Fx name="Modulation and beating" page="P2-8">
+
+$$
+A(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t
+$$
+
+$$
+= A\cos 2\pi f_c t + \frac{Am}{2}\cos 2\pi(f_c \pm f_m)t
+$$
+
+$$
+\cos 2\pi f_1 t + \cos 2\pi f_2 t = 2\cos\pi(f_1 - f_2)t\,\cos\pi(f_1 + f_2)t
+$$
+
+Sideband spacing = modulation frequency, beat period = $1/\lvert f_1 - f_2\rvert$.
+
+</Fx>
+
+## Part 3 Sensors and the measurement chain
+
+<Fx name="Non-contact displacement sensor" page="P3-2">
+
+$$
+d = \frac{V_{gap}}{-S}, \qquad d_{pp} = \frac{\Delta V_{pp}}{S}
+$$
+
+$S$ sensitivity (e.g., 7.87 V/mm). The output is a negative voltage, and the larger the gap, the more negative it is.
+
+</Fx>
+
+<Fx name="Phase and the 1X vector" page="P3-3">
+
+$$
+\varphi = 360^\circ \times \Delta t \times f_r, \qquad \vec V = A\angle\varphi = A\,e^{-j\varphi}
+$$
+
+$$
+\vec V_c = \vec V - \vec V_{sr}
+$$
+
+$\varphi$ lag angle from the keyphasor to the next positive peak, $\vec V_{sr}$ slow roll vector (compensation).
+
+</Fx>
+
+## Part 4 Rotor dynamics basics
+
+<Fx name="Amplification factor and separation margin" page="P4-1">
+
+$$
+\mathrm{AF} = \frac{N_c}{N_2 - N_1} \approx \frac{1}{2\zeta}, \qquad \mathrm{SM} = \frac{\lvert N_{op} - N_c\rvert}{N_{op}} \times 100\ [\%]
+$$
+
+$N_1, N_2$ speeds at the 0.707 points of the peak. For acceptance values, see the original standard.
+
+</Fx>
+
+<Fx name="Jeffcott rotor and forward · backward whirl" page="P4-2">
+
+$$
+m\ddot z + c\dot z + kz = m e\,\Omega^2 e^{j\Omega t}, \qquad z = A_f e^{j\Omega t} + A_b e^{-j\Omega t}
+$$
+
+$z = x + jy$. The magnitudes of the forward $A_f$ and backward $A_b$ parts set the orbit shape.
+
+</Fx>
+
+<Fx name="Cross-coupling and the stability limit" page="P4-4">
+
+$$
+m\lambda^2 + c\lambda + k - j k_{xy} = 0, \qquad \delta = -\frac{2\pi\sigma}{\omega_d}
+$$
+
+$$
+k_{xy}^{\,limit} = c\,\omega_n = 2\zeta k
+$$
+
+$\lambda = \sigma \pm j\omega_d$. If $\sigma > 0$ (negative logarithmic decrement), the whirl grows on its own.
+
+</Fx>
+
+## Part 5 Advanced signal processing
+
+<Fx name="FRF and coherence" page="P5-3">
+
+$$
+H_1 = \frac{G_{xy}}{G_{xx}}, \qquad H_2 = \frac{G_{yy}}{G_{yx}}, \qquad \gamma^2 = \frac{\lvert G_{xy}\rvert^2}{G_{xx}G_{yy}}
+$$
+
+$G_{xy}$ cross spectrum. The closer $\gamma^2$ is to 1, the better the output is explained by the input.
+
+</Fx>
+
+<Fx name="Tracking filter (nX vector)" page="P5-5">
+
+$$
+\vec V_{nX}(t) = 2\,\mathrm{LPF}\left\{x(t)\,e^{-jn\theta(t)}\right\}
+$$
+
+$\theta(t)$ rotation angle measured with the keyphasor. Even as the speed changes, it follows only that order component.
+
+</Fx>
+
+<Fx name="Envelope and kurtosis" page="P5-6">
+
+$$
+\mathrm{env}(t) = \lvert x(t) + j\,\mathcal{H}\{x(t)\}\rvert, \qquad K = \frac{E[(x-\mu)^4]}{\sigma^4}
+$$
+
+$\mathcal{H}$ Hilbert transform. Gaussian noise gives $K = 3$; it grows when impacts are mixed in.
+
+</Fx>
+
+<Fx name="Cepstrum and autocorrelation" page="P5-7">
+
+$$
+c(\tau) = \mathcal{F}^{-1}\left\{\ln A(f)\right\}, \qquad R(\tau) = \frac{E[x(t)\,x(t+\tau)]}{E[x(t)^2]}
+$$
+
+A group of evenly spaced lines (harmonics, sidebands) becomes a single peak at $\tau$ = 1/spacing.
+
+</Fx>
+
+## Part 6 Reading field plots
+
+<Fx name="Vector change" page="P6-4">
+
+$$
+\Delta\vec V = \vec V(t) - \vec V_{ref}
+$$
+
+$$
+\lvert\Delta\vec V\rvert = 2A\,\lvert\sin(\Delta\varphi/2)\rvert \quad (\text{when the amplitudes are equal})
+$$
+
+Even if the amplitude stays the same, the vector changes a lot when the phase turns.
+
+</Fx>
+
+## Part 7 Diagnosis by fault type
+
+<Fx name="Rolling bearing defect frequencies" page="P7-5">
+
+$$
+f_{FTF} = \frac{f_r}{2}\left(1 - \frac{d}{D}\cos\alpha\right)
+$$
+
+$$
+f_{BPFO} = N_r f_{FTF}, \qquad f_{BPFI} = N_r (f_r - f_{FTF})
+$$
+
+$$
+f_{BSF} = \frac{D}{2d} f_r \left(1 - \left(\frac{d}{D}\cos\alpha\right)^2\right)
+$$
+
+$N_r$ number of balls, $d$ ball diameter, $D$ pitch diameter, $\alpha$ contact angle. In practice, slip shifts them by 1 to 2 %.
+
+</Fx>
+
+<Fx name="Gear mesh and hunting tooth" page="P7-6">
+
+$$
+\mathrm{GMF} = z_1 f_1 = z_2 f_2, \qquad f_{HT} = \frac{\mathrm{GMF}}{\mathrm{LCM}(z_1, z_2)}
+$$
+
+Sideband spacing = rotating speed of the faulty shaft. The same pair of teeth meets again every $1/f_{HT}$.
+
+</Fx>
+
+<Fx name="Induction motor slip and pole pass frequency" page="P7-7">
+
+$$
+f_{sync} = \frac{2f_L}{P}, \qquad f_{slip} = f_{sync} - f_r
+$$
+
+$$
+\mathrm{PPF} = P\,f_{slip} = 2f_L - P\,f_r
+$$
+
+$f_L$ line frequency, $P$ number of poles. 2×LF sits above the harmonic whose order equals the number of poles by the PPF.
+
+</Fx>
+
+## Part 8 GT/ST-specific phenomena
+
+<Fx name="Torsional natural frequency of a two-inertia shaft system" page="P8-5">
+
+$$
+f_t = \frac{1}{2\pi}\sqrt{K_t\left(\frac{1}{J_1} + \frac{1}{J_2}\right)}
+$$
+
+$J_1, J_2$ moments of inertia, $K_t$ torsional stiffness. The elastic mode of two inertias joined by one shaft.
+
+</Fx>
+
+## Part 9 Structural testing · balancing · alignment
+
+<Fx name="Impact hammer excitation band and exponential window correction" page="P9-1">
+
+$$
+f_{-10\,\text{dB}} \approx \frac{1.02}{t_c}, \qquad \zeta_{\text{actual}} \approx \zeta_{\text{measured}} - \frac{1}{\tau\,\omega_n}
+$$
+
+$t_c$ hammer contact time (shorter with a harder tip), $\tau$ time constant of the exponential window. Correct by subtracting the damping that the window added.
+
+</Fx>
+
+<Fx name="Half-power damping ratio and record length" page="P9-1">
+
+$$
+\zeta \approx \frac{f_b - f_a}{2 f_{peak}}, \qquad Q = \frac{1}{2\zeta}, \qquad T \ge \frac{2}{\zeta f_n}
+$$
+
+$f_a$ and $f_b$ are the points at $1/\sqrt{2}$ of the peak height. Choose the record length $T$ so that at least 4 bins fall within the peak width $2\zeta f_n$.
+
+</Fx>
+
+<Fx name="Influence coefficient balancing (single-plane · two-plane)" page="P9-2">
+
+$$
+H = \frac{V_1 - V_0}{W_t}, \qquad W_c = -\frac{V_0}{H}, \qquad W = -A^{-1} V_0
+$$
+
+$V_0$ initial 1X vector, $V_1$ vector after attaching the trial weight $W_t$. All are complex (magnitude and angle). Two-plane balancing uses a 2 × 2 influence coefficient matrix $A$.
+
+</Fx>
+
+<Fx name="Balance grade" page="P9-2">
+
+$$
+e_{per} = \frac{G}{\Omega}, \qquad U_{per} = M\, e_{per}
+$$
+
+$G$ grade [mm/s], $\Omega$ angular speed [rad/s], $M$ rotor mass. Follow the standard for the grade table and the distribution between planes.
+
+</Fx>
+
+<Fx name="Alignment: readings → misalignment → foot moves" page="P9-3">
+
+$$
+y(z) = \delta + \alpha z, \qquad R_{rim} = -2\,y(z_{rim}), \qquad R_{face} = -\alpha D
+$$
+
+$$
+\Delta_{\text{front}} = \text{target} - (\delta + \alpha A), \qquad \Delta_{\text{rear}} = \text{target} - (\delta + \alpha B)
+$$
+
+$\delta$ offset at the coupling, $\alpha$ slope, $A$ and $B$ distances from the coupling to the front and rear feet. The rim reading is twice the offset.
+
+</Fx>
+
+<Fx name="Thermal growth and the cold target" page="P9-3">
+
+$$
+\Delta H \approx \alpha_{th}\, H\, \Delta T, \qquad \text{cold target} = \Delta H_S - \Delta H_M
+$$
+
+$\alpha_{th}$ thermal expansion coefficient (steel about $11.5 \times 10^{-6}$/K), $H$ height from the foot to the shaft centerline. Set the shafts deliberately offset at standstill so that they line up in operation.
+
+</Fx>
+
+## Part 10 Standards · assessment · diagnostic procedure
+
+<Fx name="Change from the baseline" page="P10-1">
+
+$$
+\Delta x = x - x_0, \qquad p = 100\,\frac{\lvert \Delta x \rvert}{b_{BC}}\ \%
+$$
+
+$x_0$ healthy baseline under the same conditions, $b_{BC}$ B/C boundary of the machine group. Check the applicable standard for how many % counts as a meaningful change.
+
+</Fx>
+
+## Part 11 Integrated diagnostic practice
+
+<Fx name="Per-revolution nX vector and slow roll compensation" page="P11-3">
+
+$$
+X = \frac{2}{N} \sum_{i=1}^{N} x_i\, e^{-jn\theta_i}, \qquad \theta_i = 2\pi\,\frac{t_i - t_k}{t_{k+1} - t_k}, \qquad V_c = V - V_{sr}
+$$
+
+$t_k$ and $t_{k+1}$ times of the keyphasor pulses that open and close one revolution, $N$ number of samples in between (subtract the mean of each revolution first). $V_{sr}$ vector measured at low speed (slow roll) ≈ runout.
+
+</Fx>
+
+## Frequently used symbols
+
+| Symbol | Meaning | Unit |
+|---|---|---|
+| $f_r$, 1X | Rotating frequency (rpm ÷ 60) | Hz |
+| $f_n$, $\omega_n$ | Natural frequency | Hz, rad/s |
+| $\zeta$ | Damping ratio | — |
+| $r$ | Frequency ratio $f/f_n$ (for rotors, $N/N_n$) | — |
+| $f_s$, $f_N$ | Sampling frequency, Nyquist frequency | Hz |
+| $N$, $T$, $\Delta f$ | Samples per frame, frame length, resolution | —, s, Hz |
+| $F_{max}$, LOR | Maximum analysis frequency, lines of resolution | Hz, — |
+| $w[n]$, $S_1$, $S_2$ | Window, window sum, sum of squares | — |
+| ENBW | Equivalent noise bandwidth | bin |
+| $M$, $r$ | Number of averages, overlap ratio | — |
+| $\varphi$ | Phase (lag angle relative to the keyphasor) | ° |
+| $\vec V$ | 1X vector $A\angle\varphi$ | Amplitude unit |
+| $N_c$ | Critical speed (peak speed) | rpm |
+| $f_L$, $P$ | Line frequency, number of poles | Hz, — |
+| $z$, $N_b$, $N_r$ | Number of teeth, number of blades, number of balls | — |
+
+You can find all terms and symbols in the <a href={withBase(availablePath('/reference/glossary/', 'en'))}>glossary</a>.

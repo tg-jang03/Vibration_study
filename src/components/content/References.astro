@@ -15,6 +15,7 @@ import { langOfUrl } from '../../i18n';
 import { REFERENCE_EN } from '../../i18n/figures';
 import { translateDeep } from '../../i18n/translate';
 import { UI } from '../../i18n/ui';
+import { availablePath } from '../../i18n/routes';
 
 type Cite = [string, string?, [string, string][]?];
 interface Props {
@@ -39,7 +40,7 @@ const hasExtra = Astro.slots.has('default');
     {
       rows.map(({ r, note, links, out }) => (
         <li class="ref-item" id={`cite-${refAnchor(r.id)}`}>
-          <a class="ref-id" href={withBase(`/reference/sources/#${refAnchor(r.id)}`)} title={ui.refSourceTitle}>
+          <a class="ref-id" href={withBase(`${availablePath('/reference/sources/', lang)}#${refAnchor(r.id)}`)} title={ui.refSourceTitle}>
             {r.id}
           </a>
           <div class="ref-body">

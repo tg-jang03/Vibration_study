@@ -4,7 +4,7 @@ import '../styles/global.css';
 import { REPO_URL, SITE_VERIFICATION, withBase } from '../lib/site';
 import { breadcrumbLd, canonicalUrl, documentTitle, jsonLdText, websiteLd } from '../lib/seo';
 import { OG_LOCALE, langOfPath, localizePath, sitePath, stripLang } from '../i18n';
-import { hasEnglish } from '../i18n/routes';
+import { availablePath, hasEnglish } from '../i18n/routes';
 import { UI } from '../i18n/ui';
 
 interface Props {
@@ -44,6 +44,8 @@ const fullTitle = documentTitle(t.siteName, t.tagline, title);
 const isHome = basePath === '/';
 const isLab = basePath.startsWith('/lab/');
 const isRef = basePath.startsWith('/reference/');
+/** 영어 메뉴의 레퍼런스: 영어 개요가 있으면 그리로, 없으면 한국어로 가며 KO 표시 */
+const refKoOnly = lang === 'en' && !hasEnglish('/reference/');
 const isDev = basePath.startsWith('/dev/');
 
 // 검색 노출 (M12.1, D-054): canonical·언어판 연결·링크 미리보기 카드·구조화 데이터
@@ -106,8 +108,8 @@ const ld: object[] = [
         <nav class="site-nav" aria-label={t.navLabel}>
           <a href={withBase(localizePath('/', lang))} aria-current={isHome ? 'page' : undefined}>{t.navCurriculum}</a>
           <a href={withBase(localizePath('/lab/', lang))} aria-current={isLab ? 'page' : undefined}>{t.navLab}</a>
-          <a href={withBase('/reference/')} aria-current={isRef ? 'page' : undefined} hreflang={lang === 'en' ? 'ko' : undefined}>
-            {t.navReference}{lang === 'en' && <span class="ko-mark" title={t.koreanOnlyTitle}>{t.koreanOnly}</span>}
+          <a href={withBase(availablePath('/reference/', lang))} aria-current={isRef ? 'page' : undefined} hreflang={refKoOnly ? 'ko' : undefined}>
+            {t.navReference}{refKoOnly && <span class="ko-mark" title={t.koreanOnlyTitle}>{t.koreanOnly}</span>}
           </a>
           <a class="lang-switch" href={switchHref} hreflang={other} lang={other} title={hasOther ? t.switchTitle : t.switchTitleMissing}>
             {t.switchLabel}

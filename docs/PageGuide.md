@@ -402,7 +402,8 @@ $(1^2 + 3^2)/2 = 5$ (mm/s)², 제곱근을 취해 $\sqrt{5} \approx 2.24$ mm/s R
 | 그림 | 그림 코드는 그대로. 제목·라벨·캡션은 `src/i18n/en/figures/pX-Y.ts` 사전(키 = 한국어 원문). 빠진 키는 `npx vitest run src/i18n/figures.test.ts`가 그대로 보여 준다 |
 | 랩 | 화면 문자열을 `tr`로 감싼다 (`t`는 시간 변수라 피함): ``tr`…${x}…` ``, 모듈 맨 위 글은 `k('…')` → 렌더 때 `tr(o.label)`, KaTeX는 ``\\text{${tr`…`}}``. 하위 컴포넌트는 `useLang()`. 사전 `src/i18n/en/labs/<파일>.ts` — 뼈대는 `node scripts/i18n/scan-lab.mjs <랩>`. 검사 `node scripts/i18n/scan-lab.mjs <랩> --check`, 다 되면 등록 `node scripts/i18n/register-lab.mjs <랩>` (`labsReady.ts`·`en/lab/[slug].astro`에 한 줄씩, 테스트가 빠진 줄을 잡는다) |
 | 링크 | 영어판이 있는 절·랩은 `withBase('/en/pX-Y/')`(한국어 앵커는 뺀다), 없는 곳은 한국어 주소 그대로. 새 영어판이 생기면 `node scripts/i18n/relink.mjs`가 앞서 만든 영어 페이지의 옛 한국어 링크를 바꾼다 (남은 것은 `i18n.test.ts`가 잡는다) |
-| 참고자료 | 쓴 곳 메모는 영어 MDX에 영어로. `references.ts`의 한국어 서지는 `src/i18n/en/references.ts` |
+| 참고자료 | 쓴 곳 메모는 영어 MDX에 영어로. `references.ts`의 한국어 서지·쓰임(about)·주의(note)는 `src/i18n/en/references.ts` (새 자료를 더하면 영어도 — `i18n.test.ts`가 잡는다) |
+| 레퍼런스 | 개요·참고 문헌·기호 공식 본문은 `components/site/Ref*Page.astro`(lang), `pages/reference/`·`pages/en/reference/`는 껍데기. 영어 공식 본문은 `components/reference/en/FormulasBody.mdx` — 한국어 `FormulasBody.mdx`를 고치면 카드 수·수식을 같게 맞춘다(낡음 알림 없음). 영어판이 있는 레퍼런스 쪽은 `pages/en/reference/{이름}.astro`가 있는지로 정해진다(`routes.ts`). 용어집 영어는 M12.16 |
 | 화면 틀 문구 | `src/i18n/ui.ts` (한·영 같은 키, 타입이 잡는다). 목차·랩 모음 영어는 `src/i18n/en/curriculum.ts`·`labs.ts` |
 | 문체 | 뜻을 옮기고 말투는 질문에서 출발하는 설명조 그대로. 용어는 `Glossary.md`의 영문, 숫자·기호·단위는 손대지 않는다. "그림 3" → "Figure 3" |
 | 검사 | `npm test` → `npm run build` → `npm run verify:i18n`(영어 페이지에 남은 한글 0) → `npm run verify:page -- /en/pX-Y/`로 영어 라벨이 그림·랩에서 넘치지 않는지 본다 (영어가 대개 더 길다) |

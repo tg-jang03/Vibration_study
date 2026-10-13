@@ -3,6 +3,8 @@
  * 레퍼런스 > 기호·공식(/reference/formulas/)의 공식 카드 (D-046). 안에 수식과 기호 풀이를 쓰고, 그 공식을 설명하는 절로 잇는다.
  */
 import { withBase } from '../../lib/site';
+import { langOfUrl } from '../../i18n';
+import { availablePath } from '../../i18n/routes';
 
 interface Props {
   name: string;
@@ -11,7 +13,8 @@ interface Props {
 }
 
 const { name, page } = Astro.props;
-const href = withBase(`/${page.toLowerCase()}/`);
+/** 영어 레퍼런스에서는 그 절의 영어판으로 (없으면 한국어 절) */
+const href = withBase(availablePath(`/${page.toLowerCase()}/`, langOfUrl(Astro.url)));
 ---
 
 <article class="fx">

@@ -4,6 +4,9 @@
  * 아래 `.ref-toolbar`·`.ref-chip`·`.ref-search`·`.ref-group` 모양을 레퍼런스 페이지들이 함께 쓴다.
  */
 import { withBase } from '../../lib/site';
+import { langOfUrl } from '../../i18n';
+import { availablePath, hasEnglish } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
 
 export type RefTab = 'home' | 'sources' | 'glossary' | 'formulas';
 interface Props {
@@ -13,23 +16,28 @@ interface Props {
 }
 
 const { current, title, lead } = Astro.props;
-const TABS: { id: RefTab; label: string; href: string }[] = [
-  { id: 'home', label: '개요', href: '/reference/' },
-  { id: 'sources', label: '참고 문헌', href: '/reference/sources/' },
-  { id: 'glossary', label: '용어집', href: '/reference/glossary/' },
-  { id: 'formulas', label: '기호 · 공식', href: '/reference/formulas/' },
-];
+const lang = langOfUrl(Astro.url);
+const t = UI[lang];
+const PATHS: Record<RefTab, string> = { home: '/reference/', sources: '/reference/sources/', glossary: '/reference/glossary/', formulas: '/reference/formulas/' };
+/** 영어 탭: 영어판이 있는 쪽은 /en/, 아직 없는 쪽(용어집, M12.16까지)은 한국어로 가며 KO 표시 */
+const TABS = (Object.keys(PATHS) as RefTab[]).map((id) => ({
+  id,
+  label: t.refTabs[id],
+  href: availablePath(PATHS[id], lang),
+  koOnly: lang === 'en' && !hasEnglish(PATHS[id]),
+}));
 ---
 
 <section class="ref-hero">
-  <p class="ref-kicker">레퍼런스</p>
+  <p class="ref-kicker">{t.refKicker}</p>
   <h1>{title}</h1>
   <p class="lead">{lead}</p>
-  <nav class="ref-tabs" aria-label="레퍼런스 메뉴">
+  <nav class="ref-tabs" aria-label={t.refTabsLabel}>
     {
-      TABS.map((t) => (
-        <a href={withBase(t.href)} aria-current={t.id === current ? 'page' : undefined}>
-          {t.label}
+      TABS.map((tab) => (
+        <a href={withBase(tab.href)} aria-current={tab.id === current ? 'page' : undefined} hreflang={tab.koOnly ? 'ko' : undefined}>
+          {tab.label}
+          {tab.koOnly && <span class="ko-mark" title={t.koreanOnlyTitle}>{t.koreanOnly}</span>}
         </a>
       ))
     }

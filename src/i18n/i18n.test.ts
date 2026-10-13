@@ -151,6 +151,13 @@ describe('참고자료 서지의 한국어가 모두 사전에 있다', () => {
     for (const r of REFERENCES) translateDeep({ a: r.authors, t: r.title, s: r.source, y: r.year }, REFERENCE_EN, missing);
     expect([...missing]).toEqual([]);
   });
+  it('쓰임·주의 (영어 참고 문헌 페이지, M12.15)', async () => {
+    const { REFERENCES } = await import('../data/references');
+    const { REFERENCE_EN } = await import('./figures');
+    const missing = new Set<string>();
+    for (const r of REFERENCES) translateDeep({ ab: r.about, n: r.note }, REFERENCE_EN, missing);
+    expect([...missing]).toEqual([]);
+  });
 });
 
 describe('깊은 번역은 숫자 배열을 건드리지 않는다', () => {

@@ -1,0 +1,274 @@
+---
+/**
+ * 레퍼런스 개요 (/reference/, /en/reference/, D-046·M12.15): 네 갈래 카드, 판단할 때 펼쳐 보는 표, 표기 약속.
+ * 영어: 영어판이 있는 갈래·절은 영어로 (표는 영어 제목의 앵커), 아직 없는 갈래(용어집, M12.16까지)는 한국어로 가며 KO 표시.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RefHeader from '../content/RefHeader.astro';
+import glossaryMd from '../../../docs/Glossary.md?raw';
+import formulasMdx from '../reference/FormulasBody.mdx?raw';
+import { LABS } from '../../data/labs';
+import { REFERENCES } from '../../data/references';
+import { parseGlossary } from '../../lib/glossary';
+import { withBase } from '../../lib/site';
+import { localizePath, type Lang } from '../../i18n';
+import { availablePath, hasEnglish } from '../../i18n/routes';
+import { UI } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const en = lang === 'en';
+const ui = UI[lang];
+
+const glossaryCount = parseGlossary(glossaryMd).length;
+const formulaCount = (formulasMdx.match(/<Fx /g) ?? []).length;
+
+const CARDS = [
+  {
+    path: '/reference/sources/',
+    title: en ? 'Sources' : '참고 문헌',
+    count: en ? `${REFERENCES.length}` : `${REFERENCES.length}개`,
+    text: en
+      ? 'The books, papers, standards and online material cited on each page, with a link to the original and the pages that cite it.'
+      : '각 페이지가 인용한 책·논문·규격·온라인 자료. 원문 링크와 그 자료를 인용한 페이지를 함께 봅니다.',
+  },
+  {
+    path: '/reference/glossary/',
+    title: en ? 'Glossary' : '용어집',
+    count: en ? `${glossaryCount}` : `${glossaryCount}개`,
+    text: en
+      ? 'A one-line meaning, symbol and unit for each term, and the page that first explains it. Filter by Part and search by name.'
+      : '용어의 한 줄 뜻·기호·단위와 처음 설명하는 페이지. Part로 거르고 이름으로 찾습니다.',
+  },
+  {
+    path: '/reference/formulas/',
+    title: en ? 'Symbols · Formulas' : '기호 · 공식',
+    count: en ? `${formulaCount}` : `${formulaCount}개`,
+    text: en
+      ? 'The formulas and symbol table you keep looking up — from natural frequency and damping to resolution, windows, phase, defect frequencies, balancing, alignment and record review.'
+      : '고유진동수·감쇠부터 분해능·윈도우·위상·결함 주파수, 밸런싱·정렬·복기까지 자주 다시 찾는 공식과 기호표.',
+  },
+  {
+    path: '/lab/',
+    title: 'Signal Lab',
+    count: en ? `${LABS.length}` : `${LABS.length}개`,
+    text: en ? 'All the interactive labs scattered through the pages, in one place to pick from and open full size.' : '페이지에 흩어진 인터랙티브 랩을 한곳에서 골라 크게 엽니다.',
+  },
+].map((c) => ({ ...c, href: availablePath(c.path, lang), koOnly: en && !hasEnglish(c.path) }));
+
+/** 판단할 때 펼쳐 보는 표·순서 (페이지 안 위치). ko·en은 각 언어 페이지의 그 절 제목 앵커 (link-check가 확인) */
+const TABLES = [
+  { id: 'P1-8', ko: '7-관심-주파수-구간-지도-기계-구성에서-어디까지-볼지-정한다', en: '7-the-map-of-frequency-bands-of-interest-deciding-how-far-to-look-from-the-machines-makeup', title: ['관심 주파수 구간 지도', 'Map of frequency bands of interest'], text: ['기계 구성에서 어디까지 볼지', 'How far to look, from the machine makeup'] },
+  { id: 'P2-5', ko: '33-목적별로-고르기', en: '33-choosing-by-purpose', title: ['윈도우 목적별로 고르기', 'Choosing a window by purpose'], text: ['Hann · Flat-top · Uniform · 힘/지수 윈도우', 'Hann · Flat-top · Uniform · force/exponential'] },
+  { id: 'P2-9', ko: '1-설정은-질문-순서대로-정한다', en: '1-choose-the-settings-in-the-order-of-the-questions', title: ['측정 설정 순서', 'Order of measurement settings'], text: ['F_max → 분해능 → 윈도우 → 평균', 'F_max → resolution → window → averaging'] },
+  { id: 'P6-2', ko: '1-스펙트럼은-1x에서-출발해-여섯-순서로-읽습니다', en: '1-read-a-spectrum-from-1x-in-six-steps', title: ['스펙트럼 읽는 순서', 'Order for reading a spectrum'], text: ['1X에서 출발하는 여섯 단계', 'Six steps starting from 1X'] },
+  { id: 'P7-1', ko: '1-지도를-거꾸로-차수로-원인-후보를-좁힌다', en: '1-the-map-in-reverse-narrow-the-candidates-by-order', title: ['주파수 → 원인 지도', 'Frequency → cause map'], text: ['차수로 원인 후보 좁히기', 'Narrowing the candidates by order'] },
+  { id: 'P7-2', ko: '7-1x-감별-순서', en: '7-the-1x-screening-order', title: ['1X 감별 순서', '1X screening order'], text: ['불평형 · 휨 · 크랙 · 편심 · 공진', 'Unbalance · bow · crack · eccentricity · resonance'] },
+  { id: 'P7-3', ko: '6-증거-5요소로-정리하고-감별하기', en: '6-summarizing-with-the-five-evidence-elements-and-separating-them', title: ['미스얼라인 · 풀림 · 러브 감별', 'Misalignment · looseness · rub'], text: ['증거 5요소로 정리', 'Sorted by the five pieces of evidence'] },
+  { id: 'P7-4', ko: '5-서브싱크로너스-감별표', en: '5-the-subsynchronous-discrimination-table', title: ['서브싱크로너스 감별표', 'Subsynchronous discrimination table'], text: ['오일 휠 · 휩 · 러브 · stall · 구조 공진', 'Oil whirl · whip · rub · stall · structural resonance'] },
+  { id: 'P7-7', ko: '9-전기와-기계의-감별표', en: '9-a-table-for-telling-electrical-from-mechanical', title: ['전기와 기계의 감별표', 'Electrical vs mechanical table'], text: ['2×LF · PPF 측대역 · 전원 차단', '2×LF · PPF sidebands · power cut'] },
+  { id: 'P7-8', ko: '6-유체--공력-원인의-감별표', en: '6-differential-table-of-fluid-and-aerodynamic-causes', title: ['유체 · 공력 원인의 감별표', 'Fluid · aerodynamic causes table'], text: ['날개 통과 · 캐비테이션 · stall · 서지', 'Blade pass · cavitation · stall · surge'] },
+  { id: 'P11-1', ko: '4-자료-고르기-무엇을-가르려는가', en: '4-choosing-data-what-are-you-trying-to-separate', title: ['자료 고르기 표', 'Choosing the data'], text: ['가르려는 질문 → 열어 볼 자료', 'The question to settle → data to open'] },
+  { id: 'P11-2', ko: '1-공개-데이터셋-누가-무엇을-어떻게-쟀나', en: '1-public-datasets-who-measured-what-and-how', title: ['공개 데이터셋 고르기', 'Choosing a public dataset'], text: ['CWRU · Paderborn · IMS의 조건과 이용 조건', 'CWRU · Paderborn · IMS conditions and terms of use'] },
+  { id: 'P11-3', ko: '1-복기란-같은-방법으로-다시-그려-판단을-확인하기', en: '1-what-a-review-is-redrawing-the-same-way-to-check-the-judgment', title: ['복기에 남길 기록', 'What to keep for a review'], text: ['원파형 · 키페이저 · 운전 기록 · 당시 판단', 'Raw waveform · Keyphasor · operating log · judgment at the time'] },
+].map((t) => {
+  const path = `/${t.id.toLowerCase()}/`;
+  const enPage = en && hasEnglish(path);
+  return { id: t.id, href: `${availablePath(path, lang)}#${enPage ? t.en : t.ko}`, title: t.title[en ? 1 : 0], text: t.text[en ? 1 : 0] };
+});
+
+const T = en
+  ? {
+      docTitle: 'Reference',
+      description: 'Sources, glossary, symbols and formulas, and the decision tables used in diagnosis, in one place.',
+      title: 'Look it up: sources · terms · formulas',
+      lead: 'Things you will want to check again while studying, in one place. Go to Sources if you wonder where something comes from, the Glossary if a meaning has gone fuzzy, and Symbols · Formulas when you need an equation.',
+      open: 'Open →',
+      tablesTitle: 'Tables to open when you make a call',
+      tablesSub: 'Straight to the discrimination and selection tables inside the diagnosis pages.',
+      howTitle: 'Conventions on this site',
+      how: [
+        'Amplitude always states Peak, RMS or Pk-Pk. RMS = Peak ÷ √2 only for a single sine wave.',
+        'Phase φ is the lag angle from the Keyphasor pulse to the next positive peak of 1X. Polar plots put 0° at the top (toward the sensor) and draw larger lag against the direction of rotation.',
+        'Numbers in figures and labs are illustrative values made by this site’s code, not assessment criteria from any standard.',
+      ],
+    }
+  : {
+      docTitle: '레퍼런스',
+      description: '참고 문헌·용어집·기호와 공식, 판단에 쓰는 감별표를 한곳에서 찾는다.',
+      title: '찾아보기: 문헌 · 용어 · 공식',
+      lead: '공부하다가 다시 확인하고 싶은 것을 한곳에 모았습니다. 출처가 궁금하면 참고 문헌, 뜻이 흐릿하면 용어집, 식이 필요하면 기호 · 공식으로 갑니다.',
+      open: '열기 →',
+      tablesTitle: '판단할 때 펼쳐 보는 표',
+      tablesSub: '진단 페이지 안의 감별표·고르기 표로 바로 갑니다.',
+      howTitle: '이 사이트의 표기 약속',
+      how: [
+        '진폭은 Peak · RMS · Pk-Pk를 늘 밝혀 씁니다. 정현파 하나일 때만 RMS = Peak ÷ √2입니다.',
+        '위상 φ는 키페이저 펄스에서 1X의 다음 양의 봉우리까지의 지연각이고, Polar는 0°를 위(센서 방향)에 두고 지연이 커질수록 회전 반대 방향으로 그립니다.',
+        '그림과 랩의 숫자는 이 사이트의 계산 코드로 만든 설명용 값이며, 규격의 판정 기준이 아닙니다.',
+      ],
+    };
+---
+
+<BaseLayout title={T.docTitle} crumbs={[{ name: T.docTitle, path: localizePath('/reference/', lang) }]} description={T.description}>
+  <RefHeader current="home" title={T.title} lead={T.lead} />
+
+  <div class="hub-grid">
+    {
+      CARDS.map((c) => (
+        <a class="hub-card" href={withBase(c.href)} hreflang={c.koOnly ? 'ko' : undefined}>
+          <span class="hub-count">{c.count}</span>
+          <span class="hub-title">
+            {c.title}
+            {c.koOnly && <span class="ko-mark" title={ui.koreanOnlyTitle}>{ui.koreanOnly}</span>}
+          </span>
+          <span class="hub-text">{c.text}</span>
+          <span class="hub-go">{T.open}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <section class="hub-tables">
+    <h2>{T.tablesTitle}</h2>
+    <p class="hub-sub">{T.tablesSub}</p>
+    <ul>
+      {
+        TABLES.map((t) => (
+          <li>
+            <a href={withBase(t.href)}>
+              <span class="hub-id">{t.id}</span>
+              <span class="hub-t">{t.title}</span>
+              <span class="hub-d">{t.text}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="hub-how">
+    <h2>{T.howTitle}</h2>
+    <ul>
+      {T.how.map((line) => <li>{line}</li>)}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--gap);
+    margin: 1.2rem 0 2rem;
+  }
+
+  .hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .hub-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.08);
+  }
+
+  .hub-count {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .hub-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .hub-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+  }
+
+  .hub-go {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hub-tables h2,
+  .hub-how h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.3rem;
+    padding-left: 0.6rem;
+    border-left: 4px solid var(--accent);
+  }
+
+  .hub-sub {
+    margin: 0 0 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .hub-tables ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .hub-tables a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.1rem 0.6rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .hub-tables a:hover {
+    border-color: var(--accent);
+  }
+
+  .hub-id {
+    grid-row: span 2;
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .hub-t {
+    font-weight: 700;
+  }
+
+  .hub-d {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .hub-how {
+    margin-top: 2rem;
+  }
+
+  .hub-how ul {
+    color: var(--text-muted);
+    padding-left: 1.2rem;
+  }
+</style>
