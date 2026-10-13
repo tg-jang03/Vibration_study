@@ -1,0 +1,258 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P6-4 Trend · Vector Trend · APHT
+description: The phase shift that Overall hides, APHT and the Polar vector path, change relative to a reference, and reading a learning-purpose acceptance region
+sectionId: P6-4
+source: p6-4.mdx
+sourceHash: 6a5a7b6cef
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import TrendLab from '../../components/labs/TrendLab';
+import * as F from '../../figures/p6-4';
+import { withBase } from '../../lib/site';
+
+# 6-4 Trend: the vector moves even when the magnitude does not
+
+For an hour the vibration magnitude stayed almost constant. But the 1X peak, measured against the keyphasor, is arriving a little later and later. Can you say "nothing has changed" just by looking at the magnitude trend?
+
+Let's string together the <a href={withBase('/en/p3-3/')}>1X vector measured in P3-3</a> in time order. This page compares what the **scalar magnitude/amplitude and the phase/vector-tip path** show and hide in the same record. The numbers in the figures and the lab are explanatory displacements for a constant operating condition.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why an Overall magnitude trend can hide a phase change.
+2. You can read the APHT amplitude and phase and the Polar vector path from the same time record.
+3. You can tell an amplitude difference from a vector change and state the reference point.
+4. You can read both the amplitude and angle boundaries of a learning-purpose acceptance region.
+5. You can recognize the traps created by phase wrapping, small amplitude and changes in operating condition.
+
+</Callout>
+
+---
+
+## 1. Scalar trend: the magnitude of what, plotted against time?
+
+The horizontal axis of a vibration trend is time. What is on the vertical axis? Start by reading whether it is the RMS of the whole band, the 1X amplitude, or the displacement p-p.
+
+<Figure {...F.scalar} />
+
+The <strong>scalar trend</strong> in Figure 1 writes down one magnitude per time point, in time order. A value that adds up the energy of the components in a band, like <a href={withBase('/en/p2-7/')}>P2-7 Overall RMS</a>, carries no phase between the components.
+
+This example assumes a constant 1X of 20 µm Peak and 2X of 2 µm Peak at every time point. If you capture a whole number of turns of both components, they are orthogonal, so the overall RMS is
+
+$$x_{\rm RMS}=\sqrt{\frac{A_1^2+A_2^2}{2}}$$
+
+$A_1$ and $A_2$ are the Peak amplitudes of each component. For Figure 1, $\sqrt{(20^2+2^2)/2}\approx14.21$ µm RMS. If only the 1X phase moves, this RMS value does not change. The Direct p-p value often used with proximity probes does vary slightly with the phase between the components (about 40 to 41 µm p-p in this example, within 2 %). A real record with noise, asynchronous components and a short measurement window can differ from this assumption.
+
+<Callout type="warn" title="'Overall is flat' and 'nothing has changed' are different observations">
+
+State the vertical axis and the band: "Overall RMS was constant." Phase, individual components and the mean axis position can be looked at separately. Do not compare trends with different sensors and units by the size of the numbers alone.
+
+</Callout>
+
+---
+
+## 2. APHT: the amplitude and phase of the same 1X on two lines
+
+Where can you see a change that magnitude alone missed? Read the 1X amplitude and the keyphasor lag angle at the same moments together.
+
+<Figure {...F.apht} />
+
+<strong>APHT (Amplitude-Phase-Time)</strong> plots the amplitude and phase of a particular order such as 1X against time. In Figure 2 the amplitude is constant at 20 µm Peak, but the lag angle increases continuously from 350° to 470°. Written in 0 to 360°, the last value is 110°.
+
+<a href={withBase('/en/p4-1/')}>P4-1 Bode</a> also plotted amplitude and phase separately. The difference is the horizontal axis. Bode reads the response versus rotating speed; this APHT reads the **movement over time at the same operating condition**. Check not only the amplitude but also the phase at the same moment.
+
+<Callout type="term" title="Phase is the lag angle, amplitude is Peak">
+
+This page also follows the P3-3 convention. $\varphi$ is the lag angle from the keyphasor to the next positive 1X peak, and the vector is $\vec V=Ae^{-j\varphi}$. The 1X amplitude in the lab is Peak, and Overall is RMS. To compare with an instrument's p-p value, apply the sinusoid relation p-p = 2 × Peak.
+
+</Callout>
+
+A shaft that bends from heat (thermal bow), a rub in which local frictional heating slowly rotates the 1X vector (Rub, the Newkirk effect), the Morton effect (a thermal phenomenon in which uneven heating of the journal couples to shaft bow, P8-2), load changes, and changes in the sensor or phase reference can all produce this kind of time variation. Parts loss (balance weight, blade) can appear as a step change in the vector, and a crack as a change in the 1X and 2X vectors. APHT shows when and by how much something changed. Confirm the cause with other channels and the operating record, and the thermal phenomena of GT/ST continue in P8-2.
+
+---
+
+## 3. Vector trend: amplitude difference 0, but a change of 34.64 µm
+
+If the amplitude stayed the same but the peak arrived later, where did the tip of the vector go? Let's move the same record into Polar coordinates.
+
+<Figure {...F.vector} />
+
+The <strong>vector trend</strong> is a path joining the tips of the 1X vector read at each time. In Figure 3, the arrows at 0 min and 60 min both have a length of 20 µm Peak. The direction differs by 120°, so the two tips are apart.
+
+The change from the reference vector to the current vector is taken by subtracting complex numbers. It is the same operation as the vector subtraction you learned in <a href={withBase('/en/p3-3/')}>P3-3 Slow roll compensation</a>.
+
+$$\Delta\vec V=\vec V(t)-\vec V_{\rm ref}$$
+
+$\vec V_{\rm ref}$ is the vector at the stated reference time, and $\Delta\vec V$ is the vector difference between now and the reference. It is not the same as the amplitude difference $A(t)-A_{\rm ref}$.
+
+<Callout type="example" title="Distance between two tips of equal amplitude A and phase difference 120°">
+
+For two vectors of equal amplitude, $\lvert\Delta\vec V\rvert=2A\lvert\sin(\Delta\varphi/2)\rvert$. Substituting $A=20$ µm Peak and $\Delta\varphi=120°$ gives $40\sin60°\approx34.64$ µm Peak. The amplitude difference is $20-20=0$, but the vector change is not zero.
+
+</Callout>
+
+<Callout type="warn" title="The 'circle of the vector tip' is not an orbit of the shaft center">
+
+Each point in this figure is the 1X vector of one sensor extracted at one time point. The data and the time scale differ from the shaft-center orbit drawn from two X·Y sensors over one turn (<a href={withBase('/en/p6-3/')}>P6-3</a>). Do not conclude a particular fault from the circular or spiral shape of a vector path alone.
+
+</Callout>
+
+---
+
+## 4. Acceptance region: compare under the same conditions as the reference
+
+You have confirmed that the vector moved. What must you decide first to settle how far it may move before you look again?
+
+<Figure {...F.accepted} />
+
+An <strong>acceptance region</strong> is the range of amplitude and phase accepted as normal under the same operating condition. It is set from the machine's normal records and the management policy, and its shape and boundaries can differ with the system and purpose.
+
+Figure 4 is an example of a fan-shaped band combining ±20% of the reference amplitude and ±30° of the reference lag angle. At a reference of 20 µm Peak and 350°, amplitudes of 16 to 24 µm Peak and lag angles of 320° to 20° are included. The angular region continues past 0°. A point is inside only if it meets both conditions.
+
+| Reading in this example | Value | Inside the region? |
+|---|---|---|
+| Amplitude 20 µm Peak, lag 10° | Shortest +20° from the reference | Inside |
+| Amplitude 24 µm Peak, lag 20° | Amplitude +20%, shortest +30°: on the boundary | Inside (boundary included) |
+| Amplitude 20 µm Peak, lag 22° | Shortest +32° | Outside |
+| Amplitude 25 µm Peak, lag 350° | Amplitude +25%, phase difference 0° | Outside |
+
+A constant runout cancels in ΔV, where two vectors are subtracted, but it stays in the amplitude % and phase boundaries of the acceptance region. Decide whether to apply slow roll compensation before taking the reference vector (<a href={withBase('/en/p3-3/')}>P3-3</a>).
+
+<Callout type="warn" title="Do not read 'outside the region' as a trip instruction">
+
+The ±20% and ±30° on this page are arbitrary learning values and are not standard, alarm or trip boundaries. Read a departure from the region as a change signal prompting you to check the measurement and operating conditions. The action of the protection system (<a href={withBase('/en/p3-5/')}>P3-5</a>) and the change criteria for each machine (P10-1) are set separately.
+
+</Callout>
+
+The general evaluation in ISO 20816 also looks at vibration magnitude and its change together. Application to specific machines is covered in P10-1, and the 1X vector difference here is not used as-is as the standard's scalar vibration change.
+
+Changing the reference time changes the question being asked. If you change the reference of Figure 3 from 0 min to 30 min, the phase difference to 60 min is 60° and the vector change is 20 µm Peak. If you build the reference by mixing records with different load, speed and temperature, normal operating changes can look like departures.
+
+---
+
+## 5. Change hidden by a large 1X: look at the residual component too
+
+Does the vector trend show the change in every component? Let's also check the case where only 1X stays the same while another component grows.
+
+<Figure {...F.residualTrend} />
+
+In Figure 5, the 1X amplitude and phase stay the same and 2X grows from 2 to 8 µm Peak. Overall RMS rises from 14.21 to 15.23 µm, about 7.17%. The residual RMS of this model, with exactly 1X removed, goes from 1.414 to 5.657 µm, 4 times.
+
+<a href={withBase('/en/p5-5/')}>P5-5 Not-1X</a> is the signal left after removing the large 1X. 2X, asynchronous components, noise and leaked 1X can all be included. This figure is an example in which the known 1X over a whole number of turns is removed exactly, so it does not reproduce the delay and leakage of a real tracking filter.
+
+<Callout type="field" title="Line up the Overall, 1X and residual trends at the same times">
+
+Whether the 1X vector moves and whether another component grows are different questions. Record the measurement band and filter width together, and check the place of the residual component with a spectrum. Do not conclude an impacting fault from an increase in residual RMS alone.
+
+</Callout>
+
+---
+
+## 6. Traps in reading phase: wrapped numbers and a changed reference
+
+The lag angle dropped from 358° to 0°. Did it really change abruptly?
+
+<Figure {...F.wrapped} />
+
+The two panels of Figure 6 are the same record. In the 0 to 360° display, the number wraps when it crosses the boundary. Here 358° → 0° is a movement of +2°. Simply subtracting $0-358$ gives a wrong −358°. The acceptance region decision uses the shortest angular difference around the circle.
+
+The **continuous phase display** shows the path across the boundary as joined up. However, in a record with sparse sample spacing, if the real movement between samples exceeds 180°, neither the direction nor the number of rotations can be decided from adjacent phases alone. This lab knows the model's path and so shows continuous phase; it does not provide a reconstruction algorithm for real records.
+
+<Callout type="warn" title="Do not take 'a large phase change in a small 1X' at face value">
+
+If the amplitude is close to the noise floor, a small error can swing the vector direction a lot. Interpret phase when the keyphasor reference is valid and 1X is extracted stably. The calculation core withholds phase and region judgments at or below 1 µm Peak, but this value is for learning and is not a limit common to all machines.
+
+</Callout>
+
+If the phases of several channels shifted similarly at the same moment, also check for a change of keyphasor, phase convention or filter delay. Separate a phase shift at constant amplitude from a change in response due to operating conditions and from a change in the measurement reference, and only then discuss the cause.
+
+---
+
+## 7. Lab: change magnitude, phase and reference one at a time
+
+Compare the records of Figures 1 to 6 in the same lab. Look at how operations that change the amplitude and phase differ from operations that change the reference.
+
+<Callout type="try">
+
+1. In the initial state, with 'only 1X phase shifts', final +120°, reference 0 min and selected 60 min, compare Overall 14.21 µm RMS, amplitude difference 0 and vector change 34.64 µm Peak.
+2. Leave the selected time at 60 min and change the reference time to 30 min. What is the vector change? Put the reference back to 0 min.
+3. Change the lag-angle tolerance from 30° to 120°. Does the 60 min vector come inside the boundary? Return it to 30° and find the first departing sample.
+4. Choose '1X unchanged, 2X grows'. Compare the growth of Overall and Not-1X, then in the phase-shift scenario turn off the continuous phase display and look at the 0° boundary.
+
+</Callout>
+
+<TrendLab client:visible lang="en" />
+
+In step 2 the phase difference to the reference becomes 60°, so the vector change falls to 20 µm Peak. In step 3 the 120° boundary is included, so the last point is inside the region. At the default 30°, 15 min is on the boundary and the first departing sample is 16 min. These are record times checked at 1 min intervals and do not mean the exact moment of departure was measured.
+
+In step 4, Overall grows about 7.17% and Not-1X by 4 times. In the phase-shift scenario, the wrapped display breaks the line at 4 min 358° → 5 min 0°, while the continuous display joins smoothly. Even when the vector goes once around 360° and returns to its original end point, the final vector difference can be 0, so look at the end-point comparison together with the intermediate record.
+
+---
+
+## 8. Summary: read the same record with several questions
+
+| Plot / value | What it shows | What it hides / what to check |
+|---|---|---|
+| Overall trend | Change over time of the whole-band magnitude | Phase and per-component changes; check units and band |
+| APHT | Amplitude and phase of a particular order, and when it changed | Confirm the cause with other channels and operating conditions |
+| Polar vector trend | Direction, distance and time path of the vector tip | Distinguish from the shaft orbit; time order needed |
+| Vector change | Distance between the reference tip and the current tip | Reference, units, convention; check the intermediate path too |
+| Acceptance region | Departure from the chosen amplitude and angle range | Normal conditions of each machine; distinguish from protection action |
+| Not-1X trend | Residual change apart from the large 1X | May include filter leakage, other components and noise |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. What is the Overall RMS of 1X 20 µm Peak and 2X 2 µm Peak?</strong></summary>
+
+Over a whole number of turns it is $\sqrt{(20^2+2^2)/2}\approx14.21$ µm RMS. This differs from simply adding the component RMS values, 14.14 + 1.41 = 15.56 µm (RMS values combine as the square root of the sum of squares).
+</details>
+
+<details>
+<summary><strong>Q2. Only the phase of 1X 20 µm Peak changed by 120°. What are the amplitude difference and vector change?</strong></summary>
+
+Amplitude difference 0; vector change $2\times20\sin60°\approx34.64$ µm Peak. Phase can change even when Overall is constant.
+</details>
+
+<details>
+<summary><strong>Q3. Reference 350°, now 10°. What is the shortest phase difference?</strong></summary>
+
++20°. Use the short path across the 0° boundary, not the −340° you get by subtracting the numbers.
+</details>
+
+<details>
+<summary><strong>Q4. With a reference of 20 µm Peak and 350°, tolerance ±20% and ±30°, is the current 24 µm Peak and 20° inside?</strong></summary>
+
+The amplitude is +20% and the shortest phase difference +30°, so it touches both boundaries. This example includes the boundary, so it is inside. The boundary values are not taken from a standard.
+</details>
+
+<details>
+<summary><strong>Q5. 2X grew 4 times but Overall rose only 7.17%. Is that a contradiction?</strong></summary>
+
+No. The large 1X of 20 µm Peak takes most of the total energy. The change of 2X from 2 to 8 µm Peak shows up more clearly in the residual RMS of the exact-removal model (1.414 to 5.657 µm) than in the total RMS.
+</details>
+
+<details>
+<summary><strong>Q6. After an hour the vector tip is the same as the reference. May I report that nothing changed?</strong></summary>
+
+The vector difference at the end point is 0, but it may have gone once around in between and come back. Check the APHT, the time-ordered vector path and the departure record together. You also need the keyphasor, sensor and operating conditions to be the same.
+</details>
+
+To look further into the components of the same record, revisit <a href={withBase('/en/p5-2/')}>P5-2 Time-frequency analysis</a> and <a href={withBase('/en/p5-5/')}>P5-5 Tracking · Not-1X</a>. You can revisit the lines of the spectrum, Waterfall and Cascade in <a href={withBase('/en/p6-2/')}>P6-2</a>. Next is <a href={withBase('/p7-1/')}>P7-1 The diagnostic frequency map</a>.
+
+## References
+
+<References items={[
+  ['R-65', 'The time axis of APHT, and the concept of Polar representation and acceptance regions'],
+  ['R-23', 'Reading context for viewing amplitude, phase and Polar changes in near-constant-speed intervals together with other plots'],
+  ['R-08', 'The intent of general evaluation by vibration magnitude and its change'],
+]}>
+
+The fan shapes, numbers and virtual records in the figures are learning examples of this site; they do not establish a cause or reproduce actual diagnostic values.
+
+</References>

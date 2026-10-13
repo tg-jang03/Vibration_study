@@ -58,4 +58,7 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'ShaftCenterlineLab',
   'StabilityLab',
   'RunUpBodeLab',
+  'TimeWaveformLab',
+  'TrendLab',
+  'WaterfallLab',
 ]);

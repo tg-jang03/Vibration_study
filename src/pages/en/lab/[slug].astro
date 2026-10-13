@@ -59,6 +59,9 @@ import AlarmLab from '../../../components/labs/AlarmLab';
 import ShaftCenterlineLab from '../../../components/labs/ShaftCenterlineLab';
 import StabilityLab from '../../../components/labs/StabilityLab';
 import RunUpBodeLab from '../../../components/labs/RunUpBodeLab';
+import TimeWaveformLab from '../../../components/labs/TimeWaveformLab';
+import TrendLab from '../../../components/labs/TrendLab';
+import WaterfallLab from '../../../components/labs/WaterfallLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -122,4 +125,7 @@ const c = lab.component;
   {c === 'ShaftCenterlineLab' && <ShaftCenterlineLab client:load lang="en" />}
   {c === 'StabilityLab' && <StabilityLab client:load lang="en" />}
   {c === 'RunUpBodeLab' && <RunUpBodeLab client:load lang="en" />}
+  {c === 'TimeWaveformLab' && <TimeWaveformLab client:load lang="en" />}
+  {c === 'TrendLab' && <TrendLab client:load lang="en" />}
+  {c === 'WaterfallLab' && <WaterfallLab client:load lang="en" />}
 </LabPageShell>
