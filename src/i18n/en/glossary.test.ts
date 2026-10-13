@@ -1,9 +1,9 @@
 /**
- * 용어집 영어 (D-058): docs/Glossary.md의 모든 행에 영어가 있고, 남는 키·한글이 없으며, 절 ID가 한국어와 같은지.
+ * 용어집 영어 (D-058): src/data/glossary.md의 모든 행에 영어가 있고, 남는 키·한글이 없으며, 절 ID가 한국어와 같은지.
  * Part 묶음 파일마다 따로 돌릴 수 있다: npx vitest run src/i18n/en/glossary.test.ts -t part2
  */
 import { describe, expect, it } from 'vitest';
-import glossaryMd from '../../../docs/Glossary.md?raw';
+import glossaryMd from '../../data/glossary.md?raw';
 import { parseGlossary } from '../../lib/glossary';
 import { hasHangul } from '../translate';
 import { GLOSSARY_EN, glossaryKeys, glossaryText, type GlossEn } from './glossary';

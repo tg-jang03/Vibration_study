@@ -114,7 +114,7 @@ The [reference hub](https://tg-jang03.github.io/Vibration_study/en/reference/) b
 > **A human decides; AI agents build.**
 
 The repo owner, a rotating-machinery vibration diagnostics engineer, decides what to learn and what counts as correct. [Claude Code](https://claude.com/claude-code) and Codex split the work into tracks and build pages, labs and figures on the same `main` branch.
-They share one rulebook, [AGENTS.md](AGENTS.md), and use decision records ([Decisions](docs/Decisions.md), `D-xxx`), issues ([Issues](docs/Issues.md), `I-xxx`) and handoff notes ([Progress](docs/Progress.md)) as shared memory.
+They share one rulebook and use decision records (`D-xxx`), issues (`I-xxx`) and handoff notes as shared memory, kept as local working documents that are not committed to this repo.
 Every push must pass type checking, tests, a build and English-content checks in GitHub Actions before it deploys. Separate headless-browser checks cover hydration, console errors, mobile overflow and animation playback.
 
 ## Run it locally
@@ -155,15 +155,7 @@ npm run verify:page -- / /en/ /lab/frc-01/ /en/lab/frc-01/
 | `src/components/labs/` · `ui/` | Lab components · shared parts (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
 | `src/lib/` | Calculation modules (`dsp`, `mck`, `rotor`, `faults`, `machine` …) and tests |
 | `src/figures/` | SVG figure data for the pages, with tests |
-| `docs/` | Current content inventory, roadmap, decisions, issues, progress and page guide (Korean); earlier records in `archive/` |
-
-</details>
-
-<details>
-<summary><b>Docs (Korean)</b></summary>
-<br>
-
-[Content inventory](docs/Contents.md) · [Roadmap](docs/Roadmap.md) · [Progress](docs/Progress.md) · [Page guide](docs/PageGuide.md) · [Glossary](docs/Glossary.md) · [Working rules](AGENTS.md) · archive in [docs/archive/](docs/archive/)
+| `src/data/` | Course outline (`curriculum.ts`), lab list, references, glossary (`glossary.md`) |
 
 </details>
 

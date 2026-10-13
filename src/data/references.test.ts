@@ -58,8 +58,8 @@ describe('참고 문헌 단일 기준 (D-046)', () => {
   });
 });
 
-describe('용어집 읽기 (docs/Glossary.md → /reference/glossary/)', () => {
-  const entries = parseGlossary(readFileSync(join(process.cwd(), 'docs', 'Glossary.md'), 'utf8'));
+describe('용어집 읽기 (src/data/glossary.md → /reference/glossary/)', () => {
+  const entries = parseGlossary(readFileSync(join(process.cwd(), 'src', 'data', 'glossary.md'), 'utf8'));
 
   it('표의 모든 행을 읽고, 대부분은 처음 나오는 절 ID가 있다', () => {
     expect(entries.length).toBeGreaterThan(400);

@@ -1,5 +1,5 @@
 /**
- * docs/Glossary.md의 표를 레퍼런스 > 용어집(/reference/glossary/)이 읽을 수 있게 푼다 (D-046). 순수 함수.
+ * src/data/glossary.md의 표를 레퍼런스 > 용어집(/reference/glossary/)이 읽을 수 있게 푼다 (D-046). 순수 함수.
  * 표는 4열(용어 | 기호·단위 | 한 줄 뜻 | 처음 나오는 곳)이고, 처음 나오는 곳의 'P2-4 §2.2 → P7-1 §4.3' 같은 절 ID를 링크로 바꾼다.
  */
 

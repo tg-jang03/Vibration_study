@@ -1,12 +1,12 @@
 ---
 /**
  * 레퍼런스 > 용어집 (/reference/glossary/, /en/reference/glossary/, D-046·D-058).
- * 원본은 docs/Glossary.md 한 곳 — 빌드할 때 그 표를 읽는다. 영어는 src/i18n/en/glossary.ts (행마다, 빠진 행은 테스트가 잡는다).
+ * 원본은 src/data/glossary.md 한 곳 — 빌드할 때 그 표를 읽는다. 영어는 src/i18n/en/glossary.ts (행마다, 빠진 행은 테스트가 잡는다).
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import RefHeader from '../content/RefHeader.astro';
 import RefFilter from '../content/RefFilter.astro';
-import glossaryMd from '../../../docs/Glossary.md?raw';
+import glossaryMd from '../../data/glossary.md?raw';
 import { PARTS, STAGES } from '../../data/curriculum';
 import { parseGlossary, sortGlossary, splitSectionIds } from '../../lib/glossary';
 import { withBase } from '../../lib/site';

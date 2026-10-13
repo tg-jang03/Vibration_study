@@ -1,5 +1,5 @@
 /**
- * 용어집(docs/Glossary.md)의 영어 (D-054·D-058). 한국어 표가 원본이고 영어는 행마다 여기(Part 묶음 파일)에 둔다.
+ * 용어집(src/data/glossary.md)의 영어 (D-054·D-058). 한국어 표가 원본이고 영어는 행마다 여기(Part 묶음 파일)에 둔다.
  * - 키 = 한국어 "용어" 칸. 같은 용어가 두 줄이면 '용어 · 처음 나오는 곳' (glossaryKeys)
  * - 영어 symbol·first는 한국어 기호·처음 나오는 곳 칸에 한글이 있을 때만 둔다 (first의 절 ID는 한국어와 같은 순서)
  * - 빠진 행·남는 키·한글은 glossary.test.ts가, 한국어 행이 바뀐 뒤의 낡은 영어는 npm run i18n:status가 알린다

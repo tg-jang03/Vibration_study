@@ -25,3 +25,10 @@ Thumbs.db
 # python (scripts/verify)
 __pycache__/
 .venv/
+
+# 작업 문서는 로컬에만 (D-059): 사이트 빌드와 무관한 docs/·에이전트 규칙 파일.
+# README 그림(docs/assets/)만 저장소에 남긴다. 용어집은 사이트가 읽으므로 src/data/glossary.md
+/docs/*
+!/docs/assets/
+/AGENTS.md
+/CLAUDE.md

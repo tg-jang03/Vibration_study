@@ -19,7 +19,7 @@ const ko = readdirSync(pages)
 const GLOSSARY_HASHES = 'src/i18n/en/glossary-source.json';
 const { parseGlossary } = await import(pathToFileURL(resolve('src/lib/glossary.ts')).href);
 const glossaryRows = () => {
-  const rows = parseGlossary(readFileSync('docs/Glossary.md', 'utf8'));
+  const rows = parseGlossary(readFileSync('src/data/glossary.md', 'utf8'));
   const count = new Map();
   for (const r of rows) count.set(r.term, (count.get(r.term) ?? 0) + 1);
   return rows.map((r) => ({

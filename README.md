@@ -114,7 +114,7 @@
 > **결정은 사람이, 구현은 AI 에이전트가.**
 
 저장소 주인(회전기계 진동 진단 엔지니어)이 무엇을 배울지, 무엇이 맞는지를 정하고, [Claude Code](https://claude.com/claude-code)와 Codex가 트랙을 나눠 같은 `main`에서 페이지·랩·그림을 만듭니다.
-규칙은 [AGENTS.md](AGENTS.md) 하나, 결정은 [Decisions](docs/Decisions.md)(`D-xxx`), 이슈는 [Issues](docs/Issues.md)(`I-xxx`), 인수인계는 [Progress](docs/Progress.md)에 남겨 서로의 기억으로 씁니다.
+작업 규칙·결정(`D-xxx`)·이슈(`I-xxx`)·인수인계는 작업 폴더의 문서(저장소에는 올리지 않음)에 남겨 서로의 기억으로 씁니다.
 push마다 GitHub Actions의 타입 검사·테스트·빌드·영어 누락 검사를 통과해야 배포됩니다. 별도의 헤드리스 브라우저 검사로 hydration·콘솔 오류·모바일 넘침·애니메이션 재생도 확인합니다.
 
 ## 직접 돌려 보기
@@ -155,15 +155,7 @@ npm run verify:page -- / /en/ /lab/frc-01/ /en/lab/frc-01/
 | `src/components/labs/` · `ui/` | 랩 컴포넌트 · 공용 부품 (`LabFrame`, `Plot`, `PhasorView`, `PlayControls` …) |
 | `src/lib/` | 계산 모듈 (`dsp`, `mck`, `rotor`, `faults`, `machine` …)과 테스트 |
 | `src/figures/` | 본문 SVG 그림 데이터와 테스트 |
-| `docs/` | 현재 콘텐츠 목록 · 로드맵 · 결정 · 이슈 · 진행 · 작성 지침, 지난 기록은 `archive/` |
-
-</details>
-
-<details>
-<summary><b>문서</b></summary>
-<br>
-
-[콘텐츠 목록](docs/Contents.md) · [로드맵](docs/Roadmap.md) · [진행 상황](docs/Progress.md) · [페이지 작성 지침](docs/PageGuide.md) · [용어집](docs/Glossary.md) · [작업 규칙](AGENTS.md) · 끝난 기록은 [docs/archive/](docs/archive/)
+| `src/data/` | 목차(`curriculum.ts`) · 랩 목록 · 참고 문헌 · 용어집(`glossary.md`) |
 
 </details>
 
