@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/readme/banner.svg" alt="Vibration Study · 진동공부" width="100%">
+  <img src=".github/readme/banner.svg" alt="Vibration Study · 진동공부" width="100%">
 </p>
 
 <p align="center">
@@ -47,7 +47,7 @@
 ## 학습 경로
 
 <p align="center">
-  <img src="docs/assets/readme/roadmap-ko.svg" alt="학습 경로: 한국어·영어로 공개된 4단계 11개 Part" width="100%">
+  <img src=".github/readme/roadmap-ko.svg" alt="학습 경로: 한국어·영어로 공개된 4단계 11개 Part" width="100%">
 </p>
 
 <p align="center"><sub>2026-10-13 기준 · 61절과 80개 랩 모두 한·영 공개 · <a href="https://tg-jang03.github.io/Vibration_study/">한국어 학습 지도</a> · <a href="https://tg-jang03.github.io/Vibration_study/en/">영어 학습 지도</a></sub></p>
@@ -59,36 +59,36 @@
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/frc-01/"><img src="docs/assets/readme/lab-frc.png" alt="LAB-FRC-01 강제진동과 공진"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/frc-01/"><img src=".github/readme/lab-frc.png" alt="LAB-FRC-01 강제진동과 공진"></a>
       <b>LAB-FRC-01 · 강제진동과 공진</b><br>
       <sub>점선 상자는 같은 힘을 천천히 걸었을 때의 자리. 감쇠비 0.05에서 가진 주파수를 고유진동수에 맞추면, 정상상태 진폭은 10배이고 힘보다 1/4주기 늦습니다.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/smp-01/"><img src="docs/assets/readme/lab-smp.png" alt="LAB-SMP-01 샘플링과 에일리어싱"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/smp-01/"><img src=".github/readme/lab-smp.png" alt="LAB-SMP-01 샘플링과 에일리어싱"></a>
       <b>LAB-SMP-01 · 샘플링과 에일리어싱</b><br>
       <sub>스트로브로 본 회전 원판. 940 Hz가 왜 60 Hz로, 그것도 거꾸로 도는 것처럼 보일까요?</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/phs-01/"><img src="docs/assets/readme/lab-phs.png" alt="LAB-PHS-01 위상 측정"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/phs-01/"><img src=".github/readme/lab-phs.png" alt="LAB-PHS-01 위상 측정"></a>
       <b>LAB-PHS-01 · 키페이저와 위상</b><br>
       <sub>홈이 지나면 펄스, high spot이 오면 봉우리. 그 사이 시간차 Δt로 한 바퀴에 한 번 나오는 펄스 기준의 위상을 구합니다.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/brg-02/"><img src="docs/assets/readme/lab-brg.png" alt="LAB-BRG-02 구름베어링 결함"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/brg-02/"><img src=".github/readme/lab-brg.png" alt="LAB-BRG-02 구름베어링 결함"></a>
       <b>LAB-BRG-02 · 구름베어링 결함</b><br>
       <sub>볼이 결함을 칠 때마다 충격. 외륜 결함의 고른 충격과 내륜 결함의 1X 변조를 비교해 보세요.</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/gear-01/"><img src="docs/assets/readme/lab-gear.png" alt="LAB-GEAR-01 기어 결함"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/gear-01/"><img src=".github/readme/lab-gear.png" alt="LAB-GEAR-01 기어 결함"></a>
       <b>LAB-GEAR-01 · 기어 결함</b><br>
       <sub>맞물려 도는 23·61이빨 기어. 정상에서 깨진 이로 바꾸면 한 바퀴에 한 번 큰 충격이 더해집니다.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/lab/fou-01/"><img src="docs/assets/readme/lab-fou.png" alt="LAB-FOU-01 하모닉 쌓기"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/lab/fou-01/"><img src=".github/readme/lab-fou.png" alt="LAB-FOU-01 하모닉 쌓기"></a>
       <b>LAB-FOU-01 · 하모닉 쌓기</b><br>
       <sub>1차 사인파에 하모닉을 더해 보세요. 도는 화살표 사슬 끝의 높이가 사각파에 가까워집니다.</sub>
     </td>

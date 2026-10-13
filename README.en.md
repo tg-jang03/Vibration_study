@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/readme/banner.svg" alt="Vibration Study · 진동공부" width="100%">
+  <img src=".github/readme/banner.svg" alt="Vibration Study · 진동공부" width="100%">
 </p>
 
 <p align="center">
@@ -47,7 +47,7 @@
 ## Learning path
 
 <p align="center">
-  <img src="docs/assets/readme/roadmap-en.svg" alt="Learning path: all eleven Parts published in Korean and English" width="100%">
+  <img src=".github/readme/roadmap-en.svg" alt="Learning path: all eleven Parts published in Korean and English" width="100%">
 </p>
 
 <p align="center"><sub>As of 2026-10-13: all 61 sections and 80 labs are published in both languages. Browse the <a href="https://tg-jang03.github.io/Vibration_study/en/">English learning map</a> or <a href="https://tg-jang03.github.io/Vibration_study/">Korean learning map</a>.</sub></p>
@@ -59,36 +59,36 @@ Build a virtual signal, change the settings, and use the formulas and readouts t
 <table>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/frc-01/"><img src="docs/assets/readme/lab-en-frc.png" alt="LAB-FRC-01 Forced vibration and resonance"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/frc-01/"><img src=".github/readme/lab-en-frc.png" alt="LAB-FRC-01 Forced vibration and resonance"></a>
       <b>LAB-FRC-01 · Forced vibration & resonance</b><br>
       <sub>The dashed box is where the same force would put the mass if applied slowly. With damping ratio 0.05 and forcing at the natural frequency, the steady-state amplitude is 10× larger and lags the force by a quarter-cycle.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/smp-01/"><img src="docs/assets/readme/lab-en-smp.png" alt="LAB-SMP-01 Sampling and aliasing"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/smp-01/"><img src=".github/readme/lab-en-smp.png" alt="LAB-SMP-01 Sampling and aliasing"></a>
       <b>LAB-SMP-01 · Sampling & aliasing</b><br>
       <sub>A strobe-lit spinning disk. Why does 940 Hz look like 60 Hz, and turn backwards?</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/phs-01/"><img src="docs/assets/readme/lab-en-phs.png" alt="LAB-PHS-01 Phase measurement"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/phs-01/"><img src=".github/readme/lab-en-phs.png" alt="LAB-PHS-01 Phase measurement"></a>
       <b>LAB-PHS-01 · Keyphasor & phase</b><br>
       <sub>The notch passes and gives a pulse; the high spot arrives and gives a peak. The time difference Δt gives the phase relative to the once-per-revolution pulse.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/brg-02/"><img src="docs/assets/readme/lab-en-brg.png" alt="LAB-BRG-02 Rolling-bearing faults"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/brg-02/"><img src=".github/readme/lab-en-brg.png" alt="LAB-BRG-02 Rolling-bearing faults"></a>
       <b>LAB-BRG-02 · Rolling-bearing faults</b><br>
       <sub>An impact every time a ball strikes the defect. Compare the even impacts of an outer-race defect with the 1X modulation of an inner-race defect.</sub>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/gear-01/"><img src="docs/assets/readme/lab-en-gear.png" alt="LAB-GEAR-01 Gear faults"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/gear-01/"><img src=".github/readme/lab-en-gear.png" alt="LAB-GEAR-01 Gear faults"></a>
       <b>LAB-GEAR-01 · Gear faults</b><br>
       <sub>A 23/61-tooth pair in mesh. Switch from healthy to a broken tooth to add one big impact per turn.</sub>
     </td>
     <td width="50%" valign="top">
-      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/fou-01/"><img src="docs/assets/readme/lab-en-fou.png" alt="LAB-FOU-01 Building harmonics"></a>
+      <a href="https://tg-jang03.github.io/Vibration_study/en/lab/fou-01/"><img src=".github/readme/lab-en-fou.png" alt="LAB-FOU-01 Building harmonics"></a>
       <b>LAB-FOU-01 · Building harmonics</b><br>
       <sub>Start with a sine wave and add harmonics. The height of the rotating-arrow chain approaches a square wave.</sub>
     </td>
