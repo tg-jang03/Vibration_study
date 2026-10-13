@@ -1,0 +1,42 @@
+import type { Dict } from '../../translate';
+
+/** LAB-CAMP-01 CampbellLab 영어 (D-054). 키 = 소스의 한국어 원문 */
+const EN: Dict = {
+  "모드 {0}": 'Mode {0}',
+  "교차 없음 (차수² ≤ 강성화 계수)": 'No crossing (order² ≤ stiffening coefficient)',
+  "표시 범위 밖 · {0} rpm": 'Outside the displayed range · {0} rpm',
+  "범위 안 · {0} rpm": 'Inside the range · {0} rpm',
+  "회전 강성화와 Campbell 교차": 'Rotational stiffening and Campbell crossings',
+  "관측 회전수": 'Observed speed',
+  "모드 1 정지 고유진동수": 'Mode 1 natural frequency at rest',
+  "모드 1 강성화 계수 c": 'Mode 1 stiffening coefficient c',
+  "가진 차수 o": 'Excitation order o',
+  "{0}차": 'Order {0}',
+  "감쇠비 ζ": 'Damping ratio ζ',
+  "초기화": 'Reset',
+  "가진 주파수": 'Excitation frequency',
+  "모드 {0} 고유진동수": 'Mode {0} natural frequency',
+  "모드 {0} 응답비": 'Mode {0} response ratio',
+  "모드 {0} 위상 지연": 'Mode {0} phase lag',
+  "모드 {0} 교차 회전수": 'Mode {0} crossing speed',
+  "기본값에서 교차 회전수를 읽고 c=0으로 바꾸세요.": 'Read the crossing speed at the defaults, then change to c=0.',
+  "모드 1은 2353.39→2000 rpm입니다. 강성화는 이 예제에서 교차를 높은 회전수로 옮깁니다. 모드 2 기본 교차는 3771.71 rpm입니다.": 'Mode 1 goes 2353.39 → 2000 rpm. In this example stiffening moves the crossing to a higher speed. The default crossing of mode 2 is 3771.71 rpm.',
+  "기본값으로 돌아와 가진 차수를 8차로 바꾸세요.": 'Go back to the defaults and change the excitation order to 8.',
+  "모드 1은 4898.98 rpm입니다. 모드 2의 양의 해 6331.74 rpm은 표시 범위 밖입니다. 교차 없음과 구별하세요.": 'Mode 1 is 4898.98 rpm. The positive solution of mode 2, 6331.74 rpm, is outside the displayed range. Distinguish it from "no crossing".',
+  "c=40, 4차에서는? 이어서 12차·c=144에서는?": 'What about c=40 at order 4? Then order 12 with c=144?',
+  "4차에서는 두 모드 모두 차수²≤각 모드의 c라 양의 교차가 없습니다. 12차·c=144는 모드 1의 등호 경계라 교차가 없지만 c₂=72인 모드 2에는 교차가 있습니다.": 'At order 4, both modes have order² ≤ their c, so there is no positive crossing. Order 12 with c=144 is the equality boundary for mode 1, so it has no crossing, but mode 2, with c₂=72, does have one.',
+  "기본값에서 감쇠비만 0.02→0.08로 바꾸세요.": 'From the defaults, change only the damping ratio from 0.02 to 0.08.',
+  "교차 위치는 그대로이고 응답 봉우리가 낮아지고 넓어집니다. 정확히 r=1일 때 응답비는 25→6.25, 위상 지연은 모두 90°입니다. 변위 응답의 최대점이 항상 r=1인 것은 아닙니다.": 'The crossing position stays the same, and the response peak becomes lower and wider. At exactly r=1 the response ratio goes 25 → 6.25 and the phase lag is 90° in both cases. The maximum of the displacement response is not always at r=1.',
+  "원심 강성화의 경향을 단순화한 가상 두 모드입니다. 모드 2는 f₀₂=1.75f₀₁, c₂=c₁/2로 정합니다. 자이로 효과·온도·모드 결합·가진력 변화는 제외합니다. 각 응답비는 해당 모드의 정적 응답에 대한 비이며 두 곡선을 실제 변위로 합산하지 않습니다. 0 rpm은 정적 극한입니다. 응력·피로수명·실기 운전 허용 범위는 계산하지 않습니다.": 'This is a simplified pair of virtual modes showing the trend of centrifugal stiffening. Mode 2 is set to f₀₂=1.75f₀₁ and c₂=c₁/2. Gyroscopic effects, temperature, mode coupling and changes in the excitation force are excluded. Each response ratio is relative to that mode\'s static response, and the two curves are not summed into an actual displacement. 0 rpm is the static limit. Stress, fatigue life and the permissible operating range of a real machine are not calculated.',
+  "{0}차 가진": 'Order {0} excitation',
+  "교차": 'Crossing',
+  "관측 모드": 'Observed modes',
+  "회전수 N [rpm]": 'Speed N [rpm]',
+  "주파수 [Hz]": 'Frequency [Hz]',
+  "Campbell 선도: 두 모드와 가진 차수선": 'Campbell diagram: two modes and the excitation order line',
+  "관측 모드 1": 'Observed mode 1',
+  "각 모드의 정적 응답 대비 비": 'Ratio to each mode\'s static response',
+  "감쇠에 따른 각 모드의 정규화 응답": 'Normalized response of each mode with damping',
+};
+
+export default EN;

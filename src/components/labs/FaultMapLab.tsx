@@ -8,6 +8,10 @@ import { withBase } from '../../lib/site';
 import { PARTS } from '../../data/curriculum';
 import { candidatesAt, FAMILY_LABEL, FAULTS, type FaultFamily, type MachineInfo, type Tracking } from '../../lib/faults/catalog';
 import { MACHINES, type MachineId } from '../../lib/faults/synth';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/FaultMapLab';
+import { faultText, familyLabel, spotLabel } from '../../i18n/en/faults';
 
 /**
  * LAB-MAP-01 진단 주파수 지도: 주파수 → 원인 후보 (P7-1, Contents §5).
@@ -15,16 +19,21 @@ import { MACHINES, type MachineId } from '../../lib/faults/synth';
  * 계산: lib/faults/catalog.ts (P7-1 그림 1과 같은 규칙).
  */
 
-const MACHINE_OPTIONS = (Object.keys(MACHINES) as MachineId[]).map((id) => ({ value: id, label: MACHINES[id].name }));
+/** 기계 이름 (lib/faults/synth.ts의 한국어 그대로, 영어는 사전) */
+const MACHINE_NAME: Record<MachineId, string> = {
+  pump: k('전동기-펌프 (2극, 베인 7개)'),
+  gearbox: k('감속기 입력축 (23 → 61이빨)'),
+  fan: k('벨트 구동 팬 (날개 8개)'),
+  compressor: k('미끄럼베어링 압축기 (날개 19개)'),
+};
 const TRACK_OPTIONS: { value: Tracking | 'unknown'; label: string }[] = [
-  { value: 'unknown', label: '모름' },
-  { value: 'rotating', label: '회전수를 따라 움직인다' },
-  { value: 'fixed', label: '회전수를 바꿔도 그대로다' },
+  { value: 'unknown', label: k('모름') },
+  { value: 'rotating', label: k('회전수를 따라 움직인다') },
+  { value: 'fixed', label: k('회전수를 바꿔도 그대로다') },
 ];
-const FAMILY_OPTIONS: { value: FaultFamily | 'all'; label: string }[] = [{ value: 'all', label: '전체' }, ...(Object.keys(FAMILY_LABEL) as FaultFamily[]).map((f) => ({ value: f, label: FAMILY_LABEL[f] }))];
 const FAMILY_ROW: Record<FaultFamily, number> = { shaft: 6, structure: 5, bearing: 4, gear: 3, electrical: 2, flow: 1 };
 /** 공개된 절이면 주소, 아직 없으면 undefined (링크를 걸지 않는다) */
-const pageHref = (id: string) => PARTS.flatMap((p) => p.sections).find((s) => s.id === id && s.status !== 'planned' && s.href)?.href;
+const pageHref = (id: string, lang: Lang) => lang === 'en' ? (PARTS.flatMap((p) => p.sections).find((s) => s.id === id && s.status !== 'planned' && s.href) ? `/en/${id.toLowerCase()}/` : undefined) : PARTS.flatMap((p) => p.sections).find((s) => s.id === id && s.status !== 'planned' && s.href)?.href;
 const FAMILY_COLOR: Record<FaultFamily, string> ={ shaft: 'var(--plot-1)', structure: 'var(--text-muted)', bearing: 'var(--plot-2)', gear: 'var(--plot-4)', electrical: 'var(--status-wip)', flow: 'var(--plot-3)' };
 
 export interface FaultMapState {
@@ -35,7 +44,10 @@ export interface FaultMapState {
   family: FaultFamily | 'all';
 }
 
-export default function FaultMapLab({ initial = {} }: { initial?: Partial<FaultMapState> }) {
+export default function FaultMapLab({ lang = 'ko', initial = {} }: { lang?: Lang; initial?: Partial<FaultMapState> }) {
+  const tr = makeT(lang, EN);
+  const MACHINE_OPTIONS = (Object.keys(MACHINES) as MachineId[]).map((id) => ({ value: id, label: tr(MACHINE_NAME[id]) }));
+  const FAMILY_OPTIONS: { value: FaultFamily | 'all'; label: string }[] = [{ value: 'all', label: tr`전체` }, ...(Object.keys(FAMILY_LABEL) as FaultFamily[]).map((f) => ({ value: f, label: familyLabel(f, lang) }))];
   const [p, setP] = useState<FaultMapState>({ machine: 'pump', rpm: MACHINES.pump.rpm, f: 120, tracking: 'unknown', family: 'all', ...initial });
   const set = <K extends keyof FaultMapState>(k: K) => (v: FaultMapState[K]) => setP((q) => ({ ...q, [k]: v }));
   const mm = MACHINES[p.machine];
@@ -50,54 +62,57 @@ export default function FaultMapLab({ initial = {} }: { initial?: Partial<FaultM
     for (const s of fault.spots(info)) {
       const row = FAMILY_ROW[fault.family];
       if (s.f1 !== undefined && s.f2 !== undefined) {
-        bands.push({ x: [s.f1, Math.min(s.f2, fMax)], y: [row, row], name: fault.name, color: FAMILY_COLOR[fault.family], width: 6, opacity: 0.5, hideInLegend: true });
+        bands.push({ x: [s.f1, Math.min(s.f2, fMax)], y: [row, row], name: faultText(fault, lang).name, color: FAMILY_COLOR[fault.family], width: 6, opacity: 0.5, hideInLegend: true });
       } else if (s.f <= fMax) {
         pts[fault.family].x.push(s.f);
         pts[fault.family].y.push(row);
-        pts[fault.family].text.push(`${fault.name}: ${s.label}`);
+        pts[fault.family].text.push(`${faultText(fault, lang).name}: ${spotLabel(s.label, lang)}`);
       }
     }
   }
   const series: PlotSeries[] = [
     ...bands,
-    ...(Object.keys(pts) as FaultFamily[]).map((fam): PlotSeries => ({ x: pts[fam].x, y: pts[fam].y, name: FAMILY_LABEL[fam], mode: 'markers', color: FAMILY_COLOR[fam], markerSize: 8 })),
-    { x: [p.f, p.f], y: [0.4, 6.6], name: '측정한 줄', color: 'var(--text)', dash: 'dash', width: 2 },
+    ...(Object.keys(pts) as FaultFamily[]).map((fam): PlotSeries => ({ x: pts[fam].x, y: pts[fam].y, name: familyLabel(fam, lang), mode: 'markers', color: FAMILY_COLOR[fam], markerSize: 8 })),
+    { x: [p.f, p.f], y: [0.4, 6.6], name: tr`측정한 줄`, color: 'var(--text)', dash: 'dash', width: 2 },
   ];
 
   return (
-    <LabFrame id="LAB-MAP-01" title="진단 주파수 지도: 주파수 → 원인 후보"
+    <LabFrame lang={lang} id="LAB-MAP-01" title={tr`진단 주파수 지도: 주파수 → 원인 후보`}
       controls={<>
-        <ParamSelect label="기계" value={p.machine} options={MACHINE_OPTIONS} onChange={(v) => setP((q) => ({ ...q, machine: v, rpm: MACHINES[v].rpm }))} />
-        <ParamSlider label="회전수" value={p.rpm} min={300} max={7200} step={5} unit="rpm" onChange={set('rpm')} hint={`1X = ${formatNumber(info.fr, 4)} Hz`} />
-        <ParamSlider label="측정한 줄의 주파수" value={p.f} min={1} max={Math.round(fMax)} step={0.1} unit="Hz" onChange={set('f')} hint={`= ${formatNumber(p.f / info.fr, 4)}X`} />
-        <ParamSelect label="운전 조건을 바꾸면" value={p.tracking} options={TRACK_OPTIONS} onChange={set('tracking')} />
-        <ParamSelect label="원인 갈래" value={p.family} options={FAMILY_OPTIONS} onChange={set('family')} />
+        <ParamSelect label={tr`기계`} value={p.machine} options={MACHINE_OPTIONS} onChange={(v) => setP((q) => ({ ...q, machine: v, rpm: MACHINES[v].rpm }))} />
+        <ParamSlider label={tr`회전수`} value={p.rpm} min={300} max={7200} step={5} unit="rpm" onChange={set('rpm')} hint={`1X = ${formatNumber(info.fr, 4)} Hz`} />
+        <ParamSlider label={tr`측정한 줄의 주파수`} value={p.f} min={1} max={Math.round(fMax)} step={0.1} unit="Hz" onChange={set('f')} hint={`= ${formatNumber(p.f / info.fr, 4)}X`} />
+        <ParamSelect label={tr`운전 조건을 바꾸면`} value={p.tracking} options={TRACK_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={set('tracking')} />
+        <ParamSelect label={tr`원인 갈래`} value={p.family} options={FAMILY_OPTIONS} onChange={set('family')} />
       </>}
-      footer={<p>원인과 증거 문구는 판단의 출발점입니다 (판정 기준이 아니다). 자리의 허용 폭은 정수배 ±2 %(최소 0.5 Hz), 2×LF ±0.3 Hz입니다. 기계 정보: 전원 {mm.lineHz} Hz{mm.poles ? `, ${mm.poles}극 유도전동기` : ''}{mm.blades ? `, 날개 ${mm.blades}개` : ''}{mm.teeth ? `, 기어 ${mm.teeth} → ${mm.mateTeeth}이빨` : ''}, {mm.balls ? `구름베어링(볼 ${mm.balls}개, 6205 치수비)` : '미끄럼베어링'}.</p>}
+      footer={<p>{tr`원인과 증거 문구는 판단의 출발점입니다 (판정 기준이 아니다). 자리의 허용 폭은 정수배 ±2 %(최소 0.5 Hz), 2×LF ±0.3 Hz입니다. 기계 정보: 전원 ${mm.lineHz} Hz`}{mm.poles ? tr`, ${mm.poles}극 유도전동기` : ''}{mm.blades ? tr`, 날개 ${mm.blades}개` : ''}{mm.teeth ? tr`, 기어 ${mm.teeth} → ${mm.mateTeeth}이빨` : ''}, {mm.balls ? tr`구름베어링(볼 ${mm.balls}개, 6205 치수비)` : tr`미끄럼베어링`}.</p>}
     >
-      <h4>이 기계의 원인 자리 (가로 = 주파수)</h4>
-      <Plot series={series} x={{ label: '주파수 [Hz]', range: [0, fMax] }} y={{ label: '', range: [0.4, 6.6] }} height={230} ariaLabel="원인 자리 지도" />
-      <p className="lab-note">세로 줄: 위부터 축·회전체, 구조, 베어링, 기어, 전기, 유체·공력. 점선 = 측정한 줄 ({formatNumber(p.f, 4)} Hz = {formatNumber(p.f / info.fr, 4)}X).</p>
-      <h4>후보 {cands.length}개 {cands.length > 1 ? '— 같은 자리에 여럿이면 나머지 증거로 가린다' : ''}</h4>
+      <h4>{tr`이 기계의 원인 자리 (가로 = 주파수)`}</h4>
+      <Plot series={series} x={{ label: tr`주파수 [Hz]`, range: [0, fMax] }} y={{ label: '', range: [0.4, 6.6] }} height={230} ariaLabel={tr`원인 자리 지도`} />
+      <p className="lab-note">{tr`세로 줄: 위부터 축·회전체, 구조, 베어링, 기어, 전기, 유체·공력. 점선 = 측정한 줄 (${formatNumber(p.f, 4)} Hz = ${formatNumber(p.f / info.fr, 4)}X).`}</p>
+      <h4>{tr`후보 ${cands.length}개 `}{cands.length > 1 ? tr`— 같은 자리에 여럿이면 나머지 증거로 가린다` : ''}</h4>
       {cands.length === 0 ? (
-        <p>이 자리에 맞는 원인이 목록에 없습니다. 회전수·기계 정보를 확인하거나, 구조 공진(고정 주파수)처럼 자리가 정해지지 않은 원인을 생각합니다.</p>
+        <p>{tr`이 자리에 맞는 원인이 목록에 없습니다. 회전수·기계 정보를 확인하거나, 구조 공진(고정 주파수)처럼 자리가 정해지지 않은 원인을 생각합니다.`}</p>
       ) : (
         <div className="fault-cards">
-          {cands.map((c) => (
+          {cands.map((c0) => {
+            const c = { ...c0, fault: faultText(c0.fault, lang) };
+            return (
             <details key={c.fault.id} className="fault-card" open={cands.length <= 2}>
               <summary>
-                <strong>{c.fault.name}</strong> — {c.spot.label} ({c.spot.f1 !== undefined ? `${formatNumber(c.spot.f1, 4)} ~ ${formatNumber(c.spot.f2!, 4)} Hz` : `${formatNumber(c.spot.f, 5)} Hz`}{c.miss > 0 ? `, ${formatNumber(c.miss, 2)} Hz 차이` : ''}) · {FAMILY_LABEL[c.fault.family]}
+                <strong>{c.fault.name}</strong> — {spotLabel(c.spot.label, lang)} ({c.spot.f1 !== undefined ? `${formatNumber(c.spot.f1, 4)} ~ ${formatNumber(c.spot.f2!, 4)} Hz` : `${formatNumber(c.spot.f, 5)} Hz`}{c.miss > 0 ? tr`, ${formatNumber(c.miss, 2)} Hz 차이` : ''}) · {familyLabel(c.fault.family, lang)}
               </summary>
               <ul>
-                <li><b>주파수</b>: {c.fault.frequency}</li>
-                <li><b>진폭</b>: {c.fault.amplitude}</li>
-                <li><b>위상</b>: {c.fault.phase}</li>
-                <li><b>방향</b>: {c.fault.direction}</li>
-                <li><b>운전조건</b>: {c.fault.condition}</li>
-                <li><b>확인</b>: {c.fault.confirm} — {pageHref(c.fault.page) ? <a href={withBase(pageHref(c.fault.page))}>{c.fault.page}</a> : <span>{c.fault.page} (준비 중)</span>}</li>
+                <li><b>{tr`주파수`}</b>: {c.fault.frequency}</li>
+                <li><b>{tr`진폭`}</b>: {c.fault.amplitude}</li>
+                <li><b>{tr`위상`}</b>: {c.fault.phase}</li>
+                <li><b>{tr`방향`}</b>: {c.fault.direction}</li>
+                <li><b>{tr`운전조건`}</b>: {c.fault.condition}</li>
+                <li><b>{tr`확인`}</b>: {c.fault.confirm} — {pageHref(c.fault.page, lang) ? <a href={withBase(pageHref(c.fault.page, lang)!)}>{c.fault.page}</a> : <span>{c.fault.page} {tr`(준비 중)`}</span>}</li>
               </ul>
             </details>
-          ))}
+            );
+          })}
         </div>
       )}
     </LabFrame>

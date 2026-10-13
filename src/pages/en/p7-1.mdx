@@ -1,0 +1,265 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-1 The diagnosis map and estimating running speed
+description: Narrowing the candidate faults by line order (frequency → cause) with a diagnosis map, separating candidates at the same spot by phase, direction and operating condition, the fingerprint of each cause from a fault synthesizer, and finding 1X when the speed is unknown (harmonic clusters, cepstrum, autocorrelation, sidebands, operating condition, nameplate and slip)
+sectionId: P7-1
+source: p7-1.mdx
+sourceHash: 42fcb263f8
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import FaultMapLab from '../../components/labs/FaultMapLab';
+import FaultSynthLab from '../../components/labs/FaultSynthLab';
+import RpmLab from '../../components/labs/RpmLab';
+import * as F from '../../figures/p7-1';
+
+# 7-1 The diagnosis map and estimating running speed: from one line to candidate faults
+
+A conspicuous line has appeared in the spectrum. What is it caused by?
+
+In P1-8 we built a map of where each machine element puts a line in the spectrum (element → frequency). Diagnosis runs the other way (frequency → cause). As we saw in P1-9, an inverse problem has no unique answer, so we use the position of the line to narrow the candidates and then sort them out with the remaining evidence. This page is the starting point of all of Part 7. It covers that map, the synthesizer that generates the signal of each cause, and the thing you need before you can use the map at all: **how to find 1X accurately**.
+
+<Callout type="idea" title="By the end of this page you should be able to">
+
+1. Read a map that narrows the candidate faults by line order (how many times 1X it is).
+2. Separate candidates that sit at the same spot by phase, direction and operating condition.
+3. Compare the spectral fingerprint of each cause with a fault synthesizer.
+4. Name the methods for finding 1X when the speed is unknown, and the cases in which each one fails.
+5. Back-calculate the speed from the nameplate speed, slip, gear ratio and blade count.
+
+</Callout>
+
+<Callout type="field" title="How Part 7 is organized">
+
+For each cause, this Part follows the order **mechanism → five pieces of evidence → differentiation → how to confirm**. The five pieces of evidence are those of P1-9: frequency, amplitude, phase, direction and operating condition. For signal-processing methods we look back to Part 5, and for the order in which to read plots, to Part 6. Judgment values (how large is dangerous) are in Part 10.
+
+</Callout>
+
+---
+
+## 1. The map in reverse: narrow the candidates by order
+
+Dividing the frequency of a line by 1X usually shows which family of causes it belongs to. What shows up at which spot?
+
+<Figure {...F.reverseMap} />
+
+Figure 1 is the map of a pump driven by a 2-pole motor (3575 rpm, 1X = 59.58 Hz). The horizontal axis is not Hz but **order** (how many times 1X, P2-1).
+
+| Spot | Main candidates | Where we met it |
+|---|---|---|
+| 1X | Unbalance, shaft bow, misalignment, resonance (response amplification) | P1-7, P4-1 |
+| 2X, 3X … (integer multiples) | Misalignment, looseness, crack | P2-2 harmonics |
+| ½X, 1½X … | Rotating looseness, rub | — (P7-3) |
+| 0.38 to 0.48X | Oil-film whirl in a journal bearing | P1-8, P4-4 |
+| Non-integer spot | Rolling bearing (BPFO 3.585X, etc.) | P1-8, P5-6 |
+| Blades × X, teeth × X | Blade pass, gear mesh | P1-8 |
+| Fixed spot, independent of speed | Electrical (2×LF), structural resonance | P1-8, P1-9 |
+
+For this table to work you need to know **1X accurately**. If 1X is off by 1 %, 10X is off by 10 %, and you can no longer even tell whether a line is an integer multiple or not. Section 4 covers how to find 1X when the speed is unknown.
+
+<Callout type="warn" title="'It sits at 1X, so it is unbalance'">
+
+At the 1X spot in Figure 1, unbalance, shaft bow, misalignment and resonance all appear together. Frequency only narrows the candidates; it does not decide the cause. As in the next section, sort them out with the remaining evidence.
+
+</Callout>
+
+---
+
+## 2. Same spot, different causes: separate them with the remaining evidence
+
+How do we separate candidates that sit at the same spot?
+
+<Figure {...F.sameLine} />
+
+Figure 2 shows the same pump with unbalance and with misalignment put in separately (fault synthesizer, section 3). Looking only at horizontal 1X, both are large. But the **direction** and the **phase** differ.
+
+- Unbalance: the radial directions (horizontal 4.91, vertical 3.53 mm/s) are large, and axial 1X is 0.49 mm/s. Vertical lags horizontal by **90°** — a force that rotates with the shaft pushes horizontally first and vertically a quarter turn later
+- Misalignment: axial 1X is the largest at 3.10 mm/s, and 2X (axial 2.57) is large too. The horizontal-vertical phase difference is 26°, far from 90° — a force that pushes in one direction
+
+<Figure {...F.twoXvsLine} />
+
+In a 2-pole motor, 2X and twice the line frequency (2×LF, 120 Hz on a 60 Hz grid) sit only 0.83 Hz apart. As in Figure 3, if the record is short and Δf is 2 Hz, the two merge into one line and you cannot tell the causes apart. With Δf = 1/T (P2-4) set to 0.5 Hz they appear separately. Another way is the **operating condition** — the moment power is cut, the electrical component vanishes at once, while the mechanical component fades slowly as the rotation slows (P7-7).
+
+The lab below is a tool that uses the map of Figure 1 in reverse. Enter the machine information and the frequency of the measured line, and it shows the matching candidates and their five pieces of evidence.
+
+<Callout type="try">
+
+1. Look at the candidates in the initial state (pump, 3575 rpm, measured line 120 Hz). Which candidate is closest, and which candidates sit 0.83 Hz away?
+2. Change "if the operating condition is changed" to "unchanged even when the speed changes".
+3. Set it back to "unknown" and move the measured line to 59.6 Hz. How many candidates are there?
+4. Switch the machine to a journal-bearing compressor (6000 rpm) and move the line to 43 Hz (0.43X).
+
+</Callout>
+
+<FaultMapLab lang="en" client:visible />
+
+In step 1 the closest candidate is electrical (2×LF), and at the 2X spot 0.83 Hz away, misalignment, looseness, crack and rub remain. With evidence that the line is independent of speed, as in step 2, only electrical remains. At 1X in step 3, all seven candidates — unbalance, shaft bow, crack, resonance, misalignment, looseness and rub — appear; it is a typical spot that frequency alone cannot narrow down. At 0.43X in step 4, oil whirl, oil whip and rotating stall come up as candidates. On a rolling-bearing machine, oil whirl drops out of the candidates.
+
+---
+
+## 3. The fault synthesizer: the fingerprint of each cause
+
+What does the spectrum of each cause look like? Real fault data is hard to collect cause by cause, so in this Part we generate the signal of each cause by calculation and compare them.
+
+<Figure {...F.fingerprints} />
+
+The **fault synthesizer** takes a machine (speed, blades, teeth, bearing, line frequency) and the type and severity of a fault, and produces horizontal, vertical and axial acceleration at one bearing housing. For each fault it turns the mechanism we saw in earlier Parts into signal components — unbalance is a rotating 1X force, misalignment a 1X and 2X push in one direction, looseness phase-aligned harmonics plus ½X, and a rolling bearing a train of impacts ringing a kHz resonance (P5-6). As in Figure 4, even on the same machine each cause produces a **fingerprint** with its own line positions and directions.
+
+<Callout type="term" title="Fault synthesizer">
+
+A calculation that turns the mechanism of each cause into signal components (frequency, direction and phase of sinusoidal components, impact trains, broadband noise) and adds them up. The Part 7 figures and labs of this site, and the integrated diagnosis exercises of Part 11, all use signals made by this synthesizer. The magnitudes are illustrative values for comparing the shapes of different causes.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (pump, unbalance 0.6, horizontal), change the direction horizontal → vertical → axial, look at 1X, and read "the angle by which vertical lags horizontal".
+2. Change fault ① to misalignment 0.6 and look at the same things.
+3. Set fault ① to looseness 0.6 and the direction to vertical. Do lines also appear between the integer-multiple dotted lines? What is the acceleration kurtosis?
+4. Set fault ① to an outer-race fault 0.6 and compare the velocity spectrum with the envelope spectrum.
+
+</Callout>
+
+<FaultSynthLab lang="en" client:visible />
+
+In step 1, the 1X of unbalance is 4.9 mm/s horizontal, 3.5 vertical and 0.5 axial, and vertical lags by about 90°. In step 2, misalignment has the largest axial 1X at 3.1 mm/s, 2X also appears, and the phase difference is about 26°. In the looseness of step 3, lines also appear at the ½X spots between the integer multiples (½X about 1 mm/s), and the phase-aligned harmonics make a spiky waveform with an acceleration kurtosis of about 10. The outer-race fault of step 4 has a small BPFO of about 0.5 mm/s in the vertical velocity spectrum, but it becomes the largest line in the envelope spectrum.
+
+---
+
+## 4. When the speed is unknown: find 1X first
+
+In many field records the speed was not kept, or the machine has no keyphasor. How do we find 1X in the spectrum?
+
+### 4.1 Harmonic clusters, cepstrum and autocorrelation
+
+<Figure {...F.rpmMethods} />
+
+- **Harmonic cluster**: 1X usually brings integer harmonics with it. For each candidate f₀, gather the line heights at f₀, 2f₀, 3f₀ … and subtract the heights at the half-step positions (½f₀, 1½f₀ …); pick the f₀ with the highest score. Subtracting the half-step positions is meant to avoid wrongly picking twice f₀
+- **Cepstrum**: gathers a cluster of equally spaced lines into a quefrency peak (P5-7)
+- **Autocorrelation**: finds the period at which the waveform repeats (P5-7)
+
+Applying the three methods to the same three records, each one fails in some case (speed: true / estimated).
+
+| Record (true speed) | Harmonic cluster | Cepstrum | Autocorrelation |
+|---|---|---|---|
+| Motor-pump (3575 rpm) | 3573 | **1792** (half) | 3576 |
+| Gearbox input shaft (1490 rpm) | 1492 | 1490 | **1558** (buried by the mesh) |
+| Loose fan (1180 rpm) | **590** (half) | **590** (half) | 1180 |
+
+For the pump, the cepstrum picked twice the 1X spacing instead of the 1X spacing; for the gearbox, the autocorrelation was buried by the short period of the largest component, the gear mesh (571 Hz) (same reason as Figure 3 of P5-7). For the loose fan, the ½X fractional harmonics create a cluster with ½X spacing, so the harmonic cluster and the cepstrum picked half.
+
+<Callout type="warn" title="'The speed one method gave'">
+
+Any method can be wrong by an integer factor (twice or half). Check against two or more methods, the nameplate speed range and the machine structure (blade count, teeth), and if possible measure it once with a keyphasor or tachometer.
+
+</Callout>
+
+### 4.2 Sideband spacing, blade pass and operating condition
+
+You can also back-calculate the speed from the spacing of a line cluster and the machine structure.
+
+- **Mesh and sidebands**: divide the gearbox mesh of 571.2 Hz by the pinion's 23 teeth to get 24.83 Hz (1490 rpm). The sideband spacing is also the speed of the faulty shaft (P2-8)
+- **Blade pass**: divide the pump's 417.1 Hz line by 7 vanes to get 59.58 Hz (3575 rpm)
+- **Envelope sidebands**: for an inner-race fault, the spacing of the sidebands on either side of BPFI is 1X (P5-6)
+
+<Figure {...F.conditionChange} />
+
+Overlaying two records taken at different operating conditions is also powerful. As in Figure 6, when the load rises and the speed drops by 30 rpm, lines related to rotation move in proportion to their order (7X by 3.5 Hz), while electrical and structural lines stay put. It is the same idea as separating slanted lines from vertical lines in a spectrogram (P5-2).
+
+### 4.3 Nameplate speed and slip
+
+An induction motor runs a little slower than synchronous speed. This difference (slip) grows with load, and the nameplate speed is the value at full load.
+
+$$
+N_{sync} = \frac{120 f_L}{P}, \qquad \text{slip} = \frac{N_{sync} - N}{N_{sync}}
+$$
+
+- $f_L$: line frequency [Hz], $P$: number of poles, $N$: actual speed [rpm]
+
+<Callout type="example" title="A 2-pole motor (60 Hz) with a 3560 rpm nameplate">
+
+1. Synchronous speed: 120 × 60 / 2 = **3600 rpm** (60 Hz)
+2. Full-load slip: (3600 − 3560)/3600 = 1.1 %
+3. The actual speed is between 3560 and 3600 rpm depending on load → 1X lies between **59.33 and 60 Hz**
+4. If the largest line in this range is at 59.58 Hz, the speed is 3575 rpm — consistent with the harmonic-cluster result of Figure 5. The cepstrum's 1792 rpm is outside this range, so discard it
+
+</Callout>
+
+If there is a gear, count the speed of the other shaft with the gear ratio. If the gearbox input is 1490 rpm and the gears are 23 → 61 teeth, the output is 1490 × 23/61 = 561.8 rpm.
+
+<Callout type="try">
+
+1. In the initial state (motor-pump, harmonic cluster), read the estimated rpm of the three methods. Switch the method and watch the graph below.
+2. Change the record to the gearbox. Which method is wrong?
+3. Change the record to the loose fan, and at the end turn on "show the answer".
+
+</Callout>
+
+<RpmLab lang="en" client:visible />
+
+In step 1, the harmonic cluster's about 3573 rpm and the autocorrelation's about 3576 rpm are within the 2-pole motor range (3560 to 3600 rpm), while the cepstrum's about 1792 rpm is outside it, which shows it picked half. In the gearbox of step 2, the autocorrelation is buried by the mesh and gives about 1558 rpm. In the loose fan of step 3, two methods give 590 rpm and only the autocorrelation gives 1180 rpm; the correct answer is 1180 rpm — choose not by majority vote but by what agrees with the machine information.
+
+---
+
+## 5. Summary
+
+| Topic | What to remember |
+|---|---|
+| Diagnosis map | Frequency → cause. Integer multiples = rotor, ½X = looseness or rub, near 0.4X = oil film, non-integer = rolling bearing, blades and teeth × X, fixed = electrical or structural |
+| Same spot | Frequency only narrows the candidates. Sort them out by phase (horizontal-vertical 90° = rotating force), direction (axial = misalignment) and operating condition (power cut, speed change) |
+| Resolution | For lines close together such as 2X and 2×LF, lengthen the record (Δf = 1/T) |
+| Fault synthesizer | Turns the mechanism of each cause into components so the fingerprints can be compared (used in Parts 7 and 11) |
+| Finding the speed | Harmonic cluster, cepstrum and autocorrelation fail by twice, half and the dominant component respectively → use two or more and confirm with machine information |
+| Back-calculation | Mesh ÷ teeth, blade pass ÷ blades, nameplate and slip range, gear ratio |
+
+## 6. Check questions
+
+<details>
+<summary><strong>Q1. The spectrum of a pump with 1X = 30 Hz (6205 bearing) has a line at 107.5 Hz. What are its order and first candidate?</strong></summary>
+
+107.5 / 30 = **3.58X**, which is not an integer multiple. The BPFO of a 6205 is 3.585X, so the first candidate is a **rolling bearing outer race**. Check whether BPFO and its harmonics appear in the envelope spectrum (P5-6, P7-5).
+</details>
+
+<details>
+<summary><strong>Q2. On a 2-pole motor running at 3575 rpm, what are two ways to tell whether a line near 120 Hz is 2X or 2×LF?</strong></summary>
+
+① 2X is 119.17 Hz and 2×LF is 120 Hz, only 0.83 Hz apart, so set **Δf to 0.5 Hz or less** (record of 2 s or more, Figure 3) to separate them into two lines. ② Record **the moment power is cut**: if it vanishes at once it is electrical; if it fades slowly as the rotation slows it is a mechanical component.
+</details>
+
+<details>
+<summary><strong>Q3. A 4-pole motor (50 Hz) has a 1460 rpm nameplate. In what range do you look for 1X?</strong></summary>
+
+Synchronous speed = 120 × 50 / 4 = 1500 rpm, and the actual speed is between 1460 and 1500 rpm depending on load. 1X lies between **24.33 and 25 Hz**.
+</details>
+
+<details>
+<summary><strong>Q4. The 1X found by the harmonic cluster was exactly half of the nameplate range. What do you suspect?</strong></summary>
+
+Suspect that ½X fractional harmonics (rotating looseness or rub) are present and a cluster with ½X spacing was picked as 1X. Take the line inside the nameplate range (twice the value found) as 1X, and check whether the lines at the ½X spots in between are evidence of looseness or rub (P7-3).
+</details>
+
+<details>
+<summary><strong>Q5. A gearbox has a mesh frequency of 1150 Hz and a 23-tooth input pinion. What is the input shaft speed?</strong></summary>
+
+1150 / 23 = **50 Hz = 3000 rpm**. If the spacing of the sidebands around the mesh is 50 Hz, suspect a fault on the input shaft; if the spacing is the output shaft speed, suspect the output shaft.
+</details>
+
+<details>
+<summary><strong>Q6. When you changed the load, the 300 Hz line stayed put and the 420 Hz line moved by 3.5 Hz. Which side is each on?</strong></summary>
+
+The 420 Hz line that moved is a **rotation-related line** (the order follows from how many times the 1X change it moved). The 300 Hz line that stayed put is a **line independent of speed, such as electrical or structural resonance**. Check whether it is related to the line frequency, and whether it matches the structural natural frequency measured by an impact test (P7-7, P9-1).
+</details>
+
+---
+
+The next page (P7-2) covers the order for separating unbalance, shaft bow, crack, eccentricity and resonance, which all sit at 1X, by the five pieces of evidence.
+
+## References
+
+<References items={[
+  ['R-02', 'Causes in the 1X family and the phase and direction evidence'],
+  ['R-03', 'Spectral patterns by cause, confirming the speed'],
+  ['R-01', 'Finding periods with the cepstrum and autocorrelation'],
+]} />

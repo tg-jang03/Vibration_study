@@ -1,0 +1,257 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: "P7-9 Torsional and Blade Vibration: Is It Fine If the Lateral Probe Is Quiet?"
+description: Pulse spacing and relative twist, the ideas of torque disturbance, SSR and Holzer, rotational stiffening, order lines and reading a Campbell diagram, BTT and strain measurement, and how to tell candidates apart
+sectionId: P7-9
+source: p7-9.mdx
+sourceHash: 1cb071a9b5
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import CampbellLab from '../../components/labs/CampbellLab';
+import {withBase} from '../../lib/site';
+import * as F from '../../figures/p7-9';
+
+# P7-9 Torsional and blade vibration: is it fine if the lateral probe is quiet?
+
+The X and Y vibration at the bearing looks as usual, yet the shaft torque record is fluctuating. And at some speeds only one particular blade's response grows. Can the shaft-center orbits we have been looking at explain these two phenomena?
+
+On this page we choose **a measured quantity that fits the moving coordinate**. Small angular fluctuations of the shaft are investigated through pass times, relative angle and strain, and the local motion of a blade through its modes and dedicated sensors. Let's not rule out this motion just because it is absent from the lateral shaft vibration.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can distinguish the angular-speed fluctuation at one location from the relative twist between two sections.
+2. You can compute speed from pulse spacing and explain the effect of timing and marker errors.
+3. You can choose the event records needed for torque disturbances, repetitive excitation and SSR.
+4. You can read a Campbell crossing by separating its existence, its position in the displayed range, and the response size.
+5. You can explain what BTT and strain gauges give, and what further checks are needed.
+
+</Callout>
+
+## 1. Can a shaft vibrate without moving sideways?
+
+Suppose the shaft rotates at a mean angular speed $\Omega$. The angle of section A is $\theta_A=\Omega t+\delta\theta_A(t)$: a small angular fluctuation rides on top of the steady rotation. If $\delta\theta_B-\delta\theta_A$ of two sections A and B changes, the twist of the shaft between them changes too.
+
+$$
+\Delta\theta(t)=\delta\theta_B(t)-\delta\theta_A(t),\qquad
+\delta\omega_A(t)=\frac{d\delta\theta_A}{dt}
+$$
+
+Here $\Delta\theta$ is the relative twist angle [rad] and $\delta\omega_A$ is the change of angular speed from the mean [rad/s]. **The angular speed at one location alone cannot directly tell you the twist between two sections.** This is because a component in which the whole shaft accelerates together is also contained in the angular speed.
+
+<Figure {...F.motion} />
+
+A lateral proximity probe reads the gap between the shaft surface and the sensor. A motion in which an ideal round shaft speeds up and slows down a little while keeping its center position hardly appears in this gap. Signals can get mixed in through surface form, runout or coupling between motions, but a lateral probe is not a sensor that measures torsion directly.
+
+<Callout type="term" title="Angular-speed fluctuation and relative twist">
+
+<strong>Instantaneous angular speed (IAS)</strong> is the rotation speed of one section viewed over time. To connect <strong>torsional vibration</strong> to shaft deformation you need the relative angle at the measurement locations and the mode shape, or strain information at those locations.
+
+</Callout>
+
+The derivation of the natural frequency and mode shape of two inertias is in <a href={withBase('/p8-5/#6-축계-비틀림과-ssr는-횡진동과-무엇이-다른가요')}>P8-5 §6</a>. Here we continue with how that angular fluctuation is observed.
+
+## 2. Why does the gear-tooth pass interval get shorter?
+
+If $z$ markers pass per revolution at equal angular spacing, the angle the shaft turns between neighboring pass times $t_k,t_{k+1}$ is $2\pi/z$. So the mean angular speed over that interval is as follows. <Cite ids={['R-66']} />
+
+$$
+\overline\omega_k=\frac{2\pi/z}{t_{k+1}-t_k},\qquad
+\overline N_k=\frac{60}{z(t_{k+1}-t_k)}
+$$
+
+$N$ is in rpm. When the shaft speeds up, it covers the same angle in a shorter time, so the interval shrinks. Reading the passes of gear teeth or encoder markers with a precise time counter lets you investigate small speed fluctuations. **This formula itself is an average between pulses.** It approaches the instantaneous value when you make the interval short enough and check the measurement bandwidth.
+
+<Figure {...F.pulses} />
+
+<Callout type="example" title="Reference values for 3000 rpm and 60 teeth">
+
+The mean rotation rate is 50 rev/s. For 60 teeth the pulse rate is 3000 pulses/s and the reference interval is 333.3 µs. With one keyphasor pulse per revolution it is 20 ms. Even a 20 Hz angular fluctuation shows a reduced swing when averaged over one revolution.
+
+Differentiating the 10 mrad angular fluctuation in the figure gives an angular-speed change peak of 1.257 rad/s. This is 0.4 % of the mean angular speed of 314.159 rad/s. A small angular fluctuation and a small speed change have different units.
+
+</Callout>
+
+Interpolating the pulses densely does not increase the measured information. A 3000 rpm record with only one pulse per revolution has a nominal observation rate of 50 per second. To recover high-frequency angular fluctuation, the number of markers, timing precision, filters and target band must be designed together. For how to recover the angle during acceleration, revisit <a href={withBase('/en/p5-4/')}>P5-4 order tracking</a>.
+
+<Callout type="warn" title="Not every interval change is shaft vibration">
+
+If the angular spacing of the markers is uneven or the wheel is eccentric, the pulse interval changes even at constant speed. Also check the trigger level, detection noise and missing pulses. If an **interval error of 100 ns** is added to the reference interval of 333.3 µs, the relative error is about 0.03 %. This number is not an equipment accuracy specification but a calculation of the size of the error. <Cite ids={['R-66']} />
+
+</Callout>
+
+To get the relative angle at two locations, the time synchronization, the reference angles of the markers and the positional relation between the sensors must all be matched. Merely subtracting the mean rpm of each does not establish a relative-angle reference.
+
+## 3. What excites torsion?
+
+The direct input to torsion is a **change in torque**. From the record, first separate whether it is a one-time event, a repeating torque, or an energy exchange between the grid and the shaft train.
+
+| Clue in the record | Input to investigate | Data to align |
+|---|---|---|
+| Angular-speed oscillation that appears right after an event and dies away | Sudden change of torque and the free response of the shaft train | Connection state, voltage, current, event time |
+| Repeats at a particular frequency or order during operation | Torque pulsation of the motor, drive or process | Current, control settings, speed, load |
+| Electrical fluctuation and torsion persist or grow together | Interaction between the grid and the mechanical mode | Grid configuration, electrical signals, shaft-train modes, damping |
+
+When investigating an event where the connection state changed suddenly, such as a grid short circuit or reclosing, check the time relation between the torque change and the angular-speed response. In an inverter drive, look at the electromagnetic torque pulsation together with the control and process conditions. You must not treat a single inverter switching frequency directly as the excitation frequency of the shaft train. <Cite ids={['R-70']} />
+
+<Figure {...F.torque} />
+
+<Callout type="field" title="Before attaching the name SSR">
+
+<strong>SSR (subsynchronous resonance)</strong> is the problem of investigating the coupling between an electrical grid and shaft-train torsion. Distinguish the criterion of an electrical phenomenon below the grid frequency from the criterion of a lateral vibration below shaft 1X. One low line in the spectrum alone cannot establish SSR. An explanation of series compensation and torsion is connected in <a href={withBase('/p8-5/#6-축계-비틀림과-ssr는-횡진동과-무엇이-다른가요')}>P8-5 §6</a>. <Cite ids={['R-48']} />
+
+</Callout>
+
+A real shaft train connects many inertias and shaft segments. <strong>Holzer's method</strong> sets a trial frequency, calculates the angular fluctuation of the inertias and the shaft torque in order, and then checks the residual of the end boundary condition. You change the frequency and look for where the residual is 0. <Cite ids={['R-68']} />
+
+<Figure {...F.holzer} />
+
+<Callout type="idea" title="A table of natural frequencies is not the end">
+
+Together with the frequency, check the mode shape, the location of the excitation torque and the damping. Even within the same mode, the relative angle may be large in some shaft segments and small in others. Here we do not build Holzer's calculation table; we remember the connection **inertia, stiffness, boundary conditions → mode → measurement location**.
+
+</Callout>
+
+## 4. Does a Campbell crossing always mean large vibration?
+
+A blade has local modes such as bending and torsion. The initial tensile state caused by centrifugal force during rotation changes the effective stiffness. So instead of fixing a mode frequency at its single value at rest, we look at it against speed. Here we simplify the trend of frequency rising from centrifugal stiffening. <Cite ids={['R-67']} />
+
+The <strong>Campbell diagram</strong> places speed on the horizontal axis and the mode frequencies and excitation frequencies together on the vertical axis. When a blade meets a stationary spatial pattern that repeats $o$ times per revolution, the excitation frequency is $of_r$. We call $o$ the <strong>engine order (EO)</strong>.
+
+<Callout type="warn" title="Engine order is about which part meets which pattern">
+
+The problem of a rotating blade meeting stationary vanes or spatial nonuniformity, and the blade pass frequency of rotating blades passing a stationary sensor, have different observation references. Do not automatically set the excitation order equal to the number of rotating blades. First settle which spatial pattern or force acts on the mode in question.
+
+</Callout>
+
+The lab uses the following virtual model. $f_0$ is the natural frequency at rest [Hz], $c$ is a dimensionless stiffening coefficient, and $f_r=N/60$ is the rotation frequency [Hz]. This is not a formula to be used as a universal expression for real modes.
+
+$$
+f_n^2=f_0^2+c f_r^2,\qquad f_{exc}=o f_r
+$$
+
+At a crossing $f_n=f_{exc}$, so $(o^2-c)f_r^2=f_0^2$. For this model with $f_0>0$, a positive crossing exists **only when $o^2>c$**.
+
+$$
+N_{cross}=\frac{60f_0}{\sqrt{o^2-c}}\quad(o^2>c)
+$$
+
+<Figure {...F.campbell} />
+
+A crossing is a **resonance candidate** where the frequencies match. The observed response differs depending on how much the excitation participates in the mode, how large the damping is, and which location the sensor looks at. For an applied GT example, see <a href={withBase('/p8-4/')}>P8-4 §6.1</a>. Here we extend its constant-natural-frequency example to rotational stiffening and multiple modes.
+
+<Figure {...F.response} />
+
+<Callout type="try" title="Following the Campbell lab">
+
+1. Read the two crossing speeds at the defaults and change only the stiffening coefficient from 40 to 0. In which direction does the first crossing move?
+2. After resetting, change the order from 12 to 8. Does mode 2 have no crossing, or is it outside 6000 rpm?
+3. Choose order 4 at c=40. Explain with $o^2-c$ why the crossings of both modes disappear.
+4. Reset and change only the damping ratio from 0.02 to 0.08. Compare the crossing position and the height and width of the response peak separately.
+
+</Callout>
+
+<CampbellLab client:visible lang="en" />
+
+At the defaults the first crossing is 2353.39 rpm and the second is 3771.71 rpm. Compared with the first crossing of 2000 rpm at c=0, stiffening has changed the position. The mode 2 solution at order 8, 6331.74 rpm, is **outside the displayed range**. That is different from the case with no positive solution.
+
+If you change only the damping, the crossing position in this model stays the same. At exactly $r=f_{exc}/f_n=1$ the ratio to the static response is $1/(2\zeta)$, so 25 → 6.25, and the phase lag is 90°. The maximum of the displacement response is not always exactly at $r=1$. You cannot obtain real stress by attaching a stress unit to the dimensionless ratio here.
+
+## 5. What do we measure from the time a blade tip passes?
+
+<strong>Blade tip timing (BTT)</strong> measures the time at which a blade tip passes a probe in the casing and compares it with the reference pass time. It is also called a non-contact stress measurement system (NSMS), but the sensor does not read stress directly. A model that connects the pass time to motion and stress is needed. <Cite ids={['R-69', 'R-71']} />
+
+If only a small tangential displacement exists and the rotation direction is taken as positive, a blade that arrives late at radius $R_b$ is behind the reference. Provided the reference speed and reference angle are accurate,
+
+$$
+\Delta t=t_{measured}-t_{expected},\qquad
+\delta s\simeq -R_b\Omega\Delta t
+$$
+
+$R_b$ is the radius [m], $\Delta t$ is the time deviation [s], and $\delta s$ is the tip tangential displacement [m]. If the bending direction or the probe geometry differs, the projection between the time deviation and the actual displacement also differs.
+
+<Figure {...F.tipTiming} />
+
+<Callout type="example" title="If it arrived 10 µs late">
+
+Putting in radius 0.5 m, 3000 rpm and a time deviation of +10 µs gives a tangential displacement of −1.571 mm. The sign comes from the definition of the rotation direction and time deviation used here. From this value alone you cannot calculate the stress at the blade root or the remaining life.
+
+</Callout>
+
+**One probe observes the same blade once per revolution.** With 24 blades at 3000 rpm the total passes are 1200 per second, but a particular single blade is seen 50 times per second. Taking the FFT of the whole pulse train as if it were uniform high-speed samples of one blade leads to a wrong interpretation.
+
+If the angular spacing of the probes is uneven, the observation times of one blade also become nonuniform samples. Even with a uniform angular layout, a change of speed changes the time spacing. The estimation method differs depending on the distinction between synchronous and asynchronous vibration, the probe layout and the mode assumptions. Simply adding more probes does not automatically recover every frequency and mode. <Cite ids={['R-69']} />
+
+<Figure {...F.bladeSensors} />
+
+<Callout type="term" title="Strain gauge and telemetry">
+
+A <strong>strain gauge</strong> reads the local strain at the position and in the direction where it is attached. On a rotating part, instrumentation such as telemetry is needed to transmit the signal. The tip motion and the local strain are connected in size through the mode shape, the measurement direction and the calibration. If the sensor is close to a node, a particular mode may look small.
+
+</Callout>
+
+## 6. With what evidence do we tie a frequency line?
+
+We use the **frequency, amplitude, phase, direction and operating condition** of the earlier pages here too. But we match the physical quantities of amplitude and direction to angular speed, relative angle, tip displacement and strain.
+
+| Evidence | To check in torsion | To check in blades |
+|---|---|---|
+| Frequency | Angular-speed and relative-angle components and torsional modes, relation to torque components | Campbell modes and order lines, response position by speed |
+| Amplitude | Basis of angular speed [rad/s], relative angle [rad] and local strain | Calibration of tip displacement and local strain, blade-to-blade differences |
+| Phase | Simultaneous record of two sections and electrical signals, reference angle | Excitation and rotation reference, probe angles and blade identification |
+| Direction and location | Which shaft segment twists and what the sensor measures | Mode shape, nodes, tip motion direction, gauge direction |
+| Operating condition | Grid events, speed, load, drive control | Speed, temperature, aerodynamic load, excitation pattern |
+
+<Callout type="field" title="Verification starts with record alignment">
+
+Align the existing event records and the synchronous measurements on the same time axis, and check the markers and time reference of the measurement chain. Then connect the design shaft-train or blade modes, the excitation source and the measurement location. Changing a connection state or instrumenting a rotating part follows the approved procedure of the site and the manufacturer. The lab on this page compares the reading principles with a virtual calculation.
+
+</Callout>
+
+## 7. How do we narrow down and keep the candidates?
+
+| Observation | Candidate to keep first | Question to separate |
+|---|---|---|
+| Lateral probe is quiet and the angular speed varies | Common acceleration or deceleration, or torsion | Do the relative angle at two locations and the mode shape also change? |
+| Pulse-interval change is the same every revolution | A real repeating motion, or a marker or eccentricity error | Does it reproduce with a reference wheel, angle calibration and an independent measurement? |
+| Angular speed fluctuates right after a grid event | Mode response to a sudden torque change | Does it match the event time and electrical signals, and does it decay? |
+| Blade response increases near a particular Campbell crossing | Forced resonance of that mode | Do the excitation participation, damping and blade-by-blade measurements agree? |
+| A mode is not visible on one sensor | Small response, or insensitivity of location or direction | Does it also agree with other locations, directions and the mode shape? |
+
+For distinguishing lateral subsynchronous vibration, continue with <a href={withBase('/en/p7-4/')}>P7-4</a>; for blade pass, stall and surge, <a href={withBase('/en/p7-8/')}>P7-8</a>; and for concrete measurement connections for GT/ST, <a href={withBase('/p8-4/')}>P8-4</a> and <a href={withBase('/p8-5/')}>P8-5</a>.
+
+## 8. Review questions
+
+1. If the lateral probe amplitude stays the same, can torsional vibration be ruled out?
+2. What is the reference pulse interval at 3000 rpm and 60 teeth? Is the speed obtained from that interval exactly the value at one instant?
+3. How does the crossing for $f_0=400$ Hz and order 12 differ between c=0 and 40? What happens if $o^2=c$?
+4. If the mode 2 crossing at order 8 is not on the screen, does it mean there is no crossing at all? Does increasing only the damping move the crossing?
+5. For a blade that passes 10 µs late at radius 0.5 m and 3000 rpm, can you know both the tip tangential displacement and the local stress?
+6. Are a single lateral line below 1X and SSR the same thing?
+
+<details>
+<summary>Show answers</summary>
+
+1. It cannot be ruled out. The lateral gap and a small angular fluctuation are different coordinates. You need a measurement that looks at that motion, such as angular speed, relative angle or shaft strain.
+2. It is 333.3 µs. It is an average between pulses. You must check the limits of interval, timing accuracy and filters.
+3. It goes 2000 → 2353.39 rpm. A larger c raises the frequency curve. For $f_0>0$, if $o^2=c$ there is no positive crossing.
+4. It is 6331.74 rpm, outside 6000 rpm. That is different from no crossing. In this model damping changes the response, not the crossing position.
+5. In this small tangential-displacement model it is −1.571 mm. The local stress additionally needs the mode shape, the material and location-specific calibration.
+6. They differ. 1X is referenced to the rotation frequency, while SSR is the problem of interaction between an electrical grid and torsional modes. Look at the grid, electrical signals and shaft-train evidence together.
+
+</details>
+
+## References
+
+<References items={[
+  ['R-66', 'Time counting of equal-angle pulses, angular-speed fluctuation and relative twist, marker and eccentricity errors'],
+  ['R-67', 'Centrifugal initial stress and mode frequencies of rotating blades, Campbell and order excitation, and mode participation'],
+  ['R-68', 'Concepts of Holzer\'s method: trial frequency, transfer calculation and end boundary condition'],
+  ['R-69', 'Nonuniform observation in BTT, assumptions of vibration estimation, and limits of probe layout'],
+  ['R-71', 'Why NSMS connects tip motion measurement with analytical modes and stress estimation'],
+  ['R-70', 'Link between torque changes in drives, electrical grids and processes and shaft-train torsion'],
+  ['R-48', 'Why electrical and shaft torsional measurements are needed in an SSR investigation'],
+]} />

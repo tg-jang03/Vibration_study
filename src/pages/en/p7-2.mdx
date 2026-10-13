@@ -1,0 +1,260 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-2 The 1X Family — Unbalance · Bow · Crack · Eccentricity · Resonance
+description: When 1X is large — separating unbalance (static, couple, dynamic), bow, runout, a crack, a directional force (eccentric pulley) and structural resonance by magnitude versus speed, the slow roll vector, phase between two bearings and two directions, and 2X, plus the order of the checks and how to confirm
+sectionId: P7-2
+source: p7-2.mdx
+sourceHash: edeb1d835a
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import OneXLab from '../../components/labs/OneXLab';
+import * as F from '../../figures/p7-2';
+
+# 7-2 The 1X family: is a big 1X always unbalance?
+
+A rotor runs at 3000 rpm, and the horizontal sensor on bearing 1 shows 37 µm p-p at 1X with nothing else large. Will adding a balance weight (balancing, P9-2) fix it? In the P7-1 map, the 1X slot had several candidates. Besides unbalance, a bent shaft, an uneven surface under the sensor, a crack, a belt pulling to one side, or a pedestal that resonates at that speed all make 1X large. A balance weight helps only against unbalance among these.
+
+This page puts one cause at a time into the same rotor and looks at how the magnitude and phase of 1X differ **with speed**, **at slow speed**, and **between the two bearings and the two directions**. It uses the 1X vector and slow roll compensation of P3-3, the Bode plot of P4-1, the orbit reading of P6-3, and the vector trend of P6-4 together.
+
+<Callout type="idea" title="By the end of this page you will">
+
+1. Recognize unbalance (static, couple, dynamic) from the magnitude versus speed, the phase between the two bearings, and the horizontal-to-vertical phase difference.
+2. Separate runout and bow from unbalance with the slow roll 1X, and know what slow roll compensation removes and what it leaves.
+3. Know the clues of a crack — a 2X peak at half the critical speed, and slowly moving 1X and 2X vectors.
+4. Tell a directional force (eccentric pulley) and a structural resonance apart by the orbit shape and a peak at one particular speed.
+5. Follow the 1X screening order to narrow the cause and choose a way to confirm it.
+
+</Callout>
+
+---
+
+## 1. The example rotor: what makes 1X?
+
+1X means "once per revolution." So something has to happen once per revolution. Something that rotates with the rotor (a heavy spot, a bent shaft, a crack) can push the shaft at the same place every turn; a force with a fixed direction (a belt) can get stronger and weaker once per turn; or the shaft can stay still while the surface the sensor looks at gets closer and farther once per turn (runout, P3-2). Resonance amplifies all of these at particular speeds.
+
+<Figure {...F.rotorModes} />
+
+Every figure and lab on this page is computed with the rotor of Figure 1. It is a flexible-support rotor whose operating speed of 3000 rpm is below the two rigid-body modes (the rigid translation and tilting of P4-2). So that each cause has the same sense of size, the "severity" is set from 0 to 100 %, and the numbers in the text use a severity of 60 %. The 1X is the vector recorded every 25 rpm, taken in a coastdown from 3000 rpm (P2-4); the amplitude is in µm p-p and the phase is the lag angle (P3-3).
+
+---
+
+## 2. Unbalance: a rotating force that grows with the speed squared
+
+### 2.1 Static · couple · dynamic
+
+Unbalance is a heavy spot that rotates with the rotor and pushes the shaft by centrifugal force (P1-7). The mode it pushes depends on **where** the heavy spot is.
+
+<Figure {...F.unbalanceTypes} />
+
+- **Static unbalance**: the center of mass is off the shaft axis. It pushes the translation mode, and both bearings move to the same side (phase difference about 0°).
+- **Couple unbalance**: equal weights at the two ends in opposite directions. The center of mass is on the shaft axis, but the weights try to tilt the rotor and push the conical mode (phase difference about 180°).
+- **Dynamic unbalance**: a mix of the two. Most real rotors have this, and the phase difference lies between 0° and 180°.
+
+This distinction decides the fix. Static unbalance can be reduced with one balance weight in one plane, but couple and dynamic unbalance need weights in two planes (P9-2).
+
+### 2.2 Speed and direction: the fingerprint of unbalance
+
+The force of unbalance is the centrifugal force m_u e Ω², so it grows with the square of the speed. Well below resonance the response does too, almost exactly.
+
+<Figure {...F.unbalanceBode} />
+
+Read three things in Figure 3.
+
+1. **Almost zero at low speed**: 1X at 300 rpm is 2.2 µm p-p, the same level as a healthy rotor.
+2. **Speed ×2 → about ×4**: from 1500 to 3000 rpm it goes from 8.2 to 37 µm p-p (4.5 times). Slightly more than 4 times because the dynamic magnification of P4-1 grows as the speed approaches the translation mode (5000 rpm).
+3. **About 90° between horizontal and vertical**: the force from the heavy spot pushes horizontally, then 90° later pushes vertically. So the orbit is a circle or an ellipse (P6-3) and is forward. If the horizontal support is softer, the ellipse is longer in the horizontal direction (1.4 times for this rotor) and the phase difference moves a little away from 90°.
+
+A nearly constant phase is also a clue. If the 1X vector stays at the same place at the same speed from day to day, the cause is fixed, like unbalance; if it moves slowly, the cause is changing, like heat or a crack (§4).
+
+---
+
+## 3. 1X that exists even at low speed: runout and bow
+
+The 1X from unbalance is close to zero at low speed. So what is it when 1X is already large at slow roll (low speed)?
+
+<Callout type="term" title="Bow">
+
+The shaft is not straight but bent. It can sag under its own weight after standing for a long time, bend from a temperature difference between top and bottom while stopped (thermal bow, only named in P3-3, explained in P8-2), or bend from the frictional heat of a rub (P7-3). A bent shaft carries its bent side past the sensor once per turn, so 1X is visible even when it turns very slowly.
+
+</Callout>
+
+<Figure {...F.slowRollCauses} />
+
+In the top of Figure 4, runout and bow are both already a little over 30 µm p-p at 300 rpm. The difference appears when the speed is raised.
+
+- **Runout** is a problem of the surface the sensor reads, so it stays the same regardless of speed (32 → 34 µm). The shaft does not actually move.
+- **Bow**: the bent shape itself pushes the mode, so like unbalance it grows as the speed rises (31 → 47 µm). The response to a bow b is b ÷ (1 − r² + j2ζr): it is b at low speed and grows as it nears resonance (r = speed ÷ natural speed, P4-1).
+
+$$
+\text{Bow: } \frac{b}{1 - r^2 + j\,2\zeta r}, \qquad \text{Unbalance: } \frac{e\,r^2}{1 - r^2 + j\,2\zeta r}
+$$
+
+The bottom of Figure 4 is the slow roll compensation (P3-3): the 300 rpm vector subtracted as a complex number from the vector at every speed. Runout disappears down to the healthy-rotor level (1.7 µm), and unbalance stays almost as it was. For bow, the low-speed b is removed, but the part amplified along with the speed (17 µm) remains. **Compensation removes only the part that does not depend on speed.**
+
+<Callout type="warn" title="Covering up a bow with a balance weight">
+
+The part left by a bow looks almost the same as unbalance, so a balance weight can reduce the 1X at the operating speed. But the shaft is still bent. If the bend is thermal it straightens when it cools, so a weight matched to the bent state becomes an unbalance at the next start. If the slow roll 1X differs from start to start, look at the cause of the bow before the balance weight.
+
+</Callout>
+
+---
+
+## 4. Crack: 2X and a slowly moving vector
+
+What changes when a fatigue crack forms in the shaft? The cracked side is weak in bending, so the shaft stiffness differs by direction. In a shaft that turns while sagging under gravity, the weak direction returns to the same posture every half turn, so the sag goes up and down **twice per revolution** (2X). A crack opens when it is at the bottom and sometimes closes when it is at the top (a breathing crack), so 1X and 3X also appear, and, as with a bent shaft, the slow roll 1X changes too.
+
+<Figure {...F.crackFig} />
+
+In the top of Figure 5, the 2X peaks at **half** the natural speed of the translation mode (2500 rpm, horizontal), reaching 20 µm p-p. The frequency of the 2X force, 2 × 2500 = 5000 rpm, matches the mode. Looking at 1X alone would miss it, so record 2X in the coastdown as well (the tracking filter of P5-5 extracts the 2X vector).
+
+A crack grows, so the **trend** is decisive. In the bottom of Figure 5, over one year the 2X at 3000 rpm grows from 0 to 8.6 µm, and 1X moves in both magnitude and phase (3.7 µm ∠46° → 31 µm ∠313°). If in APHT (P6-4) the 1X vector keeps moving in one direction and 2X grows with it, suspect a crack. 2X also appears with misalignment (P7-3) or runout, so look at the **change** rather than the size.
+
+<Callout type="warn" title="If a crack is suspected">
+
+A crack is a defect that can suddenly grow and break the shaft. If the 1X, 2X and slow roll vectors move together, shorten the trend interval and decide whether to keep running together with maintenance and design staff. Confirmation is a nondestructive test after shutdown.
+
+</Callout>
+
+---
+
+## 5. A 1X force with a fixed direction: eccentric pulley · belt
+
+On a belt-driven fan, what happens if the center of the pulley (belt wheel) is slightly off the shaft center? Once per revolution the belt tightens and slackens, and it pushes the shaft **only in the belt direction**. It is a 1X force, but not a rotating force: it has a fixed direction.
+
+<Figure {...F.directionalFig} />
+
+- **The orbit is a line**: because it pushes in one direction only, the horizontal is 3.3 times the vertical and the horizontal-to-vertical phase difference of 11° is close to 0°. This differs from the roughly 90° of unbalance.
+- **Almost independent of speed**: the force comes from the belt geometry, not from centrifugal force, so it is large even at low speed (32 µm p-p at 300 rpm). Doubling the speed gives only 1.4 times.
+- **A balance weight does not catch it**: a balance weight makes a rotating force, so if you try to cancel a force that pushes in only one direction, the other direction gets bigger. Measure the pulley wobble (runout) with a dial gauge and fix it.
+
+The same 1X shape also appears with misalignment (P7-3). Air-gap eccentricity of a motor (uneven gap between rotor and stator) is an electrical force and is treated in P7-7.
+
+---
+
+## 6. Structural resonance: large only at a particular speed
+
+The pedestal (P1-6) and the foundation have natural frequencies too. If the operating speed is near one, even a small unbalance looks large.
+
+<Figure {...F.pedestalFig} />
+
+Figure 7 gives three clues.
+
+1. **One bearing, one direction**: it is the horizontal mode of one pedestal, so only the bearing 1 horizontal rises, while the vertical of the same bearing and bearing 2 stay smooth. If it were a critical speed of the rotor itself, it would appear on both bearings and in both directions.
+2. **A peak in a narrow speed range and a sharp phase change**: it rises to 117 µm p-p at 2850 rpm, and the phase changes by about 130° only between 2600 and 3000 rpm. Once fully past resonance it is 180° (P1-4).
+3. **The speed rule does not hold**: the 3000 rpm value is 17 times the 1500 rpm value. This differs from the roughly 4 times of unbalance.
+
+Even if a balance weight reduces 1X, the resonance remains, so it grows again with small changes. Check the natural frequency of the pedestal with an impact test (hammer test) with the machine stopped (P9-1), then change the stiffness or move the resonance away from the operating speed.
+
+---
+
+## 7. The 1X screening order
+
+Putting the evidence so far into an order gives Figure 8. Before settling on a single cause, check the questions on every branch.
+
+<Figure {...F.flowchart} />
+
+<Callout type="try">
+
+1. In the initial state (static unbalance 60 %), read the speed ratio, the phase difference between the two bearings, and the horizontal-to-vertical phase difference. What changes if you switch the cause to couple unbalance?
+2. Switch the cause from bow to runout, compare the slow roll 1X and the 3000 rpm 1X, and turn on slow roll compensation.
+3. Switch the cause to crack and read the peak speed on the 2X graph.
+4. Switch the view mode to "Guess the hidden cause" and sort cases 1 to 7 in the order of Figure 8.
+5. Press **Play** on the rotor drawing at the top of the lab and switch the cause among static → couple → dynamic unbalance. How do the orange dots on the disks (the unbalance) and the two ends of the shaft move?
+
+</Callout>
+
+<OneXLab client:visible lang="en" />
+
+For 1, the speed ratio is 4.5, the phase difference between the two bearings is about −3°, and the horizontal-to-vertical phase difference is about 89°. Switching to couple unbalance, the speed ratio is similar at 4.4 but the phase difference between the two bearings becomes about −164°. For 2, the bow grows from 31 µm at slow roll to 47 µm at 3000 rpm and 17 µm remains after compensation, while the runout stays at 32 → 34 µm and disappears to 1.7 µm when compensated. For 3, the crack makes a 2X peak of 20 µm p-p at 2500 rpm (horizontal). For 4, the cases are: 1 bow, 2 static unbalance, 3 structural resonance, 4 runout, 5 directional force, 6 crack, 7 couple unbalance. Cases 3 and 5 split at ①, 1 and 4 at ②, and 2 and 7 at ③. Case 6 looks like a bow at ② (slow roll 1X 11.5 µm, growing with speed) but is separated by the 2X peak at ④.
+
+The rotor drawing in 5 connects the 1X read by two vertical sensors with straight lines to show how the shaft shakes. In static unbalance, the orange dots on the two disks are at the same angle, so when the heavy side comes up the whole shaft lifts together. It is a **cylindrical** motion in which the waveforms of the two sensors overlap (phase difference about 0°). In couple unbalance, the orange dots are on opposite sides, so when one disk lifts the other drops and the shaft tilts like a seesaw around the middle. It is a **conical** motion in which the two waveforms are almost inverted (about −164°). The phase difference is not exactly 180° because the small static unbalance and runout that even a healthy rotor has (2 µm and 1 µm in this model) are added to both bearings on the same side. Dynamic unbalance is a mix of the two, so the phase difference lies in between. This difference in shape is why the phase difference between the two bearings separates the causes.
+
+---
+
+## 8. Summarizing with the five evidence elements, and confirming
+
+| Cause | Versus speed | Slow roll 1X | Direction · phase | Decisive clue |
+|---|---|---|---|---|
+| Unbalance | speed² (×2 → about ×4) | small | horizontal-vertical about 90°; static = bearings in phase · couple = out of phase | In a trial weight test the vector moves as predicted |
+| Runout | unchanged | large (same as the operating value) | different at each sensor | Disappears when compensated |
+| Bow | amplified from the low-speed value | large | similar to unbalance | Remains after compensation; the slow roll vector can differ from start to start |
+| Crack | 2X peaks at half the critical speed | changes | — | 1X, 2X and slow roll vectors move slowly together |
+| Directional force | almost unchanged | large | line orbit, horizontal-vertical near 0° or 180° | Large only in the belt or pulley direction |
+| Structural resonance | large only in a narrow range | small | one bearing, one direction; sharp phase change around it | Impact-test natural frequency = that speed |
+
+The frequency is always 1X (plus 2X for a crack), so frequency alone cannot separate them. The other four elements do: how the amplitude changes with speed, the phase, the direction, and the operating condition (changes from start to start, from month to month).
+
+**How to confirm**:
+
+1. Record the 1X and 2X vectors of the coastdown (or run-up), and keep the slow roll vector at every start (P3-3, P3-5).
+2. Compare the horizontal-vertical and two-bearing phase differences from the same-instant record, and look at the orbit (P6-3).
+3. If unbalance is suspected, attach a trial weight and see whether the 1X vector moves as predicted (influence coefficient, P9-2).
+4. If it is large only at a particular speed, measure the natural frequency of the pedestal or foundation with an impact test while stopped (P9-1).
+5. Record the 1X and 2X vector trend (APHT, P6-4). If it keeps moving steadily, suspect a crack or a thermal cause.
+
+---
+
+## 9. Summary
+
+| Topic | What to remember |
+|---|---|
+| Unbalance | speed² · zero at low speed · horizontal-vertical about 90°. Two bearings in phase = static, out of phase = couple |
+| Runout | Independent of speed, disappears with slow roll compensation. The shaft does not move |
+| Bow | Already present at low speed and grows with speed. The amplified part remains after compensation |
+| Crack | 2X peak at half the critical speed, slow change of the 1X, 2X and slow roll vectors → operating decision |
+| Directional force | Line orbit, almost independent of speed, not caught by a balance weight |
+| Structural resonance | One bearing, one direction, a peak in a narrow speed range with a sharp phase change → impact test |
+
+## 10. Review questions
+
+<details>
+<summary><strong>Q1. A fan far from resonance has 1X of 6 µm p-p at 1800 rpm and 24 µm p-p at 3600 rpm. Is it unbalance?</strong></summary>
+
+When the speed doubles the amplitude is 24 ÷ 6 = **4 times**, which fits unbalance, whose centrifugal force grows with the speed squared. Still, before deciding, check that the slow roll 1X is small, that the horizontal-vertical phase difference is near 90°, and that the phase is stable from day to day.
+</details>
+
+<details>
+<summary><strong>Q2. At 300 rpm 1X is 20 µm ∠40°, and at 3000 rpm it is 22 µm ∠45°. What is the 1X at 3000 rpm after slow roll compensation?</strong></summary>
+
+Subtract as vectors: 22 ∠45° is (15.56, −15.56), 20 ∠40° is (15.32, −12.86) → the difference is (0.24, −2.70), so <strong>about 2.7 µm ∠85°</strong>. Most of the 3000 rpm 1X is a part independent of speed, so **runout** is the main cause and the actual 1X of the shaft is small. Subtracting the magnitudes (22 − 20 = 2 µm) ignores the phase and is wrong.
+</details>
+
+<details>
+<summary><strong>Q3. The horizontal 1X at the two bearings is 30 µm ∠70° and 28 µm ∠250°, and it grows about 4 times when the speed doubles. What is it and how do you fix it?</strong></summary>
+
+It fits the speed² rule and the phase difference between the two bearings is 250 − 70 = <strong>180°</strong>, so it is **couple unbalance**. A weight in one plane will not do; balancing with weights in two planes (P9-2) is needed.
+</details>
+
+<details>
+<summary><strong>Q4. At a belt-driven fan bearing, the horizontal 1X is 40 µm, the vertical is 6 µm, the horizontal-vertical phase difference is 175°, and 1X is large even at low speed. Balance first?</strong></summary>
+
+The horizontal is about 7 times the vertical, the phase difference is near 180° (a line orbit), and it is large even at low speed, so suspect first not a rotating force but a **directional force** — an eccentric pulley or the belt. A balance weight is a rotating force and cannot cancel such a 1X. Check the pulley wobble and the belt tension and alignment.
+</details>
+
+<details>
+<summary><strong>Q5. In the coastdown of a rotor whose translation mode is at 3500 rpm, there is a 2X peak at 1750 rpm, and over six months the 2X at the operating speed grew from 2 to 9 µm while the 1X phase moved by 40°. What do you suspect and what do you do?</strong></summary>
+
+The 2X peak is at **half** the mode (3500 ÷ 2 = 1750 rpm), and 2X grows while the 1X vector moves with it, so suspect a **crack**. Shorten the trend interval, check the change in the slow roll vector too, and decide whether to keep running together with maintenance and design staff. Confirmation is a nondestructive test after shutdown.
+</details>
+
+<details>
+<summary><strong>Q6. At 2950 rpm only the bearing 1 horizontal 1X is 80 µm; lowering to 2700 rpm it becomes 15 µm, and the phase changes by 120° in between. The other sensors are small. What do you suspect?</strong></summary>
+
+The speed was lowered by only 9 % yet the amplitude dropped to a fifth (for unbalance it would be only about 0.84 times), the phase changed a lot, and only one bearing in one direction is large, so suspect **structural resonance** (pedestal or foundation). Confirm the natural frequency in that direction with an impact test while stopped (P9-1).
+</details>
+
+---
+
+The next page (P7-3) separates misalignment, looseness and rub, which make 2X and subharmonics along with 1X, by phase, orbit and waveform.
+
+## References
+
+<References items={[
+  ['R-02', 'Unbalance, bow, runout, slow roll compensation, and the 1X and 2X vector trend of a crack'],
+  ['R-24', 'The bow response b ÷ (1 − r² + j2ζr) and the limits of a balance weight'],
+  ['R-49', '2X of a cracked rotor and resonance at half the critical speed'],
+  ['R-03', 'Eccentric pulley and belt, and telling structural resonance apart'],
+]} />

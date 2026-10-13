@@ -1,0 +1,238 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-8 Fluid and Aerodynamic Causes
+description: Blade pass frequency (N_b × X) and the clearance and operating point that change its size, the pump best efficiency point (BEP), low-flow recirculation and hydraulic unbalance, cavitation (NPSH, high-frequency broadband) and how to tell it from a rolling bearing defect, the compressor map, rotating stall, surge and anti-surge control, combustion dynamics, tests that change the operating point, and a differential table
+sectionId: P7-8
+source: p7-8.mdx
+sourceHash: 62d39629c3
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import FlowLab from '../../components/labs/FlowLab';
+import * as F from '../../figures/p7-8';
+
+# 7-8 Fluid and aerodynamic causes: same speed, different vibration
+
+A motor-driven pump always runs at the same 3575 rpm. Then the operator closes the discharge valve and cuts the flow to less than half, and the vibration grows. At night, when the tank level drops, the pump starts to sound like rolling gravel. The speed has not changed, so unbalance and misalignment should be the same as before. What changed?
+
+What changed is the **fluid**. Pumps, fans, compressors and turbines push the fluid with their blades, and the fluid pushes back on the blades and casing through pressure. That pressure depends not only on speed but also on flow and on suction and discharge pressure, that is, on the **operating point**. Starting from blade pass, this page covers the pump operating point and cavitation, then compressor rotating stall and surge, and shows how to separate the vibration the fluid creates by running tests that change the operating point.
+
+<Callout type="idea" title="After reading this page">
+
+1. You know why the blade pass frequency (number of blades × X) appears, and what changes its size: clearance, operating point and damage.
+2. You can read how the pump best efficiency point (BEP) relates to vibration, including low-flow recirculation and hydraulic unbalance.
+3. You can read the evidence for cavitation (high-frequency broadband, response to suction pressure and flow) and tell it apart from a rolling bearing defect.
+4. You can tell compressor rotating stall from surge by their position on the performance map and the shape of the signal.
+5. You can separate fluid causes from mechanical causes with a test that changes flow and pressure while the speed is held.
+
+</Callout>
+
+---
+
+## 1. Blade pass frequency: every time a blade passes the tongue
+
+The impeller of a centrifugal pump (P1-6) throws water outward between its blades, and the casing (the volute) collects it and sends it to the discharge. The tip of the partition that comes closest to the impeller inside the casing is called the **volute tongue** (cutwater). Each time a blade tip passes in front of this tongue, the pressure at that spot surges once.
+
+<Figure {...F.vanePass} />
+
+The pump in Figure 1 has 7 blades, so the pressure surges 7 times per revolution, and the frequency is the blade pass frequency (P1-8)
+
+$$
+f_{BP} = N_b\, f_r = 7 \times 59.58 = 417.1\ \text{Hz}
+$$
+
+The pressure pulse is not a sine wave, so a line also appears at twice that (834.2 Hz). The same principle holds for fan, compressor and turbine blades, and for blades passing fixed blades (vanes) such as a diffuser.
+
+The blade pass component is always present, even in a healthy pump. The issue is its **size**, and three things change it.
+
+- **Clearance**: The narrower the gap between the blade tip and the tongue, the sharper the pressure pulse and the larger it gets. If it suddenly grew after the impeller was replaced with a larger-diameter one, suspect the clearance (in the lab, halving the clearance doubles it).
+- **Operating point**: When the flow departs from the design value, the angle at which water enters the blades no longer matches, and the pulse grows (§2).
+- **Damage and resonance**: If a blade is chipped or bent, each blade gives a different pulse, so 1X sidebands appear, and if blade pass coincides with a natural frequency of the piping or casing, it is strongly amplified.
+
+<Callout type="warn" title="'A large blade pass means the impeller is damaged'">
+
+Check the operating point and the clearance first. Even the same pump at 40 % flow is a little over twice its BEP level (Figure 2). Compare records at the same flow; if it is still larger, look at clearance and damage, and if it is large only at a particular speed, look at resonance. Also check whether number of blades × X falls near gear mesh (P7-6) or a bearing defect frequency (P7-5).
+
+</Callout>
+
+---
+
+## 2. Operating point and BEP: a pump is quietest near its design flow
+
+<Callout type="term" title="Best Efficiency Point (BEP)">
+
+Even at the same speed, a pump's head (the height it lifts the water, that is, its pressure) and efficiency change with flow. The flow at which efficiency is highest is the best efficiency point, and the blade angles are designed so that water enters the blades most smoothly at this flow. This page writes flow as a ratio to the BEP flow (Q/Q_BEP).
+
+</Callout>
+
+<Figure {...F.operatingPoint} />
+
+Away from the BEP, the angle at which water enters the blades is off, so the flow separates from the blade tips and eddies form. As in the middle of Figure 2, the blade pass component is smallest at the BEP (0.6 mm/s) and grows on both sides. If you reduce the flow a lot, something else appears.
+
+- **Low-flow recirculation**: When the flow falls below 60 % of BEP (in this model), part of the water at the impeller inlet and outlet flows back and swirls strongly. This swirl has no regular rhythm, so in the spectrum it appears **not as a line but as a broad hump at low frequency** (Figure 3 top, 5 to 40 Hz). The sound is also an irregular rattle.
+- **Hydraulic unbalance**: If the impeller passages are uneven as cast, each blade pushes with a different force and a 1X appears. It is the same 1X as mechanical unbalance, but **its size changes when you change the flow** (Figure 2 purple: 1.6 at BEP, 2.56 mm/s at 60 % flow). Mechanical unbalance (gray) does not depend on flow.
+
+<Figure {...F.flowSpectra} />
+
+Figure 3 shows actual spectra at three operating points. The 1X is the same in all three, and only blade pass and the low-frequency hump change with the operating point. A component that **changes when you change only the flow, with the speed held**, is the fingerprint of a fluid cause.
+
+<Callout type="field" title="Minimum flow and operating range">
+
+Every pump has a minimum continuous flow and a recommended operating range set by the manufacturer. If you go out to a pump because of high vibration and find it running outside that range (for example at low flow because the bypass is closed), correct the operating point before touching the machine. The numbers for the range differ by pump and by standard, so check that pump's documentation.
+
+</Callout>
+
+---
+
+## 3. Cavitation: when suction pressure runs short
+
+Water boils even at room temperature if the pressure gets low enough. When the pressure in front of the blades at the pump inlet drops below that boiling pressure (the vapor pressure), small bubbles form, are carried toward the higher-pressure interior, and collapse in an instant. This is **cavitation**. The small shocks of the collapses peck at the blade surface and leave honeycomb-like damage.
+
+<Callout type="term" title="NPSH (Net Positive Suction Head)">
+
+How much the pump inlet pressure exceeds the vapor pressure, expressed as a height of water column. The margin the installation provides is NPSHa (available), and the value the pump needs to run without cavitation is NPSHr (required). The required value **grows as flow increases**, so even with the same suction conditions cavitation is more likely at high flow. This page calls NPSHa ÷ NPSHr the suction margin.
+
+</Callout>
+
+<Figure {...F.cavitation} />
+
+The bubbles collapse at random times, so cavitation produces no lines but raises a **high-frequency broadband** (Figure 4 top, 1 g at 2 to 6 kHz). It tends to occur when the suction tank level is low, when the suction strainer is clogged, when the water is hot so the vapor pressure is high, and at high flow. The evidence looks like this.
+
+- **Frequency**: a hump in the kHz band, not lines. Blade pass may also fluctuate irregularly.
+- **Amplitude and operating condition**: it decreases when suction pressure goes up or flow goes down, and grows when flow goes up (lab: it disappears at suction margin +0.2 or at 70 % flow).
+- **Sound**: like gravel rolling. It is often found by ear as well.
+
+A rise in the high-frequency band resembles stages 2 and 3 of a rolling bearing defect (P7-5). The key to telling them apart is the **rhythm**. A bearing defect rings regularly each time a ball passes the defect, so the envelope spectrum (P5-6) of the same band shows lines such as BPFO (213.6 Hz). Cavitation is irregular, so its envelope spectrum is flat with no lines (Figure 4 bottom). And a bearing defect does not respond to suction pressure.
+
+---
+
+## 4. Compressors: rotating stall and surge
+
+A compressor, unlike a pump, pushes a gas to raise its pressure. Gas is compressible, so more dramatic phenomena occur than in a pump when the flow decreases.
+
+<Figure {...F.compressorMap} />
+
+<Callout type="term" title="Compressor map and surge line">
+
+The curve of the pressure ratio the compressor produces (discharge pressure ÷ suction pressure) against flow at one speed is the performance curve, and a plot gathering the curves of several speeds is the compressor map. As the flow decreases the pressure ratio rises until it reaches a peak, and at flows below that the compressor cannot run stably. That boundary is the surge line.
+
+</Callout>
+
+- **Rotating stall**: Approaching the surge line, zones where the flow has separated (stall cells) form in front of a few blades, and these zones travel in the rotation direction more slowly than the rotor (P7-4 §1). A component below 1X appears in the shaft signal (Figure 6 top: 29.4 Hz = 0.196X at flow 0.64). A dynamic pressure sensor in the casing sees a pulsation of number of cells × cell rotation speed.
+- **Surge**: Beyond the surge line the compressor cannot overcome the downstream pressure, the flow is momentarily pushed backward, and when the downstream pressure drops the flow goes forward again, repeatedly. It is the compressor and the whole piping and vessel system oscillating together, so the frequency is very low (once every few seconds to a few Hz depending on the piping volume; 0.7 Hz in Figure 6), and each time the flow reverses the thrust reverses and the axial position jumps strongly (about 120 µm). It leads to loud noise, temperature rise, and damage to thrust bearings and seals.
+
+<Figure {...F.stallSurge} />
+
+**Anti-surge control** opens a recycle valve when the flow approaches the surge line, sending part of the discharge gas back to the suction to keep flow through the compressor. The anti-surge line (0.62) in Figure 5 is an example. It prevents surge, but if it is set lower than the flow at which stall begins (0.72) as in this model, stall can remain.
+
+<Callout type="warn" title="'A line below 1X means oil whirl'">
+
+A line below 1X in a compressor can also be rotating stall. Oil whirl responds to oil temperature and bearing load and sits at 0.38 to 0.48X (P7-4), while stall responds to **flow** and can sit anywhere from 0.1 to 0.8X. If it disappears when you increase the flow, it is stall, and replacing the bearing will not fix it.
+
+</Callout>
+
+<Callout type="field" title="Combustion dynamics in gas turbines">
+
+When the flame in a gas turbine combustor and the acoustic resonance of the combustion chamber (longitudinal and circumferential modes) lock together, large pressure pulsations of hundreds to thousands of Hz arise. They are hard to see with shaft vibration sensors, so they are watched with dynamic pressure sensors on the combustor and controlled by combustion tuning that changes the fuel distribution. P8-4 covers this in detail.
+
+</Callout>
+
+---
+
+## 5. Lab: changing the operating point to sort out the cause
+
+<Callout type="try">
+
+1. From the initial state (pump normal, flow 100 %), change the flow 100 → 40 → 125 % and read the 1X, blade pass and the 5 to 40 Hz band.
+2. Set the pump state to "low suction pressure" and read the 2 to 6 kHz acceleration at 100 % flow. What happens if you raise the suction pressure by 0.2, or change the flow to 70 % or 110 %?
+3. Alternate between hydraulic unbalance and mechanical unbalance and compare the 1X at flow 60 → 100 → 130 %.
+4. Change the machine to a compressor, keep anti-surge on, and reduce the flow 1.0 → 0.70 → 0.64 → 0.50. At the end, turn anti-surge off.
+
+</Callout>
+
+<FlowLab client:visible lang="en" />
+
+In step 1 the 1X stays at 0.8 mm/s, and blade pass goes 0.6 → 1.25 → 0.71 mm/s, smallest at the BEP. The 5 to 40 Hz band rises to about 1.8 mm/s only at 40 %. Step 2 shows a broadband of about 1 g at 100 %, it disappears at suction +0.2 or flow 70 %, and it gets larger at 110 %. In step 3 the hydraulic unbalance goes 2.56 → 1.6 → 2.32 mm/s, smallest at the BEP, while mechanical unbalance stays at 4.3 mm/s. In step 4, stall appears at 32.1 Hz (0.214X) and 2 µm at 0.70, and at 29.4 Hz (0.196X) and 8 µm at 0.64; even if you request 0.50, anti-surge holds 0.62 and only stall (28.5 Hz, 10 µm) remains. With anti-surge off, the discharge pressure swings by about 40 % and the axial position by about 120 µm at 0.7 Hz. The hidden cases are 1 cavitation, 2 low-flow recirculation, 3 tongue clearance, 4 hydraulic unbalance, 5 rotating stall, 6 surge and 7 mechanical unbalance.
+
+---
+
+## 6. Differential table of fluid and aerodynamic causes
+
+| Cause | Frequency | What it responds to | Look-alike | Check |
+|---|---|---|---|---|
+| Excessive blade pass | Number of blades × X and twice that | Flow (minimum at BEP), clearance | Gear mesh, structural resonance | Compare at the same flow, check blade count and clearance |
+| Hydraulic unbalance | 1X | Flow (minimum at BEP) | Mechanical unbalance (independent of flow) | Trend the 1X while changing flow |
+| Low-flow recirculation | Broad hump at low frequency below 1X | Flow ↑ → disappears | Looseness, structural resonance | Record the operating point, minimum flow |
+| Cavitation | Broad hump in the kHz band | Suction pressure ↑, flow ↓ → disappears | Rolling bearing defect | No lines in the envelope spectrum, sound, suction conditions |
+| Rotating stall | Line below 1X (0.1 to 0.8X) | Flow ↑ → disappears | Oil whirl (responds to oil temperature and load) | Dynamic pressure sensor, position on the performance map |
+| Surge | Large pulsation below a few Hz | Flow ↑, anti-surge → stops | — | Discharge pressure, axial position, temperature |
+| Combustion dynamics (GT) | Pressure pulsation of hundreds to thousands of Hz | Fuel distribution, load | — | Combustor dynamic pressure sensor (P8-4) |
+
+There is one decisive test in common: **does it change when you change flow and pressure with the speed held?** If it does, it is the fluid; if it stays, it is mechanical or electrical. Conversely, mechanical causes respond to the speed, not the operating point (P7-1 §4).
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Blade pass | $f_{BP} = N_b f_r$ and twice that. Present even when healthy; clearance, operating point, damage and resonance set its size |
+| Operating point | Quietest at BEP. At low flow, the low-frequency hump of recirculation appears, and the 1X of hydraulic unbalance also responds to flow |
+| Cavitation | kHz broadband, disappears with suction pressure ↑ or flow ↓. No lines in the envelope spectrum, which separates it from a bearing |
+| Rotating stall | A line below 1X when flow decreases, disappears when flow increases. Does not go away when the bearing is replaced |
+| Surge | Flow reverses: large pressure pulsation below a few Hz and axial position jumps. Prevented by anti-surge control |
+| Differential test | Hold the speed and change flow and pressure; if it responds, the cause is fluid |
+
+## 8. Review questions
+
+<details>
+<summary><strong>Q1. A fan with 6 blades runs at 1480 rpm. What are the blade pass frequency and twice that?</strong></summary>
+
+1X = 1480 / 60 = 24.67 Hz, blade pass = 6 × 24.67 = **148 Hz**, and twice that is **296 Hz**. Also check that no other machine element (gear teeth, bearing defect frequencies) falls at the same place.
+</details>
+
+<details>
+<summary><strong>Q2. The blade pass component of a pump is twice what it was last month. The operating records show the flow dropped from 95 % to 45 % of BEP in the meantime. Should the impeller be replaced?</strong></summary>
+
+**Not yet.** Blade pass grows the further you move from the BEP (in Figure 2, 40 % is about twice the BEP level), so the change of operating point alone can explain it. Measure again at the same flow as last month and compare, and if low flow lasted a long time, also look at the low-frequency hump of recirculation.
+</details>
+
+<details>
+<summary><strong>Q3. The 3 to 5 kHz range of a pump acceleration spectrum has risen broadly. Is it a rolling bearing defect or cavitation? How do you tell?</strong></summary>
+
+Both raise the high-frequency band. (1) If lines such as BPFO or BPFI appear in the **envelope spectrum** of the same band, it is the bearing; if it is flat with no lines, it leans toward cavitation. (2) If the band disappears when you **raise the suction pressure or reduce the flow**, it is cavitation. A bearing defect does not respond to suction conditions.
+</details>
+
+<details>
+<summary><strong>Q4. In a pump with large 1X, raising the flow from 60 % to 100 % reduced the 1X from 2.6 to 1.6 mm/s. Will balancing solve it?</strong></summary>
+
+**Probably not.** The 1X of mechanical unbalance should be independent of flow at the same speed. A 1X that changes with flow is the fingerprint of **hydraulic unbalance** from uneven impeller passages, and a balance weight is right at only one operating point. Inspect the impeller passages and also consider moving the operating point toward the BEP.
+</details>
+
+<details>
+<summary><strong>Q5. A 0.2X component appeared in a centrifugal compressor, and the operator reported surge. The discharge pressure is nearly constant and the axial position is unchanged. Is that right?</strong></summary>
+
+**It is more likely rotating stall than surge.** Surge comes with a large pressure pulsation below a few Hz from flow being pushed backward, and jumps in axial position. If pressure and axial position are quiet and a single line below 1X has appeared, it is stall near the surge line. Check whether it disappears when you increase the flow, and see whether the anti-surge setting covers the stall region.
+</details>
+
+<details>
+<summary><strong>Q6. At the same speed you measured vibration while changing the flow. The 1X and 2X stayed the same, and only a 0.45X line appeared when the flow was reduced and disappeared when it was increased. How do you tell it from oil whirl?</strong></summary>
+
+Oil whirl responds when oil temperature or bearing load changes and moves with speed at 0.38 to 0.48X (P7-4). This line responded only to **flow**, so it leans toward rotating stall. Checking once more that it stays unchanged when you change the oil temperature makes it certain.
+</details>
+
+---
+
+The next page (P7-9) covers torsional and blade vibration, which lateral sensors barely see, using instantaneous angular speed and the Campbell diagram.
+
+## References
+
+<References items={[
+  ['R-41', 'Blade pass pressure pulsation and clearance, partial-flow recirculation, NPSH and cavitation'],
+  ['R-42', 'Rotation speed of rotating stall cells, surge and anti-surge'],
+  ['R-43', 'Surge created jointly by the compressor and piping volume, distinguishing stall from surge'],
+  ['R-01', 'Telling bearing defects from broadband noise by envelope analysis'],
+  ['R-02', 'Components below 1X in compressors and fluid causes'],
+]} />

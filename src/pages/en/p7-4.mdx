@@ -1,0 +1,205 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-4 Fluid-Film and Fluid-Force Instability
+description: A candidate map for components below 1X (subsynchronous), the evidence for oil whirl and whip (following 0.38 to 0.48X, then locking to a mode, forward direction, scattered keyphasor dots, hysteresis), the load threshold of steam and seal fluid-force whirl, tests that change oil temperature, bearing load and process load, and a subsynchronous discrimination table with checks and countermeasure directions
+sectionId: P7-4
+source: p7-4.mdx
+sourceHash: 11d5e3fdd7
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import SubsyncLab from '../../components/labs/SubsyncLab';
+import * as F from '../../figures/p7-4';
+
+# 7-4 Fluid-Film and Fluid-Force Instability: Finding the Owner of a Line Below 1X
+
+A compressor on plain bearings suddenly shakes hard at 7200 rpm (120 Hz). The spectrum shows a line at 50 Hz (0.42X) that is bigger than 1X. Is it oil whip, the rub of P7-3, or rotating stall caused by a drop in flow? The region below 1X is crowded with dangerous causes, and the right response differs completely from one cause to the next.
+
+P4-4 showed how cross-coupling pushes the orbit around, and explained oil whirl and whip. P6-2 showed in the cascade how whirl locks into whip. P7-3 covered the ½X of rub and looseness. This page ties them together as **discrimination**. It uses an explanatory model in which one cause at a time is put into the same machine, and shows how position, direction, keyphasor dots and the response to operating conditions differ.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can see the candidates below 1X (oil whirl and whip, fluid-force whirl, ½X of rub and looseness, rotating stall, structural resonance, cage FTF) on one map, and you know that position alone cannot separate them.
+2. You can read the evidence of fluid-film instability: following 0.38 to 0.48X, then locking to a mode, forward direction, scattered keyphasor dots, sudden onset and hysteresis.
+3. You can separate the causes with tests that change oil temperature, bearing load and process load.
+4. You can narrow the cause with the subsynchronous discrimination table and pick a way to confirm it.
+5. You can pick the direction of the countermeasure that fits the cause (P4-4 §7).
+
+</Callout>
+
+---
+
+## 1. The candidate map below 1X: the positions overlap
+
+Subsynchronous (P2-1) is the **name of a position**: a frequency lower than 1X. Several causes can sit there.
+
+<Figure {...F.candidateMap} />
+
+The machine in Figure 1 is a compressor rotor whose first critical speed is 3000 rpm (50 Hz). Look around 0.4 to 0.5X at 6000 to 7200 rpm: oil whirl (0.45X), oil whip (50 Hz), fluid-force whirl (about 49 Hz), the ½X of rub and looseness (47.5 to 57.5 Hz) and, if the bearings are rolling-element, the cage FTF (0.4X) are all packed within a few Hz of each other. Deciding "it is near 0.45X, so it is oil whirl" from one spectrum is easy to get wrong. That is why we look at **how the line moves when speed or operating conditions change**.
+
+<Callout type="term" title="Rotating stall">
+
+When the flow through a compressor or fan drops too far, the flow separates from a few blades and forms a blocked zone (a stall cell). This zone rotates in the direction of rotation, but slower than the shaft. As a result, pressure pulsation and vibration appear below 1X (often 0.1 to 0.8X). Increasing the flow makes it disappear (the aerodynamic cause is covered in detail in P7-8).
+
+</Callout>
+
+---
+
+## 2. Fluid-film instability: oil whirl and oil whip
+
+### 2.1 A recap: why 0.45X, and why does it lock?
+
+At the journal surface the oil moves at journal speed, and at the bearing surface it moves at zero, so on average it circulates at a little under half the journal speed. This oil flow becomes a cross-coupled force that pushes the shaft in the direction of rotation (P4-4 §1). When it exceeds the damping, the shaft whirls at the speed of that flow, that is, at 0.43 to 0.48 times the rotating speed (oil whirl). As the speed rises, this whirl frequency reaches the first natural frequency; from then on it stays at the mode frequency and grows large (oil whip, P4-4 §5, P6-2 §3).
+
+### 2.2 The evidence: forward direction, scattered dots, sudden onset
+
+<Figure {...F.oilHysteresis} />
+
+<Figure {...F.subOrbits} />
+
+The evidence for fluid-film instability shows up in all five places.
+
+- **Frequency**: it follows the speed at 0.38 to 0.48X (whirl), then locks to the first-mode frequency (whip). It is not exactly ½X.
+- **Amplitude**: it appears **suddenly** at a threshold speed, and once it is whip it can grow large enough to fill the clearance. In Figure 2 it appears at 4800 rpm and reaches 65 µm at 7200 rpm.
+- **Phase and keyphasor dots**: it is not tied to the rotating speed, so the dots land in a different place every turn (Figure 4, left). The orbit is a forward inner loop (P6-3).
+- **Direction**: close to a forward circle. In the full spectrum it stands on the forward (+) side (P5-3).
+- **Operating conditions**: it appears readily when the bearing load is small (when the eccentricity ratio is small, P4-3) and when the oil temperature is low so the viscosity is high. Sometimes misalignment has unloaded one bearing (P7-3 §2.2). On the way down it persists to a lower speed than where it appeared (Figure 2, **hysteresis**: appears at 4800 rpm, remains down to 4200 rpm).
+
+---
+
+## 3. Fluid-force instability: cross-coupling in steam and seals
+
+Cross-coupling force is not produced only in the oil film. In the blade-tip clearance of a steam turbine and in the labyrinth seals of a compressor, the fluid also circulates around the circumference and pushes the shaft in the direction of rotation. This force is proportional to the fluid density and the pressure difference, so the threshold is set <strong>by the load (pressure and flow), not by the speed</strong>.
+
+<Figure {...F.steamThreshold} />
+
+In Figure 5, keep the speed fixed and raise the process load: the moment it passes 80 %, a component appears near the first mode (49 Hz) and grows with the load. In steam turbines this is called steam whirl, and the decisive evidence is that it appears when you raise the load and disappears when you lower it (the steam-turbine-specific phenomenon is covered in P8-3). The Alford force produced by blade-tip clearance in gas turbines belongs to the same family.
+
+---
+
+## 4. Tests that change the operating conditions
+
+When positions overlap, the strongest evidence is **what responds when you change something**.
+
+<Figure {...F.conditionCurves} />
+
+- **Oil temperature**: raising the oil temperature lowers the viscosity, which raises the eccentricity ratio and stabilizes the film. In the top panel of Figure 3, the oil whirl at 6000 rpm disappears at about 58 °C. The whip at 7200 rpm stays as it is, because even when its threshold rises to 6240 rpm it is still below the operating speed. Rub, looseness and stall are independent of oil temperature.
+- **Bearing load**: raising the load (for example by adjusting alignment) increases the eccentricity ratio so the whirl disappears, and rotating looseness is also pressed down and shrinks (0.61 times). Fluid-force whirl decreases only a little (0.89 times).
+- **Process load (flow)**: fluid-force whirl disappears when the load is lowered, and rotating stall appears and grows when the flow is reduced (2 times when flow goes from 60 to 40 %). Bearing causes do not respond.
+
+<Callout type="warn" title="Test within the safe range">
+
+Tests that change oil temperature, load or flow must stay within operating limits and process conditions, together with the operations staff, changing only one condition at a time. When the amplitude grows quickly, as with whip or circumferential rub, the first decision is to lower the speed or shut down, not to test.
+
+</Callout>
+
+---
+
+## 5. The subsynchronous discrimination table
+
+| Cause | Frequency | When the speed changes | Direction | Keyphasor dots | Responds to | Confirmation |
+|---|---|---|---|---|---|---|
+| Oil whirl | 0.38 to 0.48X | Follows at the same ratio | Forward | Scattered | Oil temperature or bearing load up: disappears; hysteresis | Record bearing load and oil temperature; shaft centerline (eccentricity ratio) |
+| Oil whip | First-mode frequency | Hz fixed, order goes down | Forward, large | Scattered | May be insensitive to oil temperature and load | Confirm locking in the cascade (P6-2) |
+| Fluid-force whirl (steam, seal) | Near the mode | Hz nearly fixed | Forward | Scattered | Process load or pressure threshold | Lower the load and see whether it disappears |
+| Partial rub | Exactly ½X or ⅓X, harmonics | Same ratio | Large reverse component | Fixed at 2 or 3 places | Heat, clearance; start-up and shutdown | Contact marks, full spectrum (P7-3) |
+| Full-annular rub | Fixed frequency | Hz fixed | **Reverse** | Scattered | Grows quickly | Decide on immediate shutdown (P7-3 §4.2) |
+| Rotating looseness | ½X and a group of its integer multiples | Same ratio | One direction (a line) | Fixed at 2 places | Load up: shrinks | Check clearance and tightness (P7-3 §3.2) |
+| Rotating stall | 0.1 to 0.8X | Ratio changes a little with flow | Forward | Scattered | Flow down: appears | Pressure pulsation, operating point (P7-8) |
+| Structural resonance | Fixed Hz | Unchanged | A line | Scattered | No response | Impact test (P9-1) |
+| Cage FTF | About 0.4X | Same ratio | — | — | Rolling-element bearings only | Envelope (P7-5) |
+
+Looking only at the two leftmost columns (position and movement), whirl, FTF, rub and stall overlap. The three columns that actually separate them are **direction** (full spectrum), **keyphasor dots** (orbit) and **what it responds to**.
+
+---
+
+## 6. Lab: Identifying the hidden cause
+
+<Callout type="try">
+
+1. Select fluid-film instability and raise the speed 4500 → 6000 → 7200 rpm, reading the Hz and the order. At which speeds does it appear and disappear?
+2. With the same cause, at 6000 rpm and at 7200 rpm, raise the oil temperature to 60 °C, or the bearing load to 1.5.
+3. At 6300 rpm, change the cause from partial rub to rotating looseness to fluid-film instability, and compare the order, the forward/reverse components and the keyphasor dots.
+4. Change the view mode to "guess the hidden cause" and hide cases 1 to 7. You may also test with the condition sliders.
+
+</Callout>
+
+<SubsyncLab client:visible lang="en" />
+
+In 1, nothing appears at 4500 rpm; at 6000 rpm there is 45 Hz (0.45X, whirl), and at 7200 rpm 50 Hz (0.417X, whip). On run-up it appears at 4800 rpm, and on coast-down it remains down to 4200 rpm. In 2, the whirl at 6000 rpm disappears above an oil temperature of about 58 °C or at load 1.5, but the whip at 7200 rpm stays, because even when its threshold rises (6240 and 6120 rpm) it is still below the operating speed. In 3, rub and looseness are exactly 0.5X (52.5 Hz) with the dots fixed at two places; for rub the reverse component is 0.7 times the forward one, for looseness forward and reverse are equal. The fluid film is at 0.45X (47.25 Hz), a little below half, forward, with scattered dots. In 4 the cases are: 1 rub, 2 oil whirl, 3 structural resonance, 4 rotating stall, 5 oil whip, 6 rotating looseness, 7 fluid-force whirl.
+
+---
+
+## 7. Directions for countermeasures
+
+Different causes sometimes call for opposite responses. The detailed principle is in P4-4 §7 (the paths of energy supply and dissipation).
+
+- **Oil whirl and whip**: reduce cross-coupling and increase damping. Change the bearing type (a bearing with small cross-coupling, such as a tilting pad), secure bearing load and eccentricity ratio (alignment), adjust clearance and oil temperature. Whip rarely disappears through operating conditions alone.
+- **Fluid-force whirl**: adjust the order of raising load and the valve sequence, and reduce the fluid-side cross-coupling, for example with a device that breaks up the swirl flow in the seal (a swirl brake) (Part 8).
+- **Rub and looseness**: correct clearance, alignment and tightness. For full-annular rub, shut down (P7-3).
+- **Rotating stall**: move the operating point (flow) into the stable range (P7-8). Changing the bearing will not make it go away.
+- **Structural resonance**: move the natural frequency by changing stiffness or mass, or reduce the exciting force (P9-1).
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Candidate map | Whirl, whip, fluid-force whirl, ½X and FTF overlap around 0.4 to 0.5X. Do not decide from position alone |
+| Oil whirl | Follows at 0.38 to 0.48X, forward, scattered dots, sudden start, disappears with higher oil temperature or load |
+| Oil whip | Locked to the first-mode frequency, large, hysteresis, rarely goes away through operating conditions alone |
+| Fluid-force whirl | Load or pressure threshold, disappears when the load is lowered |
+| Discrimination | Separate by three columns: direction (full spectrum), keyphasor dots (orbit), response to conditions (tests) |
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. A rotor whose first critical speed is 2400 rpm (40 Hz) shows a 0.45X component at 6000 rpm. What frequency is it, and what happens if you raise the speed further?</strong></summary>
+
+0.45 × 100 Hz = **45 Hz**, which is already above the first mode (40 Hz). If it were oil whirl, the speed at which the whirl frequency reaches the mode (40 ÷ 0.45 × 60 ≈ 5330 rpm) has already been passed, so it is most likely **oil whip** locked near the mode frequency. Check in the cascade whether the Hz stays near 40 Hz as the speed rises (the order goes down).
+</details>
+
+<details>
+<summary><strong>Q2. A component below 1X is exactly half the rotating speed, the reverse direction is 70 % of the forward one in the full spectrum, and the keyphasor dots are fixed at two places. Is it oil whirl?</strong></summary>
+
+**Probably not.** Oil whirl is at 0.38 to 0.48X, a little below half, forward, with scattered dots. Exactly ½X, a large reverse component and two fixed dots are the fingerprint of **partial rub** (P7-3). Check whether it changes with heat or clearance changes, and whether there are contact marks.
+</details>
+
+<details>
+<summary><strong>Q3. A steam turbine at rated speed was being loaded up when, around 70 %, a component near the first mode appeared and grew with the load. When the load was lowered to 60 % it disappeared. Changing the oil temperature makes no difference. What do you suspect?</strong></summary>
+
+The threshold is set by the **load**, not the speed, and it is independent of oil temperature, so suspect not the oil film but <strong>fluid-force whirl (steam whirl)</strong>. Also look at cross-coupling in the blade-tip clearance and seals, and at cases where partial admission (partial arc) changed the bearing load (the ST section of Part 8).
+</details>
+
+<details>
+<summary><strong>Q4. In a compressor, a 0.18X component appears when the flow is reduced, and the pressure pulsation grows with it. Someone proposes changing to tilting-pad bearings. How do you answer?</strong></summary>
+
+It responds to flow and the pressure pulsation is present, so it is **rotating stall**. It is not oil-film instability of the bearing, so changing the bearings will not make it go away. The remedy is to move the operating point into the stable range (higher flow) (P7-8).
+</details>
+
+<details>
+<summary><strong>Q5. During start-up, 0.46X appeared at 5000 rpm. During shutdown it remained down to 4300 rpm. What does this difference tell you?</strong></summary>
+
+The speed at which it disappeared (4300) is lower than the speed at which it appeared (5000). This **hysteresis** is a typical clue to fluid-film instability: once the whirl has started, it continues to speeds below the threshold. If you record the run-up and coast-down cascades together, you can follow the change of the threshold as a trend.
+</details>
+
+<details>
+<summary><strong>Q6. A 38 Hz component stays at the same Hz when the speed changes from 4800 to 6600 rpm, and it responds to none of oil temperature, load or flow. What do you do next?</strong></summary>
+
+It is a **fixed frequency** independent of the speed and does not respond to operating conditions, so first suspect **structural resonance** (the natural frequency of a support, piping or casing being shaken by, for example, flow turbulence). Find the natural frequency at that frequency with an impact test during shutdown (P9-1), and also check whether the orbit is one with equal forward and reverse sizes (a line).
+</details>
+
+---
+
+The next page (P7-5) is on rolling-element bearings: where the cage FTF below 1X and the BPFO and BPFI above 1X come from.
+
+## References
+
+<References items={[
+  ['R-02', 'Fluid-induced instability (whirl and whip), reading cascades and orbits, thresholds in run-up and coast-down'],
+  ['R-49', 'Average fluid whirl speed ratio, cross-coupling and threshold speed, telling it apart from rub'],
+  ['R-04', 'Fluid-force whirl and seal cross-coupling, tilting-pad bearings'],
+]} />

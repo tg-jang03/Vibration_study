@@ -1,0 +1,299 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-5 Rolling-Element Bearings
+description: Fault-frequency formulas including the contact angle, the approximations and slip, whether BSF is used once or twice, the envelope patterns of outer-race, inner-race, ball and cage faults, the four fault stages and where the fault shows up in each, and telling it apart with five pieces of evidence and confirming it
+sectionId: P7-5
+source: p7-5.mdx
+sourceHash: ba6ab16924
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import BearingCalcLab from '../../components/labs/BearingCalcLab';
+import BearingStageLab from '../../components/labs/BearingStageLab';
+import * as F from '../../figures/p7-5';
+
+# 7-5 Rolling-Element Bearings: Where Is the Flaw, and How Far Has It Progressed?
+
+In the pump of P7-1, a line stood at 211 Hz in the envelope spectrum. The outer-race fault frequency of a 6205 bearing is calculated as 213.6 Hz, which differs by about 3 Hz (1 %). Is it an outer-race fault? If so, how far has it progressed?
+
+P1-8 showed why the four frequencies of a rolling-element bearing (FTF, BPFO, BPFI, BSF) are not integer multiples of 1X, and P5-6 taught envelope analysis, which pulls that rhythm out of the kHz ringing. This page ties the two together as diagnosis. It calculates the fault frequencies including the contact angle, tells which part has the flaw from the shape of the spectrum, and follows **where the fault shows up first** as the failure progresses.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can calculate fault frequencies with the formula that includes the contact angle, and you know how far the approximations and slip are off.
+2. You can tell whether BSF is used once or twice, and explain why a ball fault strikes at a 2×BSF rhythm.
+3. You can separate outer-race, inner-race, ball and cage faults in the envelope spectrum by the sideband spacing.
+4. You know where the fault shows up in each of the four failure stages, and which method suits each stage.
+5. You know the order for separating a bearing fault from other causes with five pieces of evidence and confirming it.
+
+</Callout>
+
+---
+
+## 1. Fault frequencies: calculating with the contact angle
+
+The formulas of P1-8 assumed that the ball touches the race in the radial direction. What changes when the ball touches at an angle?
+
+<Figure {...F.contactAngle} />
+
+The angle that the line joining the two points where the ball touches the outer and inner races makes with the radial direction is called the **contact angle** α (a different meaning from the exponential-average coefficient α of P2-6). A deep-groove ball bearing has nearly 0, and an angular contact ball bearing, built to touch at an angle so that it also carries axial load, is usually 15 to 40°.
+
+<Callout type="term" title="Angular contact ball bearing">
+
+A ball bearing in which the shoulders of the outer and inner races (the lips beside the raceway) are made high on opposite sides, so that the ball touches the race at an angle (Figure 1, right). It carries radial and axial load together. It is often used where pumps and compressors take thrust.
+
+</Callout>
+
+The radius at which the ball rolls on the inner race is smaller than the radius D/2 of the ball center by (d/2)cos α. As in P1-8, the ball center moves at half the inner-race surface speed, so the cage rotation frequency and the other three become:
+
+$$
+f_{FTF} = \frac{f_r}{2}\left(1 - \frac{d}{D}\cos\alpha\right), \qquad f_{BPFO} = N_r\, f_{FTF}, \qquad f_{BPFI} = N_r\,(f_r - f_{FTF})
+$$
+
+$$
+f_{BSF} = \frac{D}{2d}\, f_r \left(1 - \left(\frac{d}{D}\cos\alpha\right)^2\right)
+$$
+
+- $N_r$: number of balls (rolling elements), $d$: ball diameter, $D$: pitch diameter, $f_r$: shaft rotating frequency (the case where the inner race turns with the shaft and the outer race is stationary)
+- With α = 0 these are the formulas of P1-8. For a roller bearing, put the roller diameter in $d$
+
+<Callout type="example" title="The pump of P7-1: 6205, 3575 rpm">
+
+1. $f_r$ = 3575 ÷ 60 = 59.58 Hz, $d/D$ = 7.94 ÷ 39.04 = 0.2034, α = 0
+2. FTF = 59.58 ÷ 2 × (1 − 0.2034) = **23.73 Hz** (0.3983X)
+3. BPFO = 9 × 23.73 = **213.6 Hz** (3.585X), BPFI = 9 × (59.58 − 23.73) = **322.7 Hz** (5.415X)
+4. BSF = 39.04 ÷ (2 × 7.94) × 59.58 × (1 − 0.2034²) = **140.4 Hz**, 2×BSF = **280.8 Hz**
+5. Approximations: 0.4 × 9 × 59.58 = 214.5 Hz (+0.4 %), 0.6 × 9 × 59.58 = 321.8 Hz (−0.3 %)
+
+</Callout>
+
+<Figure {...F.alphaEffect} />
+
+As in Figure 2, a larger contact angle raises BPFO and lowers BPFI. For the same dimensions at α = 40°, BPFO is 226.4 Hz and BPFI 309.9 Hz, so looking for BPFO with the approximation 0.4·N_r would put you more than 5 % too low. For angular contact ball bearings, use the formulas or the manufacturer's data instead of the approximations. However, BPFO + BPFI = N_r × 1X always holds regardless of α, so if you have found two lines you can check them with the sum.
+
+### 1.1 Slip: 1 to 2 % off the calculated value
+
+Balls and the cage do not roll exactly as the formulas say; they slip a little. If the cage turns slower than calculated, BPFO stands lower and BPFI higher, because the inner race catches up with the cage more often. If the cage is 2 % slow, BPFO is 209.3 Hz (−2 %) and BPFI 326.9 Hz (+1.3 %).
+
+The 211 Hz line in the introduction is 1 % below the calculated 213.6 Hz. This is a difference that slip commonly produces. So we do not expect a measured line to match the calculated value exactly. We look for a **line that is not an integer multiple** within ±2 % of the calculated value, together with its **group of harmonics** and its **sideband spacing**. A sideband spacing of 1X is exactly 1X even with slip, and an FTF spacing is also only 1 to 2 % off the calculated value. That is why the spacing, whether 1X or about 0.4X (FTF), can tell the fault location (Section 3).
+
+Where do you get the bearing information? If you know the bearing number (for example 6205), you can get FTF, BPFO, BPFI and BSF as multiples of 1X from the manufacturer's fault-frequency table or a calculation tool. Even with the same number, the ball count and dimensions can differ by manufacturer, so use the data of the manufacturer of the bearing actually installed in the machine. If you do not know the number, search first with the approximations and the "group of non-integer harmonics".
+
+<Callout type="try">
+
+1. In the initial state (6205, 3575 rpm), read the difference between BPFO, BPFI and the approximations.
+2. Raise the contact angle from 0° to 40°. Which way do BPFO and BPFI move? What is "(BPFO + BPFI) ÷ (N_r × 1X)"?
+3. Return the contact angle to 0° and set the slip to 2 %. In the upper graph, on which side of the BPFO and BPFI bars does the position after slip (dashed) stand? The shift is small, about 0.07X, so look right beside the bar.
+4. Change the bearing to "Angular contact ball (hypothetical dimensions, α 40°)" and look at the difference from the approximations.
+
+</Callout>
+
+<BearingCalcLab client:visible lang="en" />
+
+In 1, the difference between BPFO of 213.6 Hz (3.585X) and the approximation 214.5 Hz is 0.4 %. At α = 40° in 2, BPFO is 226.4 Hz and BPFI 309.9 Hz, approaching each other, and the sum stays at 9X, so that cell remains 1. In 3, the dashed line of BPFO stands on the left (209.3 Hz) and that of BPFI on the right (326.9 Hz). In the angular contact ball preset of 4 (12 balls, α 40°), BPFO is 5.051X, and the approximation 4.8X is about 5 % low. For a bearing with a large contact angle, do not use the approximations.
+
+---
+
+## 2. Is BSF once or twice?
+
+When a ball has a flaw, does the impact strike at the BSF rhythm?
+
+<Figure {...F.ballTwice} />
+
+BSF is how often the ball turns once on its own axis (the ball spin frequency). During one spin, the flaw on the ball touches the outer race once, and half a turn later touches the inner race once. So **the impact rhythm of a ball fault is 2×BSF** (280.8 Hz for the 6205 at 3575 rpm).
+
+If the strength differs between touching the outer race and the inner race, as at the bottom of Figure 3, that difference repeats at the BSF rhythm, and a small line also stands at the BSF (once) position. The ball also travels with the cage and passes through the load zone once per FTF, so the impact size rises and falls at FTF. As with the modulation of P2-8, **sidebands spaced at FTF** stand on both sides of 2×BSF.
+
+<Callout type="warn" title="The BSF your instrument shows">
+
+Literature, diagnostic instruments and bearing lists each use BSF either as the ball spin frequency (once) or as the ball-fault rhythm (twice). For the 6205 the two values are 140.4 Hz and 280.8 Hz, a factor of two apart, so if you do not check which definition applies you will look in the wrong place. This site uses BSF as the spin frequency (once) and writes the ball-fault rhythm as 2×BSF.
+
+</Callout>
+
+---
+
+## 3. The pattern for each fault location: look at the sideband spacing
+
+A fault line has appeared in the envelope spectrum. Which part has the flaw?
+
+<Figure {...F.locationPatterns} />
+
+The four locations differ in the **rhythm** of the impacts and in the **modulation** that makes their size rise and fall.
+
+- **Outer race**: the outer race is stationary and the flaw is usually at the bottom, which carries the load (the load zone). Every ball strikes with the same strength, so only BPFO and its harmonics stand, with no sidebands.
+- **Inner race**: the flaw turns with the shaft and enters and leaves the load zone once per 1X. **Sidebands spaced at 1X** stand on both sides of BPFI, and 1X itself stands (P5-6 §4).
+- **Ball**: 2×BSF is the largest, with **sidebands spaced at FTF** on both sides, and FTF and BSF standing on the low side.
+- **Cage**: the signal is weak, about as much as a broken divider hitting once per turn (7 to 14 times smaller than the other locations). FTF and its harmonics stand; the fundamental FTF (about 0.4X) is below 1X, and the harmonics continue above 1X.
+
+| Location | Impact rhythm | What changes the size | Lines in the envelope |
+|---|---|---|---|
+| Outer race | BPFO | None (flaw stays in the load zone) | BPFO, 2×, 3× … |
+| Inner race | BPFI | Passing through the load zone (1X) | BPFI ± 1X, 1X |
+| Ball | 2×BSF | Passing through the load zone (FTF), outer/inner strength difference | 2×BSF ± FTF, FTF, BSF |
+| Cage | FTF | Uneven striking | FTF and harmonics (fundamental below 1X) |
+
+The 1X spacing is exactly 1X even with slip, and the FTF spacing is only 1 to 2 % off, so even if the position of the fault line is a little off the calculated value, the spacing can tell the location. However, FTF-spaced sidebands also stand normally in a ball fault, so we do not call it a cage problem from that alone.
+
+The bearing drawing at the top of the lab below animates this table. The outer race is stationary, the inner race turns with the shaft, and the cage carrying the balls (purple) turns more slowly. Each time a ball touches the fault (red), a yellow impact flashes, and the impacts stack as bars in the strip on the right. The bar height is the impact strength. In reality it happens hundreds of times a second, so the drawing plays back slowly, with the shaft turning 0.25 turn per second.
+
+<Callout type="try">
+
+1. In the envelope spectrum of the initial state (outer race, stage 3, resonance band), look at BPFO and the line at twice that. Are there sidebands?
+2. Change the fault location to the inner race. What is the spacing of the sidebands on both sides of BPFI, in Hz?
+3. Change to ball. What is the largest line, and the sideband spacing?
+4. Change to cage, and compare the positions of the lines with 1X (dotted).
+5. Press **play** on the bearing drawing, change from outer race to inner race, and compare the bar heights in the right strip. How many impacts come in one shaft turn (the dotted cell)?
+
+</Callout>
+
+<BearingStageLab client:visible initial={{ fault: 'outer', stage: 3, band: 'res' }} lang="en" />
+
+In 1, the outer race has only BPFO (211 Hz) and its double (423 Hz), with no sidebands. In 2, the inner race has sidebands spaced at 59.6 Hz (1X) on both sides of BPFI (325 Hz), and a large line also stands at the 1X position. In 3, the ball has 2×BSF (278 Hz) as the largest line, and the spacing of the sidebands on both sides is 23.5 Hz (FTF). In 4, the cage has lines only at 23.5 Hz (FTF) and its multiples, and the fundamental FTF stands below 1X (59.6 Hz). The harmonics continue above 1X, and the line size is 7 to 14 times smaller than the fault lines of the other locations. In 5, the outer race gives bars of even height 3.58 times per shaft turn (213.6 ÷ 59.6). That is because the fault stays in the load zone, so every ball strikes with the same force. The inner race strikes more often, 5.42 times per turn (322.7 ÷ 59.6), but the bars are tall only while the fault passes through the lower load zone and become low as it moves up. This rise and fall repeating every shaft turn is the identity of the 1X-spaced sidebands (the AM of P2-8).
+
+---
+
+## 4. The four fault stages: where does the fault show up first?
+
+As soon as a flaw forms, does a BPFO line stand in the velocity spectrum?
+
+The progression of a rolling-element bearing failure is commonly described in **four stages**. This is an empirical division widely used in field textbooks; the time each stage takes differs greatly with the bearing, load and lubrication, and stages are sometimes skipped. The figures below are an explanatory model (outer-race fault) that follows this description.
+
+<Figure {...F.stagesAcc} />
+
+<Callout type="term" title="Ultrasonic band">
+
+A frequency band above the range humans hear (about 20 kHz). The short, sharp impact from a very small flaw hardly rings the part resonances of the lower bands and mainly rings this high band (in this model, the ringing at stage 1 is 0.004 g at 3.3 kHz and 0.25 g at 24 kHz). Other machine sounds (flow, electromagnetic, gear) are mostly concentrated below this, so the ultrasonic band is a good place to see small impacts on a quiet background.
+
+P3-1 said the range where an accelerometer can be trusted is below one third of the mounting resonance. Ultrasonic and high-frequency techniques instead use the neighborhood of the mounting resonance (about 25 kHz for a stud mount) like an amplifier, to see the **rhythm** of the impacts. The size in that band is not a calibrated value, so compare only trends measured with the same sensor and the same mounting method.
+
+</Callout>
+
+<Figure {...F.stagesVel} />
+
+<Figure {...F.stageNumbers} />
+
+| Stage | Inside the bearing | What shows in the signal (Figures 5 to 7) | Methods that suit |
+|---|---|---|---|
+| 1 | Very small flaw, the lubricant film gets thin | Small ringing only in the ultrasonic band. The BPFO line of the envelope (ultrasonic band) is 78 times the floor, and in the resonance band it is buried at 2.3 times. Overall and 1X are the same as when healthy | Ultrasonic and high-frequency envelope (high-frequency techniques with different names on different instruments) |
+| 2 | The flaw grows | A part or housing resonance (here 3.3 kHz) rings. Resonance-band envelope 117 times, kurtosis 4.2. Not yet in the velocity spectrum (0.036 mm/s) | Envelope (resonance band), kurtosis, SK and kurtogram (P5-6) |
+| 3 | The flaw is visible to the eye | Fault frequency, harmonics and sidebands also in the velocity spectrum (BPFO 0.72 mm/s), kurtosis 5.6 | Velocity and acceleration spectrum + envelope |
+| 4 | The damage spreads | The fault lines get blurred (envelope 4.6 times, velocity BPFO 0.23 mm/s), the broadband floor rises and 1X grows to 2.9 mm/s (the clearance opens), and kurtosis comes back down to 3.2 | Trend of overall and RMS, 1X, height of the floor |
+
+The number that shows the fault best shifts from stage to stage: ultrasonic band → resonance-band envelope → fault line in the velocity spectrum → floor and 1X. As seen in P5-7, kurtosis rises and then falls again at stage 4.
+
+<Callout type="warn" title="No fault frequency visible, so the bearing is fine?">
+
+A stage-1 fault hardly appears in the normal accelerometer band (0 to 10 kHz), and a stage-4 fault looks smaller because its fault lines are blurred. Do not call a bearing healthy just because there is no fault-frequency line. If the fault line has become smaller than a month ago but overall, 1X and the floor have grown, first suspect an advanced fault.
+
+</Callout>
+
+So we do not decide the stage from the size of one envelope line. Measure the envelope, kurtosis, overall and 1X steadily at the same measurement point with the same settings, and look at the trend (P5-7 §6). If it looks like stage 3 to 4, plan the replacement time. The judgment of how much means replacement is covered in Part 10.
+
+<Callout type="try">
+
+1. In the initial state (outer race, stage 1, ultrasonic band), read "line ÷ floor" for the two bands. In the upper dB graph, where does it differ from healthy (gray)?
+2. Raise the stage to 2 and change the envelope band to the resonance band. What is the BPFO line in the velocity spectrum?
+3. Raise the stage to 3 and 4, and watch the velocity BPFO line, 1X and kurtosis.
+4. At stage 4, switch the envelope band between the two options.
+
+</Callout>
+
+<BearingStageLab client:visible initial={{ fault: 'outer', stage: 1, band: 'ultra' }} lang="en" />
+
+In 1, the BPFO line in the ultrasonic band is 78 times the floor, but in the resonance band it is 2.3 times. In the dB graph, the normal measurement band (0 to 10 kHz) is the same as healthy, everything above 12 kHz comes up, and around 24 kHz it is about 25 dB above healthy, the largest rise. In 2, the resonance band also stands at 117 times, but the BPFO line in the velocity spectrum is 0.036 mm/s, so absent. At stage 3 in 3, the BPFO line stands at 0.72 mm/s with kurtosis 5.6; at stage 4 the BPFO line comes down to 0.23 mm/s and kurtosis to 3.2, and 1X grows to 2.9 mm/s. In 4, at stage 4, whichever band you choose the line is below 5 times the floor.
+
+---
+
+## 5. Putting it together with five pieces of evidence, and telling it apart
+
+Is every line that is not an integer multiple a bearing?
+
+| Evidence (P1-9) | Rolling-element bearing fault |
+|---|---|
+| Frequency | Lines that are not integer multiples (BPFO, BPFI, 2×BSF, FTF) and harmonics. Sideband spacing 1X (inner race) or FTF (ball). 1 to 2 % off the calculated value |
+| Amplitude | Early on, only in the ultrasonic band and envelope; as it progresses, in the velocity spectrum; at the end, the floor and 1X |
+| Phase | Unrelated to the 1X phase (the fault rhythm is not an integer multiple of 1X) |
+| Direction | Large in the load direction (usually vertical). For angular contact ball bearings carrying axial load, also axial |
+| Operating conditions | Moves in proportion to the speed. Sensitive to load and lubrication (right after lubrication, high-frequency indicators of an early stage may briefly drop) |
+
+**Discrimination**: other causes that stand at similar positions:
+
+- **Gear**: the mesh is the tooth count × X, an integer multiple, and the sideband spacing is the rotating speed of the gear shaft (P7-6)
+- **Electrical**: twice the line frequency (2×LF) stays put even when the speed changes. A fault in an induction-motor rotor puts small sidebands right around 1X (P7-7)
+- **Looseness and rub**: lines at integer harmonics and at the ½X position (P7-3)
+- **Blade pass**: blade count × X, an integer multiple (P7-8)
+- **1X of another shaft**: the 1X of a belt-connected shaft or of a neighboring machine may not be an integer multiple relative to this shaft. Check the speed of that machine (P7-1)
+
+**How to confirm**:
+
+1. Calculate the fault frequencies from the bearing number, and look for lines and a group of harmonics within ±2 %
+2. Look at the sideband spacing in the envelope spectrum to tell the location. Choose the band with a kurtogram (P5-6)
+3. In two records at different speeds, check whether the line moves in proportion to the speed (P7-1)
+4. Compare with the measurement points of the neighboring bearings. It is larger at the point closer to the faulty bearing
+5. Gauge the stage from the trend of the envelope line, kurtosis and overall (P5-7)
+
+---
+
+## 6. Summary
+
+| Topic | What to remember |
+|---|---|
+| Fault frequencies | FTF = (f_r/2)(1 − (d/D)cos α), BPFO = N_r·FTF, BPFI = N_r(f_r − FTF). With a large contact angle, do not use the approximations (0.4·N_r, 0.6·N_r). BPFO + BPFI = N_r × 1X |
+| Slip | The cage is 1 to 2 % slow, so BPFO stands low and BPFI high. Rely on the harmonic group and sideband spacing rather than an exactly matching line |
+| BSF | The once (spin) and twice (ball-fault rhythm) definitions are both in use. A ball fault is 2×BSF ± FTF |
+| Location | Outer race = no sidebands, inner race = ± 1X, ball = 2×BSF ± FTF, cage = FTF and harmonics (fundamental below 1X) |
+| Four stages | Ultrasonic → resonance-band envelope → fault line in the velocity spectrum → rising floor and 1X with blurring fault lines. Kurtosis rises and then falls |
+| Confirmation | Calculated value ±2 %, sideband spacing, proportional to speed, comparison of measurement points, trend. The judgment is in Part 10 |
+
+## 7. Check questions
+
+<details>
+<summary><strong>Q1. A 6205 bearing runs at 1785 rpm in a 4-pole motor. What are BPFO and BPFI?</strong></summary>
+
+$f_r$ = 1785 ÷ 60 = 29.75 Hz. Multiples of 1X do not depend on the speed, so BPFO = 3.5848 × 29.75 = **106.6 Hz** and BPFI = 5.4152 × 29.75 = **161.1 Hz**. Allowing for slip, search within ±2 %.
+</details>
+
+<details>
+<summary><strong>Q2. The envelope spectrum of a 6205 bearing turning at 1500 rpm has a 135 Hz line with sidebands spaced at 25 Hz on both sides, and a 25 Hz line. Where is the flaw?</strong></summary>
+
+1X = 25 Hz, and 135 ÷ 25 = 5.4X matches BPFI (5.415X = 135.4 Hz). The sideband spacing is 1X and a 1X line also stands, so it is an **inner-race** fault, because the flaw turns with the shaft and enters and leaves the load zone once per 1X.
+</details>
+
+<details>
+<summary><strong>Q3. The bearing list gives BSF as 140.4 Hz. The envelope spectrum has a 278 Hz line with sidebands spaced at 23.5 Hz on both sides (1X is 59.6 Hz). What do you suspect?</strong></summary>
+
+278 Hz is 1 % below 2 × 140.4 = 280.8 Hz, so allowing for slip it is **2×BSF**. The sideband spacing of 23.5 Hz is FTF (23.7 Hz calculated), so it is a **ball fault**. If you did not check that the BSF in the list uses the once definition and looked only around 140 Hz, you would miss it.
+</details>
+
+<details>
+<summary><strong>Q4. Last month the BPFO line in the envelope spectrum was clear, but this month it is smaller. Instead overall and 1X have grown and the floor of the spectrum has risen. Has it improved?</strong></summary>
+
+No. When the damage spreads and impacts occur at random times, the BPFO rhythm blurs and the line gets smaller, while the clearance opens, raising 1X and the floor. First suspect a **fault that has advanced to stage 4**, and plan the replacement time. If kurtosis has come down to around 3, it is evidence pointing the same way.
+</details>
+
+<details>
+<summary><strong>Q5. A bearing with a 40° contact angle (9 balls, d/D = 0.2034) turns at 3575 rpm. How wrong are you if you look for BPFO with the approximation 0.4·N_r?</strong></summary>
+
+The approximation gives 0.4 × 9 × 59.58 = 214.5 Hz, while the formula gives BPFO = 226.4 Hz (3.799X). You would look about 12 Hz, **more than 5 %** too low, which is much more than slip (1 to 2 %). For a bearing with a contact angle, use the formulas or the manufacturer's data.
+</details>
+
+<details>
+<summary><strong>Q6. To catch a bearing fault at a very early stage (stage 1), what should you check in the measurement setup?</strong></summary>
+
+A stage-1 impact is seen only in the ultrasonic band, so it is hard to see in the spectrum of the normal accelerometer band (0 to 10 kHz) or in the resonance-band envelope. Use a **technique that looks at the ultrasonic and high-frequency band**, and fix the sensor firmly with a stud or adhesive so that the impact is transmitted up to that band (P3-1). A magnet or a hand-held probe has a low mounting resonance and cannot see this band. The size in that band is not a calibrated value, so compare trends with the same sensor and the same mounting method.
+</details>
+
+---
+
+The next page (P7-6) uses the rhythm of the teeth meshing and the sidebands around it to tell wear, eccentricity and a broken tooth in a gear.
+
+## References
+
+<References items={[
+  ['R-20', 'Fault-frequency formulas, slip, modulation at each location'],
+  ['R-01', 'Bearing fault diagnosis by envelope analysis'],
+  ['R-03', 'Spectrum patterns and progression of bearing faults'],
+  ['R-10', '6205 bearing dimensions'],
+]} />

@@ -5,6 +5,9 @@ import { GEAR_DEMO, GEAR_PAIR, type GearFault, type GearSide } from '../../lib/f
 import { gearToothAngle, meshEvents, pinionToothAngle } from '../../lib/faults/gearMotion';
 import { usePlayClock } from '../ui/hooks';
 import PlayControls, { turnSpeeds } from '../ui/PlayControls';
+import { useLang } from '../ui/lang';
+import { makeT, type T } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/GearMesh';
 
 /**
  * LAB-GEAR-01의 움직이는 그림 (D-044): 23이빨 피니언(반시계)과 61이빨 기어(시계)가 맞물려 돈다.
@@ -50,19 +53,21 @@ function toothMark(c: { x: number; y: number }, r: number, a: number, z: number)
     .join(' ');
 }
 
-const EXPLAIN: Record<GearFault, (side: GearSide) => string> = {
-  healthy: () => `맞물림은 1초에 GMF = ${z1} × ${formatNumber(f1, 4)} = ${formatNumber(GEAR_PAIR.gmf, 4)}번, 이빨마다 고르게 일어납니다. 이 그림에서 막대는 고르고, 결함은 스펙트럼과 파형에서 봅니다.`,
-  wear: () => '마모는 모든 이빨이 고르게 닳아 맞물림마다 조금씩 세집니다. 막대는 고르게 높아질 뿐이라, 결함 모양은 GMF 하모닉의 키(스펙트럼)에서 봅니다.',
-  eccentric: (s) => `편심인 ${s === 'pinion' ? '피니언은' : '기어는'} 한 바퀴에 한 번 더 깊게 물렸다 얕게 물립니다. 막대 높이가 그 기어의 회전(${formatNumber(s === 'pinion' ? f1 : f2, 4)} Hz)으로 오르내림 → GMF 둘레에 그 간격의 측대역.`,
-  broken: (s) => `깨진 이(빨강)는 ${s === 'pinion' ? `피니언이 한 바퀴 돌 때(${formatNumber(1000 / f1, 3)} ms)` : `기어가 한 바퀴 돌 때(${formatNumber(1000 / f2, 4)} ms)`} 한 번만 맞물려 그때만 큰 충격이 옵니다 — 파형에서 한 바퀴에 한 번 튀는 봉우리, 스펙트럼에서 GMF 둘레의 ${s === 'pinion' ? '피니언' : '기어'} 1X 간격 측대역이 넓게.`,
-  backlash: () => '백래시가 크면 가벼운 부하에서 이빨이 떨어졌다 다시 부딪힙니다. 이 그림의 맞물림은 고르게 그렸고, 모양은 파형·스펙트럼에서 봅니다.',
-  hunting: () => `피니언의 상한 이빨과 기어의 상한 이빨(둘 다 빨강)은 ${z1} × ${z2} = ${z1 * z2}번 맞물림마다 = 피니언 ${z2}바퀴 = 기어 ${z1}바퀴마다 한 번만 만납니다(${formatNumber(htPeriod, 4)} s, 헌팅 투스 주기). 작은 주황 막대는 상한 이빨 하나가 맞물릴 때, 큰 빨강 막대는 둘이 만날 때입니다 — 띠에는 두 주기를 담아 큰 막대 사이 간격이 곧 헌팅 투스 주기입니다.`,
+const EXPLAIN: Record<GearFault, (tr: T, side: GearSide) => string> = {
+  healthy: (tr) => tr`맞물림은 1초에 GMF = ${z1} × ${formatNumber(f1, 4)} = ${formatNumber(GEAR_PAIR.gmf, 4)}번, 이빨마다 고르게 일어납니다. 이 그림에서 막대는 고르고, 결함은 스펙트럼과 파형에서 봅니다.`,
+  wear: (tr) => tr('마모는 모든 이빨이 고르게 닳아 맞물림마다 조금씩 세집니다. 막대는 고르게 높아질 뿐이라, 결함 모양은 GMF 하모닉의 키(스펙트럼)에서 봅니다.'),
+  eccentric: (tr, s) => tr`편심인 ${s === 'pinion' ? tr('피니언은') : tr('기어는')} 한 바퀴에 한 번 더 깊게 물렸다 얕게 물립니다. 막대 높이가 그 기어의 회전(${formatNumber(s === 'pinion' ? f1 : f2, 4)} Hz)으로 오르내림 → GMF 둘레에 그 간격의 측대역.`,
+  broken: (tr, s) => tr`깨진 이(빨강)는 ${s === 'pinion' ? tr`피니언이 한 바퀴 돌 때(${formatNumber(1000 / f1, 3)} ms)` : tr`기어가 한 바퀴 돌 때(${formatNumber(1000 / f2, 4)} ms)`} 한 번만 맞물려 그때만 큰 충격이 옵니다 — 파형에서 한 바퀴에 한 번 튀는 봉우리, 스펙트럼에서 GMF 둘레의 ${s === 'pinion' ? tr('피니언') : tr('기어')} 1X 간격 측대역이 넓게.`,
+  backlash: (tr) => tr('백래시가 크면 가벼운 부하에서 이빨이 떨어졌다 다시 부딪힙니다. 이 그림의 맞물림은 고르게 그렸고, 모양은 파형·스펙트럼에서 봅니다.'),
+  hunting: (tr) => tr`피니언의 상한 이빨과 기어의 상한 이빨(둘 다 빨강)은 ${z1} × ${z2} = ${z1 * z2}번 맞물림마다 = 피니언 ${z2}바퀴 = 기어 ${z1}바퀴마다 한 번만 만납니다(${formatNumber(htPeriod, 4)} s, 헌팅 투스 주기). 작은 주황 막대는 상한 이빨 하나가 맞물릴 때, 큰 빨강 막대는 둘이 만날 때입니다 — 띠에는 두 주기를 담아 큰 막대 사이 간격이 곧 헌팅 투스 주기입니다.`,
 };
 
 export default function GearMesh({ fault, side }: { fault: GearFault; side: GearSide }) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
   const box = useRef<HTMLDivElement>(null);
   const hunting = fault === 'hunting';
-  const speeds = useMemo(() => turnSpeeds(f1, hunting ? [1, 2, 4] : [0.1, 0.25, 0.5]), [hunting]);
+  const speeds = useMemo(() => turnSpeeds(f1, hunting ? [1, 2, 4] : [0.1, 0.25, 0.5], lang), [hunting, lang]);
   const [speed, setSpeed] = useState(1);
   const rate = speeds[Math.min(speed, speeds.length - 1)].rate;
   const clock = usePlayClock(rate, undefined, box);
@@ -95,9 +100,9 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
   return (
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={Math.min(speed, speeds.length - 1)} onSpeed={setSpeed}
-        status={`피니언 ${(t * f1).toFixed(2)}바퀴 · 기어 ${(t * f2).toFixed(2)}바퀴`} />
+        status={tr`피니언 ${(t * f1).toFixed(2)}바퀴 · 기어 ${(t * f2).toFixed(2)}바퀴`} />
       <ResponsiveSvg mobilePanels={[[0,-4,320,278],[320,-4,400,278]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`${z1}이빨 피니언과 ${z2}이빨 기어가 맞물려 돈다. ${EXPLAIN[fault](side)}`}>
+        aria-label={tr`${z1}이빨 피니언과 ${z2}이빨 기어가 맞물려 돈다. ${EXPLAIN[fault](tr, side)}`}>
         {blur ? (
           <>
             <circle cx={G.x} cy={G.y} r={R2} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.3" strokeDasharray="5 4" />
@@ -125,12 +130,12 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
             })}
           </g>
         )}
-        <text x={P.x} y={P.y + R1 + 26} textAnchor="middle" fontSize="12" fill="var(--text-muted)">피니언 {z1}이빨 ↺</text>
-        <text x={G.x} y={G.y + R2 + 26} textAnchor="middle" fontSize="12" fill="var(--text-muted)">기어 {z2}이빨 ↻</text>
+        <text x={P.x} y={P.y + R1 + 26} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{tr`피니언 ${z1}이빨 ↺`}</text>
+        <text x={G.x} y={G.y + R2 + 26} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{tr`기어 ${z2}이빨 ↻`}</text>
 
         {/* 오른쪽 띠 */}
         <text x={X0} y={18} fontSize="12.5" fill="var(--text-muted)">
-          {hunting ? `상한 이빨이 맞물릴 때만 · 헌팅 투스 두 주기 (2 × ${formatNumber(htPeriod, 4)} s)` : `맞물림마다의 충격 (막대 높이) · ${gearSideWin ? '기어 2바퀴' : '피니언 4바퀴'} 동안 ${events.length}번`}
+          {hunting ? tr`상한 이빨이 맞물릴 때만 · 헌팅 투스 두 주기 (2 × ${formatNumber(htPeriod, 4)} s)` : tr`맞물림마다의 충격 (막대 높이) · ${gearSideWin ? tr('기어 2바퀴') : tr('피니언 4바퀴')} 동안 ${events.length}번`}
         </text>
         <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke="var(--border)" />
         {gridLines.map((g, i) => (
@@ -142,7 +147,7 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
           </g>
         ))}
         <text x={X1} y={BASE + 36} textAnchor="end" fontSize="11.5" fill="var(--text-muted)">
-          {hunting ? '피니언 바퀴 수' : gearSideWin ? '기어 바퀴 수' : '피니언 바퀴 수'}
+          {hunting ? tr('피니언 바퀴 수') : gearSideWin ? tr('기어 바퀴 수') : tr('피니언 바퀴 수')}
         </text>
         {events.map((e) => (
           <line key={e.n} x1={xAt(e.t)} y1={BASE} x2={xAt(e.t)} y2={BASE - e.w * stemK} stroke={e.damaged === 2 ? '#dc2626' : e.damaged === 1 ? 'var(--plot-2)' : 'var(--plot-1)'}
@@ -150,7 +155,7 @@ export default function GearMesh({ fault, side }: { fault: GearFault; side: Gear
         ))}
         <line x1={xAt(t)} y1={30} x2={xAt(t)} y2={BASE + 5} stroke="var(--text-muted)" />
       </ResponsiveSvg>
-      <p className="anim-caption">{EXPLAIN[fault](side)} 파랑·보라 선은 두 기어가 도는 것을 보이는 표시선입니다. 그림은 실제보다 느리게 재생합니다{hunting ? '(헌팅 투스는 주기를 보려고 더 빠르게 — 이빨이 너무 빨라 거꾸로 도는 것처럼 보이지 않게 피치원만 그림)' : ''}.</p>
+      <p className="anim-caption">{EXPLAIN[fault](tr, side)} {tr('파랑·보라 선은 두 기어가 도는 것을 보이는 표시선입니다. 그림은 실제보다 느리게 재생합니다')}{hunting ? tr('(헌팅 투스는 주기를 보려고 더 빠르게 — 이빨이 너무 빨라 거꾸로 도는 것처럼 보이지 않게 피치원만 그림)') : ''}.</p>
     </div>
   );
 }

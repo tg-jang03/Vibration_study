@@ -1,0 +1,257 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P7-3 Misalignment · Looseness · Rub
+description: Why nonlinearities such as contact, clearance and coupling forces make harmonics, subharmonics and reverse components; misalignment by 1X, 2X, axial, phase across the coupling, orbit and shaft position; structural and rotating looseness; clues and severity of partial, full annular and thermal (Newkirk) rub; separating and confirming them with the five evidence elements
+sectionId: P7-3
+source: p7-3.mdx
+sourceHash: 43ee158f73
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import NonlinearLab from '../../components/labs/NonlinearLab';
+import { withBase } from '../../lib/site';
+import * as F from '../../figures/p7-3';
+
+# 7-3 Misalignment · looseness · rub: machines that do not answer with a sine wave
+
+In the causes of P7-2, a 1X force made a 1X vibration. Twice the force gave twice the vibration, and only 1X (2X for a crack) stood in the spectrum. But field spectra show 2X and 3X standing in a row, and sometimes half of 1X (½X). The waveform is flat on one side (P6-1), and the orbit draws a banana, a figure eight or an inner loop (P6-3). What makes such shapes?
+
+The three causes on this page — misalignment, looseness and rub — all arise where the force is not proportional to the displacement, that is, where things **touch and separate** or where parts are **forced together**. We build where those shapes come from with the same rotor model, and then sort out the evidence that separates the three.
+
+<Callout type="idea" title="By the end of this page you will">
+
+1. Explain why nonlinearities such as contact and clearance make harmonics, subharmonics and reverse components.
+2. Recognize misalignment from 1X and 2X, the phase across the coupling, the orbit shape and the shaft position (shaft centerline), and know that "angular = axial, parallel = 2X" is a simplification.
+3. Distinguish structural looseness (amplitude and phase on both sides of a joint) from rotating looseness (a harmonic cluster, a ½X cluster, a truncated waveform).
+4. Know the clues and severity of partial rub, full annular rub and thermal rub (Newkirk).
+5. Separate the three from one another, and from the causes of P7-2, with the five evidence elements.
+
+</Callout>
+
+---
+
+## 1. Nonlinear: it does not answer a sine force with a sine
+
+In the mass-spring of P1-4, the spring force was proportional to the displacement (F = kx). So a sine force was answered by a sine of the same frequency. The moment the shaft touches a seal (the part that closes the narrow gap between rotating and stationary parts) is different. Before contact only the shaft bends; after contact the seal pushes back like a very stiff spring. The spring suddenly changes with displacement.
+
+<Callout type="term" title="Nonlinear">
+
+A system in which the force is not proportional to the displacement (or velocity). Typical cases are contact, clearance, a bolted joint opening and closing, and a coupling forced into connection. Even if a sine force is applied, the response is not a sine, so harmonics (2X, 3X) appear; depending on the conditions, subharmonics (½X, ⅓X) appear, or the system settles into one of two possible motions under the same force.
+
+</Callout>
+
+<Figure {...F.contactIntro} />
+
+The rotor of this page is the Jeffcott rotor of P4-2 (an elastic shaft carrying one disk). The critical speed is 3000 rpm, the radial seal clearance is 100 µm, and it turns while sagging 70 µm under gravity; the force and the motion were obtained by integrating directly in time order. Two things to see in Figure 1.
+
+- **The shape changes**: the waveform bends on the side blocked by the seal. A periodic waveform that is not a sine is a sum of harmonics (P2-2), so 2X appears.
+- **The motion itself can change**: the motion that would have been a small circle of 32 µm radius without the seal was bounced away when the bottom touched the seal lightly, and moved to a motion circling widely in the clearance. The contact actually made the vibration bigger. This does not happen in a linear system.
+
+---
+
+## 2. Misalignment
+
+### 2.1 Two shafts forced together
+
+<Figure {...F.misalignSketch} />
+
+Misalignment (P3-3) means the centerlines of two shafts are offset (parallel) or bent (angular). The coupling flexes to connect them, but at a price of three things.
+
+1. **Static preload**: it pulls the two shafts toward each other and changes the position of the shaft in the bearing.
+2. **1X and 2X forces**: a flexed coupling bends and straightens once or twice per revolution. This force is not a rotating force but a force with a **fixed direction** (P7-2 §5).
+3. **Axial force**: angular misalignment pushes the two shafts in opposite axial directions.
+
+### 2.2 Orbit and shaft position
+
+<Figure {...F.misalignOrbits} />
+
+Figure 3 is the orbit at 2400 rpm when a misalignment force is added to the same rotor. The 1X and 2X with fixed directions are added to the circle of unbalance, and the shape is a banana when the 2X is 0.6 times the 1X, and a figure eight when it is 1.5 times. These shapes are as read in P6-3.
+
+More decisive is the <strong>cross (mean position)</strong>. With good alignment the shaft sits at the gravity-sag position (−70 µm), but under strong misalignment the preload lifted the shaft up to −28 µm. For a journal bearing, the shaft centerline (P4-3) is away from the normal position, on the side opposite the load or sideways. If the preload **unloads** one bearing, that bearing becomes lightly loaded and an oil whirl (P4-4) can appear. This is the path by which misalignment becomes a cause of instability.
+
+### 2.3 Phase across the coupling
+
+<Figure {...F.couplingPhase} />
+
+Angular misalignment pushes the shafts on the two sides of the coupling in opposite directions, so the **axial** vibration of the bearings on both sides of the coupling is about 180° out of phase. With parallel misalignment the radial vibration also tends to be about 180° across the coupling. With unbalance, the axial vibration is small and the two sides move almost together.
+
+<Callout type="warn" title={'"Angular = axial, parallel = 2X" is a simplification'}>
+
+Textbook tables often say "angular misalignment → axial 1X, parallel misalignment → radial 2X." In a real machine the two forms are mixed, and depending on the coupling type and stiffness the 2X is often smaller than the 1X. Do not decide from one ratio in the spectrum; look at the <strong>phase across the coupling (about 180°), the orbit shape (banana, figure eight), and the shaft position (preload)</strong> together. Confirmation is an alignment measurement while stopped (P9-3).
+
+</Callout>
+
+---
+
+## 3. Looseness
+
+Looseness is a place that should be tight opening and closing. It is divided in two by where it is loose.
+
+### 3.1 Structural looseness: between the foot and the foundation
+
+If the bolts of the machine foot loosen, or the base or foundation cracks, the joint opens when it is pulled upward.
+
+<Figure {...F.footFig} />
+
+The clue in Figure 5 is **measuring both sides of the joint**. A tight joint moves together on both sides, but a loose joint lifts and drops only at the foot, so the foot 1X is 6.2 times the base, with a phase difference of 37°. The waveform rises only to the lifting side, and the 2X is 0.48 times the 1X. The 1X is mainly concentrated in one direction (usually vertical). Measure the same direction in turn from foot → base → foundation and look for the place where the amplitude and phase **suddenly change**.
+
+### 3.2 Rotating looseness: when the bearing clearance has grown
+
+When the bearing wears or the housing loosens and the clearance grows, the shaft rests on the bottom of the clearance, and lifts and drops the moment the unbalance force exceeds the weight.
+
+<Figure {...F.looseRotFig} />
+
+Even on the same machine, two fingerprints appear depending on speed and unbalance.
+
+- **Harmonic cluster** (3600 rpm): the bottom of the vertical waveform is blocked by the clearance floor and cut off, and 2X to 5X stand in a row above 1X (2X 58 · 3X 28 · 4X 16 µm p-p). The horizontal has nothing blocking it and shakes widely (horizontal 248 · vertical 127 µm p-p).
+- **½X cluster** (4200 rpm): the same shape repeats once every two turns, so ½X (111 µm) and 1½X (100 µm) stand. Integer multiples of ½X standing in a line make a subharmonic cluster.
+
+---
+
+## 4. Rub
+
+<Callout type="term" title="Rub">
+
+A rotating part touching and rubbing against a stationary part (seal, bearing, casing). It is divided into partial rub, in which only part of a turn touches; full annular rub, which touches along the whole circumference; and thermal rub (Newkirk effect), in which frictional heat bends the shaft.
+
+</Callout>
+
+### 4.1 Partial rub: harmonics, ½X, reverse components
+
+<Figure {...F.rubFig} />
+
+In Figure 7, at 4200 rpm (1.4 times the critical speed) the orbit goes widely around the seal circle, is blocked by the seal at the bottom, and a 2X appears. The contact point differs a little each turn, so the keyphasor dots do not gather in one place — contact can make a motion that does not repeat exactly the same shape (the spectrum floor rises a little and widens). At 7800 rpm (2.6 times) the vertical ½X is 132 µm p-p, far larger than the 1X (25 µm). Each time it touches, the rotor rings at its own natural frequency, and when the speed is about twice the critical speed the period of that ringing matches two turns, so the same shape repeats every two turns. For the same reason ⅓X may appear near about 3 times (Ehrich 1988). The speed range in which a subharmonic appears depends on the clearance, the contact stiffness and the unbalance, so even the same machine can lose and regain it with a small change of speed. The keyphasor dot splitting into two places is the orbit clue for ½X (P6-3).
+
+In the full spectrum the **reverse component** grows. This is because contact friction pushes the shaft on the side opposite to the sliding of the shaft surface, that is, against the direction of rotation.
+
+### 4.2 Full annular rub: dangerous reverse whirl
+
+<Figure {...F.fullRubFig} />
+
+When partial rub becomes severe (Figure 8 top), the whole orbit turns against the rotation, and the largest components of the full spectrum stand in reverse at −0.92X · −0.84X · −0.78X. The orders differ with speed, but the frequency stays almost the same at about 120 · 118 · 117 Hz. The reverse whirl is **locked** to the natural frequency rather than to the speed (dry whip). With more friction (Figure 8 middle and bottom) the reverse whirl grows every turn and in 11 turns exceeded 1.8 times the clearance (dry whirl).
+
+<Callout type="warn" title="If the reverse whirl grows, stop immediately">
+
+Full annular rub can badly damage the seal, shaft and bearings within seconds. If the **reverse component is dominant** in the full spectrum or the orbit, its frequency does not follow the speed, and the amplitude grows quickly, lean toward stopping the machine.
+
+</Callout>
+
+### 4.3 Thermal rub: Newkirk effect
+
+If the shaft touches on one side only, that side (the high spot, P4-1) is heated by friction and expands, and the shaft bows toward it. The bent shaft changes the 1X, like the bow of P7-2, and the changed vibration in turn moves the place of contact.
+
+<Figure {...F.newkirkFig} />
+
+Below the critical speed the response of the bow lags the high spot a little (lag 40°), so the contact place moves a little at a time against the direction of rotation, and the 1X vector rotates against the rotation while growing. Over 4 hours it goes 1.6 ∠40° → 4.6 ∠140° (as a ratio to the response of unbalance alone). Above the critical speed the bow tends to reduce the vibration, so it hardly changes. If in APHT (P6-4) the 1X vector draws a circle or a spiral over several minutes to several hours, suspect a thermal cause. The Morton effect, which makes the same shape, arises from the heat of the journal oil film without contact, and the evidence that separates the two is covered in <a href={withBase('/p8-2/')}>P8-2</a>.
+
+---
+
+## 5. Lab: put the three causes into the same rotor
+
+<Callout type="try">
+
+1. Set the state to misalignment and the speed to 2400 rpm, and raise the severity from 25 % to 80 %. What are the orbit shape and the mean position (vertical)?
+2. Set the state to partial rub (severity 50 %) and raise the speed from 4200 to 7800 rpm. Which component becomes the main one?
+3. Set the state to rotating looseness and compare severity 100 % at 3600 rpm with severity 50 % at 4200 rpm.
+4. Raise the severity of the partial rub to 100 % and raise the speed 7800 → 9000 → 9600 rpm.
+
+</Callout>
+
+<NonlinearLab client:visible lang="en" />
+
+For 1, the 2X is about 0.6 times the 1X at 25 % (banana) and about 1.5 times at 80 % (figure eight), and the mean position lifts −70 → −57 → −28 µm. For 2, at 4200 rpm the 1X (radius 85 µm) is the main one and a 2X appears, and at 7800 rpm the ½X (132 µm p-p) exceeds the 1X (25 µm p-p). For 3, at 3600 rpm there are a truncated waveform and 2X to 5X, and at 4200 rpm a ½X and 1½X cluster. For 4, from 7800 rpm the orbit turns against the rotation (forward ratio 0 %) and the largest reverse component stays near about 118 Hz, then the calculation stops at 9600 rpm.
+
+---
+
+## 6. Summarizing with the five evidence elements, and separating them
+
+| Evidence (P1-9) | Misalignment | Structural looseness | Rotating looseness | Rub |
+|---|---|---|---|---|
+| Frequency | 1X, 2X (sometimes 3X) | 1X, plus 2X if the waveform is distorted | Several harmonics, a ½X, 1½X cluster depending on conditions | Harmonics, ½X, ⅓X; full annular rub gives a reverse component independent of speed |
+| Amplitude | Depends on the alignment state and temperature (thermal growth) | Large on one side of the joint only | Truncated in one direction (usually the load direction) | Changes suddenly or with time |
+| Phase | About 180° across the coupling (axial and radial) | Sharp change across the joint | Unstable | In thermal rub the 1X vector rotates slowly |
+| Direction | Axial is large; banana and figure-eight orbits | One direction (usually vertical) | Load direction | Reverse component; flat face and inner loop |
+| Operating condition | Changes with load and temperature as the alignment changes | Appears when the force exceeds the weight | The fingerprint changes with speed and unbalance | Start-up and shutdown, thermal distortion, seal clearance |
+
+**Separating** — other causes that look similar:
+
+- **Unbalance and bow (P7-2)**: the 1X is a plain sine, the harmonics are small, and the horizontal-vertical phase difference is about 90°.
+- **Oil whirl and whip (P7-4)**: components below 1X, but not exactly at ½X (0.38 to 0.48X), and forward. Whip stays at the mode frequency even when the speed changes. If the ½X follows exactly half the speed, it is on the rub or looseness side.
+- **Measurement chain (P3-4, P6-1)**: if one side is cut off by exceeding the sensor range, harmonics appear, but the shaft does not move that way. Look at the gap voltage and other sensors together.
+- **Electrical causes (P7-7)**: the 2×LF disappears the moment power is cut.
+
+**How to confirm**:
+
+1. Compare the axial and radial phase of the bearings on both sides of the coupling at the same instant (check sensor direction and polarity)
+2. Compare the orbit and the shaft centerline with the records from normal times (P4-3, P6-3)
+3. Measure foot → base → foundation in turn in the same direction, look for where the amplitude and phase change sharply, and check the bolt tightness
+4. In the full spectrum, see the reverse component and whether its frequency follows the speed (P5-3)
+5. Look at the time trend of the 1X vector (APHT). Check the alignment while stopped (P9-3), and inspect the clearance, seals and signs of contact
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Nonlinear | Where things touch and separate or are forced together → harmonics and subharmonics; the motion itself may change |
+| Misalignment | 1X, 2X, axial; about 180° across the coupling; banana and figure eight; the shaft position changes by preload. The ratio rule is a simplification |
+| Structural looseness | Sharp change of amplitude and phase across the joint, one direction, distorted waveform |
+| Rotating looseness | Truncated waveform with a harmonic cluster or a ½X cluster; the fingerprint changes with speed |
+| Partial rub | Harmonics, ½X, ⅓X, reverse component, flat face, keyphasor dots splitting |
+| Full annular rub | Reverse whirl locked to the natural frequency or growing fast → stop immediately |
+| Thermal rub | The 1X vector rotates against the rotation and grows over several minutes to hours (below the critical speed) |
+
+## 8. Review questions
+
+<details>
+<summary><strong>Q1. At the bearings on both sides of a motor-pump coupling, the axial 1X phase is 40° on the motor side and 215° on the pump side, and the axial 2X is also large. What do you suspect, and what do you check before concluding?</strong></summary>
+
+The phase difference is 215 − 40 = <strong>175°</strong>, almost opposite, and the axial 1X and 2X are large, so suspect **angular misalignment**. Before concluding, check that the two sensors are mounted in the same direction (same polarity) — if one is mounted reversed, the 180° is an illusion. Also look at the orbit shape and the shaft centerline, and measure the alignment while stopped.
+</details>
+
+<details>
+<summary><strong>Q2. A rotor with a critical speed of 1800 rpm shows ½X (30 Hz) at 3600 rpm. When the speed is lowered to 3300 rpm that component followed down to 27.5 Hz. What do you think?</strong></summary>
+
+3300 ÷ 60 ÷ 2 = 27.5 Hz, so it follows **exactly half the speed**; think first of the subharmonic that contact or clearance makes at about twice the critical speed (**partial rub or rotating looseness**). An oil whip would have stayed near the mode frequency (about 30 Hz), and an oil whirl would be a little off ½X at 0.38 to 0.48X (P7-4). Also look at the reverse component, the splitting of the keyphasor dots and the harmonics.
+</details>
+
+<details>
+<summary><strong>Q3. At one foot the vertical 1X is 120 µm ∠60°, and the base right below it is 20 µm ∠15°. The other feet have similar foot and base values. What do you do?</strong></summary>
+
+Across the joint the amplitude differs by **6 times** and the phase by 45°, so suspect **structural looseness** of that foot (bolt, shim, base crack). Check the bolt tightness and the gap under the foot, tighten, and measure again to confirm that both sides move together.
+</details>
+
+<details>
+<summary><strong>Q4. A machine running below its critical speed had its 1X grow from 40 µm ∠30° to 70 µm ∠120° over 2 hours after start-up, rotating against the rotation, and the 2X is unchanged. How do you separate it from a crack?</strong></summary>
+
+The time scale is in **hours** and the 1X vector rotates against the rotation while growing, so suspect <strong>thermal rub (Newkirk)</strong> first. A crack (P7-2) usually changes over weeks to months and the 2X grows with it. See whether the pattern changes when the load or speed is changed, and whether there is temperature or contact marks near the seal, and also separate it from the Morton effect (<a href={withBase('/p8-2/')}>P8-2</a>), which arises from journal heat without contact.
+</details>
+
+<details>
+<summary><strong>Q5. During operation the reverse component in the full spectrum suddenly grew, its frequency stays at about 118 Hz even when the speed is changed, and the amplitude is growing quickly. What do you do?</strong></summary>
+
+The reverse component is dominant, its frequency does not follow the speed, and it grows fast, so suspect <strong>full annular rub (dry whip and whirl)</strong> and lean **toward stopping the machine**. The seal and shaft can be badly damaged within seconds to minutes. After stopping, check the seal and shaft for signs of contact and the clearance.
+</details>
+
+<details>
+<summary><strong>Q6. Only the lower side of the vertical waveform is flat and 2X to 5X stand in a row. A colleague says "rub." What do you check?</strong></summary>
+
+A waveform blocked on one side and a harmonic cluster can be made by **rub, rotating looseness and truncation in the measurement chain**. (1) Check the gap voltage and the sensor range to see whether the measurement is cut off (P3-4), (2) compare horizontal and vertical and the other bearing to see whether only one direction (the load direction) is cut, and (3) look at the reverse component of the full spectrum, the keyphasor dots, and the change with speed (½X cluster). If it is cut in the load direction and changes to a ½X cluster with speed, it is rotating looseness; if the reverse component is large and there are signs of contact or heat, it is on the rub side.
+</details>
+
+---
+
+The next page (P7-4) puts another main character of the components below 1X — fluid-film and fluid-force instabilities such as oil whirl and whip — into a separating table together with rub and looseness.
+
+## References
+
+<References items={[
+  ['R-02', 'Preload and orbit of misalignment; subharmonics and reverse components of rub'],
+  ['R-49', 'Contact friction of rub, dry whirl and whip, the Newkirk effect'],
+  ['R-23', 'Evidence for reading rub'],
+  ['R-29', '½X and ⅓X of a rotor in a clearance'],
+  ['R-03', 'Structural and rotating looseness, phase across the coupling'],
+]} />

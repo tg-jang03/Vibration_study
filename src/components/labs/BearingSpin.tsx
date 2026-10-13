@@ -5,6 +5,9 @@ import { BRG_DEMO, DEMO_CALC, DEMO_FR, FAULT_LABEL, RATE_LABEL, type BearingFaul
 import { bearingImpacts, bearingPose } from '../../lib/faults/bearingMotion';
 import { usePlayClock } from '../ui/hooks';
 import PlayControls, { turnSpeeds } from '../ui/PlayControls';
+import { useLang } from '../ui/lang';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/BearingSpin';
 
 /**
  * LAB-BRG-02의 움직이는 그림 (D-044): 6205 볼베어링(볼 9개)이 도는 모습과 결함 충격.
@@ -55,16 +58,20 @@ function Burst({ x, y, size = 1 }: { x: number; y: number; size?: number }) {
   );
 }
 
-const EXPLAIN: Record<BearingFault, string> = {
-  outer: `외륜은 멈춰 있고 결함은 아래 하중대에 있습니다. 볼 ${N}개를 실은 케이지가 축 한 바퀴에 ${formatNumber(B.ftf / FR, 3)}바퀴(FTF = ${formatNumber(B.ftf, 4)} Hz) 돌므로, 결함 위를 지나는 볼은 1초에 ${N} × ${formatNumber(B.ftf, 4)} = ${formatNumber(B.bpfo, 4)}개 — 이것이 BPFO입니다. 결함이 늘 하중대에 있어 충격 세기가 고릅니다.`,
-  inner: `내륜 결함은 축과 함께 1초에 ${formatNumber(FR, 4)}바퀴 돌고, 볼은 그보다 느리게(${formatNumber(B.ftf, 4)} Hz) 돕니다. 결함이 볼을 따라잡는 빈도는 ${N} × (${formatNumber(FR, 4)} − ${formatNumber(B.ftf, 4)}) = ${formatNumber(B.bpfi, 4)} Hz — BPFI입니다. 결함이 축 한 바퀴에 한 번 아래 하중대를 지나며 충격이 커졌다 작아지므로, 충격 세기가 1X로 오르내립니다 → BPFI ± 1X 측대역.`,
-  ball: `흠이 난 볼(빨간 점)은 케이지 안에서 1초에 ${formatNumber(B.bsf, 4)}바퀴(BSF) 자전하며, 한 바퀴에 외륜과 내륜에 한 번씩 닿습니다 → 2 × BSF = ${formatNumber(B.bsf2, 4)} Hz. 그 볼은 케이지와 함께 1초에 ${formatNumber(B.ftf, 4)}바퀴 하중대를 들락날락하므로 세기가 FTF로 오르내립니다 → 2×BSF ± FTF.`,
-  cage: `케이지의 칸 하나(빨간 칸)가 부러졌습니다. 그 칸이 하중대를 지날 때마다 볼과 부딪히므로 1초에 FTF = ${formatNumber(B.ftf, 4)}번, 축 회전수(${formatNumber(FR, 4)} Hz)보다도 낮습니다. 충격은 궤도면 결함보다 약합니다.`,
-};
+/** 결함 이름의 영어 사전 키 (D-054). 한국어 화면은 FAULT_LABEL(lib/faults/bearing)을 그대로 쓴다 */
+const FAULT_KEY: Record<BearingFault, string> = { outer: k('외륜'), inner: k('내륜'), ball: k('볼'), cage: k('케이지') };
 
 export default function BearingSpin({ fault, healthy }: { fault: BearingFault; healthy: boolean }) {
+  const lang = useLang();
+  const tr = makeT(lang, EN);
+  const EXPLAIN: Record<BearingFault, string> = {
+    outer: tr`외륜은 멈춰 있고 결함은 아래 하중대에 있습니다. 볼 ${N}개를 실은 케이지가 축 한 바퀴에 ${formatNumber(B.ftf / FR, 3)}바퀴(FTF = ${formatNumber(B.ftf, 4)} Hz) 돌므로, 결함 위를 지나는 볼은 1초에 ${N} × ${formatNumber(B.ftf, 4)} = ${formatNumber(B.bpfo, 4)}개 — 이것이 BPFO입니다. 결함이 늘 하중대에 있어 충격 세기가 고릅니다.`,
+    inner: tr`내륜 결함은 축과 함께 1초에 ${formatNumber(FR, 4)}바퀴 돌고, 볼은 그보다 느리게(${formatNumber(B.ftf, 4)} Hz) 돕니다. 결함이 볼을 따라잡는 빈도는 ${N} × (${formatNumber(FR, 4)} − ${formatNumber(B.ftf, 4)}) = ${formatNumber(B.bpfi, 4)} Hz — BPFI입니다. 결함이 축 한 바퀴에 한 번 아래 하중대를 지나며 충격이 커졌다 작아지므로, 충격 세기가 1X로 오르내립니다 → BPFI ± 1X 측대역.`,
+    ball: tr`흠이 난 볼(빨간 점)은 케이지 안에서 1초에 ${formatNumber(B.bsf, 4)}바퀴(BSF) 자전하며, 한 바퀴에 외륜과 내륜에 한 번씩 닿습니다 → 2 × BSF = ${formatNumber(B.bsf2, 4)} Hz. 그 볼은 케이지와 함께 1초에 ${formatNumber(B.ftf, 4)}바퀴 하중대를 들락날락하므로 세기가 FTF로 오르내립니다 → 2×BSF ± FTF.`,
+    cage: tr`케이지의 칸 하나(빨간 칸)가 부러졌습니다. 그 칸이 하중대를 지날 때마다 볼과 부딪히므로 1초에 FTF = ${formatNumber(B.ftf, 4)}번, 축 회전수(${formatNumber(FR, 4)} Hz)보다도 낮습니다. 충격은 궤도면 결함보다 약합니다.`,
+  };
   const box = useRef<HTMLDivElement>(null);
-  const speeds = useMemo(() => turnSpeeds(FR, [0.1, 0.25, 0.5]), []);
+  const speeds = useMemo(() => turnSpeeds(FR, [0.1, 0.25, 0.5], lang), [lang]);
   const [speed, setSpeed] = useState(1);
   const rate = speeds[speed].rate;
   const clock = usePlayClock(rate, undefined, box);
@@ -98,12 +105,12 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
   return (
     <div className="anim-panel" ref={box}>
       <PlayControls clock={clock} speeds={speeds} speed={speed} onSpeed={setSpeed}
-        status={`축 ${turns.toFixed(2)}바퀴 · 케이지 ${(turns * (B.ftf / FR)).toFixed(2)}바퀴`} />
+        status={tr`축 ${turns.toFixed(2)}바퀴 · 케이지 ${(turns * (B.ftf / FR)).toFixed(2)}바퀴`} />
       <ResponsiveSvg mobilePanels={[[0,-4,300,278],[300,-4,420,278]]} viewBox={`0 0 ${W} ${H}`} width="100%" role="img" style={{ display: 'block' }}
-        aria-label={`볼 ${N}개 베어링이 돈다. ${healthy ? '결함 없음' : `${FAULT_LABEL[fault]} 결함, 충격이 1초에 ${formatNumber(fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf, 4)}번`}.`}>
+        aria-label={tr`볼 ${N}개 베어링이 돈다. ${healthy ? tr`결함 없음` : tr`${lang === 'en' ? tr(FAULT_KEY[fault]) : FAULT_LABEL[fault]} 결함, 충격이 1초에 ${formatNumber(fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf, 4)}번`}.`}>
         {/* 하중대 */}
         <path d={arcBand(-Math.PI / 3, Math.PI / 3, R_OUT + 2, R_OUT + 12)} fill="var(--status-wip)" opacity="0.35" />
-        <text x={C.x} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">하중대 (축 무게가 실리는 아래)</text>
+        <text x={C.x} y={H - 4} textAnchor="middle" fontSize="12" fill="var(--text-muted)">{tr`하중대 (축 무게가 실리는 아래)`}</text>
         {/* 외륜 (고정) */}
         <circle cx={C.x} cy={C.y} r={(R_OUT + R_OR) / 2} fill="none" stroke="var(--border)" strokeWidth={R_OUT - R_OR} />
         <circle cx={C.x} cy={C.y} r={R_OR} fill="none" stroke="var(--text-muted)" strokeWidth="1.5" />
@@ -114,7 +121,7 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
         <circle cx={C.x} cy={C.y} r={R_IR} fill="none" stroke="var(--text-muted)" strokeWidth="1.5" />
         <circle cx={C.x} cy={C.y} r={R_SHAFT} fill="var(--surface)" stroke="var(--text-muted)" strokeWidth="1.5" />
         <line x1={at(pose.inner + Math.PI, 6)[0]} y1={at(pose.inner + Math.PI, 6)[1]} x2={at(pose.inner + Math.PI, R_SHAFT - 4)[0]} y2={at(pose.inner + Math.PI, R_SHAFT - 4)[1]} stroke="var(--plot-1)" strokeWidth="3" strokeLinecap="round" />
-        <text x={C.x} y={C.y + 4} textAnchor="middle" fontSize="11" fill="var(--text-muted)">축</text>
+        <text x={C.x} y={C.y + 4} textAnchor="middle" fontSize="11" fill="var(--text-muted)">{tr`축`}</text>
         {!healthy && fault === 'inner' && <path d={arcBand(pose.inner - 0.09, pose.inner + 0.09, R_IR - 7, R_IR)} fill="#dc2626" />}
         {/* 케이지: 피치 원 + 볼 사이 칸막이 */}
         <circle cx={C.x} cy={C.y} r={RP} fill="none" stroke="var(--plot-4)" strokeWidth="1.2" strokeDasharray="3 3" />
@@ -132,17 +139,17 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
         })}
         {!healthy && fault === 'ball' && <circle cx={spot[0]} cy={spot[1]} r={3.6} fill="#dc2626" />}
         {burst && <Burst x={burst[0]} y={burst[1]} size={0.6 + 0.6 * (flash?.w ?? 1)} />}
-        <text x={C.x - R_OUT} y={14} fontSize="12" fill="var(--text-muted)">외륜 고정 · 내륜(축) ↺</text>
+        <text x={C.x - R_OUT} y={14} fontSize="12" fill="var(--text-muted)">{tr`외륜 고정 · 내륜(축) ↺`}</text>
 
         {/* 오른쪽 띠: 축 4바퀴 동안의 충격 */}
         <text x={X0} y={18} fontSize="12.5" fill="var(--text-muted)">
-          {healthy ? '결함이 없으면 충격도 없습니다' : `충격 (막대 높이 = 세기) · 축 ${WINDOW_TURNS}바퀴 동안 ${formatNumber(hits.length, 3)}번`}
+          {healthy ? tr`결함이 없으면 충격도 없습니다` : tr`충격 (막대 높이 = 세기) · 축 ${WINDOW_TURNS}바퀴 동안 ${formatNumber(hits.length, 3)}번`}
         </text>
         <line x1={X0} y1={BASE} x2={X1} y2={BASE} stroke="var(--border)" />
         {Array.from({ length: WINDOW_TURNS + 1 }, (_, i) => (
           <g key={i}>
             <line x1={xAt(w0 + i / FR)} y1={BASE - STEM - 10} x2={xAt(w0 + i / FR)} y2={BASE + 6} stroke="var(--text-muted)" strokeDasharray="3 4" opacity="0.5" />
-            <text x={xAt(w0 + i / FR)} y={BASE + 20} textAnchor={i === 0 ? 'start' : i === WINDOW_TURNS ? 'end' : 'middle'} fontSize="11.5" fill="var(--text-muted)">{i === 0 ? '축 0바퀴' : `${i}`}</text>
+            <text x={xAt(w0 + i / FR)} y={BASE + 20} textAnchor={i === 0 ? 'start' : i === WINDOW_TURNS ? 'end' : 'middle'} fontSize="11.5" fill="var(--text-muted)">{i === 0 ? tr`축 0바퀴` : `${i}`}</text>
           </g>
         ))}
         {hits.map((h) => (
@@ -151,14 +158,14 @@ export default function BearingSpin({ fault, healthy }: { fault: BearingFault; h
         <line x1={xAt(t)} y1={BASE - STEM - 10} x2={xAt(t)} y2={BASE + 6} stroke="var(--text-muted)" />
         {!healthy && (
           <text x={X1} y={H - 6} textAnchor="end" fontSize="12" fill="var(--text-muted)">
-            {RATE_LABEL[fault]} = {formatNumber(fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf, 4)} Hz = 축 한 바퀴에 {formatNumber((fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf) / FR, 3)}번
-            {fault === 'ball' ? ' (주황 = 외륜에, 초록 = 내륜에)' : ''}
+            {tr`${RATE_LABEL[fault]} = ${formatNumber(fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf, 4)} Hz = 축 한 바퀴에 ${formatNumber((fault === 'outer' ? B.bpfo : fault === 'inner' ? B.bpfi : fault === 'ball' ? B.bsf2 : B.ftf) / FR, 3)}번`}
+            {fault === 'ball' ? tr` (주황 = 외륜에, 초록 = 내륜에)` : ''}
           </text>
         )}
       </ResponsiveSvg>
       <p className="anim-caption">
-        {healthy ? `건전한 베어링: 축(파란 표시)이 1초에 ${formatNumber(FR, 4)}바퀴, 볼을 실은 케이지(보라)는 그보다 느린 ${formatNumber(B.ftf, 4)}바퀴(FTF) 돕니다. 결함 위치를 고르고 단계를 올리면 충격이 보입니다.` : EXPLAIN[fault]}
-        {' '}숫자는 미끄럼 없는 계산값입니다(실제 신호는 미끄럼 1 %로 조금 다름).
+        {healthy ? tr`건전한 베어링: 축(파란 표시)이 1초에 ${formatNumber(FR, 4)}바퀴, 볼을 실은 케이지(보라)는 그보다 느린 ${formatNumber(B.ftf, 4)}바퀴(FTF) 돕니다. 결함 위치를 고르고 단계를 올리면 충격이 보입니다.` : EXPLAIN[fault]}
+        {' '}{tr`숫자는 미끄럼 없는 계산값입니다(실제 신호는 미끄럼 1 %로 조금 다름).`}
       </p>
     </div>
   );

@@ -62,6 +62,19 @@ import RunUpBodeLab from '../../../components/labs/RunUpBodeLab';
 import TimeWaveformLab from '../../../components/labs/TimeWaveformLab';
 import TrendLab from '../../../components/labs/TrendLab';
 import WaterfallLab from '../../../components/labs/WaterfallLab';
+import FaultMapLab from '../../../components/labs/FaultMapLab';
+import FaultSynthLab from '../../../components/labs/FaultSynthLab';
+import RpmLab from '../../../components/labs/RpmLab';
+import FlowLab from '../../../components/labs/FlowLab';
+import CampbellLab from '../../../components/labs/CampbellLab';
+import OneXLab from '../../../components/labs/OneXLab';
+import NonlinearLab from '../../../components/labs/NonlinearLab';
+import SubsyncLab from '../../../components/labs/SubsyncLab';
+import BearingCalcLab from '../../../components/labs/BearingCalcLab';
+import BearingStageLab from '../../../components/labs/BearingStageLab';
+import GearSpectrumLab from '../../../components/labs/GearSpectrumLab';
+import GearTsaLab from '../../../components/labs/GearTsaLab';
+import ElectricLab from '../../../components/labs/ElectricLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -128,4 +141,17 @@ const c = lab.component;
   {c === 'TimeWaveformLab' && <TimeWaveformLab client:load lang="en" />}
   {c === 'TrendLab' && <TrendLab client:load lang="en" />}
   {c === 'WaterfallLab' && <WaterfallLab client:load lang="en" />}
+  {c === 'FaultMapLab' && <FaultMapLab client:load lang="en" />}
+  {c === 'FaultSynthLab' && <FaultSynthLab client:load lang="en" />}
+  {c === 'RpmLab' && <RpmLab client:load lang="en" />}
+  {c === 'FlowLab' && <FlowLab client:load lang="en" />}
+  {c === 'CampbellLab' && <CampbellLab client:load lang="en" />}
+  {c === 'OneXLab' && <OneXLab client:load lang="en" />}
+  {c === 'NonlinearLab' && <NonlinearLab client:load lang="en" />}
+  {c === 'SubsyncLab' && <SubsyncLab client:load lang="en" />}
+  {c === 'BearingCalcLab' && <BearingCalcLab client:load lang="en" />}
+  {c === 'BearingStageLab' && <BearingStageLab client:load lang="en" />}
+  {c === 'GearSpectrumLab' && <GearSpectrumLab client:load lang="en" />}
+  {c === 'GearTsaLab' && <GearTsaLab client:load lang="en" />}
+  {c === 'ElectricLab' && <ElectricLab client:load lang="en" />}
 </LabPageShell>
