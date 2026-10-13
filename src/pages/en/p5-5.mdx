@@ -1,0 +1,297 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-5 Tracking and notch filters
+description: How a tracking filter that follows shaft speed (complex demodulation plus a low-pass) extracts the 1X amplitude and phase, the trade-off between filter bandwidth, noise and lag, the errors that shift and shave the peak in a run-up Bode plot and filtering twice, Not-1X with the 1X removed by a notch, and the 1X filtered orbit
+sectionId: P5-5
+source: p5-5.mdx
+sourceHash: 688bebf013
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import TrackingLab from '../../components/labs/TrackingLab';
+import * as F from '../../figures/p5-5';
+
+# 5-5 Tracking and notch filters: following the rotation to extract and remove 1X
+
+In P4-1 you read the critical speed and the amplification factor (AF) from the Bode and Polar plots of a run-up record. Every point in those plots is the 1X amplitude and phase that the analyzer computed during startup.
+
+But the measured signal contains 2X, noise and other components besides 1X, and the frequency of 1X keeps moving with the shaft speed. How does the analyzer pick out only 1X from such a signal and keep reading its amplitude and phase? This page covers that calculation (the tracking filter) and, conversely, the calculation that removes only 1X to see what is buried beneath it (the notch).
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why a fixed band-pass filter cannot follow 1X during a run-up.
+2. You can state, in order, the calculation that extracts the 1X amplitude and phase by complex demodulation plus a low-pass.
+3. You can calculate how the filter bandwidth B trades noise against lag (lag ≈ 0.45/B).
+4. You can recognize in a run-up Bode plot that the peak is shifted and lowered by filter lag, and know how to avoid it.
+5. You know what Not-1X (1X removed by a notch) and the 1X filtered orbit show.
+
+</Callout>
+
+---
+
+## 1. To keep only 1X, the filter has to follow the rotation
+
+Can a single band-pass filter from P5-1 keep only 1X?
+
+<Figure {...F.fixedVsTracking} />
+
+While the speed goes from 600 rpm to 3600 rpm, 1X moves from 10 Hz to 60 Hz. A filter fixed at 27 Hz, like the gray band in Figure 1, passes 2X near 810 rpm, 1X near 1620 rpm and 0.45X at 3600 rpm. The output is always "something near 27 Hz", and what that something is changes with the speed. Widening the band lets several components in at once.
+
+So to look at 1X alone, **the center of the passband has to move together with 1X**. The Keyphasor tells you the speed (P3-3).
+
+<Callout type="term" title="Tracking filter">
+
+A narrow band-pass filter whose passband center moves with the speed measured from the Keyphasor. It keeps only 1X (or an nX such as 2X) and keeps reading its amplitude and phase. The run-up Bode and Polar plots (P4-1), the vector trend and the 1X vector in balancing all come from this calculation. The name was mentioned in P3-3.
+
+</Callout>
+
+---
+
+## 2. The digital tracking filter: rotate the signal, then low-pass
+
+The speed keeps changing, so how do we move the center of the filter? In the digital domain, instead of moving the filter we **move the signal**.
+
+In P2-2 the DFT multiplied the signal by cos and sin templates of the frequency being sought and summed, and the synchronous DFT in P3-3 did the same with the shaft rotation angle θ. The tracking filter also multiplies the signal by the cos and sin of the rotation angle. But instead of cutting out a frame and summing, it keeps applying a low-pass filter to the product.
+
+$$
+\vec V_{1X}(t) = 2\,\mathrm{LPF}\left\{x(t)\,e^{-j\theta(t)}\right\}
+$$
+
+- $\theta(t)$: the shaft rotation angle built from the Keyphasor times (P5-4 §2)
+- $e^{-j\theta} = \cos\theta - j\sin\theta$: a reference that rotates with the shaft (complex notation, P2-2)
+- $\mathrm{LPF}$: the low-pass filter; the leading 2 restores the half amplitude (P2-2)
+- $\vec V_{1X} = A\,e^{-j\varphi}$: the 1X vector — amplitude $A$ (peak) and lag angle $\varphi$ (P3-3)
+
+Why does this give 1X? If 1X is $x = A\cos(\theta - \varphi)$, the product splits into two pieces.
+
+$$
+x\,e^{-j\theta} = \frac{A}{2}e^{-j\varphi} + \frac{A}{2}e^{-j(2\theta - \varphi)}
+$$
+
+The first piece is a constant that does not change with time, and the second turns twice per revolution. 2X becomes two pieces that turn once and three times per revolution, and noise wanders at random. **Seen from a frame that rotates with the shaft, only 1X stands still**, so keeping only what stands still with a low-pass gives the 1X vector.
+
+<Figure {...F.demodulation} />
+
+What you can read in Figure 2:
+
+- **The product (light line) swings rapidly** → the twice-per-revolution partner of 1X and the share of 2X
+- **The center of that swing is constant** → its height is the real and imaginary part of the 1X vector
+- **After the low-pass, only that height remains** → after about 1 s it settles at that height
+
+<Callout type="example" title="From real part −15.23 µm and imaginary part −4.154 µm to the 1X vector">
+
+1. Amplitude: $A = \sqrt{15.23^2 + 4.154^2} = 15.79$ µm (peak) = **31.57 µm pp**
+2. Lag angle: $A\cos\varphi = -15.23$, $A\sin\varphi = 4.154$ → $\cos\varphi = -0.965$, $\sin\varphi = 0.263$ → $\varphi$ = **164.7°**
+3. This matches the 3600 rpm value in P4-1 Figure 1 (31.57 µm pp, 164.7°).
+
+</Callout>
+
+In terms of frequency, the multiplication moves 1X to 0 Hz. So a low-pass that keeps everything from near 0 Hz up to $f_c$ is equivalent to a **band-pass of width $B = 2f_c$** centered on 1X in the original signal. The center of this band follows $\theta(t)$ by itself. This page calls $B$ the filter bandwidth.
+
+In the same equation, multiplying by $e^{-j2\theta}$ instead of $e^{-j\theta}$ gives the 2X vector. In general, $\vec V_{nX} = 2\,\mathrm{LPF}\{x\,e^{-jn\theta}\}$.
+
+<Callout type="field" title="The synchronous DFT is also a tracking filter">
+
+In P3-3 we got the 1X vector with a synchronous DFT over a whole number of revolutions. Multiplying and averaging over N revolutions is also a tracking filter doing the same job, with an N-revolution average in place of the low-pass. The larger N is, the narrower and slower it is. Each analyzer differs in its method and in its convention for "width", so record the filter settings along with the run-up record.
+
+</Callout>
+
+---
+
+## 3. Filter bandwidth B: less noise means more lag
+
+How wide should the filter bandwidth B be? A narrow one lets in only the noise near 1X, but you lose something in return.
+
+<Figure {...F.bandwidthStep} />
+
+Figure 3 reads, with three filters of different widths, a signal in which 1X suddenly becomes 1.5 times larger at 3600 rpm. Two things are traded against each other.
+
+- **The noise ripple is proportional to √B**: narrowing B from 5 Hz to 0.2 Hz (1/25) reduces the ripple (theoretical value) from 1.47 to 0.29 µm pp (1/5)
+- **The lag is proportional to 1/B**: catching up with half of the change takes from 0.092 s to 2.28 s
+
+This lag is the group delay from P5-1. The low-pass used on this page (2nd-order Butterworth) has a group delay at 0 Hz of
+
+$$
+\tau_g = \frac{\sqrt{2}}{2\pi f_c} = \frac{\sqrt{2}}{\pi B} \approx \frac{0.45}{B}
+$$
+
+- $\tau_g$: the time by which the 1X vector is read late [s], $B$: the filter bandwidth [Hz]
+
+In Figure 3 the half-catch-up times (0.092, 0.455, 2.28 s) are almost the same as $\tau_g$ (0.090, 0.450, 2.25 s), and reaching 90 % takes about 1.9 times that. Resolving frequencies with a narrow width means watching for that much longer — the same bargain as the frame-length trade-off in P5-2.
+
+<Callout type="example" title="Reading a 200 rpm/s run-up with B = 0.5 Hz">
+
+1. Lag: $\tau_g = 0.45 / 0.5$ = **0.90 s**
+2. Speed passed meanwhile: $\Delta N \approx R\,\tau_g = 200 \times 0.90$ = **180 rpm** ($R$: acceleration rate [rpm/s])
+3. The 1X shown at "3200 rpm" now is roughly the 1X from around 3020 rpm appearing late (near the peak the amplitude is also shaved, §4)
+
+</Callout>
+
+<Callout type="warn" title="'The narrower, the more accurate'">
+
+That is true only when the speed and 1X are not changing. Where 1X changes quickly — a run-up through a critical speed, a sudden change — a narrow filter follows late and reads both amplitude and phase wrong.
+
+</Callout>
+
+---
+
+## 4. Run-up Bode: a narrow filter pushes and shaves the peak
+
+During startup, how does this lag show up in the Bode plot?
+
+<Figure {...F.runupBode} />
+
+Figure 4 is a record of the example rotor from P4-1 (natural speed 3000 rpm, ζ = 0.05) run up at 200 rpm/s. B = 2 Hz (blue) reads the peak at 3066 rpm, 98.9 µm pp, close to the true values (3008 rpm, 100.1 µm pp). With B = 0.5 Hz (orange) the peak is **pushed to 3197 rpm and lowered to 76.5 µm pp**. The 90° phase is also crossed at 3187 rpm, not at 3000 rpm.
+
+The shift (189 rpm for the peak, 187 rpm for the 90° phase) is almost the same as the $R\,\tau_g$ ≈ 180 rpm from the previous section. The peak is lowered because the late filter mixes the short time spent passing the peak with the time just before and after it. Moreover, the phase turns quickly while passing through the resonance, so when vectors pointing in different directions are mixed they partly cancel each other. Whether this error is large or small is judged by comparing it with the width of the resonance. The half-power width $N_2 - N_1$ of the example rotor is about 300 rpm (P4-1), so 180 rpm is 60 % of it.
+
+If you apply the half-power method from P4-1 to this Bode plot, the AF comes out as **5.88** instead of the true 9.90. You would wrongly judge the machine to have much more damping than it really has. With B = 2 Hz it is 10.0.
+
+<Figure {...F.upDownZeroPhase} />
+
+A real-time filter is always pushed toward **where it has been**. As in the top of Figure 5, the run-up is pushed to the high side (3197 rpm) and the coastdown to the low side (2864 rpm), so the two end up 333 rpm apart.
+
+If the record is stored, the filtering twice (zero phase) from P5-1 can remove the lag. In the bottom of Figure 5 the peak speed is 3038 rpm and the 90° phase is 2997 rpm, so both come back almost to where they belong. But the amplitude is shaved even more, to 69.0 µm pp. Filtering twice makes the amplitude response $\lvert H\rvert^2$, which is a narrower filter. You can remove the lag, but the limit remains: a peak that passes in a short time cannot be read with a narrow filter. Widening to 2 Hz and filtering twice gives 3014 rpm and 97.6 µm pp.
+
+<Callout type="warn" title="'The critical speeds of run-up and coastdown differ = the machine has changed'">
+
+Suspect the filter first. Even with the same B, a different acceleration rate shifts the reading by a different amount, and a real-time filter is pushed in opposite directions in a run-up and a coastdown. Check the acceleration rate and filter width of both records, and if they are stored, recompute by filtering twice or by widening the band.
+
+Look for any difference that remains after removing the filter's share on the machine side. If it passes quickly, the transient response of the rotor itself also moves the peak a little in the same direction (about 30 rpm for the example rotor at 200 rpm/s), and the difference in temperature and bearing condition between startup and shutdown also changes the critical speed.
+
+</Callout>
+
+In the lab below, change B, the acceleration rate, the direction and the filtering method.
+
+<Callout type="try">
+
+1. In the initial state (run-up 200 rpm/s, B = 0.5 Hz, real-time), compare the peak speed, amplitude and AF of the reading with the theory (true response).
+2. Widen B to 2 Hz. Where does the peak go? What happens to the "Amplitude ripple" at the bottom?
+3. Return B to 0.5 Hz and lower the acceleration rate to 50 rpm/s. Compare with the result of step 2.
+4. Put the acceleration rate back to 200 rpm/s, switch the speed change to "Down" and then "Up" again with filtering set to "Stored record".
+
+</Callout>
+
+<TrackingLab client:visible lang="en" />
+
+In step 1 the peak is at 3197 rpm and 76.5 µm pp and the AF is 5.88, far from the true values (3008 rpm, 100 µm pp, 9.90). With B = 2 Hz as in step 2 you get closer, at 3066 rpm, 98.9 µm pp and AF 10.0, but in return the amplitude ripple at 3600 rpm grows from about 0.5 to 0.9 µm pp.
+
+In step 3, 50 rpm/s with B = 0.5 Hz gives a peak at 3065 rpm and 99.6 µm pp, almost the same as step 2 (200 rpm/s, B = 2 Hz). Both have an $R\,\tau_g$ of 45 rpm. **Choose the filter width together with the acceleration rate** — a machine that is run up slowly can use a narrow filter and cut noise as well, while a machine that is run up quickly needs a wide filter. In step 4 the coastdown is pushed down to 2864 rpm, and filtering twice brings it back to 3038 rpm but at a low 69.0 µm pp.
+
+---
+
+## 5. Notch: remove 1X and what was buried shows
+
+When 1X is large, how do you see the small components beneath it? Subtract the 1X waveform extracted by the tracking filter from the original signal.
+
+$$
+x_{\text{Not-1X}}(t) = x(t) - \mathrm{Re}\left\{\vec V_{1X}(t)\,e^{j\theta(t)}\right\}
+$$
+
+- $\mathrm{Re}\{\vec V_{1X}\,e^{j\theta}\} = A\cos(\theta - \varphi)$: the 1X waveform extracted by the tracking filter
+
+<Callout type="term" title="Notch filter · Not-1X">
+
+A filter that deeply removes just one narrow frequency band is called a **notch**. In rotating machinery, you subtract the 1X extracted by the tracking filter to remove only 1X, and call the remaining signal **Not-1X**. The RMS of Not-1X (like the overall in P2-7) shows in a single number how large "everything outside 1X" is.
+
+</Callout>
+
+<Figure {...F.notch} />
+
+At 3600 rpm in Figure 6, 0.45X (12 µm pp, the oil-whirl example — P4-4) mixes into 1X (31.6 µm pp) and only makes the peak heights of the waveform ragged; from the waveform it is hard to tell what it is or how large. Even looking at the direct RMS, it **grows only 7 %**, from 11.4 µm without the 0.45X to 12.2 µm. The RMS takes the square root of the sum of the squared RMS of each component, so the large 1X covers the small change. Not-1X, with 1X removed, more than doubles from 2.35 µm to 4.86 µm, and the change shows right away.
+
+The notch has lag too. If the tracking filter follows late, the extracted 1X differs from the real 1X, and the difference **leaks into** Not-1X. That is the small hump near the critical speed at the very bottom of Figure 6 (Not-1X of 3.7 µm at 3031 rpm, of which 2.67 µm is leaked 1X).
+
+<Callout type="try">
+
+1. In the initial state (run-up 50 rpm/s, B = 2 Hz, noise 1 µm, notch on), compare the direct RMS and the Not-1X RMS in the two graphs below, before and after 3300 rpm.
+2. Narrow B to 0.5 Hz. What happens to the Not-1X near the critical speed and to the readout "1X left by the notch"?
+3. Return B to 2 Hz and raise the noise to 5 µm. What made the Not-1X at 3600 rpm grow?
+
+</Callout>
+
+<TrackingLab client:visible lang="en" initial={{ rate: 50, bandwidth: 2, noise: 1e-6, notch: true }} />
+
+In step 1 the Not-1X is about 2.3 µm (2X and noise) before 3300 rpm and rises to 4.86 µm as 0.45X grows, but the change in the direct RMS is buried in the ups and downs of 1X and cannot be seen. In step 2, narrowing the filter means the notch cannot follow the 1X passing through the critical speed, and the remaining 1X, up to 10.5 µm, inflates the Not-1X greatly. In step 3 the Not-1X at 3600 rpm grows to 6.91 µm because the wide-band noise comes in as it is.
+
+<Callout type="warn" title="'Not-1X grew = subsynchronous vibration has appeared'">
+
+Not-1X holds everything that is not 1X — other orders such as 2X, asynchronous components below and above 1X, noise, and the leaked 1X. Growth tells you only that "something outside 1X increased". Check what it is with the spectrum (P6-2).
+
+</Callout>
+
+---
+
+## 6. With two channels: the 1X filtered orbit
+
+If you apply the same tracking filter to the X and Y sensors (P3-2), what can you draw?
+
+<Figure {...F.orbitCompare} />
+
+Extract the 1X vector of each channel, build the 1X waveform with the same θ, and plot the two as a pair, horizontal and vertical: this is the <strong>1X filtered orbit</strong>. As in the right of Figure 7, eight revolutions overlap on one ellipse, and only the shape of the 1X (synchronous) response — in this example the unbalance response (the ellipse in P4-2) — is shown cleanly. Other causes that appear at 1X, such as a bow or runout, are also contained in this ellipse. The direct orbit on the left includes 0.45X, 2X and noise and takes a different path every revolution. The two answer different questions, so look at them together. How to read orbits is covered in P6-3.
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Tracking filter | A filter whose passband center moves with 1X. It needs the Keyphasor rotation angle θ(t) |
+| Calculation | $\vec V_{nX} = 2\,\mathrm{LPF}\{x\,e^{-jn\theta}\}$ — rotating the signal makes only nX stand still, and the low-pass keeps only what stands still |
+| Filter bandwidth B | Noise ripple ∝ √B, lag $\tau_g \approx 0.45/B$ (2nd-order Butterworth). A narrow width watches for a long time |
+| Run-up Bode | A real-time filter is pushed toward where it has been by $R\,\tau_g$ and the peak is shaved → the AF comes out small. Choose B by comparing with the half-power width |
+| Filtering twice | For a stored record the lag disappears. In return it becomes narrower, and the peak may be shaved more |
+| Notch · Not-1X | Subtract the extracted 1X to reveal changes outside 1X. If 1X changes quickly, 1X leaks through |
+| 1X filtered orbit | The ellipse drawn from the 1X vectors of two channels. Look at it together with the direct orbit (P6-3) |
+
+## 8. Check your understanding
+
+<details>
+<summary><strong>Q1. What is the lag of a tracking filter with bandwidth B = 1 Hz (2nd-order Butterworth)? For a run-up at 300 rpm/s, how many rpm is the Bode plot shifted?</strong></summary>
+
+$\tau_g = \sqrt{2}/(\pi \times 1) \approx$ **0.45 s**, and the speed passed meanwhile is 300 × 0.45 ≈ **135 rpm**, so the peak and phase are shifted about 135 rpm toward the high side.
+</details>
+
+<details>
+<summary><strong>Q2. You want to halve the ripple in the 1X amplitude at a constant speed. What do you change B to, and what do you have to accept?</strong></summary>
+
+The ripple is proportional to √B, so narrow B to **1/4**. In return the lag becomes **4 times** longer, and when 1X changes it takes 4 times as long to catch up.
+</details>
+
+<details>
+<summary><strong>Q3. The run-up Bode of the same machine reads a peak at 3190 rpm and the coastdown at 2860 rpm. What do you check before reporting that the critical speed has changed?</strong></summary>
+
+Suspect the **lag** of the real-time tracking filter first. The run-up is pushed to the high side and the coastdown to the low side by roughly $R\,\tau_g$ each (the peak shape is asymmetric, so the two sides are not exactly equal), so check the acceleration rate and filter width of both records. The middle of the two (about 3025 rpm) may be close to the real peak. If the records are stored, recompute by filtering twice or by widening the band.
+</details>
+
+<details>
+<summary><strong>Q4. The real part of the tracking filter output is −10 µm and the imaginary part is +10 µm (peak). What is the 1X vector?</strong></summary>
+
+The amplitude is $\sqrt{10^2 + 10^2}$ = 14.1 µm (peak) = **28.3 µm pp**. Since $A\cos\varphi = -10$ and $A\sin\varphi = -10$, the lag angle is **225°**. Reading the sign of the imaginary part directly as the angle (135°) is wrong — the 1X vector is $A\,e^{-j\varphi}$.
+</details>
+
+<details>
+<summary><strong>Q5. Over one month the direct overall rose 5 % but Not-1X doubled. What do you suspect, and what do you look at next?</strong></summary>
+
+Suspect that a component other than 1X has appeared or grown. The direct overall changed only a little because the large 1X hides it. Whether it is a subsynchronous component such as 0.4 to 0.5X, another order such as 2X, or noise, check with the **spectrum** (P6-2).
+</details>
+
+<details>
+<summary><strong>Q6. You filtered a stored startup record twice with B = 0.5 Hz, and the peak speed is right but the amplitude came out 30 % low. Why, and what do you do?</strong></summary>
+
+Filtering twice removes the lag but makes the amplitude response $\lvert H\rvert^2$, a narrower filter. The record passed the peak in a short time, so that time was mixed with the time before and after and shaved. **Widen B** (for example to 2 Hz) and recompute. For the example rotor it returns from 69.0 to 97.6 µm pp.
+</details>
+
+---
+
+On the next page (P5-6) we cover envelope analysis, which brings out repeated events buried at high frequencies, such as the small impacts of a rolling-element bearing, and Spectral Kurtosis and the Kurtogram, which choose that band.
+
+## References
+
+<References items={[
+  ['R-02', 'The 1X vector from a tracking filter, Bode and Polar plots, direct and 1X filtered orbits, Not-1X'],
+  ['R-01', 'Filters that extract rotating components, and order tracking'],
+  ['R-16', 'Step response and group delay of filters'],
+]} />

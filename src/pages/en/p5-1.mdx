@@ -1,0 +1,329 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-1 Digital Filters and Integration
+description: Magnitude response and passband/stopband of a filter, how Butterworth, Chebyshev, Bessel and FIR differ, phase and group delay, forward-backward (zero-phase) filtering, integration as a filter, the ski slope and the low cutoff, drift in cumulative-sum integration, decimation
+sectionId: P5-1
+source: p5-1.mdx
+sourceHash: c07f22f1d8
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import FilterLab from '../../components/labs/FilterLab';
+import IntegrationLab from '../../components/labs/IntegrationLab';
+import * as F from '../../figures/p5-1';
+
+# 5-1 Digital Filters and Integration
+
+You are looking at the velocity waveform of a gearbox running at 1500 rpm. You want to see the shape that 1X to 3X make, but a ripple at the 500 Hz gear mesh (P1-8) is laid over it. When you switch on "low-pass 150 Hz" in the analyzer, the ripple disappears, but the whole waveform now comes out a little late and the 1X phase value has changed. In the spectrum of the same machine's acceleration converted to velocity, the left end sticks up (the ski slope of P3-4).
+
+What does a filter keep, and does it leave the kept part alone? This page looks at how a filter changes both the **magnitude** and the <strong>timing (phase)</strong> of each component, and looks at **integration**, which turns acceleration into velocity and displacement, in the same way.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can read the passband, stopband, cutoff frequency and the slope set by the order from a magnitude-response plot.
+2. You can say what Butterworth, Chebyshev, Bessel and FIR trade against each other.
+3. You can explain that even components in the passband come out late (phase, group delay), and that if the lateness differs from component to component, the waveform changes shape. You know how forward-backward filtering removes the lateness, and its limits.
+4. You can treat integration as a filter that multiplies by $1/(j2\pi f)$, and handle the ski slope and drift with a low cutoff.
+5. You can explain why a low-pass filter is needed before throwing samples away (decimation).
+
+</Callout>
+
+---
+
+## 1. A filter is a different gain at each frequency: the magnitude response
+
+The AAF of P2-3 was a filter that cut components above $F_{max}$ "gradually", and the higher the order, the steeper the cut (§2.2). This section widens that picture to filters in general.
+
+<Figure {...F.filterSpec} />
+
+What you can read in Figure 1:
+
+- The horizontal axis is frequency; the vertical axis is **how many times larger or smaller the component at that frequency comes out**. 0 dB means unchanged, −20 dB means 1/10 (dB is in P2-3 §2.2).
+- The top one (low-pass) keeps the low side and cuts the high side. 1X to 3X stay as they are, and the 500 Hz gear mesh is at −42.5 dB (about 1/130).
+- The bottom one (high-pass) is the opposite. We use it again for the integration in §4 of this page.
+
+<Callout type="term" title="Magnitude response, passband, stopband">
+
+When a sine wave of frequency $f$ passes through a filter, its amplitude is multiplied by $\lvert H(f) \rvert$. Plotting this $\lvert H(f) \rvert$ against frequency gives the **magnitude response**. The side that stays almost unchanged is the <strong>passband</strong>, the side that is cut enough is the <strong>stopband</strong>, and the region between them is the <strong>transition band</strong>. The frequency where the magnitude falls to $1/\sqrt{2}$ (−3 dB) is called the **cutoff frequency** $f_c$ (for a Chebyshev filter, by convention it is the end of the ripple; this page uses the −1 dB point as $f_c$). A filter that keeps what is below $f_c$ is a **low-pass** filter, and one that keeps what is above is a **high-pass** filter.
+
+</Callout>
+
+The magnitude response of the most common one, the Butterworth low-pass, is
+
+$$
+\lvert H(f) \rvert = \frac{1}{\sqrt{1 + (f/f_c)^{2n}}}
+$$
+
+Here $n$ is the order. For $f \ll f_c$ it is 1, at $f = f_c$ it is $1/\sqrt{2}$, and for $f \gg f_c$ it approaches $(f_c/f)^n$. So above $f_c$, every time the frequency doubles, the magnitude is multiplied by $2^{-n}$, that is, cut by about $6n$ dB.
+
+<Callout type="example" title="4th order, f_c = 150 Hz low-pass">
+
+1. 3X at 75 Hz: $(75/150)^8 = 0.0039$ → $\lvert H \rvert = 1/\sqrt{1.0039} = 0.998$. Almost unchanged.
+2. 300 Hz: $(300/150)^8 = 256$ → $\lvert H \rvert = 1/\sqrt{257} = 0.0624$, that is, −24.1 dB. At twice $f_c$ this is $4 \times 6 = 24$ dB.
+3. In Figure 1, 300 Hz is −24.3 dB. A digital filter cuts a little more than this formula as you get closer to $f_s/2$ (3200 Hz).
+
+</Callout>
+
+<Callout type="term" title="Octave and decade">
+
+An interval where the frequency doubles is 1 **octave**, and an interval where it becomes 10 times is 1 **decade**. The slope of a filter is quoted in "dB/octave" or "dB/decade". An $n$th-order filter has about $6n$ dB/octave = $20n$ dB/decade in the stopband.
+
+</Callout>
+
+<Callout type="warn" title="'It cuts off sharply at f_c'">
+
+At $f_c$ the signal is already cut to 0.707, and a good deal remains above $f_c$ as well. For a 4th-order filter, even at $2f_c$ it is still 1/16. Choose $f_c$ and the order so that the components you want to keep lie well below $f_c$ and the ones you want to remove lie well above. The $f_s = 2.56\,F_{max}$ of P2-3 was for the same reason.
+
+</Callout>
+
+---
+
+## 2. Types: trading flatness for steepness
+
+If the order is the same, 4th, and $f_c$ is the same, are all filters alike?
+
+<Figure {...F.familyMagnitude} />
+
+The three filters in Figure 2 have the same order but choose different things. **Butterworth** is the name of the design rule that makes the passband as flat as possible, and **Chebyshev** allows a set amount of up-and-down in the passband (<strong>ripple</strong>, here 1 dB) in exchange for cutting more steeply. **Bessel** chooses "every component delayed by the same time", which we will see in §3, and in exchange is the gentlest. There is also **Elliptic**, which allows ripple in both the passband and the stopband and is the steepest, but this page only mentions the name.
+
+<Callout type="term" title="IIR and FIR">
+
+The filters so far compute by feeding past values of the output back in (feedback). Such a filter is called **IIR** (Infinite Impulse Response). A filter that uses no feedback, but multiplies the last $N$ input samples by fixed weights (<strong>taps</strong>) and adds them up, is **FIR** (Finite Impulse Response). FIR needs far more computation (the 101-tap FIR on this page takes 101 multiplications per point, a 4th-order IIR about 10; in return, this FIR cuts more steeply), but if the weights are made symmetric left to right, every component is delayed by exactly the same time.
+
+</Callout>
+
+| Type | Passband | 500 Hz (4th order, $f_c$ 150 Hz) | Delay (§3) | Use it when |
+|---|---|---|---|---|
+| Butterworth | Flattest | −42.5 dB | Medium | Default, AAF |
+| Chebyshev (ripple 1 dB) | Rises and falls within 1 dB | −53.9 dB | Differs most between components | Separating nearby components |
+| Bessel | Sags from before $f_c$ | −29.1 dB | Most even | Preserving the waveform shape |
+| FIR (101 taps) | Flat | −62.1 dB | Perfectly even | Stored data, digital analysis |
+
+---
+
+## 3. Components that are not cut also come out late: phase and group delay
+
+1X to 3X have a magnitude of almost 1, so why did the waveform in the opening come out late?
+
+In the forced vibration of P1-4, the response lagged the force in phase (0° → 90° → 180°). A filter is also a system that takes an input and produces an output, so for each component it changes the phase along with the magnitude. The phase lag as a function of frequency is called the <strong>phase response</strong> $\varphi(f)$.
+
+<Figure {...F.familyPhase} />
+
+<Callout type="term" title="Group delay and linear phase">
+
+Converting the phase lag to time gives how many seconds that one component comes out late. This is called the **phase delay** $\tau_p$. The time by which a group of components at neighboring frequencies (a lump of the waveform) is delayed together is called the **group delay**, and it is found from how steeply the phase lag grows with frequency.
+
+$$
+\tau_p(f) = -\frac{\varphi}{\omega}, \qquad \tau_g(f) = -\frac{d\varphi}{d\omega}, \qquad \omega = 2\pi f
+$$
+
+If the group delay is the same at every frequency (if the phase is proportional to frequency, **linear phase**), the waveform keeps its shape and is simply delayed by $\tau_g$. An FIR with symmetric taps does this.
+
+</Callout>
+
+<Callout type="example" title="How late are 1X and 3X for a 4th-order Butterworth (f_c 150 Hz)?">
+
+1. 1X at 25 Hz: phase lag 25.0° → phase delay $25.0/360 \times 1/25\ \mathrm{Hz} = 2.78$ ms
+2. 3X at 75 Hz: phase lag 77.8° → phase delay $77.8/360 \times 1/75\ \mathrm{Hz} = 2.88$ ms
+3. The two components differ in lateness by only 0.1 ms (2.8° at 3X), so the 1X to 3X waveform keeps almost the same shape and is delayed as a whole by about 2.8 ms. At $f_c$, on the other hand, the group delay is later, 3.94 ms (phase delay 3.33 ms).
+
+</Callout>
+
+In P2-2 §1.3, the waveform shape changed when the phase changed even though the bars had the same size. The same thing happens when a filter delays components near $f_c$ more. It shows up well in signals with many components near $f_c$, for example a sharp edge.
+
+<Figure {...F.squareEdgeFig} />
+
+After the edge, the output goes past the target (<strong>overshoot</strong>) and then rings before settling. The size of this grows the more steeply the filter cuts near $f_c$ (magnitude) and the more the lateness differs between components (phase). For 4th order it is 10.9 % for Butterworth, 21.9 % for Chebyshev and 0.89 % for Bessel (Chebyshev is measured against the 0.89 level at which it settles). The FIR has perfectly even lateness but cuts steeply, so it overshoots by about 5.9 %, and because the symmetric taps mix in samples after the edge, its ringing is symmetric before and after the edge.
+
+Back to the vibration waveform:
+
+<Figure {...F.waveDelay} />
+
+<Callout type="field" title="Filter delay and the 1X phase">
+
+In P3-3, the phase was the angle from the keyphasor pulse to the 1X peak. When the signal passes through a filter, the peak arrives late, so the phase reads larger by that amount (25° in this example). If the same filter is used on every channel, the phase differences between channels (X-Y, two bearings) stay the same, but when you compare keyphasor-referenced phase with other instruments or other settings, check which filter the signal passed through and whether the instrument compensates for that delay.
+
+</Callout>
+
+### 3.1 Forward-backward filtering: pull back by as much as it was delayed
+
+With stored data, the lateness can be removed. Pass the filtered result through the same filter once more with the time order reversed, and then reverse it again. The lateness added going forward is pulled back going backward, so the phase becomes 0. This is called **forward-backward filtering** (zero-phase filtering, often written filtfilt).
+
+<Figure {...F.filtfiltResponse} />
+
+The price is paid in magnitude. The signal passes through the same filter twice, so the magnitude is squared and the −3 dB at $f_c$ becomes −6 dB. The solid green line in Figure 5 overlapping the target is this method.
+
+<Callout type="warn" title="'Forward-backward filtering can always be used'">
+
+To filter backward, all the samples that come later must already exist. So it can be used only on stored data, not in a real-time monitor or protection system (P3-5). At the designed $f_c$ the gain is −6 dB, and the −3 dB point moves below $f_c$ (for a 4th-order Butterworth, about 0.90 $f_c$ = 134 Hz), so to hit a −3 dB point you raise $f_c$ a little in the design.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (Butterworth 4th order, $f_c$ 150 Hz, vibration waveform), note the 1X phase and the 1X and 3X group delay from the readouts, and see in the bottom waveform how much later the output (blue) is than the target (green dotted line).
+2. Change the type to Chebyshev → Bessel → FIR. Which one cuts 500 Hz the most, and which delays 1X the least? What shape is the FIR's group-delay plot?
+3. Change the test signal to a square wave, compare the edge overshoot of Butterworth and Bessel, and then raise the Butterworth order from 2 to 8.
+4. Back on the vibration waveform, turn on "forward-backward". Does the output overlap the target? And the 500 Hz magnitude?
+
+</Callout>
+
+<FilterLab lang="en" client:visible />
+
+In step 1, the 1X phase is 25°, the group delay is 2.8 ms at 1X and 3.16 ms at 3X (2.78 and 2.88 ms as phase delay), and the waveform is about 2.8 ms late. In step 2, 500 Hz is cut most by the FIR (−62.1 dB), then Chebyshev (−53.9 dB), Butterworth (−42.5 dB) and Bessel (−29.1 dB). Among the three IIR filters, Bessel delays the 1X phase least, at 20.2° (Chebyshev 26.8°). The FIR's group delay is a horizontal line at 7.81 ms. Its 1X phase is the largest, 70.3°, but all components are delayed together so the shape stays the same. In step 3, the overshoot is 10.9 % for Butterworth and 0.89 % for Bessel, and for Butterworth it grows with the order, from about 4 % at 2nd order to about 16 % at 8th. This is because a steeper cut makes the group delay near $f_c$ rise higher. In step 4 the output overlaps the target and 500 Hz drops to −85 dB.
+
+---
+
+## 4. Integration is a filter too: 1/(j2πf)
+
+When you look at a velocity spectrum from an accelerometer signal, what does the analyzer do?
+
+In P2-7, the acceleration of a sine wave was divided by $2\pi f$ to get velocity, and in P3-4 we saw that this division inflates low frequencies and makes the ski slope. Dividing each component by a different number is "a different gain at each frequency", so it is a filter.
+
+$$
+V(f) = \frac{A(f)}{j2\pi f}, \qquad D(f) = \frac{A(f)}{(j2\pi f)^2} = -\frac{A(f)}{(2\pi f)^2}
+$$
+
+$A$, $V$ and $D$ are complex numbers that express the acceleration, velocity and displacement of the component at frequency $f$ with magnitude and phase together (P2-2). $1/j = -j$ is a 90° phase lag, so velocity lags acceleration by 90° (P1-2 §6).
+
+<Figure {...F.integrationGain} />
+
+In Figure 7, the magnitude response of integration is −20 dB/decade, the same slope as the stopband of a 1st-order low-pass. The difference is that it grows without limit as $f \to 0$. That is why a low-frequency wobble that was small in acceleration swells in velocity, and more in displacement. The way to stop it is to put a high-pass filter, which cuts the low side, together with the integration, that is, a <strong>low cutoff</strong>.
+
+<Figure {...F.skiSlope} />
+
+The low cutoff is chosen to satisfy two things. It must be high enough to suppress the ski slope, and low enough not to cut the lowest component of interest (here 1X at 25 Hz). For a 2nd-order high-pass, the magnitude at 1X is $1/\sqrt{1 + (f_c/f_{1X})^4}$, so if $f_c$ is set to 1/3 of 1X or lower, 1X is cut by less than 1 % ($1/\sqrt{1 + (1/3)^4} = 0.994$). In this example 5 Hz cuts 0.08 %, 10 Hz cuts 1.3 % and 20 Hz cuts 16 %.
+
+<Callout type="warn" title="'The higher the cutoff, the cleaner'">
+
+A 20 Hz cutoff makes the spectrum the cleanest but makes you read 1X 16 % too small. If you apply a 5 Hz cutoff to a 300 rpm machine whose 1X is 5 Hz, 1X comes out at 0.71. For slow machines, lower the cutoff further, and if a ski slope still remains, use a sensor that measures low frequencies directly (P3-1).
+
+</Callout>
+
+---
+
+## 5. Time-domain integration: a small offset becomes drift
+
+What happens if, instead of working in the frequency domain, you integrate by adding up the samples one after another?
+
+Integration is piling up area, so you can add the areas between samples (trapezoids) one by one (a cumulative sum). Circuits and monitors that integrate in real time do it this way. The problem is that if the acceleration has even a tiny DC component (offset), that gets piled up too.
+
+<Figure {...F.driftFig} />
+
+Three things happen in Figure 9.
+
+- An offset $a_0$ adds a straight line $a_0 t$ to the velocity. 0.0005 g (4.9 mm/s²) gives 9.8 mm/s in 2 seconds, which is larger than the real 1X (4 mm/s).
+- The cumulative sum does not know the initial velocity (the integration constant) and starts from 0, so the whole curve is shifted by the real initial velocity (about 4.2 mm/s).
+- Integrating once more piles up this line and constant again, so the displacement spreads apart as a parabola and a line. Within 2 seconds it reaches 1.85 mm, tens of times the real displacement (a little over 30 µm peak, about 61 µm p-p).
+
+This pulling of the integration result to one side over time is called <strong>drift</strong>. If you apply a high-pass before integrating (blue), DC and the very low frequencies are removed first and no drift appears. Frequency-domain integration sets the 0 Hz bin to zero, so it is not pulled by an offset, but it suffers the ski slope of §4 just the same.
+
+<Callout type="field" title="Displacement from integrating an accelerometer twice">
+
+The "integrated" output of a portable meter or monitor is usually an integration with a high-pass applied together. Even so, displacement from integrating acceleration twice is hard to trust at low frequencies, so shaft displacement in a GT/ST is measured directly with a proximity probe (P3-2).
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (low-frequency wobble, frequency domain, velocity, no cutoff), compare the left end of the spectrum and the readout "max below 5 Hz" with 1X.
+2. Raise the cutoff 2 → 5 → 10 → 20 Hz. How do the max below 5 Hz and the 1X amplitude change?
+3. Change the sensor-side problem to "DC offset", the method to "time domain" and the cutoff to "none", and look at velocity and then displacement. What if you change only the method to frequency domain?
+4. In the state of step 3 (time domain), raise the cutoff to 5 Hz.
+
+</Callout>
+
+<IntegrationLab lang="en" client:visible />
+
+In step 1, below 5 Hz is 18.2 mm/s, larger than the 1X value of 3.99 mm/s. In step 2, with a 5 Hz cutoff it drops to 0.71 mm/s and 1X stays almost the same at 3.98 mm/s; with 10 Hz 1X is 3.94 mm/s, and with 20 Hz it is 3.36 mm/s (−16 %). In step 3, the velocity drifts away by 9.8 mm/s in 2 seconds and the displacement spreads out to the mm level. Switching to the frequency domain makes the offset vanish. If you apply the high-pass first, as in step 4, both stay near the real values.
+
+---
+
+## 6. Decimation: filter before you reduce
+
+If you throw samples away to look at only the low frequencies in detail, what must you watch out for?
+
+The Zoom FFT of P2-4 went through "cut → throw away samples". Keeping only one sample in every $q$ and reducing $f_s$ to $1/q$ is called <strong>decimation</strong>. Components above the Nyquist frequency after reduction, $f_s/(2q)$, fold over like the aliasing of P2-3, so they must be cut by a digital low-pass **before** thinning.
+
+<Figure {...F.decimationFig} />
+
+The low-pass in Figure 10 is an 8th-order Chebyshev, applied twice, with its cutoff frequency at 0.8 times the new Nyquist frequency (640 Hz). The 1300 Hz component is cut away before the reduction and the 100 Hz component stays as it is.
+
+<Callout type="field" title="Inside the analyzer when you change F_max">
+
+An analyzer usually acquires at one high $f_s$, and when you lower $F_{max}$ it reduces the rate with a digital low-pass + decimation. This is what P2-3 §2.2 meant by "a digital filter is added to the analog filter". Order tracking (P5-4), which resamples according to the rotation angle, needs the same care.
+
+</Callout>
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| Magnitude response | $\lvert H(f) \rvert$: how many times each component is kept. $f_c$ is the −3 dB point, and an $n$th-order filter cuts about $6n$ dB per doubling |
+| Types | Butterworth flat, Chebyshev steep + ripple, Bessel even lateness, FIR linear phase (much computation) |
+| Phase and group delay | Passband components are late too (4th-order Butterworth, $f_c$ 150 Hz: 1X 25°). Lateness of one component = phase delay, lateness of a group = group delay. The steeper the cut and the more the lateness differs between components, the more the edge overshoots (overshoot 10.9 %) |
+| Forward-backward filtering | Phase 0, magnitude $\lvert H \rvert^2$ (−6 dB at $f_c$). Stored data only |
+| Integration | A $1/(j2\pi f)$ filter: it boosts the low side. A 2nd-order low cutoff should be at most 1/3 of 1X |
+| Time-domain integration | Offset → drift, integration constant → shift. High-pass before integrating |
+| Decimation | Low-pass before thinning. Otherwise it folds |
+
+## 8. Review questions
+
+<details>
+<summary><strong>Q1. A 4th-order Butterworth low-pass, f_c = 200 Hz. By how many dB is a 1 kHz component cut?</strong></summary>
+
+$(1000/200)^8 = 5^8 = 390\,625$, so $\lvert H \rvert \approx 1/625 = 0.0016$, about −56 dB. Even estimating 24 dB per doubling gives −24 dB at 400 Hz and −48 dB at 800 Hz, and 1 kHz is cut a little more than that.
+</details>
+
+<details>
+<summary><strong>Q2. You want to see the shape of a time waveform containing impacts exactly as it is. With the same order, do you choose Chebyshev or Bessel?</strong></summary>
+
+Bessel. The group delay in the passband is almost constant, so components are delayed together, and the edge overshoot is small, 0.89 %. Chebyshev cuts more steeply, but its group delay rises near $f_c$, giving an overshoot of 21.9 %, and that ringing can be mistaken for an impact. For stored data, forward-backward filtering or an FIR is also good. However, these two have no lateness or an even lateness, but may produce ringing before an impact.
+</details>
+
+<details>
+<summary><strong>Q3. A signal with 1X at 50 Hz passes through a filter with a passband group delay of 3 ms. Roughly how many degrees larger is the keyphasor-referenced 1X phase read?</strong></summary>
+
+$360° \times 50\ \mathrm{Hz} \times 0.003\ \mathrm{s} = 54°$. The phase is the lateness within one 1X period, so even for the same 3 ms, the higher the frequency, the larger the angle.
+</details>
+
+<details>
+<summary><strong>Q4. You applied a 4th-order Butterworth (f_c 150 Hz) to stored data forward and backward. What are the magnitude and phase of the 150 Hz component?</strong></summary>
+
+The magnitude is $(1/\sqrt{2})^2 = 0.5$ times (−6 dB), and the phase is 0. With a single pass it was 0.707 times with a 180° lag (Figure 3).
+</details>
+
+<details>
+<summary><strong>Q5. You integrate the acceleration of a machine with 1X at 10 Hz (600 rpm) to velocity. If you apply a 2nd-order low cutoff at 5 Hz, by what factor is 1X read? And to keep it within 1 %?</strong></summary>
+
+$1/\sqrt{1 + (5/10)^4} = 1/\sqrt{1.0625} = 0.970$ times, that is, 3 % too small. To keep it within 1 %, set $f_c$ at 1/3 of 1X, about 3.3 Hz or lower.
+</details>
+
+<details>
+<summary><strong>Q6. An acceleration signal has a DC offset of 0.001 g. If you integrate it for 1 second with a sample cumulative sum, how far does the velocity drift? And with frequency-domain integration?</strong></summary>
+
+$0.001 \times 9.81 = 0.00981$ m/s², so it drifts away by 9.8 mm/s in 1 second. Frequency-domain integration sets the 0 Hz bin to zero, so it is not pulled by the offset. However, if there is low-frequency wobble, the ski slope appears just the same.
+</details>
+
+<details>
+<summary><strong>Q7. Data acquired at f_s = 25 600 Hz was thinned to one sample in every 16. What is the new Nyquist frequency? If it was not filtered, where does a 1000 Hz component appear?</strong></summary>
+
+The new $f_s$ = 1600 Hz and the Nyquist frequency is 800 Hz. 1000 Hz folds to $\lvert 1000 - 1600 \rvert = 600$ Hz and becomes a fake bar. A low-pass that cuts at around 640 Hz is needed before thinning.
+</details>
+
+On the next page (P5-2), we look at how the spectrum changes while the rotation speed changes, using the STFT, the spectrogram and the waterfall.
+
+## References
+
+<References items={[
+  ['R-16', 'Magnitude and step response of filters, Chebyshev, feedback filters, windowed-sinc FIR (chapters 14 to 21)'],
+  ['R-17', 'IIR filter design, forward-backward filtering, decimation — the cross-check reference for this page\'s calculations (Bessel poles, forward-backward filtering, default decimation filter)', [
+    ['sosfiltfilt', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sosfiltfilt.html'],
+    ['decimate', 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.decimate.html'],
+  ]],
+  ['R-01', 'Integration and the low-frequency problem'],
+]} />

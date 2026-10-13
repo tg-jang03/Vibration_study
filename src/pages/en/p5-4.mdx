@@ -1,0 +1,251 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-4 Order Tracking
+description: Computed order tracking, which re-samples a fixed-rate record at equal shaft angles using Keyphasor times — the angle-time interpolation, equal-angle resampling, order resolution and maximum order, aliasing and interpolation error in the order domain, and how to do it without a Keyphasor using a spectrogram ridge
+sectionId: P5-4
+source: p5-4.mdx
+sourceHash: 9dfe8850c6
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import OrderTrackingLab from '../../components/labs/OrderTrackingLab';
+import * as F from '../../figures/p5-4';
+
+# 5-4 Order Tracking: Keeping 1X in One Place While the Speed Changes
+
+If you take data recorded at a fixed sampling rate during a run-up and FFT it, the 1X peak spreads out and gets lower (smearing, P2-4). In P3-5 we avoided this from the start with synchronous sampling, which samples in step with the rotation.
+
+But what if the data has already been recorded at a fixed rate? As long as the Keyphasor pulse times were saved with it, you can **compute** a re-sampling at equal shaft angles. This page covers the order of that calculation and the errors it introduces.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain how the same frame looks different in the time FFT and in the order spectrum.
+2. You can state the sequence: Keyphasor times → angle-time relation → equal-angle resampling → FFT.
+3. You can calculate the order resolution 1/N_rev and the maximum order N_spr/2.56.
+4. You know that resampling also produces aliasing and interpolation error, and what to do about them.
+5. You know how to track orders without a Keyphasor, using a spectrogram ridge, and what its limits are.
+
+</Callout>
+
+---
+
+## 1. The same frame, two scales
+
+What do you see if you FFT 2.3 seconds of rising speed as it is, and what do you see if you re-sample it at equal angles?
+
+<Figure {...F.timeVsOrder} />
+
+In the time FFT at the top of Figure 1, 1X moved from 25 Hz to 30.7 Hz during those 2.3 seconds. The power of 1X was split over several bins, so the peak dropped to 13.7 µm. The true value is 25 µm.
+
+In the order spectrum below, the horizontal axis is not Hz but <strong>how many times 1X (the order, P2-1)</strong>. However the speed changes, 1X is always "once per revolution", so it stays at order 1 and reads 25 µm as it should.
+
+Conversely, the fixed 95 Hz component, independent of speed (a structural resonance example), is sharp at the top but smears across orders 3.09 to 3.8 at the bottom. As the speed rises, the same 95 Hz corresponds to a lower order.
+
+<Callout type="warn" title="'The order spectrum is always better'">
+
+The order spectrum sharpens the rotating components at the price of blurring fixed-frequency components (structural resonances, the line frequency 2 f_L). For run-up data, look at both scales, and check whether a line follows the rotation with a cascade plot (P5-2).
+
+</Callout>
+
+---
+
+## 2. The calculation: Keyphasor → angle → re-sample → FFT
+
+How do you make samples at equal angle steps from samples taken at equal time steps?
+
+<Figure {...F.pipeline} />
+
+1. **Keyphasor times** $t_k$: one pulse is the instant the shaft completes one revolution (P3-3). At the $k$-th pulse the angle is $k$ revolutions.
+2. **Angle-time relation**: connect the pulses to assign an angle to every instant. During acceleration the shaft speeds up even within one revolution, so the pulses are joined by a quadratic curve through three neighboring pulses.
+3. **Equal-angle times**: divide one revolution into $N_{spr}$ equal parts, and for each angle read from the curve the time at which it is reached.
+4. **Signal interpolation**: those times fall between samples, so the value is interpolated from the neighboring samples.
+5. **FFT**: an FFT of the equal-angle samples, cut at a whole number of revolutions, gives a spectrum whose horizontal axis is the order.
+
+$$
+\theta(t) = 2\pi \int f_r\,dt
+$$
+
+- $\theta$: angle turned by the shaft [rad], $f_r$: instantaneous rotation frequency [Hz]. One Keyphasor pulse arrives every time $\theta$ grows by $2\pi$.
+
+<Callout type="term" title="Computed order tracking">
+
+A method that re-samples a signal recorded at a fixed rate at equal shaft angles using the Keyphasor times (angular resampling). The principle is the same as synchronous sampling, which samples in step with the rotation in hardware (P3-5), with interpolation error added (§4), and it can be used on data that has already been recorded.
+
+</Callout>
+
+Because the frame is cut at a whole number of revolutions, rotating components such as 1X and 2X repeat an exact whole number of times within the frame. There is no leakage, so you may use the **Uniform window** (P2-5). Not having to worry about amplitude correction is another advantage of the order spectrum. Note, however, that this holds only for rotating components that repeat a whole number of times within the frame. Fixed-frequency components (the 95 Hz in Figure 1), orders such as 0.43X that do not repeat a whole number of times in the frame, and components whose size changes during the frame (passing a critical speed) still smear.
+
+---
+
+## 3. Order resolution and maximum order
+
+What do Δf = 1/T and F_max = f_s/2.56 of the Hz spectrum become in the order spectrum?
+
+$$
+\Delta o = \frac{1}{N_{rev}}, \qquad o_{max} = \frac{N_{spr}}{2.56}
+$$
+
+- $N_{rev}$: number of revolutions in the frame (corresponds to the time-domain frame length $T$)
+- $N_{spr}$: samples per revolution (corresponds to the sampling frequency $f_s$)
+
+<Callout type="example" title="64 revolutions, 64 points per revolution">
+
+1. Number of samples = 64 × 64 = 4096 points
+2. Order resolution Δo = 1/64 = 0.0156 orders — equal to 0.39 Hz when 1X is 25 Hz
+3. Maximum order = 64 ÷ 2.56 = up to order 25 can be trusted
+4. The frame time depends on the speed: around 1500 rpm with an acceleration of 150 rpm/s, 64 revolutions take 2.3 seconds
+
+</Callout>
+
+More revolutions give better resolution, but a longer frame. If the amplitude changes during that time (near a critical speed) or the speed range is wide, the speed that one frame represents gets blurred. In a cascade that stacks a run-up by speed, you choose between resolution and speed spacing.
+
+In the lab below, you compare the same frame on the two scales.
+
+<Callout type="try">
+
+1. In the initial state (Keyphasor, acceleration 150 rpm/s, 64 revolutions, 64 points per revolution), compare 1X and the readings of the two spectra.
+2. Change the acceleration from 0 to 300 rpm/s. What happens to the 1X peak of the time FFT? And to the order spectrum?
+3. Set the acceleration back to 150 rpm/s and reduce the frame to 16 revolutions. Why does 1X of the time FFT become high again? What is Δo?
+
+</Callout>
+
+<OrderTrackingLab client:visible lang="en" />
+
+In step 1, 1X of the time FFT is 13.7 µm but the order spectrum gives 25.0 µm. With zero acceleration as in step 2, both are 25 µm, and at 300 rpm/s the time FFT falls to 10.6 µm while the order spectrum stays the same. The 16-revolution frame in step 3 lasts 0.62 s, during which the speed changes by only 93 rpm, so the time FFT also nearly recovers, to 24.5 µm. In exchange, Δo = 1/16 = 0.0625 orders, so the resolution becomes 4 times coarser.
+
+---
+
+## 4. Re-sampling is also sampling: aliasing and interpolation error
+
+What should you watch out for when you reduce the samples per revolution?
+
+<Figure {...F.orderAliasing} />
+
+Sampling at $N_{spr}$ points per revolution is sampling in the angle domain. So the aliasing of P2-3 occurs just the same. Components above order $N_{spr}/2$ fold back and stand as fake lines at low orders. In the middle of Figure 3, 23X (a blade-pass example) passed the folding point of 32 points per revolution (order 16) and landed on 9X. It looks as if 9X has a real cause, which makes it a dangerous result.
+
+The remedy follows the same idea as the AAF in the time domain (P2-3). First sample **generously**, for example at 256 points per revolution, filter with a low-pass filter in the order domain, and then **decimate** to the number of points you want (decimation, P5-1). In the order domain 23X is always at order 23 whatever the speed, so a single filter handles it even when the speed changes.
+
+<Figure {...F.interpolationLoss} />
+
+Another error comes from **interpolation**. The equal-angle times usually fall between the fixed-f_s samples, and connecting them with straight lines shaves off high orders that oscillate quickly. In Figure 4, 23X read 8.1 % low with linear interpolation and 1.6 % low with cubic interpolation. To see high orders accurately, choose a generous f_s from the start and interpolate with cubic or higher order.
+
+<Callout type="try">
+
+1. In the initial state (32 points per revolution, anti-aliasing off), look at 9X in the order spectrum and the "9X" reading.
+2. Turn anti-aliasing on. What happens to 9X? Is 23X visible?
+3. Raise the samples per revolution to 64. Does 23X stand in its proper place?
+4. Change the signal interpolation to linear and compare the 23X reading with the cubic case.
+
+</Callout>
+
+<OrderTrackingLab client:visible lang="en" initial={{ spr: 32, antiAlias: false }} />
+
+In step 1 a fake line of 2.96 µm stands at 9X — it is 23X (3 µm) folded back. With anti-aliasing on as in step 2, 9X disappears at 0.006 µm, but 23X is also outside the maximum order (12.5), so it is not visible. At 64 points per revolution in step 3 the maximum order is 25, so 23X stands in its place at 2.95 µm. In step 4 linear interpolation reads 23X as 2.76 µm.
+
+---
+
+## 5. When there is no Keyphasor: the spectrogram ridge
+
+Can you track orders on data that has no Keyphasor signal?
+
+<Figure {...F.tacholess} />
+
+You take the speed information out of the signal itself. If you follow the line of the clearest rotating component, such as 1X, frame by frame in the spectrogram (P5-2), you can read the rotation frequency at each instant (if you followed the line of another order such as 2X, divide by that order). Integrating this frequency over time gives the angle (the $\theta(t)$ formula above), and the instants when the angle grows by one revolution are taken as virtual Keyphasor pulses and re-sampled in the same way.
+
+<Callout type="term" title="Ridge">
+
+The brightest line that a component draws over time in the spectrogram. In each frame, the position of the peak is read by interpolating between the highest bin of that line and its neighboring bins.
+
+</Callout>
+
+As Figure 5 shows, 1X reads almost unchanged, but the limits are also clear.
+
+- **The angle error grows with the order**: if the ridge speed is off by only a few rpm, the angle obtained by integrating that error drifts little by little. The same angle error becomes a 23-fold phase error at 23X, so 23X smears.
+- **Errors can accumulate**: if the ridge error is biased to one side, the integrated angle is pushed in one direction throughout the frame, and even low orders such as 1X and 2X read low.
+- **There is no phase reference**: the starting angle of the integral is unknown, so the 1X phase cannot be read. For work that needs phase, such as balancing, a Keyphasor is required (P3-3).
+- **The reference line must be clear**: if the line to follow is buried under other components, or if the speed changes suddenly as in a trip, the ridge jumps to a wrong line.
+
+<Callout type="try">
+
+1. In the initial state (no Keyphasor, acceleration 150 rpm/s), look at the 1X and 23X readings and the "maximum ridge speed error".
+2. Change the angle reference to "Keyphasor" and compare 23X.
+3. Set it back to "No Keyphasor" and lower the acceleration to 0. What happens to the ridge error and to 1X and 2X?
+
+</Callout>
+
+<OrderTrackingLab client:visible lang="en" initial={{ reference: 'tacholess' }} />
+
+In step 1 the ridge speed is off by at most 3.8 rpm within the frame, and 1X at 24.9 µm and 2X at 7.92 µm are nearly right, but 23X smears and its reading falls to 0.54 µm. Here the ridge error swings between + and −, so the angle error does not accumulate. With the Keyphasor as in step 2, 23X returns to 2.95 µm.
+
+In step 3 the speed is constant, so 1X stays at the same position between STFT bins. The error in reading the peak position is therefore consistently biased toward about +4 rpm, that error accumulates throughout the frame, and 1X shrinks to 24.0 µm (−4 %) and 2X to 6.67 µm (−17 %). Even when you look only at 1X and 2X in a result without a Keyphasor, check that the ridge error is not biased to one side.
+
+<Callout type="field" title="Where it is used">
+
+It is used on auxiliary equipment that has no Keyphasor, or when analyzing past records left without a Keyphasor channel. In the result, state that "the data was re-sampled with a speed estimated without a Keyphasor", and that high orders may smear.
+
+</Callout>
+
+---
+
+## 6. Summary
+
+| Topic | What to remember |
+|---|---|
+| Two scales | Time FFT: fixed frequencies are sharp, rotating components smear. Order spectrum: the opposite. Look at both |
+| Calculation order | Keyphasor times → angle-time curve (quadratic for acceleration) → equal-angle times → signal interpolation → whole-revolution FFT (Uniform) |
+| Resolution and range | Δo = 1/N_rev, o_max = N_spr/2.56 (the same convention as Δf = 1/T, F_max = f_s/2.56) |
+| Aliasing | Re-sampling is also sampling. Sample generously, then filter and decimate in the order domain |
+| Interpolation error | The higher the order, the more it is shaved. Generous f_s, cubic or higher interpolation |
+| No Keyphasor | Spectrogram ridge → integrate → virtual pulses. High orders smear and there is no phase |
+
+## 7. Review questions
+
+<details>
+<summary><strong>Q1. At a constant speed with 1X at 30 Hz, you build an order spectrum from 64 revolutions. What are the order resolution and the frame time?</strong></summary>
+
+Δo = 1/64 ≈ **0.0156 orders**, which corresponds to 0.47 Hz at 30 Hz. The frame time is 64 ÷ 30 ≈ **2.13 s**.
+</details>
+
+<details>
+<summary><strong>Q2. What is the minimum number of samples per revolution needed to trust up to 23X? (as a power of 2)</strong></summary>
+
+o_max = N_spr/2.56 ≥ 23 → N_spr ≥ 58.9 → **64**. With 32 the maximum order is 12.5, which is not enough, and 23X also passes the folding point (order 16).
+</details>
+
+<details>
+<summary><strong>Q3. You re-sampled at 32 points per revolution without anti-aliasing. At which order does a 20X component stand as a fake line?</strong></summary>
+
+The folding point is order 16, so it stands at 32 − 20 = **12X**. If you sample generously and then filter and decimate in the order domain, it disappears.
+</details>
+
+<details>
+<summary><strong>Q4. In the order spectrum of run-up data, you see a broad hump spanning orders 3.1 to 3.8. What do you suspect?</strong></summary>
+
+Suspect a **fixed-frequency component** independent of speed. As the speed rises during the frame, the same Hz may have spread across several orders. Check whether the time FFT of the same frame shows a sharp line at one frequency, and whether that line stands vertically in the cascade.
+</details>
+
+<details>
+<summary><strong>Q5. Can you decide the angle of a balancing weight from a 1X result order-tracked from a ridge without a Keyphasor?</strong></summary>
+
+No. The angle obtained by integrating the ridge frequency has an unknown starting point, so the **phase** of 1X is meaningless. It can be used to look at the trend of the magnitude, but for work that needs angle, such as balancing, you need a Keyphasor.
+</details>
+
+<details>
+<summary><strong>Q6. During acceleration, what goes wrong if you join the pulses with straight lines (constant speed)?</strong></summary>
+
+The shaft speeds up even within one revolution, so the real angle-time curve is convex downward. If you join the pulses with a straight line, the line lies above the curve, so every equal-angle time within that revolution is assigned a little **earlier** than the real one (zero at the pulses, largest in the middle of the revolution). This error repeats every revolution, so the phase drifts more for higher orders and small sidebands appear on neighboring orders. A quadratic curve through three pulses is exact for constant acceleration.
+</details>
+
+---
+
+In the next page (P5-5) we cover tracking filters and notch filters, which pick out or remove only the component of the order you want, and how to extract the magnitude and phase of 1X during a run-up (the source of Bode and Polar plots).
+
+## References
+
+<References items={[
+  ['R-19', 'Second-order interpolation of Keyphasor times and equal-angle resampling'],
+  ['R-01', 'Order tracking, and tacholess methods'],
+  ['R-02', 'Keyphasor and 1X phase'],
+]} />

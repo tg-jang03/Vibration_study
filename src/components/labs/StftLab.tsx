@@ -9,6 +9,9 @@ import { texNumber } from '../../lib/format';
 import { bestFrameSeconds, smearWidth, stft } from '../../lib/dsp/stft';
 import type { WindowType } from '../../lib/dsp/window';
 import { RAMP_RATE, RUN, rpmAt, runSignal, trueX1 } from '../../lib/stftDemo';
+import type { Lang } from '../../i18n';
+import { k, makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/StftLab';
 
 /**
  * LAB-STFT-01 스펙트로그램 · 워터폴 · 캐스케이드 (P5-2, Contents §5-1b).
@@ -25,18 +28,19 @@ const OVERLAPS = [
 ];
 const WINDOWS: { value: WindowType; label: string }[] = [
   { value: 'hann', label: 'Hann' },
-  { value: 'uniform', label: '사각 (윈도우 없음)' },
+  { value: 'uniform', label: k('사각 (윈도우 없음)') },
 ];
 const VIEWS: { value: View; label: string }[] = [
-  { value: 'spec', label: '스펙트로그램 (색 지도)' },
-  { value: 'waterfall', label: '워터폴 (세로 = 시간)' },
-  { value: 'cascade', label: '캐스케이드 (세로 = 회전수)' },
+  { value: 'spec', label: k('스펙트로그램 (색 지도)') },
+  { value: 'waterfall', label: k('워터폴 (세로 = 시간)') },
+  { value: 'cascade', label: k('캐스케이드 (세로 = 회전수)') },
 ];
 const F_MAX = 130;
 const SIGNALS = { on: runSignal({ instability: true }), off: runSignal({ instability: false }) };
 const db = (v: number) => 20 * Math.log10(Math.max(v * 1e6, 1e-3));
 
-export default function StftLab() {
+export default function StftLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
   const [n, setN] = useState(512);
   const [overlap, setOverlap] = useState(0.5);
   const [win, setWin] = useState<WindowType>('hann');
@@ -77,56 +81,57 @@ export default function StftLab() {
 
   return (
     <LabFrame
+      lang={lang}
       id="LAB-STFT-01"
-      title="스펙트로그램 · 워터폴 · 캐스케이드"
+      title={tr`스펙트로그램 · 워터폴 · 캐스케이드`}
       controls={
         <>
-          <ParamSelect label="프레임 길이 N" value={n} options={NS} onChange={(v) => setN(Number(v))} />
-          <ParamSelect label="겹침" value={overlap} options={OVERLAPS} onChange={(v) => setOverlap(Number(v))} />
-          <ParamSelect label="윈도우" value={win} options={WINDOWS} onChange={setWin} />
-          <ParamSelect label="보기" value={view} options={VIEWS} onChange={setView} />
-          <ParamToggle label="불안정 성분 (오일 휠 → 휩)" checked={instab} onChange={setInstab} hint="2400 rpm부터 0.45X, 3333 rpm부터 25 Hz에 잠김" />
+          <ParamSelect label={tr`프레임 길이 N`} value={n} options={NS} onChange={(v) => setN(Number(v))} />
+          <ParamSelect label={tr`겹침`} value={overlap} options={OVERLAPS} onChange={(v) => setOverlap(Number(v))} />
+          <ParamSelect label={tr`윈도우`} value={win} options={WINDOWS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setWin} />
+          <ParamSelect label={tr`보기`} value={view} options={VIEWS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setView} />
+          <ParamToggle label={tr`불안정 성분 (오일 휠 → 휩)`} checked={instab} onChange={setInstab} hint={tr`2400 rpm부터 0.45X, 3333 rpm부터 25 Hz에 잠김`} />
         </>
       }
       formulas={
         <>
           <Formula display tex={`T = \\dfrac{N}{f_s} = \\dfrac{${n}}{${RUN.fs}} = ${texNumber(T, 3)}\\ \\mathrm{s},\\quad \\Delta f = \\dfrac{1}{T} = ${texNumber(1 / T, 3)}\\ \\mathrm{Hz},\\quad \\mathrm{hop} = ${S.hop}\\ (${texNumber(S.hop / RUN.fs, 3)}\\ \\mathrm{s})`} />
-          <Formula display tex={`\\text{번짐} \\approx \\max\\!\\left(\\dfrac{1}{T},\\ aT\\right) = \\max(${texNumber(1 / T, 3)},\\ ${texNumber(move, 3)}) = ${texNumber(smearWidth(RAMP_RATE, T), 3)}\\ \\mathrm{Hz},\\quad T_{best} = \\dfrac{1}{\\sqrt{${RAMP_RATE}}} = ${texNumber(best, 3)}\\ \\mathrm{s}`} />
+          <Formula display tex={`\\text{${tr`번짐`}} \\approx \\max\\!\\left(\\dfrac{1}{T},\\ aT\\right) = \\max(${texNumber(1 / T, 3)},\\ ${texNumber(move, 3)}) = ${texNumber(smearWidth(RAMP_RATE, T), 3)}\\ \\mathrm{Hz},\\quad T_{best} = \\dfrac{1}{\\sqrt{${RAMP_RATE}}} = ${texNumber(best, 3)}\\ \\mathrm{s}`} />
         </>
       }
       readouts={
         <ReadoutTable
           rows={[
-            { label: '프레임 수', value: S.times.length, sig: 4 },
-            { label: '프레임 동안 1X가 움직인 폭 aT', value: move, unit: 'Hz', sig: 3 },
-            { label: `${texNumber(read.t, 3)} s 1X 봉우리`, value: read.peak, theory: read.truth, unit: 'µm', sig: 3 },
+            { label: tr`프레임 수`, value: S.times.length, sig: 4 },
+            { label: tr`프레임 동안 1X가 움직인 폭 aT`, value: move, unit: 'Hz', sig: 3 },
+            { label: tr`${texNumber(read.t, 3)} s 1X 봉우리`, value: read.peak, theory: read.truth, unit: 'µm', sig: 3 },
           ]}
         />
       }
       tasks={[
         {
-          question: 'N을 128 → 512 → 4096으로 바꾸며 20 s 1X 봉우리를 읽어 보세요. 실제 값(16.3 µm)에 가장 가까운 것은?',
-          answer: '128은 15.6, 512는 16.1, 4096은 3.65 µm입니다. 4096(8 s)은 한 프레임 동안 1X가 10 Hz 움직여 봉우리가 크게 낮아집니다. 1X가 1.25 Hz/s로 오르므로 T_best = 0.89 s입니다. 봉우리 높이가 실제 값에 가장 가까운 것은 N = 512이고, 줄 폭은 512 ~ 1024가 가늡니다.',
+          question: tr('N을 128 → 512 → 4096으로 바꾸며 20 s 1X 봉우리를 읽어 보세요. 실제 값(16.3 µm)에 가장 가까운 것은?'),
+          answer: tr('128은 15.6, 512는 16.1, 4096은 3.65 µm입니다. 4096(8 s)은 한 프레임 동안 1X가 10 Hz 움직여 봉우리가 크게 낮아집니다. 1X가 1.25 Hz/s로 오르므로 T_best = 0.89 s입니다. 봉우리 높이가 실제 값에 가장 가까운 것은 N = 512이고, 줄 폭은 512 ~ 1024가 가늡니다.'),
         },
         {
-          question: '겹침을 0 % → 90 %로 바꾸면 줄의 굵기가 바뀌나요? 무엇이 바뀌나요?',
-          answer: '줄의 굵기(주파수 쪽)는 그대로입니다. 프레임 길이가 같기 때문입니다. 바뀌는 것은 장 수와 세로 칸의 간격(hop)이라, 그림이 세로로 매끄러워집니다. 겹친 장은 완전히 새 정보가 아닙니다(P2-6 §5.2).',
+          question: tr('겹침을 0 % → 90 %로 바꾸면 줄의 굵기가 바뀌나요? 무엇이 바뀌나요?'),
+          answer: tr('줄의 굵기(주파수 쪽)는 그대로입니다. 프레임 길이가 같기 때문입니다. 바뀌는 것은 장 수와 세로 칸의 간격(hop)이라, 그림이 세로로 매끄러워집니다. 겹친 장은 완전히 새 정보가 아닙니다(P2-6 §5.2).'),
         },
         {
-          question: '보기를 캐스케이드로 두고 "불안정 성분"을 켰다 껐다 해 보세요. 40 s 뒤 3600 rpm 높이에서 무엇이 달라지나요? 워터폴에서는?',
-          answer: '켜면 3600 rpm 높이에 25 Hz 봉우리가 생기지만, 캐스케이드에서는 유지한 20초가 한 높이에 겹쳐 그 봉우리가 자라는 과정이 보이지 않습니다. 워터폴에서는 유지하는 동안(42 → 55 s) 25 Hz가 7.7 → 14.0 µm로 자라는 것이 보입니다.',
+          question: tr('보기를 캐스케이드로 두고 "불안정 성분"을 켰다 껐다 해 보세요. 40 s 뒤 3600 rpm 높이에서 무엇이 달라지나요? 워터폴에서는?'),
+          answer: tr('켜면 3600 rpm 높이에 25 Hz 봉우리가 생기지만, 캐스케이드에서는 유지한 20초가 한 높이에 겹쳐 그 봉우리가 자라는 과정이 보이지 않습니다. 워터폴에서는 유지하는 동안(42 → 55 s) 25 Hz가 7.7 → 14.0 µm로 자라는 것이 보입니다.'),
         },
       ]}
     >
       {view === 'spec' ? (
-        <Plot series={[]} heatmap={heat} x={{ label: '주파수 [Hz]', range: [0, F_MAX] }} y={{ label: '시간 [s]', range: [0, RUN.seconds] }} height={380} ariaLabel="스펙트로그램" />
+        <Plot series={[]} heatmap={heat} x={{ label: tr`주파수 [Hz]`, range: [0, F_MAX] }} y={{ label: tr`시간 [s]`, range: [0, RUN.seconds] }} height={380} ariaLabel={tr`스펙트로그램`} />
       ) : (
         <Plot
           series={lines}
-          x={{ label: '주파수 [Hz]', range: [0, F_MAX] }}
-          y={view === 'waterfall' ? { label: '시간 [s]', range: [0, 66] } : { label: '회전수 [rpm]', range: [400, 3950] }}
+          x={{ label: tr`주파수 [Hz]`, range: [0, F_MAX] }}
+          y={view === 'waterfall' ? { label: tr`시간 [s]`, range: [0, 66] } : { label: tr`회전수 [rpm]`, range: [400, 3950] }}
           height={380}
-          ariaLabel={view === 'waterfall' ? '워터폴' : '캐스케이드'}
+          ariaLabel={view === 'waterfall' ? tr`워터폴` : tr`캐스케이드`}
         />
       )}
     </LabFrame>

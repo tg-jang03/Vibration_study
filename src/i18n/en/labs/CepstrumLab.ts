@@ -1,0 +1,40 @@
+import type { Dict } from '../../translate';
+
+/** LAB-CEP-01 CepstrumLab 영어 (D-054). 키 = 소스의 한국어 원문 */
+const EN: Dict = {
+  "끔": 'Off',
+  "피니언 무리 지우기 ({0} ms의 정수배)": 'Erase pinion family (integer multiples of {0} ms)',
+  "기어 무리 지우기 ({0} ms의 정수배)": 'Erase gear family (integer multiples of {0} ms)',
+  "낮은 quefrency(< 5 ms)만 남기기": 'Keep only low quefrency (< 5 ms)',
+  "켑스트럼: 줄 무리의 간격 → quefrency 봉우리, 리프터링": 'Cepstrum: spacing of a line family → quefrency peak, liftering',
+  "피니언 결함 (25 Hz 간격 무리)": 'Pinion fault (family spaced 25 Hz)',
+  "변조 깊이": 'Modulation depth',
+  "기어 결함 ({0} Hz 간격 무리)": 'Gear fault (family spaced {0} Hz)',
+  "넓은 대역 잡음": 'Broadband noise',
+  "리프터링": 'Liftering',
+  "스펙트럼에서 Δf 간격으로 늘어선 줄 무리는 로그 스펙트럼에 주기 Δf의 물결을 만들고, 그 물결이 quefrency 1/Δf에 봉우리로 모입니다.": 'A family of lines spaced Δf apart in the spectrum makes a ripple of period Δf in the log spectrum, and that ripple gathers into a peak at quefrency 1/Δf.',
+  "읽음값": 'Readouts',
+  "켑스트럼 40 ms 봉우리 (피니언)": 'Cepstrum peak at 40 ms (pinion)',
+  "켑스트럼 {0} ms 봉우리 (기어)": 'Cepstrum peak at {0} ms (gear)',
+  "2 ~ 200 ms에서 가장 큰 봉우리": 'Largest peak in 2 – 200 ms',
+  "{0} Hz 측대역 (피니언)": '{0} Hz sideband (pinion)',
+  "리프터 뒤 변화 (피니언 측대역)": 'Change after lifter (pinion sideband)',
+  "리프터 뒤 변화 (기어 측대역 {0} Hz)": 'Change after lifter (gear sideband {0} Hz)',
+  "처음 상태에서 켑스트럼의 가장 큰 봉우리는 몇 ms인가요? 피니언 결함을 0으로 하면?": 'In the initial state, at how many ms is the largest cepstrum peak? What if the pinion fault is set to 0?',
+  "40 ms(1/25 Hz)입니다. 그 정수배(80, 120 … ms)에도 라모닉이 섭니다. 피니언 결함을 0으로 하면 40 ms 봉우리가 거의 사라지고 기어 무리의 61.7 ms와 그 정수배만 남습니다 — 정수배(185 ms)가 가장 클 수도 있으니 봉우리의 간격으로 읽습니다.": "40 ms (1/25 Hz). Rahmonics also stand at its integer multiples (80, 120 … ms). With the pinion fault at 0, the 40 ms peak nearly vanishes and only the gear family's 61.7 ms and its integer multiples remain — a multiple (185 ms) may even be the largest, so read the spacing of the peaks.",
+  "리프터링을 \"피니언 무리 지우기\"로 바꾸면 625 Hz와 616.2 Hz 측대역은 각각 얼마나 변하나요?": 'If you switch liftering to "erase pinion family", how much do the 625 Hz and 616.2 Hz sidebands each change?',
+  "625 Hz(피니언) 측대역은 약 15 dB 낮아지고, 616.2 Hz(기어) 측대역은 거의 그대로(약 +2 dB)입니다. 켑스트럼에서 자리가 나뉘어 있으므로 한 무리만 골라 지울 수 있습니다.": 'The 625 Hz (pinion) sideband drops by about 15 dB, and the 616.2 Hz (gear) sideband stays almost the same (about +2 dB). Because the families sit in different places in the cepstrum, you can pick one family and erase it.',
+  "잡음을 0.2 g로 키우면 켑스트럼 봉우리는? 0.01 g이면?": 'What happens to the cepstrum peaks if you raise the noise to 0.2 g? And at 0.01 g?',
+  "0.2 g에서는 40 ms 봉우리가 약 0.024로 낮아지고, \"가장 큰 봉우리\"도 41.7 ms 같은 엉뚱한 자리로 옮겨 갑니다. 바깥쪽 측대역과 맞물림 2·3배 둘레의 측대역이 잡음 바닥에 묻혀 로그 스펙트럼의 물결이 약해지기 때문입니다. 0.01 g이면 약 0.14로 커집니다. 켑스트럼은 줄 무리가 잡음 바닥보다 위에 있어야 드러납니다.": 'At 0.2 g, the 40 ms peak drops to about 0.024, and the "largest peak" moves to a wrong place such as 41.7 ms. This is because the outer sidebands and the sidebands around 2× and 3× the mesh frequency are buried in the noise floor, which weakens the ripple in the log spectrum. At 0.01 g it grows to about 0.14. The cepstrum shows a line family only if the family is above the noise floor.',
+  "신호는 설명용 예시입니다: 피니언 24이빨 {0} rpm, 기어 37이빨(공약수 없음), 맞물림 {1} Hz의 1·2·3배를 두 축의 국부 결함 펄스로 진폭 변조, f_s {2} Hz, {3}초, Hann. 리프터링은 켑스트럼에서 정수배 자리 ± 0.5 ms를 0으로 만든 뒤 스펙트럼으로 되돌립니다.": 'The signal is an illustrative example: pinion with 24 teeth at {0} rpm, gear with 37 teeth (no common factor), and 1×, 2× and 3× the {1} Hz mesh frequency amplitude-modulated by local-fault pulses on the two shafts; f_s {2} Hz, {3} s, Hann. Liftering sets ± 0.5 ms around the integer-multiple positions in the cepstrum to zero and then transforms back to a spectrum.',
+  "스펙트럼 {0} Hz 둘레 (dB re 1 g)": 'Spectrum around {0} Hz (dB re 1 g)',
+  "원래": 'Original',
+  "리프터링 뒤": 'After liftering',
+  "주파수 [Hz]": 'Frequency [Hz]',
+  "맞물림 둘레 스펙트럼": 'Spectrum around the mesh frequency',
+  "켑스트럼": 'Cepstrum',
+  "1/25 Hz의 정수배": 'Integer multiples of 1/25 Hz',
+  "1/{0} Hz의 정수배": 'Integer multiples of 1/{0} Hz',
+};
+
+export default EN;

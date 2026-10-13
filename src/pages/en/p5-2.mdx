@@ -1,0 +1,244 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-2 Time-Frequency Analysis
+description: The STFT, which cuts a changing signal into short frames and strings the spectra together; reading a spectrogram (rotating, fixed and locked components); the time-frequency trade-off of frame length and how to choose it; waterfall versus cascade; the wavelet idea
+sectionId: P5-2
+source: p5-2.mdx
+sourceHash: 1f357b575b
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import StftLab from '../../components/labs/StftLab';
+import * as F from '../../figures/p5-2';
+
+# 5-2 Time-Frequency Analysis: STFT · Spectrogram · Waterfall
+
+In P3-5 you saw a cascade: the spectra stored at each speed during a run-up, stacked together. But speed never stops changing. How is each one of those spectra made? P2-4 said that if the speed changes while you measure, the peak smears out (smearing). Measure too long and it smears; measure too short and the resolution gets poor.
+
+This page covers the method that cuts a changing signal into short pieces and strings their spectra together (the STFT), and the three plots that show the result (spectrogram, waterfall, cascade).
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain what the STFT does (cut → window → FFT → slide).
+2. In a spectrogram you can tell apart components that follow the rotation, components that stay in place, and components that are locked onto something.
+3. You can explain the frame-length trade-off with numbers, and choose a frame length from how fast the speed is changing.
+4. You know what a waterfall and a cascade have in common, how they differ, and which to pick for a given purpose.
+5. You can say in one line how a wavelet differs from the STFT.
+
+</Callout>
+
+---
+
+## 1. Cut short, FFT, slide, repeat: the STFT
+
+How would you look at the spectrum of a 60-second record in which the speed keeps changing?
+
+If you FFT all 60 seconds at once, the 1X for 600 to 3600 rpm smears over 10 to 60 Hz into one lump (P2-4 §3). If you cut it into 1-second pieces instead, the speed changes by only 75 rpm within one second, so 1X moves 1.25 Hz, just a bin or two. Within that one second you can treat the speed as nearly constant.
+
+<Figure {...F.stftIdea} />
+
+<Callout type="term" title="STFT (Short-Time Fourier Transform)">
+
+Cut the signal into **frames** of length $N$ (time $T = N/f_s$), multiply each frame by a window (P2-5), take its FFT, then slide by a fixed step (the <strong>hop</strong>) and repeat. The result is "one spectrum for each frame time". Cutting frames that overlap is the same as the overlap of P2-6.
+
+</Callout>
+
+$$
+\mathrm{hop} = N(1 - \text{overlap}), \qquad t_m = \frac{m \cdot \mathrm{hop} + N/2}{f_s}, \qquad \text{number of frames} = \left\lfloor \frac{L - N}{\mathrm{hop}} \right\rfloor + 1
+$$
+
+$t_m$ is the time of the $m$-th frame (its center) and $L$ is the total number of samples.
+
+<Callout type="example" title="60 s record, f_s = 512 Hz, N = 512, 50 % overlap">
+
+1. Frame length $T = 512/512 = 1$ s, $\Delta f = 1/T = 1$ Hz
+2. hop $= 512 \times 0.5 = 256$ samples = one spectrum every 0.5 s
+3. Number of frames $= \lfloor (30\,720 - 512)/256 \rfloor + 1 = 119$
+
+</Callout>
+
+---
+
+## 2. Spectrogram: a map of spectra stacked in color
+
+How do you take in 119 spectra at a glance?
+
+<Figure {...F.spectrogram} />
+
+<Callout type="term" title="Spectrogram">
+
+The STFT spectra laid out in frame-time order, with the magnitude painted as color intensity. Because magnitudes differ so much, they are usually painted in dB (P2-7 §7). In the plot on this page frequency runs horizontally and time vertically, so it is a waterfall (§4) seen from above (and because the speed in this run-up rises in proportion to time, it is also almost the same as the cascade of P3-5).
+
+</Callout>
+
+What you can read from Figure 2:
+
+- **Slanted lines**: components that move with the speed, like 1X and 2X. The ratio frequency ÷ speed (Hz) is the order, and in this plot, where the vertical axis is time (speed), a higher order makes the line lie flatter.
+- **Vertical lines**: components that stay in place regardless of speed, like the one at 95 Hz. A structural natural frequency (P1-2) or an electrical component looks like this.
+- **Where it gets darker**: 1X is largest, 40.7 µm, as it passes the critical speed (12 s, 1500 rpm), and 2X grows to 10.2 µm at 30 s (2850 rpm), where it crosses the 95 Hz vertical line. A rotating line resonates (P1-4) when it passes a natural frequency.
+- **Bending lines**: from 24 s (2400 rpm) a 0.45X line appears below 1X and follows it diagonally, then from 36.4 s (3333 rpm) it bends vertical at 25 Hz and rises no further.
+
+The last line is the classic shape of an instability in a fluid-film bearing. The **oil whirl** (introduced in P1-8 §5), in which the shaft whirls at a frequency slightly below half of 1X (0.38 to 0.48X), follows the speed until that frequency reaches the frequency of the first critical speed (here 25 Hz = 1500 rpm) and locks onto it. This state is called **oil whip**, and the vibration grows large. Why it locks is covered in P4-4. For now just remember the shape: "a line that was following turns vertical".
+
+---
+
+## 3. Frame length: look at time finely and frequency blurs
+
+A longer frame makes $\Delta f = 1/T$ better, so why did we use 1 second?
+
+<Figure {...F.tradeoff} />
+
+The frame length $T$ sets two things: the frequency resolution $\Delta f = 1/T$ and the time resolution (one spectrum lumps together $T$ seconds). You cannot make both good at once. On top of that, while the speed is changing, 1X moves by $a \cdot T$ within one frame and smears ($a$: how much the 1X frequency rises per second, Hz/s). So the width of the 1X line is roughly the larger of $1/T$ and $a \cdot T$, and it is thinnest where the two are equal.
+
+$$
+\text{smear} \approx \max\!\left(\frac{1}{T},\ a\,T\right), \qquad T_{best} = \frac{1}{\sqrt{a}}
+$$
+
+<Callout type="example" title="A run-up rising at 75 rpm/s">
+
+1. 1X: $a = 75/60 = 1.25$ Hz/s → $T_{best} = 1/\sqrt{1.25} = 0.89$ s. With $f_s = 512$ Hz, $N \approx 458$, so choose the nearest power of two, 512.
+2. 2X moves twice as fast, so $a = 2.5$ Hz/s → $T_{best} = 0.63$ s. To see higher orders sharply, cut shorter.
+3. At 20 s in Figure 3, the half-width of the 1X peak is about 8 Hz for $N$ = 128 and about 2 Hz for $N$ = 512 (a Hann peak is roughly 2Δf wide). For 4096, 1X moves 10 Hz during one frame.
+
+</Callout>
+
+<Callout type="warn" title="'The longer you measure, the more accurate it is'">
+
+True at constant speed, but not while the speed is changing. An 8-second frame looks fine with $\Delta f$ = 0.125 Hz, yet it lowers the 1X peak from 16.1 to 3.65 µm (the smearing of P2-4). Read the amplitudes of run-up and coast-down data together with the frame length.
+
+</Callout>
+
+<Callout type="field" title="What the analyzer settings decide">
+
+The number of lines and $F_{max}$ (P2-3) in the run-up Waterfall and Cascade setup determine $T$. With $F_{max}$ of 200 Hz and 400 lines, $\Delta f$ = 0.5 Hz and $T$ = 2 s, so in this example run-up 1X moves 2.5 Hz per frame. For a fast run-up, lower the number of lines and set the number of spectra with the storage interval (Δrpm, P3-5). Order tracking (P5-4), which resamples to match the rotation angle, is another way to remove the smearing of rotating components (in exchange, fixed-frequency components smear on the order axis).
+
+</Callout>
+
+---
+
+## 4. Waterfall and cascade: stack by time, or by speed?
+
+When you stack the same spectra as lines, what do you put on the vertical axis?
+
+<Figure {...F.waterfallCascade} />
+
+The two plots stack the same STFT result and differ only in the vertical axis. The **waterfall** stacks at the height of the time, the **cascade** at the height of the speed at that time. While the speed rises steadily, as in this run-up, the two look almost the same, but they part ways in 40 to 60 s, where the speed is held.
+
+| | Waterfall (vertical = time) | Cascade (vertical = speed) |
+|---|---|---|
+| Shows well | What changes with time at the same speed (during the hold, 25 Hz grows from 7.7 to 14.0 µm between 42 and 55 s) | Rotating components become straight lines, so you see which order and at what rpm they appear |
+| Hides | If the run-up is uneven, the rotating lines bend | Many spectra at the same speed overlap, hiding the change over time |
+| Use it for | Changes during constant-speed operation, load and temperature changes | Run-up and coast-down, comparing several run-ups |
+
+<Callout type="warn" title="'If it says Waterfall, the vertical axis is time'">
+
+The two names are mixed up across instruments and documents, and both are sometimes drawn obliquely like a 3D plot. Before reading the plot, check first whether the vertical axis is time or speed.
+
+</Callout>
+
+---
+
+## 5. Telling causes apart by the shape of the line
+
+What do the shapes of lines in a spectrogram and a cascade tell you?
+
+<Figure {...F.lineReading} />
+
+| Shape of the line | Meaning | Example |
+|---|---|---|
+| Straight line from the origin | Follows the rotation. Frequency ÷ speed = order (the higher, the flatter) | 1X (unbalance), 2X, blade pass and gear mesh (P1-8) |
+| Vertical line | Independent of speed | Structural natural frequency, twice the line frequency ($2f_L$, P1-8) |
+| Follows, then bends vertical | Locked onto some natural frequency | Oil whirl → oil whip |
+| Darker where a rotating line crosses a vertical line | Resonance crossing | 1X × first critical = critical speed, 2X × structural resonance |
+
+<Callout type="warn" title="'A line below 1X is oil whirl'">
+
+A line near 0.4 to 0.5X can also come from other causes such as rub (the shaft touching a stationary part) or looseness (tell them apart in P7-3 and P7-4). Look together at whether the line follows when you change the speed, whether it locks onto one frequency, and when it appeared.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (spectrogram, $N$ = 512, overlap 50 %, unstable component on), find the same lines as in Figure 2. Compare the readout "20 s 1X peak" with the true value.
+2. Change $N$ from 128 → 512 → 4096. How do the thickness of the 1X line, the thickness of the vertical cells, and the 20 s 1X peak change?
+3. Switch the view from waterfall → cascade and compare after 40 s (3600 rpm held).
+4. Turn off "unstable component". Which lines disappear?
+
+</Callout>
+
+<StftLab client:visible lang="en" />
+
+In step 1, the 20 s 1X peak of 16.1 µm is almost the same as the true value of 16.3 µm. In step 2, $N$ = 128 makes each spectrum 0.25 s, so the time is fine but the line is thick (half-width about 8 Hz); with 4096, 1X moves 10 Hz during one frame, so the line smears, the peak drops to 3.65 µm, and one spectrum lumps together 8 seconds (the spacing of the vertical cells in the lab is the hop: 0.125 s and 4 s at 50 % overlap). The peak height closest to the true value is at 512, and the thinnest lines are at 512 to 1024. In the waterfall of step 3 you can see the 25 Hz line growing during the hold, while in the cascade those 20 seconds overlap on the single 3600 rpm line. In step 4 the 0.45X line and the 25 Hz vertical line disappear, while 1X, 2X and the 95 Hz vertical line stay.
+
+---
+
+## 6. Wavelets: a different frame length for each frequency (for reference)
+
+How do you see a slow rotating component and a short impact together in one plot?
+
+<Figure {...F.tiling} />
+
+The STFT divides all frequencies into the same cells with a single frame length. The **wavelet transform** looks at low frequencies with long frames (fine in frequency) and at high frequencies with short frames (fine in time). Either way, the area of one cell (time width × frequency width) cannot get much smaller than about 1. What you choose is which way to spend that area. This site covers only the concept.
+
+---
+
+## 7. Summary
+
+| Topic | What to remember |
+|---|---|
+| STFT | Cut with length $N$, window and FFT, slide by the hop and repeat → one spectrum per frame time |
+| Spectrogram | Spectra in time order, magnitude as color. Slanted line = rotation, vertical line = fixed, bend = locking |
+| Frame length | $\Delta f = 1/T$ vs time $T$. When speed changes, smear $\approx \max(1/T, aT)$, $T_{best} = 1/\sqrt{a}$ |
+| Waterfall / cascade | Same result, only the vertical axis differs: time / speed. Waterfall for holds, cascade for comparing run-ups |
+| Reading lines | Rotating line × vertical line = resonance crossing. For a line below 1X, see whether it follows or locks when you change the speed |
+| Wavelet | A different frame length for each frequency. The cell area stays the same |
+
+## 8. Check your understanding
+
+<details>
+<summary><strong>Q1. You STFT a 10 s record with f_s = 1024 Hz, N = 1024 and 75 % overlap. What are the frame length, Δf, hop time and number of frames?</strong></summary>
+
+$T$ = 1 s, $\Delta f$ = 1 Hz, hop = 256 samples = 0.25 s, number of frames = $\lfloor (10\,240 - 1024)/256 \rfloor + 1 = 37$.
+</details>
+
+<details>
+<summary><strong>Q2. A spectrogram shows a vertical line at 87 Hz throughout the run-up. Is it a rotating component?</strong></summary>
+
+No. A rotating component moves diagonally with the speed. A vertical line that stays in place is something independent of speed, like a structural natural frequency or an electrical component. If it gets larger where a rotating line crosses it, the machine is resonating at that speed.
+</details>
+
+<details>
+<summary><strong>Q3. In a fast run-up 1X rises 4 Hz per second. Roughly what frame length shows 1X most sharply? What is N if f_s = 1024 Hz?</strong></summary>
+
+$T_{best} = 1/\sqrt{4} = 0.5$ s, $N = 0.5 \times 1024 = 512$. With a 2 s frame, 1X moves 8 Hz per frame and smears.
+</details>
+
+<details>
+<summary><strong>Q4. During constant-speed operation you want to see whether 1X slowly grew over 2 hours. Do you look at a waterfall or a cascade?</strong></summary>
+
+A waterfall. The speed is the same, so in a cascade all 2 hours of spectra overlap at one height and the change is hidden. Also look at the trend of 1X magnitude and phase over time (P6-4).
+</details>
+
+<details>
+<summary><strong>Q5. A 0.43X line rises with the speed, then from about 3070 rpm stays at 22 Hz. What do you suspect, and what else do you check?</strong></summary>
+
+Suspect oil whip, an oil whirl locked onto the first critical frequency (22 Hz ≈ 1320 rpm). Check whether 22 Hz matches the frequency of the first critical speed (Bode, P4-1), whether it could be another cause (rub or looseness, P7-3), and whether the line follows the speed again when you lower it.
+</details>
+
+<details>
+<summary><strong>Q6. You STFT the same signal with N = 256 and N = 4096. At constant speed 1X has the same magnitude, but during the run-up it is much smaller with 4096. Why?</strong></summary>
+
+At constant speed 1X does not move within the frame, so the amplitude is the same in both cases. During the run-up, 1X moves several Hz during a 4096 frame and is split among several bins, so the peak gets lower (smearing). When you read an amplitude, look together at the speed change in that interval and the frame length.
+</details>
+
+On the next page (P5-3) we cover analysis that looks at two channels together: the cross spectrum, the frequency response function (FRF) and coherence, and the full spectrum, which uses the two signals X and Y to separate forward from backward whirl.
+
+## References
+
+<References items={[
+  ['R-17', 'ShortTimeFFT and spectrogram — checking the definitions of frame, hop and window'],
+  ['R-02', 'Waterfall and cascade, oil whirl and whip'],
+  ['R-01', 'Time-frequency analysis, wavelets'],
+]} />

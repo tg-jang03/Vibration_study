@@ -31,4 +31,13 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'UnitConverterLab',
   'ModulationLab',
   'SandboxLab',
+  'StftLab',
+  'OrderTrackingLab',
+  'FrfLab',
+  'FullSpectrumLab',
+  'FilterLab',
+  'IntegrationLab',
+  'TrackingLab',
+  'CepstrumLab',
+  'FeatureLab',
 ]);

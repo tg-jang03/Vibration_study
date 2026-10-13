@@ -7,7 +7,7 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.4 Part 2 완료(영어 12절) → 다음 M12.5 Part 5 | 진행 중 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.5 Part 5 완료(영어 18절) → M12.6 Part 1 진행 중 | 진행 중 |
 | **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
@@ -25,7 +25,7 @@
 - **M12.2 완료 (2026-10-12)**: `src/i18n/`(경로·`ui.ts` 문구·`translate.ts` 사전·`lab.ts` tr/k·`routes.ts` 영어판 목록·`en/` 목차·랩 모음·그림·랩 사전), 영어 홈·Part 11·랩 모음·랩 3·**P2-3 전체**(본문·그림 8·SMP-01~03). 검사: `src/i18n/*.test.ts`(빠진 영어·감싸지 않은 한글·그림 사전), `npm run verify:i18n`(CI에 추가), `npm run i18n:status`. sitemap에 ko↔en 짝. 레퍼런스는 아직 한국어만(영어 메뉴에 KO 표시).
 - **M12.3 완료 (2026-10-13)**: 영어 P2-3 · P2-5 · P4-2 · P5-6 · P6-3, 랩 13개(SMP·WIN·JEF·ENV·SK·ORB). 고침: Plot 범례 끝 잘림(Plotly 글꼴 이름), `translateDeep`이 Float64Array(그림 heatmap z)를 평범한 객체로 바꾸던 것. 확인법: 한·영 그림의 도형 수 비교(5절 모두 같음).
 - **M12.4 완료 (2026-10-13)**: Part 2 전부(영어 P2-1 ~ P2-9), 랩 13개 더(BAS-02·FOU-01 셋·RES·ZOOM·AVG 둘·SPC 둘·UNIT·MOD·SBX). 등록은 `node scripts/i18n/register-lab.mjs <랩>`. `lib/`의 한국어 라벨(sandbox 판정·목적, orbit 모양)은 랩 안에서 `k()` 목록 + `tr`로 옮김 — `lib`의 글을 바꾸면 그 랩 사전도. 한국어 "준비 중" 남은 것 5곳 정리(P2-7·P2-8·P2-9·P8-2·P10-3).
-- **다음 M12.5 ~**: Part 5 나머지(P5-1 ~ P5-5·P5-7) → 6 → 7 → 1 → 3 → 4 → 8 → 9 → 10 → 11. 방식 그대로: Sonnet 에이전트 4개 동시 + 끝나는 대로 다음, 지시문 `archive/TranslationBrief.md`, Claude가 등록·검사(그림 도형 수 한·영 비교 포함)·Part별 커밋.
+- **M12.5 완료 (2026-10-13)**: Part 5 전부(영어 P5-1 ~ P5-7), 랩 9개 더(FLT·INT·STFT·XCH·FULL·ORD·FLT-02·CEP·FEAT). **다음 M12.6 ~**: 번호 순서 Part 1(진행 중) → 3 → 4 → 6 → 7 → 8 → 9 → 10 → 11 (사용자 지적: 영어 "Start here"가 P2-1로 가는 등 읽는 흐름이 깨짐).
 
 ## 핸드오프 — 트랙 B (Codex)
 - 배정 없음. M0.15 모바일 그림 대응 완료(D-053), 사용자 모바일 검토 대기. 영어판(M12) 파일은 Claude 단독이라 건드리지 않는다.

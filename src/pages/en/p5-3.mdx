@@ -1,0 +1,248 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-3 Two-channel analysis
+description: Analyzing two signals together — the cross spectrum, H1 and H2 estimates of the FRF from input and output and the effect of noise, coherence to separate trustworthy frequencies, and the full spectrum that splits forward and reverse components from X and Y sensors, with its assumptions
+sectionId: P5-3
+source: p5-3.mdx
+sourceHash: efe81752f5
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import FrfLab from '../../components/labs/FrfLab';
+import FullSpectrumLab from '../../components/labs/FullSpectrumLab';
+import * as F from '../../figures/p5-3';
+
+# 5-3 Two-channel analysis: cross spectrum · FRF · coherence · full spectrum
+
+A pedestal rings strongly near 80 Hz while the machine runs. To check whether that is a natural frequency of the structure, you apply a force, measure the response, and try to get the frequency response function (FRF, P1-4). But if you simply divide the response spectrum by the force spectrum, the value jumps around from one measurement to the next. Meanwhile, the spectra of the shaft's X and Y sensors both show the same 1X, yet they do not tell you which way the shaft is turning.
+
+What more can you learn by looking at two signals **together**? This page looks at how to measure the relationship between two channels.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain that the cross spectrum holds the common content of two signals and their phase difference.
+2. You can compute the H1 and H2 estimates of the FRF from input (force) and output (response), and choose which to use depending on which side the noise is on.
+3. You can use coherence to separate trustworthy frequencies, and say why coherence is meaningless without averaging.
+4. You can compute the full spectrum from X and Y signals to separate forward and reverse components, and check the sensor assumptions.
+
+</Callout>
+
+---
+
+## 1. Is dividing two spectra the FRF?
+
+In P1-4, the FRF was "at each frequency, how many times the force the response is, and how much it lags". So can we just divide the response spectrum by the force spectrum bin by bin?
+
+<Figure {...F.ratioOneFrame} />
+
+Near a resonance the quotient is close to the true FRF. But where the response is very small — here the <strong>antiresonance</strong> between the two resonances (the frequency where the response nearly vanishes, 106 Hz) — things are different. Noise that is small overall (10 % of the mean response magnitude) is about 3 times larger than the response at this frequency, so it goes straight into the division and the true value of 0.177 comes out as 1.35. The division of a single frame cannot filter out noise. You have to average several frames, and what you average matters.
+
+---
+
+## 2. Cross spectrum: a vector average that uses the input as the phase reference
+
+What does the quotient look like when you collect it over many frames?
+
+<Figure {...F.crossArrows} />
+
+The value in one bin is an arrow with a magnitude and a phase (P2-6 §3.1). If you divide the response arrow by the force arrow in each frame, the part of the response explained by the force always points the same way, while noise turns at random. So when you average over many frames (more precisely, giving frames with larger force more weight $\lvert X \rvert^2$), the noise is wiped out and only the part that moves with the force remains. The vector average of P2-6 needed a trigger to align the component directions, but here the force signal itself serves as the phase reference in every frame.
+
+<Callout type="term" title="Cross spectrum">
+
+From the same-frame spectra $X$, $Y$ of two signals $x$, $y$, compute $X^{*}Y$ in each bin and average over frames ($^{*}$ is the complex conjugate, ⟨ ⟩ the frame average).
+
+$$
+G_{xy} = \langle X^{*}Y \rangle,\qquad G_{xx} = \langle \lvert X \rvert^2 \rangle,\qquad G_{yy} = \langle \lvert Y \rvert^2 \rangle
+$$
+
+The magnitude of $G_{xy}$ is the size of the content contained in both signals, and its phase is the phase difference from $x$ to $y$. $G_{xx}$ and $G_{yy}$ are the power spectra of P2-7 (also called the auto spectrum).
+
+</Callout>
+
+---
+
+## 3. FRF estimation: H1 and H2
+
+How do you get the FRF from the cross spectrum? There are two ways, and which one is right depends on which side the noise is on.
+
+$$
+H_1 = \frac{G_{xy}}{G_{xx}}, \qquad H_2 = \frac{G_{yy}}{G_{yx}} \quad (G_{yx} = G_{xy}^{*})
+$$
+
+<Figure {...F.h1h2} />
+
+- **Noise on the response** is uncorrelated with the force, so it is wiped out by averaging in $G_{xy}$, but it piles up in $G_{yy}$. So $H_1$ is right and $H_2$ is too large. It is especially large at the antiresonance, where the response is small (top: the true value 0.177 becomes 3.33 with 64 averages). However many averages you take, $H_2$ does not converge to the true value but to around $\lvert H \rvert/\gamma^2 \approx 1.6$ (about 9 times the true value), and with few averages it swings widely around that.
+- **Noise on the force** does the opposite: it piles up in $G_{xx}$, so $H_1$ becomes smaller and $H_2$ is right (middle).
+
+<Callout type="example" title="H1 at 80 Hz with 30 % noise on the force">
+
+1. Noise power ÷ force power $= 0.3^2 = 0.09$
+2. $H_1 = H \times \dfrac{1}{1 + 0.09} = 16.7 \times 0.917 = 15.3$
+3. The value in the middle of Figure 3 is 15.38 (64 averages). Taking more averages does not reduce this bias. Noise produces both scatter, which averaging reduces, and bias, which averaging does not; this is the bias.
+
+</Callout>
+
+Frequencies where $H_1$ and $H_2$ are similar can be trusted; frequencies where they differ widely are where the noise is large. The phase (Figure 3, bottom) also scatters in the same places. The phase of $H_1$ is the lag from force to response. If you compute the cross spectrum between two response locations in the same way, its phase tells you whether the two locations move together or in opposition, at any frequency and not only at 1X (P3-3 §7 did the same job with 1X vectors).
+
+<Callout type="field" title="Impact test and measurement during operation">
+
+In an impact test, where the FRF is measured by striking with a hammer (P9-1), the hammer's force-sensor signal is clean and the response side is more often noisy, so $H_1$ is the default. If you look at the cross spectrum between the responses at two locations on a running machine, you can see at which frequencies the two places move in phase or in antiphase. The axial phase on both sides of a coupling (P7-3) and the motion shape of several points (ODS, P9-1) use this method.
+
+</Callout>
+
+---
+
+## 4. Coherence: which frequencies can you trust?
+
+Can the places where $H_1$ and $H_2$ diverge be seen in a single number?
+
+<Figure {...F.coherenceFig} />
+
+<Callout type="term" title="Coherence">
+
+$$
+\gamma^2 = \frac{\lvert G_{xy} \rvert^2}{G_{xx}\,G_{yy}} = \frac{\lvert H_1 \rvert}{\lvert H_2 \rvert}, \qquad 0 \le \gamma^2 \le 1
+$$
+
+It is the share of the response power that is explained (linearly) by the force. At 1 the response all came from the force; the lower it is, the larger the share of noise, other excitation sources, nonlinearity and leakage (P2-5).
+
+</Callout>
+
+In Figure 4 the value near the resonance is 0.999, almost 1, and at the antiresonance it is low: 0.22 with 16 averages and 0.081 with 256 (the theoretical value for this example is about 0.11). Coherence with few averages reads higher than the real value and scatters widely (with 16 averages the relative error is about 100 %, with 256 about 24 %), so read it together with the number of averages. A low value at the antiresonance is the normal picture: the response itself is small, so noise wins. If it is low near a resonance, first suspect leakage from insufficient frequency resolution (P2-5, common with lightly damped resonances; $H_1$ then reads the peak too small), then sensor mounting, vibration from other machines mixing in, and, for an impact test, the hammer striking twice.
+
+<Callout type="warn" title="'Coherence is 1 without averaging, so it is perfect'">
+
+With a single frame, $\lvert X^{*}Y \rvert^2 = \lvert X \rvert^2 \lvert Y \rvert^2$, so the coherence is exactly 1 at every frequency regardless of noise (the gray curve in Figure 4). Coherence is meaningful only when several frames are averaged. Always report the number of averages with it.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (16 averages, 10 % noise on the response, 0 on the force), read H1, H2 and the coherence at the antiresonance (106 Hz).
+2. Change the averages to 1. What happens to the coherence and to H1 and H2?
+3. Raise the averages to 256. Does the antiresonance value of H2 approach the true value?
+4. Set the response noise to 0 and the force noise to 30 %. Which one is right this time?
+
+</Callout>
+
+<FrfLab client:visible lang="en" />
+
+In step 2, with a single frame the coherence is 1 everywhere and H1 equals H2. Both are a single division, so neither filters out noise. In step 3, as you increase the averages H1 converges toward the true value, but H2 does not go to the true value at the antiresonance and stays around 1.6 (about 9 times the true value; 1.90 with 256 averages). It is a bias from response noise piling up in $G_{yy}$, so averaging does not reduce it. In step 4 it is the other way round: H2 is right and H1 is low by a factor of about 0.92 at every frequency.
+
+---
+
+## 5. Full spectrum: seen as one signal, X and Y reveal the direction
+
+The X and Y sensors read the same 1X with the same magnitude, so which way is the shaft turning?
+
+<Figure {...F.fullIdea} />
+
+The spectra of X and Y separately (half spectra, P2-2 §3) are the same in all four cases. The direction is contained in the phase difference between X and Y, and looking at each spectrum on its own loses that information. In P4-2 we combined the two signals into one complex number $z = x + jy$ and computed the forward and reverse components $A_f$ and $A_b$ from a formula. With measured data, you simply take the FFT of $z$.
+
+<Callout type="term" title="Full spectrum">
+
+The FFT of the complex signal $z = x + jy$, which combines $x$ (right sensor) and $y$ (upper sensor). Unlike a real signal, $+f$ and $-f$ take different values. The bar at $+f$ is the radius $\lvert A_f \rvert$ of the circle turning counterclockwise (forward) at that frequency, and the bar at $-f$ is the radius $\lvert A_b \rvert$ of the circle turning clockwise (reverse). So, unlike the half spectrum, you do not double it. "+f = counterclockwise = forward" is the naming for a shaft turning counterclockwise (from X toward Y). If the shaft turns clockwise, swap x and y or compute $z = x - jy$, so that $+f$ is always the direction of rotation (forward).
+
+</Callout>
+
+| Orbit | +f (forward) | −f (reverse) | Figure 5 |
+|---|---|---|---|
+| Counterclockwise circle | radius | 0 | 50 / 0 µm |
+| Counterclockwise ellipse | (semi-major + semi-minor)/2 | (semi-major − semi-minor)/2 | 46.2 / 19.1 µm |
+| Straight line | half of the half-length | half of the half-length | 35.4 / 35.4 µm (half-length 70.7) |
+| Clockwise circle | 0 | radius | 0 / 50 µm |
+
+<Callout type="example" title="An ellipse with Y lagging by 45°">
+
+1. $\tilde X = 50$, $\tilde Y = 50\,e^{-j45°}$ (µm, the complex amplitudes of P4-2)
+2. $\lvert A_f \rvert = \lvert \tilde X + j\tilde Y \rvert / 2 = 50 \times \lvert 1 + e^{j45°} \rvert / 2 = 50 \cos 22.5° = 46.2$ µm
+3. $\lvert A_b \rvert = 50 \cos 67.5° = 19.1$ µm → the forward part is larger, so it turns counterclockwise
+
+</Callout>
+
+<Figure {...F.premise} />
+
+<Callout type="warn" title="'If a reverse bar shows, it is reverse whirl'">
+
+The calculation is correct only if the two sensors are exactly 90° apart and have the same sensitivity. A 10 % sensitivity difference creates a false reverse bar of 5 % of the radius, and a 10° mounting-angle difference one of 8.7 %. Enter the actual mounting angle (such as the ±45° layout of P3-2) and the sensitivities to correct before reading, and suspect the sensors first for a small reverse bar. Genuine reverse components often appear with anisotropic support (P4-2, elliptical orbit), and a reverse whirl, where the reverse component is larger than the forward one and the shaft actually turns backward, appears between two critical speeds (P4-2) or in a rub where the shaft touches the fixed part all the way round (P7-3).
+
+</Callout>
+
+Here is the table above as a moving picture. $z(t) = A_f e^{j2\pi f t} + A_b e^{-j2\pi f t}$ is **two arrows turning at the same speed in opposite directions**, joined end to end (the turning arrow of P1-2). The arrow of length $\lvert A_f \rvert$ turns counterclockwise, and the arrow of length $\lvert A_b \rvert$, attached to its tip, turns clockwise. When the two arrows point the same way the tip is farthest (semi-major = sum of the lengths), and when they point opposite ways it is closest (semi-minor = difference of the lengths). So the heights of the $\pm 1$X bars of the full spectrum are the lengths of the two arrows, and the longer one decides the direction in which the orbit turns.
+
+<Callout type="try">
+
+1. In the initial state (X and Y 50 µm, Y lagging by 90°), look at the full spectrum and the orbit. What are $A_f$ and $A_b$ in the readout?
+2. Change the Y lag from 45° to 0° to 270° and watch the bars and the orbit direction.
+3. Set it back to 90° and apply a Y sensor sensitivity error of +10 % and a mounting-angle error of 10°, one at a time.
+4. Turn on the "0.45X component". On which side of the full spectrum does it stand?
+5. Press **play** on the orbit figure and set the Y lag to 45° and 0°. Watch how the blue (+1X) and orange (−1X) arrows turn and draw the orbit.
+
+</Callout>
+
+<FullSpectrumLab client:visible lang="en" />
+
+Step 1 gives $A_f$ = 50 µm, $A_b$ = 0. In step 2, 45° is a counterclockwise ellipse of 46.2 and 19.1 µm, 0° is a straight line with 35.4 µm on each side, and 270° is a clockwise circle with 50 µm only at −50 Hz. In step 3, the sensitivity error raises a false reverse bar of 2.5 µm at −50 Hz, and the angle error one of 4.4 µm. In step 4, the 0.45X is a circle turning in the same direction as the shaft, so it stands only at +22.5 Hz. The full spectrum confirms that the oil-whirl line seen in P5-2 is a forward component. In step 5, at 45° the short orange arrow (19.1 µm) turns against the long blue one (46.2 µm), so the tip moves between 65.3 µm (sum) and 27.1 µm (difference) in a counterclockwise ellipse. At 0° the two arrows have the same length of 35.4 µm, so there is a direction in which they cancel, and the tip just moves back and forth along a diagonal line.
+
+---
+
+## 6. Summary
+
+| Topic | What to remember |
+|---|---|
+| Cross spectrum | $G_{xy} = \langle X^{*}Y \rangle$: common content and phase difference. A vector average that uses the force as the phase reference |
+| H1 · H2 | $H_1 = G_{xy}/G_{xx}$ is robust to response noise and $H_2 = G_{yy}/G_{yx}$ to force noise. Noise produces both scatter (reduced by averaging) and bias (not reduced) |
+| Coherence | $\gamma^2 = \lvert H_1 \rvert / \lvert H_2 \rvert$. Trust frequencies near 1. With one average it is always 1 |
+| Phase between channels | $H_1$ is the lag from force to response. The phase of the cross spectrum between two responses shows whether they move together or in opposition at any frequency |
+| Full spectrum | FFT of $z = x + jy$. For a shaft turning counterclockwise, $+f$ = forward radius, $-f$ = reverse radius (for clockwise, $z = x - jy$) |
+| Assumptions | X and Y 90° apart with equal sensitivity. 10 % sensitivity difference → 5 %, 10° angle difference → 8.7 % false reverse |
+
+## 7. Check your understanding
+
+<details>
+<summary><strong>Q1. You computed coherence without averaging (M = 1) and got 1 at every frequency. Is the measurement perfect?</strong></summary>
+
+No. With a single frame, $\lvert X^{*}Y \rvert^2 = \lvert X \rvert^2 \lvert Y \rvert^2$, so it is always 1. You have to average several frames for the share of noise to show.
+</details>
+
+<details>
+<summary><strong>Q2. At the antiresonance H2 is more than ten times larger than H1. Which do you trust, and why?</strong></summary>
+
+If the cause is response noise, trust $H_1$. Response noise is wiped out by averaging in $G_{xy}$ and piles up in $G_{yy}$, so $H_2$ is inflated at the antiresonance, where the response is small. The coherence at that frequency also comes out low.
+</details>
+
+<details>
+<summary><strong>Q3. Noise equal to 25 % of the force power is mixed into the force signal. At a frequency where the true FRF is 10, roughly what does H1 come out as?</strong></summary>
+
+$10 / (1 + 0.25) = 8$. Taking more averages does not reduce this bias, and in this case $H_2$ is the right one.
+</details>
+
+<details>
+<summary><strong>Q4. If the coherence is 0.81 and H1 = 9, what is H2?</strong></summary>
+
+Since $\gamma^2 = \lvert H_1 \rvert / \lvert H_2 \rvert$, $\lvert H_2 \rvert = 9 / 0.81 \approx 11.1$.
+</details>
+
+<details>
+<summary><strong>Q5. The X·Y orbit is a straight line of length 60 µm (amplitude 30 µm). What are the ±1X bars of the full spectrum?</strong></summary>
+
+A straight line is the sum of forward and reverse circles of equal size, so both +1X and −1X are 15 µm (half the amplitude).
+</details>
+
+<details>
+<summary><strong>Q6. The shaft turns counterclockwise, but the −1X of the full spectrum has a bar of about 9 % of the radius. What do you check first?</strong></summary>
+
+Check the sensor assumptions first. See whether the two probes are exactly 90° apart (about 8.7 % if off by 10°), whether the sensitivities are equal (5 % for a 10 % difference), and whether the mounting angles and direction signs used in the calculation are right. Only then look at real causes such as anisotropic support or rub.
+</details>
+
+The next page (P5-4) covers order tracking: resampling by the angle the shaft has turned instead of by time, so that 1X stays in one bin even while the speed changes.
+
+## References
+
+<References items={[
+  ['R-18', 'Cross spectrum, H1 and H2, coherence and its bias'],
+  ['R-02', 'Full spectrum, forward and reverse whirl'],
+  ['R-17', 'csd and coherence — cross-checking the cross-spectrum and coherence definitions'],
+]} />

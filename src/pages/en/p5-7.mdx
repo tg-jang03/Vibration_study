@@ -1,0 +1,256 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-7 Cepstrum · Autocorrelation · Features
+description: The cepstrum, which gathers families of lines such as harmonics and sidebands into quefrency peaks, liftering to erase just one family, finding a period with autocorrelation, RMS · peak · crest factor · kurtosis · skewness and how these features trend as a fault progresses, with MED and ANC by name only
+sectionId: P5-7
+source: p5-7.mdx
+sourceHash: d600fe5e69
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import CepstrumLab from '../../components/labs/CepstrumLab';
+import FeatureLab from '../../components/labs/FeatureLab';
+import * as F from '../../figures/p5-7';
+
+# 5-7 Cepstrum · Autocorrelation · Features: Spacing of Line Families and the Trend of Impulsiveness
+
+If you zoom into the acceleration spectrum of a gearbox, the sidebands are packed densely around the gear-mesh frequency. In P2-8 we said that the sideband spacing is the rotating frequency of the shaft that causes them, but once two or more families are mixed together, the spacing is hard to count by eye.
+
+The first half of this page covers the **cepstrum**, which gathers a family of equally spaced lines into a single number, and the **autocorrelation**, which finds a period. The second half covers the **time-domain features**, which reduce a whole waveform to a few numbers, and how those numbers change while a fault progresses.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain how the cepstrum turns a line family with spacing Δf into a peak at quefrency 1/Δf.
+2. You know that liftering can erase just one family, or keep only the smooth shape of the spectrum.
+3. You know how autocorrelation differs from the cepstrum, and you can find a repetition period with autocorrelation.
+4. You can say what RMS, peak, crest factor, kurtosis and skewness are each sensitive to.
+5. You know that kurtosis can rise and then come back down while a fault progresses, so you read features as trends.
+
+</Callout>
+
+---
+
+## 1. When families mix, the spacing is hard to count
+
+What does the spectrum look like for a gearbox where both the pinion and the gear have a fault?
+
+<Figure {...F.familySpectrum} />
+
+In the gearbox of Figure 1, a pinion (24 teeth, 25 Hz) and a gear (37 teeth, 16.22 Hz) mesh at 600 Hz. If one pinion tooth has a flaw, the mesh is disturbed once per pinion revolution, which raises **several pairs of sidebands spaced 25 Hz apart** around the mesh frequency (the short modulation of P2-8). A flaw on the gear raises a family spaced 16.22 Hz apart.
+
+With the two families overlapping, the lines are packed densely around 600 Hz, and the same families repeat around 2× and 3× the mesh frequency. Counting which line belongs to which family one by one is tedious, and lines buried in noise cannot be counted at all.
+
+<Callout type="field" title="Why tooth counts are chosen with no common factor">
+
+24 and 37 have no common factor. Built this way, it takes a long time before one pinion tooth meets the same gear tooth again (37 pinion revolutions = 1.48 s), so wear spreads evenly (hunting tooth). In the signal, it means that the sideband families of the two shafts coincide only at integer multiples of the mesh frequency (600, 1200 … Hz) and pass each other, mixed, in between.
+
+</Callout>
+
+---
+
+## 2. Cepstrum: gather the hidden spacing into one place
+
+Can we gather a line family that repeats with spacing Δf into a single number? To find something that repeats at equal intervals in a time signal, we used the Fourier transform. To find something that repeats in a spectrum, we do the same thing — we take the **Fourier transform of the logarithm of the spectrum**, one more time.
+
+$$
+c(\tau) = \mathcal{F}^{-1}\left\{\ln A(f)\right\}
+$$
+
+- $A(f)$: amplitude spectrum, $\ln$: natural logarithm
+- $c(\tau)$: the **cepstrum**; the horizontal axis $\tau$ is the **quefrency** [s], which has units of time
+- A line family with spacing Δf makes a ripple of period Δf in $\ln A(f)$, and that ripple gathers into a peak at $\tau = 1/\Delta f$
+
+<Figure {...F.cepstrumFig} />
+
+In Figure 2, the pinion family with 25 Hz spacing puts a peak at 1/25 Hz = 40 ms, and the gear family with 16.22 Hz spacing puts one at 61.7 ms. The two families that were mixed in the spectrum are now separated into different places. Peaks also appear at integer multiples of 40 ms (80, 120 … ms; in this example, the ones at 200 and 240 ms are almost as tall as the one at 40 ms), and these are called **rahmonics** (the cepstrum version of harmonics). Peak height depends on the log base, on amplitude versus power, and on the normalization convention, so do not compare it directly with values from other software.
+
+<Callout type="example" title="From the quefrency of a peak to the shaft that causes it">
+
+1. Peak at 40.0 ms → spacing 1 ÷ 0.040 = **25 Hz**
+2. 25 Hz × 60 = 1500 rpm → equal to the rotating speed of the pinion shaft → candidate: a fault on the pinion
+3. Peak at 61.7 ms → 16.2 Hz → 973 rpm → the gear shaft
+
+</Callout>
+
+Why use the logarithm? The vibration that reaches the sensor is a cause (meshing, impacts) that has passed through a transmission path, so in the spectrum it is a **product** (the line family of the cause × the smooth shape of the path). The logarithm turns this product into a **sum**, so the ripple made by the line family (high quefrency) and the shape of the path (low quefrency) land in different places. Amplitude modulation is a product in time, so it appears as a sideband family in the spectrum (P2-8), and the cepstrum picks up the equally spaced ripple that this family makes in the log spectrum. The logarithm also compresses the size difference between large and small lines, so it shows evenly the spacing of sidebands that are tens of dB below the mesh line (1 g).
+
+<Callout type="warn" title="'The largest cepstrum peak = the period of the cause'">
+
+Sometimes a rahmonic is as tall as the fundamental peak, or taller. Even in the initial state, the peaks at 200 and 240 ms are almost equal to the one at 40 ms, and in the lab, if you set the pinion fault to 0, the third multiple of the gear family (185 ms) is the largest. Look not for one peak but for a **row of peaks at equal spacing**, and read that spacing.
+
+</Callout>
+
+---
+
+## 3. Liftering: pick a family and erase it
+
+If the cepstrum has separated the families, can we also erase just one of them?
+
+<Figure {...F.lifterFig} />
+
+Setting part of the cepstrum to zero and transforming back to a spectrum is called <strong>liftering</strong> (it is like filtering, but done in the cepstrum). As in the top of Figure 3, erasing 40 ms and its integer multiples removes only the pinion family (compare with the bottom of Figure 1). The 625 Hz sideband drops by 15.0 dB, while the 616.2 Hz sideband of the gear family stays almost the same.
+
+As in the bottom of Figure 3, if you keep only very short quefrencies (below 5 ms), all the lines vanish and only the **smooth shape of the spectrum** remains. The example has no structural resonance, so it is nearly flat, but in a real machine the transmission path to the sensor and the bands boosted by resonances show up in this shape. The idea is to look separately at the spacing of the lines (what is the cause) and the shape of the spectrum (how the structure amplifies it).
+
+<Callout type="try">
+
+1. In the initial state (pinion 0.3, gear 0.2, noise 0.05 g), look at the cepstrum peaks at 40 ms and 61.7 ms and at the "largest peak".
+2. Lower the pinion fault to 0. What happens to the 40 ms peak and the row of rahmonics?
+3. Return the pinion fault to 0.3 and switch liftering to "erase pinion family" and then "erase gear family" to see how the two sidebands change.
+4. Raise the noise to 0.2 g.
+
+</Callout>
+
+<CepstrumLab client:visible lang="en" />
+
+In step 1, the largest peak is at 40 ms (0.071), and the one at 61.7 ms is 0.033. As in step 2, if you remove the pinion fault, the 40 ms line disappears and only the lines spaced 61.7 ms remain. In step 3, erasing the pinion family lowers 625 Hz by 15 dB and hardly touches 616.2 Hz. Erasing the gear family lowers 616.2 Hz by about 7 dB and leaves 625 Hz as it is — it is not erased as cleanly as the pinion family. As in step 4, when the noise grows, the outer sidebands and the sidebands around 2× and 3× the mesh frequency are buried in the noise floor, so the 40 ms peak drops to 0.024 and the "largest peak" moves to a wrong place such as 41.7 ms — the cepstrum, too, can only gather the lines that are above the noise floor.
+
+---
+
+## 4. Autocorrelation: find the repetition period in time
+
+If you do not know the rotating speed, can you find directly how many ms apart the signal repeats?
+
+<strong>Autocorrelation</strong> is the average of the signal multiplied by a copy of itself delayed by τ. When τ equals the repetition period, the two signals overlap and the value becomes large. It is the correlation that we used in P2-2 to measure similarity by multiplying with a template, now applied to the signal with itself.
+
+$$
+R(\tau) = \frac{E[x(t)\,x(t+\tau)]}{E[x(t)^2]}
+$$
+
+- $x$ is the signal with its mean removed. $R(0) = 1$, and if it repeats with period T there is a peak near $R(T)$. In spectrum terms it is $\mathcal{F}^{-1}\{\lvert X(f)\rvert^2\}$ (squaring instead of the logarithm)
+
+<Figure {...F.acfPeriod} />
+
+Figure 4 takes the envelope of the bearing signal of P5-6 and computes its autocorrelation. The first peak stands at a lag of 5.55 ms and repeats at each integer multiple of it. 1/5.55 ms ≈ 180 Hz, which matches the BPFO of 179.2 Hz (the difference comes from the sample spacing of 0.06 ms). Dividing the fifth peak (27.89 ms) by 5 also cuts the error from the sample spacing to a fifth, giving 179.3 Hz. Even without knowing the rotating speed, you can find the repetition period of a fault first, and then compare it with the table of element frequencies (P1-8) (P7-1).
+
+<Figure {...F.acfVsCepstrum} />
+
+However, in the autocorrelation of the same gearbox signal (Figure 5), 40 ms does not stand out. The 600 Hz mesh is most of the signal, so the autocorrelation returns to almost 1 every 1.67 ms. Autocorrelation shows the **period of the large components**, while the cepstrum, by compressing size with the logarithm, also shows the **spacing of small line families**. Either filter out the large components first (as with the band-pass and envelope of P5-6) or use the cepstrum.
+
+---
+
+## 5. Time-domain features: a waveform in a few numbers
+
+When you monitor hundreds of machines every day, you cannot look at each spectrum. If you reduce the whole waveform to a few numbers, what can you see?
+
+<Figure {...F.featureShapes} />
+
+| Feature | Formula | What it is sensitive to | Value in Figure 6 |
+|---|---|---|---|
+| RMS | $\sqrt{E[x^2]}$ | Total energy (P2-1) | 1 for all |
+| Peak | $\max\lvert x\rvert$ | The single largest instantaneous value | 1.41 · 3.39 · 6.42 · 1.62 |
+| Crest factor | Peak / RMS | Rare large values (P2-1) | Sine 1.41, impulse 6.42 |
+| Kurtosis K | $E[(x-\mu)^4]/\sigma^4$ | Rare large values, over the whole sample (P5-6) | 1.5 · 3.02 · 17.9 · 1.51 |
+| Skewness S | $E[(x-\mu)^3]/\sigma^3$ | How different the upper and lower sides are | Sine and noise 0, impulse 0.83, sine with flattened top −0.42 |
+
+<Callout type="term" title="Skewness">
+
+The mean of the cube of the mean-removed value, divided by σ³. It is 0 if the waveform is symmetric top and bottom, and takes the sign of the side where it sticks out longer. A waveform whose top is blocked and flattened, as at the bottom of Figure 6, extends further downward, so it is negative. The waveform becomes asymmetric like this when the shaft touches something (rubbing) or is loose in one direction only (Part 7).
+
+</Callout>
+
+CF and kurtosis are both sensitive to rare large values, but CF is set by the single largest sample, while kurtosis averages the fourth power of all the samples. So CF is shaken more by an accidental peak of the noise.
+
+---
+
+## 6. While a fault progresses: a trend, not a single value
+
+As an outer-race fault forms and grows, how do these numbers change?
+
+<Figure {...F.trendFig} />
+
+Figure 7 is an illustrative model. Early on, the impact of a single defect grows, so the signal pops out only now and then, and **kurtosis and CF rise first** — at 30 % progression, kurtosis goes from 2.36 to 10.7 and RMS from 0.087 to 0.17 g. When the damage spreads and impacts occur often in many places, the impacts overlap and the signal becomes like normal noise, and **RMS keeps rising while kurtosis comes down** (100 % progression: RMS 0.82 g, kurtosis 3.43).
+
+<Callout type="warn" title="'Kurtosis came down, so it got better'">
+
+Kurtosis fell from 14.8 at 55 % progression to 3.4 at 100 %, but over the same span RMS kept rising from 0.31 to 0.82 g. Do not judge from the rise and fall of one feature; look at the trends of several features together with the spectrum and the envelope spectrum. Judgment criteria are covered in Part 10.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (progression 30 %), compare the RMS, CF and kurtosis in the readout with those of the healthy state (the theory column).
+2. Move the slider to 55 % and then to 100 %, and watch the points on the three trends and the waveform.
+3. Move the slider slightly around 100 % and see whether CF or kurtosis is more jagged.
+
+</Callout>
+
+<FeatureLab client:visible lang="en" />
+
+In step 1, RMS is about 2 times the healthy value (0.17 g), but kurtosis is about 4.5 times (10.7) and CF a little over 2 times (6.61). In step 2, kurtosis is largest near 55 % (14.8 to 15), and while it comes down to 3.4 at 100 %, RMS rises to 0.82 g. The waveform also changes from a shape with clear rare impacts to a shape like dense noise. In step 3, CF depends on the single largest sample, so it shakes more than kurtosis.
+
+---
+
+## 7. Making impacts clearer: just know the names
+
+<Callout type="field" title="MED · ANC/SANC">
+
+- **MED** (Minimum Entropy Deconvolution): undoes the smearing of impacts by the transmission path, finding the filter that gives the output the largest kurtosis. Impacts become sharper, so it is used before envelope analysis.
+- **ANC / SANC** (Adaptive Noise Cancellation / Self-Adaptive Noise Cancellation): predicts regular, large components such as gear mesh and subtracts them, leaving the irregular components beneath, such as bearing impacts. It serves the same purpose as subtracting the TSA of P2-6 (the component synchronized to the shaft) from the raw signal, but achieves it without a rotation signal, using the signal itself delayed as the reference.
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Cepstrum | $c(\tau) = \mathcal{F}^{-1}\{\ln A(f)\}$. A line family with spacing Δf → a peak at quefrency 1/Δf + integer-multiple rahmonics |
+| Why the logarithm | It splits the product of spectra (cause × transmission path) into a sum, and compresses the difference between large and small lines so small families show too |
+| Liftering | Erase part of the cepstrum and transform back. Comb lifter = erase one family, low quefrency = smooth shape |
+| Autocorrelation | A peak of $R(\tau)$ = repetition period. It is covered by large components, so use it after band-pass and envelope, or together with the cepstrum |
+| Features | RMS = energy, CF and kurtosis = rare large values (CF shakes more), skewness = top-bottom asymmetry |
+| Trend | Early: kurtosis and CF rise first. Late: RMS keeps rising, kurtosis can come down to near 3 → look at several features together |
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. Peaks stand at 32 ms, 64 ms and 96 ms in the cepstrum. In the spectrum, what is the spacing of the line family, and if it is a shaft, how many rpm?</strong></summary>
+
+Peak spacing 32 ms → 1/0.032 = **31.25 Hz** spacing for the family, and for a shaft that is 31.25 × 60 = **1875 rpm**. The peaks at 64 and 96 ms are rahmonics.
+</details>
+
+<details>
+<summary><strong>Q2. Why does the cepstrum transform the logarithm of the spectrum? What do you get if you inverse-transform |X|² without the logarithm?</strong></summary>
+
+The logarithm turns the product of spectra (cause × transmission path) into a sum, separating the two, and compresses the difference between large and small lines so that even the spacing of small sideband families shows. If you inverse-transform $\lvert X\rvert^2$ without the logarithm, you get the **autocorrelation**, which is easily covered by the period of large components (for example, the mesh).
+</details>
+
+<details>
+<summary><strong>Q3. You lifter away only the pinion family, and the pinion sidebands drop by 15 dB while the gear sidebands stay the same. What does this tell you?</strong></summary>
+
+It confirms that the remaining sideband family has a cause on the gear side. Because the two families gathered at different quefrencies in the cepstrum, we could pick one family and erase it.
+</details>
+
+<details>
+<summary><strong>Q4. Between a sine with RMS 1 and a train of rare impacts with RMS 1, which has the larger crest factor and kurtosis?</strong></summary>
+
+For both, the **rare impact train** is larger. The sine has CF 1.41 and kurtosis 1.5, while the rare impact train has a much larger CF and kurtosis (Figure 6: 6.42, 17.9). Even with the same RMS, they grow the more often there are values that jump out large.
+</details>
+
+<details>
+<summary><strong>Q5. In bearing monitoring, kurtosis rose to 12 over several months and recently came down to 4, while RMS kept rising throughout. Has the condition improved?</strong></summary>
+
+No. When the damage spreads and impacts overlap often, the signal becomes like normal noise and kurtosis comes down, but RMS continuing to rise means the vibration energy is growing. Suspect an **advanced fault** and confirm with the envelope spectrum and other tools.
+</details>
+
+<details>
+<summary><strong>Q6. On the acceleration of a pump whose speed you do not know, the first autocorrelation peak was at 8.3 ms. What can you tell, and what do you do next?</strong></summary>
+
+The signal repeats about every 1/0.0083 ≈ **120 Hz**. You do not yet know whether this frequency is 1X, vane pass, or a bearing fault frequency. Build the table of element frequencies (P1-8) from the machine configuration (number of vanes, bearing dimensions, line frequency), compare, and check for that harmonic structure in the spectrum. 120 Hz is also 2× the 60 Hz line frequency, so an electrical cause is a candidate too.
+</details>
+
+---
+
+Part 5 is finished. In the next part, Part 6 (reading field plots), we cover the order for reading on the field screen what was computed in this Part — filtered waveforms, waterfall and cascade, full spectrum, the 1X vector and the orbit.
+
+## References
+
+<References items={[
+  ['R-01', 'Cepstrum and liftering, gear sidebands, MED and SANC'],
+  ['R-18', 'Autocorrelation'],
+  ['R-03', 'Time-domain features and trends'],
+]} />

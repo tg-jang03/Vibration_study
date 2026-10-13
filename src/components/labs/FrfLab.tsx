@@ -1,4 +1,7 @@
 import { useMemo, useState } from 'react';
+import type { Lang } from '../../i18n';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/FrfLab';
 import Formula from '../ui/Formula';
 import LabFrame from '../ui/LabFrame';
 import ParamSelect from '../ui/ParamSelect';
@@ -13,7 +16,7 @@ import { ANTI_F, FREQS, frfFrames, TRUE_H } from '../../lib/xchDemo';
  * 신호: src/lib/xchDemo.ts (본문 그림 1 ~ 4와 같은 받침대·시드), 계산: src/lib/dsp/twoChannel.ts.
  */
 
-const MS = [1, 4, 16, 64, 256].map((m) => ({ value: m, label: `${m}장` }));
+const M_VALUES = [1, 4, 16, 64, 256];
 const NOISE = [0, 0.05, 0.1, 0.3].map((v) => ({ value: v, label: `${v * 100} %` }));
 const F = Array.from(FREQS);
 const K80 = FREQS.indexOf(80);
@@ -22,7 +25,9 @@ const TRUE_MAG = cxAbs(TRUE_H);
 const db = (v: number) => 20 * Math.log10(Math.max(v, 1e-6));
 const deg = (r: number) => (r * 180) / Math.PI;
 
-export default function FrfLab() {
+export default function FrfLab({ lang = 'ko' }: { lang?: Lang }) {
+  const tr = makeT(lang, EN);
+  const MS = M_VALUES.map((m) => ({ value: m, label: tr`${m}장` }));
   const [m, setM] = useState(16);
   const [outN, setOutN] = useState(0.1);
   const [inN, setInN] = useState(0);
@@ -36,27 +41,28 @@ export default function FrfLab() {
   }, [m, outN, inN]);
 
   const magSeries: PlotSeries[] = [
-    { x: F, y: Array.from(TRUE_MAG, db), name: '참 FRF', color: 'var(--text-muted)', dash: 'dash', width: 1.8 },
+    { x: F, y: Array.from(TRUE_MAG, db), name: tr`참 FRF`, color: 'var(--text-muted)', dash: 'dash', width: 1.8 },
     { x: F, y: Array.from(r.m1, db), name: 'H1', color: 'var(--plot-1)', width: 1.8 },
     { x: F, y: Array.from(r.m2, db), name: 'H2', color: 'var(--plot-2)', width: 1.6 },
   ];
   // 위상은 −270 ~ 90°로 감아 두 공진(−180°까지 늦어짐) 사이에서 ±180° 감김 스파이크가 생기지 않게 한다 (그림 3과 같음)
   const wrapDeg = (r: number) => ((((deg(r) + 270) % 360) + 360) % 360) - 270;
   const phaseSeries: PlotSeries[] = [
-    { x: F, y: Array.from(cxArg(TRUE_H), wrapDeg), name: '참 FRF', color: 'var(--text-muted)', dash: 'dash', width: 1.6 },
-    { x: F, y: Array.from(cxArg(r.h1), wrapDeg), name: 'H1 위상', color: 'var(--plot-1)', width: 1.6 },
+    { x: F, y: Array.from(cxArg(TRUE_H), wrapDeg), name: tr`참 FRF`, color: 'var(--text-muted)', dash: 'dash', width: 1.6 },
+    { x: F, y: Array.from(cxArg(r.h1), wrapDeg), name: tr`H1 위상`, color: 'var(--plot-1)', width: 1.6 },
   ];
   const cohSeries: PlotSeries[] = [{ x: F, y: Array.from(r.coh), name: 'γ²', color: 'var(--plot-3)', width: 1.8 }];
 
   return (
     <LabFrame
       id="LAB-XCH-01"
-      title="FRF 추정과 코히어런스"
+      lang={lang}
+      title={tr`FRF 추정과 코히어런스`}
       controls={
         <>
-          <ParamSelect label="평균한 프레임 수 M" value={m} options={MS} onChange={(v) => setM(Number(v))} />
-          <ParamSelect label="응답 쪽 잡음 (응답 평균 크기 대비)" value={outN} options={NOISE} onChange={(v) => setOutN(Number(v))} />
-          <ParamSelect label="힘 쪽 잡음 (힘 크기 대비)" value={inN} options={NOISE} onChange={(v) => setInN(Number(v))} />
+          <ParamSelect label={tr`평균한 프레임 수 M`} value={m} options={MS} onChange={(v) => setM(Number(v))} />
+          <ParamSelect label={tr`응답 쪽 잡음 (응답 평균 크기 대비)`} value={outN} options={NOISE} onChange={(v) => setOutN(Number(v))} />
+          <ParamSelect label={tr`힘 쪽 잡음 (힘 크기 대비)`} value={inN} options={NOISE} onChange={(v) => setInN(Number(v))} />
         </>
       }
       formulas={
@@ -68,29 +74,29 @@ export default function FrfLab() {
       readouts={
         <ReadoutTable
           rows={[
-            { label: '80 Hz (공진) H1', value: r.m1[K80], theory: TRUE_MAG[K80], sig: 3 },
-            { label: '80 Hz (공진) H2', value: r.m2[K80], theory: TRUE_MAG[K80], sig: 3 },
-            { label: `${ANTI_F} Hz (반공진) H1`, value: r.m1[KA], theory: TRUE_MAG[KA], sig: 3 },
-            { label: `${ANTI_F} Hz (반공진) H2`, value: r.m2[KA], theory: TRUE_MAG[KA], sig: 3 },
-            { label: `${ANTI_F} Hz 코히어런스 γ²`, value: r.coh[KA], sig: 3 },
-            { label: '80 Hz 코히어런스 γ²', value: r.coh[K80], sig: 3 },
+            { label: tr`80 Hz (공진) H1`, value: r.m1[K80], theory: TRUE_MAG[K80], sig: 3 },
+            { label: tr`80 Hz (공진) H2`, value: r.m2[K80], theory: TRUE_MAG[K80], sig: 3 },
+            { label: tr`${ANTI_F} Hz (반공진) H1`, value: r.m1[KA], theory: TRUE_MAG[KA], sig: 3 },
+            { label: tr`${ANTI_F} Hz (반공진) H2`, value: r.m2[KA], theory: TRUE_MAG[KA], sig: 3 },
+            { label: tr`${ANTI_F} Hz 코히어런스 γ²`, value: r.coh[KA], sig: 3 },
+            { label: tr`80 Hz 코히어런스 γ²`, value: r.coh[K80], sig: 3 },
           ]}
         />
       }
       tasks={[
         {
-          question: '응답 쪽 잡음 10 %에서 M을 16 → 256으로 늘리면 반공진의 H1과 H2는 각각 참값(0.177)에 가까워지나요?',
-          answer: 'H1은 0.275 → 0.153으로 참값 쪽으로 모입니다(평균할수록 흔들림이 줄어듦). H2는 1.23 → 1.90으로 참값에 가까워지지 않습니다. 응답 쪽 잡음이 G_yy에 쌓이는 쏠림이라, 평균을 아무리 늘려도 H2는 참값이 아니라 |H|/γ² ≈ 1.6(참값의 약 9배) 근처로 모이고, 평균이 적으면 그 둘레에서 크게 흔들립니다.',
+          question: tr`응답 쪽 잡음 10 %에서 M을 16 → 256으로 늘리면 반공진의 H1과 H2는 각각 참값(0.177)에 가까워지나요?`,
+          answer: tr`H1은 0.275 → 0.153으로 참값 쪽으로 모입니다(평균할수록 흔들림이 줄어듦). H2는 1.23 → 1.90으로 참값에 가까워지지 않습니다. 응답 쪽 잡음이 G_yy에 쌓이는 쏠림이라, 평균을 아무리 늘려도 H2는 참값이 아니라 |H|/γ² ≈ 1.6(참값의 약 9배) 근처로 모이고, 평균이 적으면 그 둘레에서 크게 흔들립니다.`,
         },
         {
-          question: '힘 쪽 잡음만 30 %로 두면 80 Hz의 H1은 참값(16.7)의 몇 배가 되나요? 평균 수를 바꾸면?',
-          answer: '약 1/(1 + 0.3²) = 0.917배, 15.4 근처입니다. 평균 수를 늘려도 이 비율은 그대로이고 흔들림만 줄어듭니다. 이 경우는 H2가 참값에 맞습니다.',
+          question: tr`힘 쪽 잡음만 30 %로 두면 80 Hz의 H1은 참값(16.7)의 몇 배가 되나요? 평균 수를 바꾸면?`,
+          answer: tr`약 1/(1 + 0.3²) = 0.917배, 15.4 근처입니다. 평균 수를 늘려도 이 비율은 그대로이고 흔들림만 줄어듭니다. 이 경우는 H2가 참값에 맞습니다.`,
         },
       ]}
     >
-      <Plot series={magSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: '크기 [dB]', range: [-30, 40] }} height={240} ariaLabel="FRF 크기: 참값, H1, H2" />
-      <Plot series={phaseSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: '위상 [°]', range: [-280, 100] }} height={170} ariaLabel="FRF 위상" />
-      <Plot series={cohSeries} x={{ label: '주파수 [Hz]', range: [0, 400] }} y={{ label: 'γ²', range: [0, 1.05] }} height={170} ariaLabel="코히어런스" />
+      <Plot series={magSeries} x={{ label: tr`주파수 [Hz]`, range: [0, 400] }} y={{ label: tr`크기 [dB]`, range: [-30, 40] }} height={240} ariaLabel={tr`FRF 크기: 참값, H1, H2`} />
+      <Plot series={phaseSeries} x={{ label: tr`주파수 [Hz]`, range: [0, 400] }} y={{ label: tr`위상 [°]`, range: [-280, 100] }} height={170} ariaLabel={tr`FRF 위상`} />
+      <Plot series={cohSeries} x={{ label: tr`주파수 [Hz]`, range: [0, 400] }} y={{ label: 'γ²', range: [0, 1.05] }} height={170} ariaLabel={tr`코히어런스`} />
     </LabFrame>
   );
 }
