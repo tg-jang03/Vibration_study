@@ -24,7 +24,7 @@ function centerPanel(title: string, measured?: Point, orbit = false): FigPanel {
     ], annotations: [
       { type: 'point', x: 0, y: -100, label: '냉간 (0, −100)', dx: -12, dy: 17, color: 'muted' },
       // 글자는 점의 왼쪽(Cr 원 안쪽)에 두어 점선 원과 겹치지 않게 한다
-      { type: 'point', x: um(normal.x), y: um(normal.y), label: '3000 rpm 평균', dx: -88, dy: 4, color: 'c1' },
+      { type: 'point', x: um(normal.x), y: um(normal.y), label: '3000 rpm 평균', dx: -118, dy: 4, color: 'c1' },
       ...(measured ? [{ type: 'point' as const, x: um(measured.x), y: um(measured.y), label: '전압에서 복원', dx: -88, dy: -12, color: 'c2' as const }, { type: 'arrow' as const, double: false, x1: um(normal.x), y1: um(normal.y), x2: um(measured.x), y2: um(measured.y), color: 'c2' as const }] : []),
       { type: 'text', x: -280, y: 112, text: '자전 ↺ · +Y 위', color: 'muted' },
     ] };
@@ -75,7 +75,7 @@ export const probes: FigureSpec = {
     { type: 'text', x: 3, y: 1.6, text: '접근 → gap 감소 → V가 덜 음수', color: 'c1' },
     { type: 'text', x: 3, y: .4, text: 'ΔVA/S = (Δx + Δy)/√2', color: 'c1' },
     { type: 'text', x: 3, y: -.8, text: 'ΔVB/S = (−Δx + Δy)/√2', color: 'c2' },
-    { type: 'text', x: 3, y: -2, text: `S = ${(PROBE.sensitivity / 1000).toFixed(3)} V/mm`, color: 'muted' },
+    { type: 'text', x: 3, y: -2.7, text: `S = ${(PROBE.sensitivity / 1000).toFixed(3)} V/mm`, color: 'muted' },
   ] }],
 };
 export const referenceErrors: FigureSpec = {
@@ -85,7 +85,7 @@ export const referenceErrors: FigureSpec = {
 export const coefficients: FigureSpec = {
   id: 'fig-p4-3-7', caption: '그림 7. 평형점에서 X로 조금 움직이거나 X 방향 속도가 생겼을 때 유막의 힘은 X와 Y에 모두 나타날 수 있다. Y 변화도 두 힘을 만든다. 그림의 화살표는 두 성분의 분해를 설명하며 실제 계수의 크기나 부호를 뜻하지 않는다. 첫 첨자는 힘 방향, 둘째 첨자는 변위 또는 속도 방향이다.',
   panels: [{ frame: false, height: 200, x: { range: [0, 10] }, y: { range: squareYRange([0, 10], 200) }, series: [], annotations: [
-    { type: 'point', x: 2, y: 1, label: '평형점', color: 'muted', dx: -40, dy: 18 },
+    { type: 'point', x: 2, y: 1, label: '평형점', color: 'muted', dx: -40, dy: -12 },
     { type: 'arrow', double: false, x1: 2, y1: 1, x2: 3.5, y2: 1, label: 'δx 또는 δẋ', color: 'c1', labelDy: 22 },
     { type: 'arrow', double: false, x1: 5, y1: 1, x2: 3.5, y2: 1, label: 'δFx: −kxxδx−cxxδẋ', color: 'c2', labelDy: 22 },
     { type: 'arrow', double: false, x1: 3.5, y1: 1, x2: 3.5, y2: 2.5, label: 'δFy: kyx, cyx', color: 'c3', labelDx: 75 },

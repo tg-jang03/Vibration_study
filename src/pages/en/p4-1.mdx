@@ -1,0 +1,302 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 'P4-1 Single-DOF Unbalance Response in Bode/Polar Form'
+description: 'Reads the 1X response to unbalance centrifugal excitation in Bode and Polar plots, and extracts the amplification factor (AF) and separation margin (SM) with the half-power method.'
+sectionId: P4-1
+source: p4-1.mdx
+sourceHash: 8f73046e63
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import RunUpBodeLab from '../../components/labs/RunUpBodeLab';
+import * as F from '../../figures/p4-1';
+import { withBase } from '../../lib/site';
+
+# 4-1 Single-DOF Unbalance Response in Bode/Polar Form
+
+While you switch a machine on and accelerate it from standstill to its target speed, the monitor draws curves of vibration amplitude and phase against speed.
+
+At a certain speed the amplitude suddenly shoots up and then settles, and the phase lag swings steeply from near 0° to near 180°.
+
+In P1-7 we learned the physical basis of the centrifugal force an unbalanced mass creates and of the critical speed, and in P3-3 we worked with the Keyphasor, which measures one pulse per revolution, and with the 1X vector.
+
+Now we look at **how to read the resonance peak and the phase quantitatively from real run-up data, and how to extract damping and safety margin from that data**.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can re-read the same run-up data in Bode and Polar form and see how it differs as damping changes.
+2. You understand why the heavy spot and the position of maximum displacement (the high spot) drift apart by up to 180° as speed changes.
+3. You can extract the amplification factor (AF) with the half-power method and calculate its relation to the damping ratio ($\text{AF} \approx 1/(2\zeta)$).
+4. You can calculate the separation margin (SM) between the operating speed and the critical speed.
+5. You can tell apart the distortions that the speed interval, sensor noise and runout cause in a run-up reading.
+
+</Callout>
+
+---
+
+## 1. What run-up data looks like: one 1X vector per speed
+
+The collection process for run-up and coast-down was covered in P3-5, and the amplitude and phase of the 1X vector in P3-3. Here we split the vectors obtained at each speed into a Bode plot and read the peak, the phase lag and the damping.
+
+<Figure {...F.runUpRecord} panels={[...F.runUpRecord.panels,...F.polarLoop.panels]} caption="Figure 1. The same 1X vector from P3-3, re-read as Bode and Polar plots. In this model, 3000 rpm gives 100 µm pp·90° and 3600 rpm gives 31.57 µm pp·164.7°. Top: amplitude and phase lag (blue dots = values measured every 100 rpm, gray line = analytical solution, dotted line = operating speed 3600 rpm). Bottom: the Polar plot of the same vector (blue). The gray dotted loop is the case with the damping ratio doubled to 0.1: the loop gets smaller, and the high-speed end approaches 10 µm pp∠180°. Rather than relearning the definitions, connect the changes in peak, phase and loop." />
+
+In P3-3, Bode meant amplitude and phase against speed, and Polar meant the path traced by the tip of the same vector. Here we read the change with damping, and the AF, from the same record. In Figure 1 the amplitude at 3000 rpm is 100 µm pp, and at 3600 rpm it is 31.57 µm pp at 164.7°.
+
+Let us write down again the steady-state response formula for single-DOF unbalance (P1-7):
+
+$$
+\frac{X}{e_{\text{cg}}} = \frac{r^2}{\sqrt{(1-r^2)^2 + (2\zeta r)^2}}, \qquad \varphi = \operatorname{atan2}(2\zeta r, \, 1-r^2)
+$$
+
+Here $r = N / N_n$ is the speed ratio to the natural speed, and $e_{\text{cg}} = m_u e / M$ is the eccentricity. The example rotor has an eccentricity of 5 µm (10 µm pp double amplitude), a natural speed $N_n = 3000$ rpm and a damping ratio $\zeta = 0.05$.
+
+---
+
+## 2. What more damping does to the peak: the gap between the peak and 90°
+
+How does the shape of the Bode curve change when the damping ratio $\zeta$ changes?
+
+<Figure {...F.dampingCompare} />
+
+In Figure 2 the blue curve is $\zeta = 0.05$ and the orange one is $\zeta = 0.2$, with four times the damping.
+
+- <strong>Height of the amplitude peak</strong>: at $\zeta = 0.05$ it reaches 100.0 µm pp at 3000 rpm, but at $\zeta = 0.2$ the amplitude at 3000 rpm drops to about 25.0 µm pp, a quarter.
+- <strong>Slope of the phase curve</strong>: the smaller the damping, the closer to vertical the phase changes near resonance; the larger the damping, the more gently it turns.
+
+<Callout type="warn" title="'Is the speed of maximum amplitude always the natural frequency?'">
+
+For an ordinary constant-force FRF (P1-4), the peak appears slightly below the natural frequency, at $r = \sqrt{1 - 2\zeta^2}$.
+
+But for unbalance excitation the centrifugal force itself grows with the square of speed ($\Omega^2$), so an $r^2$ appears in the numerator and the mathematical amplitude peak sits <strong>slightly above the natural frequency</strong>, at $r_{\text{peak}} = 1 / \sqrt{1 - 2\zeta^2}$.
+
+At $\zeta = 0.05$, $r_{\text{peak}} \approx 1.0025$ (about 3008 rpm), only 0.25 % from the natural speed (3000 rpm). With more damping such as $\zeta = 0.2$, however, the peak is displaced to <strong>3128 rpm</strong>, more than 4 % above the natural speed. In contrast, <strong>the 90° phase point in this single-DOF model stays at 3000 rpm regardless of damping</strong>.
+
+</Callout>
+
+The 90° in this model is a lag relative to the excitation force. With a measured Keyphasor phase, also check the speed at which the phase has changed by 90° from the low-speed reference. For multi-DOF shaft trains, interpret the peak, the phase and the mode shape together.
+
+---
+
+## 3. The heavy spot and where the shaft bulges most: heavy spot vs high spot
+
+Let us separate the position of the force from the position of the response. There is the <strong>heavy spot</strong>, where the unbalanced mass sits, and the <strong>position of maximum displacement (high spot)</strong>, where the vibrating shaft bulges out farthest toward the sensor.
+
+<Figure {...F.heavyHighSpot} />
+
+Figure 3 is a cross-section seen along the shaft axis. At the instant the Keyphasor pulse fires, the heavy spot (orange) is fixed at the 12 o'clock position (0°), and the point of maximum displacement (blue) is compared at different speeds:
+
+1. <strong>Low speed ($r = 0.5$, 1500 rpm)</strong>: the phase lag is only about 3.8°. The shaft is pushed in the direction the force acts, so the heavy spot and the point of maximum displacement are almost in the same place ($\text{high spot} \approx \text{heavy spot}$).
+2. <strong>Critical speed ($r = 1$, 3000 rpm)</strong>: resonance occurs and the phase lag becomes exactly <strong>90°</strong>. The place 90° behind, against the direction of rotation (counter-clockwise), is the point of maximum displacement.
+3. <strong>Supercritical high speed ($r = 2$, 6000 rpm)</strong>: the inertia force overwhelms the restoring force and the phase lag becomes about 176° (converging to 180°). The point of maximum displacement ends up on the <strong>opposite side</strong> of the heavy spot.
+
+<Callout type="field" title="Why check the speed first when balancing (Part 9)?">
+
+To quiet the shaft vibration you put a correction weight opposite the heavy spot.
+
+But the phase of the 1X vector the sensor reads is the position of the "point of maximum displacement (high spot)".
+
+On a low-speed machine you can put the weight opposite the high spot. On a supercritical machine, operated above the critical speed, the high spot itself is already on the opposite side of the heavy spot. If you attach a weight looking only at the direction of the vibration peak without knowing the phase lag, you may even make the unbalance worse. Actual correction is confirmed with trial weights and influence coefficients (Part 9).
+
+</Callout>
+
+---
+
+## 4. How do you extract damping from data: the half-power method and the amplification factor (AF)
+
+The design drawing does not list the damping ratio $\zeta$. In the field you have to estimate the damping of the system directly from the run-up curve you get by running the machine.
+
+The <strong>half-power band method</strong> applies the half-power width you saw in P1-4 §4 to the run-up curve.
+
+<Figure {...F.halfPower} caption="Figure 4. The amplification factor is read with the half-power method from the amplitude measured at 25 rpm intervals (blue dots) in the Figure 1 run-up. The two speeds where the curve meets the line at 70.7 µm pp, 0.707 times the peak of 100 µm pp (N_c = 3000 rpm) (orange dotted line), are N₁ = 2867 and N₂ = 3171 rpm (read by joining neighboring points with straight lines). AF = 3000 ÷ (3171 − 2867) = 9.84, close to 1/(2ζ) = 10." />
+
+The point where the square of the amplitude (energy, power) is half ($1/2$) of the resonance peak corresponds, in terms of amplitude, to a height of $1/\sqrt{2} \approx 0.707$ times the peak value.
+
+$$
+\text{Level}_{0.707} = \frac{A_{\text{peak}}}{\sqrt{2}} \approx 0.7071 \times A_{\text{peak}}
+$$
+
+Calling the two speeds on the left and right where this height meets the amplitude curve $N_1$ and $N_2$, the <strong>amplification factor (AF)</strong> is defined as:
+
+$$
+\text{AF} = \frac{N_c}{N_2 - N_1}
+$$
+
+Here $N_c$ is the peak speed and $N_2 - N_1$ is the half-power bandwidth.
+
+<Callout type="example" title="Calculating the AF from the example rotor data in Figure 4">
+
+1. Peak speed and amplitude: $N_c = 3000$ rpm, $A_{\text{peak}} = 100.0$ µm pp
+2. Height of the half-power criterion: $100.0 \times 0.7071 = 70.71$ µm pp
+3. Crossing speeds by interpolating the data: $N_1 \approx 2866.5$ rpm, $N_2 \approx 3171.5$ rpm
+4. Bandwidth: $N_2 - N_1 = 3171.5 - 2866.5 \approx 305.0$ rpm
+5. Amplification factor: $\text{AF} = 3000 / 305.0 \approx \mathbf{9.84}$
+
+Compared with the theoretical approximation $1 / (2\zeta) = 1 / 0.1 = 10.0$ for $\zeta = 0.05$, this is within about 1.6 %, a very good match.
+
+</Callout>
+
+The smaller the damping ($\zeta \to 0$), the sharper the peak and the narrower the bandwidth $N_2 - N_1$, so the AF becomes very large ($\text{AF} \gg 1$). Conversely, the more damping, the flatter the peak and the smaller the AF.
+
+---
+
+## 5. How far from the dangerous speed: the separation margin (SM)
+
+If the speed at which the machine runs continuously (normal operating speed $N_{\text{op}}$) lies within the resonance band, vibration fatigue can damage the equipment.
+
+So the operating speed must be kept well away from the critical speed. This distance, whose name you met in P1-7 §6, is called the <strong>separation margin (SM)</strong>.
+
+<Figure {...F.separation} caption="Figure 5. The separation margin (SM) is how far the operating speed N_op is from the critical speed N_c, written as a fraction of N_op. The example rotor has N_c = 3000 rpm and N_op = 3600 rpm, so SM = 16.7 %. The orange band is the half-power width (N₁ to N₂), the range where the amplitude is at least 0.707 times the peak. If the operating speed is close to this band, even a small change makes the amplitude change a lot." />
+
+The basic formula for the separation margin is:
+
+$$
+\text{SM} = \frac{|N_{\text{op}} - N_c|}{N_{\text{op}}} \times 100\ [\%]
+$$
+
+In Figure 5, with $N_c = 3000$ rpm and a normal operating speed of $N_{\text{op}} = 3600$ rpm:
+
+$$
+\text{SM} = \frac{|3600 - 3000|}{3600} \times 100\% \approx \mathbf{16.67\%}
+$$
+
+<Callout type="field" title="Check the AF and the separation margin together">
+
+The half-power band is the range where the amplitude is at least 0.707 times the peak. A large AF means small damping and high sensitivity to resonance, so you cannot read a small separation margin as safe just because the band is narrow.
+
+In API RP 684 and similar documents, the required separation margin depends on the AF (see the references at the end of the page). Check the specific limit values in the original document; the judgment procedure is covered in Part 10. The 16.67 % calculated here is not itself a pass/fail judgment.
+
+</Callout>
+
+---
+
+## 6. Three reasons real field data scatter
+
+Even the half-power calculation, which works out cleanly on paper, has three pitfalls that cause errors in real field measurement data.
+
+<Figure {...F.dataErrors} caption="Figure 6. Three ways the same calculation goes wrong on real data (gray line = true response). Top: with a damping ratio of 0.01 the half-power width is about 60 rpm, so measuring every 200 rpm (orange dots) leaves only one or two points near the peak and the AF comes out as 21.8 (48.3 at 25 rpm intervals; the true value is about 50). Middle: when noise with a standard deviation of 4 µm per vector component is added, the points scatter and the AF becomes 11.8. Bottom: adding a runout of 8 µm pp∠60° shows 8 µm pp even at low speed and changes the peak to 107 µm pp. Subtracting the 300 rpm vector (blue) brings the true response back." />
+
+### ① Error from the rpm sampling interval
+When the damping is very small, $\zeta = 0.01$, the theoretical AF reaches 50 and the half-power bandwidth is only a little over 60 rpm.
+
+But if the acceleration is too fast or the speed interval of the acquisition equipment is coarse at 200 rpm (orange dots at the top of Figure 6), this example still captures the 3000 rpm peak of 500 µm pp. However, the two 0.707 crossings are linearly interpolated between the sparse points, so the bandwidth is inflated from about 60.03 rpm to 137.6 rpm and the <strong>estimated AF drops to about 21.8</strong>. To calculate properly, collect densely enough that at least three or four measurement points fall inside the bandwidth.
+
+### ② Peak distortion from measurement noise
+When electrical noise or disturbances get into the vibration signal (middle of Figure 6), the peak amplitude and the $N_1, N_2$ crossings become ragged, and the AF estimate picks up errors. You need to average several run-ups or apply a smoothing filter to get reliable results.
+
+### ③ Uncompensated runout
+If mechanical runout from machining marks on the shaft surface, or electrical runout from residual magnetism (P3-2), of 4 µm (8 µm pp) is mixed in (orange line at the bottom of Figure 6), the vibration does not fall to zero even at low speed and the floor is lifted off the axis.
+
+If you take the 0.707 height with this false vector added, both the peak amplitude and the bandwidth change. In this example the two move together so the AF changes only a little, from 9.84 to 9.90, but depending on the size and phase of the runout the AF error can be much larger. You must first apply the <strong>slow-roll compensation</strong> learned in P3-3 (subtracting the low-speed 300 rpm vector as a complex number) before calculating the AF; only then do you get the pure elastic unbalance response, like the blue dotted line.
+
+---
+
+## 7. Run-up Bode and amplification factor lab (LAB-AF-01)
+
+In the lab below, change the natural speed, damping ratio, measurement interval, noise and runout yourself, watch the Bode plot and Polar plot update in real time, and calculate the half-power AF.
+
+<Callout type="try" title="Follow along: extracting the AF and the separation margin from data">
+
+1. In the initial state ($N_n = 3000$ rpm, $\zeta = 0.05$, 25 rpm interval, $N_{\text{op}} = 3600$ rpm), compare the estimated AF in the readout table ($\approx 9.84$) with the theoretical value $1/(2\zeta)$ ($= 10.0$).
+2. Set the display to Bode + Polar and widen the <strong>measurement rpm interval</strong> from 25 rpm to 100 rpm and 200 rpm. How do the peak point, the bandwidth and the spacing of the Polar points change?
+3. Reduce the damping ratio $\zeta$ from 0.05 to 0.01, and compare rpm intervals of 10 rpm and 200 rpm.
+4. Turn on the <strong>runout</strong> toggle and see the low-speed amplitude lift off, then turn on <strong>slow-roll compensation</strong> and check that it is restored.
+
+
+</Callout>
+
+<RunUpBodeLab client:visible lang="en" />
+
+In step 1, the estimated AF from the 25 rpm interval data at $\zeta = 0.05$ is about <strong>9.84</strong>, very close to the theoretical 10.0 (an error of about -1.6 %). The separation margin SM is about <strong>16.7 %</strong>.
+
+At the 100 rpm interval of step 2 the AF is about 9.64. Widening to 200 rpm gives about 10.06, which comes out even closer to 10, but that is a coincidence. Inside the half-power band (about 2867 to 3171 rpm) there is only one measurement point, at 3000 rpm, so the crossings are fixed only by straight-line interpolation between sparse points, and even a small change in damping or peak position can throw them off a lot. Even when a result looks consistent with theory, first check the number of points inside the band. When you change the damping or interval, the size and point spacing of the same loop in the Polar plot change as well.
+
+In step 3, when the damping ratio drops as far as $\zeta = 0.01$ the bandwidth is only 60 rpm, so at a 200 rpm interval the interpolated bandwidth is inflated and the estimated AF falls to about 21.8. With a dense interval that puts several points inside the band (50 rpm or less in this example), you get a value close to 48 to 50.
+
+In step 4, turning on runout leaves 8 µm pp even at low speed and changes the peak to 107 µm pp. In this example the peak and the 0.707 criterion move together, so the AF changes only a little, to 9.90, but depending on the size and phase of the runout the error can grow. Turning on slow-roll compensation removes the 300 rpm reference vector and returns the pure amplitude of 100 µm pp and an AF of about 9.84. A small elastic response remains even at 300 rpm, so the values are not exactly identical.
+
+---
+
+## 8. Summary
+
+| Topic | Key points to remember |
+|---|---|
+| **1X unbalance response** | $X/e_{\text{cg}} = r^2 / \sqrt{(1-r^2)^2 + (2\zeta r)^2}$. 0 at low speed, $1/(2\zeta)$ at the critical speed, converging to 1 at high speed (rotation about the center of mass) |
+| **Phase 90° vs peak** | The unbalance peak is displaced slightly to $r > 1$. In a single DOF the 90° point relative to the excitation force is the natural speed. In measurements, check the phase change from the low-speed reference |
+| **heavy vs high spot** | high spot = heavy spot + $\varphi$. In phase at low speed, 90° lag at resonance, 180° opposite at high speed (the key to supercritical balancing) |
+| **Amplification factor (AF)** | $\text{AF} = N_c / (N_2 - N_1) \approx 1/(2\zeta)$. Evaluate damping from the half-power bandwidth |
+| **Separation margin (SM)** | $\text{SM} = \lvert N_{\text{op}} - N_c \rvert / N_{\text{op}} \times 100\%$. Safety gap between operating speed and the resonance band |
+| **Sources of data error** | Sampling interval (finer than the bandwidth), noise (smoothing), runout (slow-roll vector compensation is a must) |
+
+---
+
+## 9. Check your understanding
+
+<details>
+<summary><strong>Q1. In run-up data, which is more accurate for the machine's natural speed ($N_n$): the speed of maximum amplitude ($N_{\text{peak}}$), or the speed at which the phase has lagged 90° more than the slow-roll phase ($N_{90^\circ}$)?</strong></summary>
+
+<strong>The speed at which the phase has lagged 90° more than the slow-roll phase ($N_{90^\circ}$).</strong>
+
+The unbalance force is proportional to the square of speed ($\Omega^2$), so the mathematical amplitude peak always appears slightly above the natural speed, at $r = 1/\sqrt{1 - 2\zeta^2}$. The more heavily damped the rotor, the more the amplitude peak speed is displaced above the natural speed, by several percent or more, but in a single-DOF model the speed with a 90° phase lag coincides with $N_n$ regardless of damping. The absolute phase in a measurement depends on the angle between the heavy spot and the sensor, so look for the place where the phase has changed by 90° from the slow-roll phase.
+
+</details>
+
+<details>
+<summary><strong>Q2. A supercritical machine (operating speed twice the first critical speed) has heavy 1X vibration and you want to balance it. Should the weight go in the direction of the maximum displacement point (high spot) the sensor read, or on the opposite side?</strong></summary>
+
+<strong>The correction weight goes on the same side as the high spot.</strong>
+
+In the supercritical region ($r \gg 1$) the phase lag converges to 180°, so the point of maximum displacement (high spot) is on the exact opposite side of the heavy spot. To cancel the heavy spot, therefore, the weight must be added on the same side as the high spot. This is for the single-DOF model. In a real machine, multiple modes, bearing anisotropy and the angle between the sensor and the Keyphasor can make the phase differ from 180°, so confirm with trial weights and influence coefficients (Part 9).
+
+</details>
+
+<details>
+<summary><strong>Q3. The peak speed is 3000 rpm and the half-power 0.707 crossing speeds are measured as $N_1 = 2850$ rpm and $N_2 = 3150$ rpm. What are the amplification factor (AF) and the damping ratio ($\zeta$) estimate?</strong></summary>
+
+The bandwidth is $N_2 - N_1 = 3150 - 2850 = 300$ rpm.
+
+The amplification factor is $\text{AF} = 3000 / 300 = \mathbf{10.0}$.
+
+Since $\text{AF} \approx 1/(2\zeta)$, the damping ratio can be estimated as $\zeta \approx 1 / (2 \times 10) = \mathbf{0.05}$ (5 %).
+
+</details>
+
+<details>
+<summary><strong>Q4. A compressor with a critical speed of 3000 rpm has a rated operating speed of 3600 rpm. What is the separation margin (SM) in %?</strong></summary>
+
+$$
+\text{SM} = \frac{|3600 - 3000|}{3600} \times 100\% = \frac{600}{3600} \times 100\% \approx \mathbf{16.67\%}
+$$
+
+</details>
+
+<details>
+<summary><strong>Q5. You measured a run-up of a rotor with very light damping ($\zeta = 0.005$) at 100 rpm intervals. Will the calculated AF come out larger or smaller than the real one?</strong></summary>
+
+<strong>It comes out much smaller (underestimated).</strong>
+
+At $\zeta = 0.005$ the theoretical AF is 100 and the half-power bandwidth is only $N_c / 100 = 30$ rpm. The 100 rpm grid in this example contains the 3000 rpm peak of 1000 µm pp. With both 0.707 crossings linearly interpolated between sparse points, the bandwidth is inflated from about 30 rpm to 68.8 rpm and the AF falls to about 43.6.
+
+</details>
+
+<details>
+<summary><strong>Q6. Why does an error arise if you simply take 0.707 times the highest point of the run-up curve to get the half-power level, without compensating for runout?</strong></summary>
+
+Runout lays down a fixed false amplitude, mechanical or electrical, that does not depend on speed.
+
+Because of this the amplitude does not go to zero even at low speed but has an offset, and the peak amplitude is also the combined magnitude with the runout vector, not the pure unbalance elastic displacement. The 0.707 reference level itself therefore shifts, and $N_1, N_2$ and the AF can be thrown off. Depending on the size and phase of the runout the error is sometimes small (in this page's example, 9.84 → 9.90), but you cannot know in advance how far off it will be, so do the slow-roll compensation first.
+
+</details>
+
+---
+
+The next page is <a href={withBase('/en/p4-2/')}><strong>P4-2: Jeffcott Rotor</strong></a>. Going beyond the single-DOF shaft model, it covers the trajectory the shaft center traces in a two-dimensional plane (whirl and orbit) and the behavior of isotropic and anisotropic support systems.
+
+## References
+
+<References items={[
+  ['R-07', 'Definition of the amplification factor (AF), separation margin (SM), and the concepts of unbalance response analysis — check the original for judgment values'],
+  ['R-02', 'Heavy spot and high spot, reading Bode and Polar plots'],
+  ['R-04', 'Critical speed and unbalance response of a single-DOF rotor'],
+]} />

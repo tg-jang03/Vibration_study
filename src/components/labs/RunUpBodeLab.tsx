@@ -1,4 +1,7 @@
 import { useMemo, useState } from 'react';
+import type { Lang } from '../../i18n';
+import { makeT } from '../../i18n/lab';
+import EN from '../../i18n/en/labs/RunUpBodeLab';
 import Formula from '../ui/Formula';
 import LabFrame from '../ui/LabFrame';
 import ParamSelect from '../ui/ParamSelect';
@@ -22,6 +25,7 @@ const pp = (m: number) => m * 2e6;
 const deg = (rad: number) => (rad * 180) / Math.PI;
 
 interface RunUpBodeLabProps {
+  lang?: Lang;
   initialNaturalRpm?: number;
   initialZeta?: number;
   initialStep?: number;
@@ -29,11 +33,13 @@ interface RunUpBodeLabProps {
 }
 
 export default function RunUpBodeLab({
+  lang = 'ko',
   initialNaturalRpm = 3000,
   initialZeta = 0.05,
   initialStep = 25,
   initialOp = 3600,
 }: RunUpBodeLabProps) {
+  const tr = makeT(lang, EN);
   const [naturalRpm, setNaturalRpm] = useState(initialNaturalRpm);
   const [zeta, setZeta] = useState(initialZeta);
   const [rpmStep, setRpmStep] = useState(initialStep);
@@ -83,13 +89,13 @@ export default function RunUpBodeLab({
     const y = activePoints.map((p) => pp(p.amp));
     const s: PlotSeries[] = [
       // 측정점마다 점을 찍어 rpm 간격이 보이게 한다
-      { x, y, name: '1X 진폭', color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
+      { x, y, name: tr`1X 진폭`, color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
     ];
     if (hp) {
       s.push({
         x: [0, 6000],
         y: [levelPp, levelPp],
-        name: `0.707 피크 (${formatNumber(levelPp, 3)} µm pp)`,
+        name: tr`0.707 피크 (${formatNumber(levelPp, 3)} µm pp)`,
         color: 'var(--plot-2)',
         dash: 'dash',
         width: 1.5,
@@ -97,7 +103,7 @@ export default function RunUpBodeLab({
       s.push({
         x: [hp.peakRpm],
         y: [peakAmpPp],
-        name: `피크 N_c ${hp.peakRpm}`,
+        name: tr`피크 N_c ${hp.peakRpm}`,
         color: 'var(--plot-3)',
         mode: 'markers',
         markerSize: 9,
@@ -106,23 +112,23 @@ export default function RunUpBodeLab({
     s.push({
       x: [operatingRpm, operatingRpm],
       y: [0, Math.max(120, peakAmpPp * 1.15)],
-      name: `운전 N_op ${operatingRpm}`,
+      name: tr`운전 N_op ${operatingRpm}`,
       color: 'var(--plot-4)',
       dash: 'dot',
       width: 1.5,
     });
     return s;
-  }, [activePoints, hp, levelPp, peakAmpPp, operatingRpm]);
+  }, [activePoints, hp, levelPp, peakAmpPp, operatingRpm, lang]);
 
   const bodePhaseSeries = useMemo<PlotSeries[]>(() => {
     const x = activePoints.map((p) => p.rpm);
     const y = activePoints.map((p) => deg(p.lag));
     const s: PlotSeries[] = [
-      { x, y, name: '1X 위상 지연', color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
+      { x, y, name: tr`1X 위상 지연`, color: 'var(--plot-1)', width: 2, mode: 'lines+markers', markerSize: 4 },
       {
         x: [0, 6000],
         y: [90, 90],
-        name: '90° 공진 기준',
+        name: tr`90° 공진 기준`,
         color: 'var(--text-muted)',
         dash: 'dash',
         width: 1.2,
@@ -139,7 +145,7 @@ export default function RunUpBodeLab({
       });
     }
     return s;
-  }, [activePoints, hp]);
+  }, [activePoints, hp, lang]);
 
   // Polar 플롯 시리즈
   const polarSeries = useMemo<PolarSeries[]>(() => {
@@ -149,7 +155,7 @@ export default function RunUpBodeLab({
       {
         amp: ampArr,
         lagDeg: lagArr,
-        name: '1X 궤적',
+        name: tr`1X 궤적`,
         color: 'var(--plot-1)',
         width: 2,
       },
@@ -158,7 +164,7 @@ export default function RunUpBodeLab({
       s.push({
         amp: [peakAmpPp],
         lagDeg: [deg(activePoints.find((p) => p.rpm === hp.peakRpm)?.lag ?? Math.PI / 2)],
-        name: `피크 (${hp.peakRpm} rpm)`,
+        name: tr`피크 (${hp.peakRpm} rpm)`,
         color: 'var(--plot-3)',
         mode: 'markers',
         markerSize: 6,
@@ -169,14 +175,14 @@ export default function RunUpBodeLab({
       s.push({
         amp: [pp(opPt.amp)],
         lagDeg: [deg(opPt.lag)],
-        name: `운전 (${operatingRpm} rpm)`,
+        name: tr`운전 (${operatingRpm} rpm)`,
         color: 'var(--plot-4)',
         mode: 'markers',
         markerSize: 6,
       });
     }
     return s;
-  }, [activePoints, hp, peakAmpPp, operatingRpm, rpmStep]);
+  }, [activePoints, hp, peakAmpPp, operatingRpm, rpmStep, lang]);
 
   const maxPlotAmp = Math.max(110, peakAmpPp * 1.15);
 
@@ -192,12 +198,13 @@ export default function RunUpBodeLab({
 
   return (
     <LabFrame
+      lang={lang}
       id="LAB-AF-01"
-      title="Run-up Bode & 증폭계수 (AF)"
+      title={tr`Run-up Bode & 증폭계수 (AF)`}
       controls={
         <>
           <ParamSlider
-            label="고유 회전수 N_n"
+            label={tr`고유 회전수 N_n`}
             value={naturalRpm}
             min={1500}
             max={4500}
@@ -206,7 +213,7 @@ export default function RunUpBodeLab({
             onChange={setNaturalRpm}
           />
           <ParamSlider
-            label="감쇠비 ζ"
+            label={tr`감쇠비 ζ`}
             value={zeta}
             min={0.01}
             max={0.25}
@@ -215,19 +222,19 @@ export default function RunUpBodeLab({
             onChange={setZeta}
           />
           <ParamSelect
-            label="측정 rpm 간격"
+            label={tr`측정 rpm 간격`}
             value={rpmStep}
             options={[
-              { value: 10, label: '10 rpm (고해상도)' },
-              { value: 25, label: '25 rpm (기본)' },
+              { value: 10, label: tr`10 rpm (고해상도)` },
+              { value: 25, label: tr`25 rpm (기본)` },
               { value: 50, label: '50 rpm' },
               { value: 100, label: '100 rpm' },
-              { value: 200, label: '200 rpm (거침)' },
+              { value: 200, label: tr`200 rpm (거침)` },
             ]}
             onChange={setRpmStep}
           />
           <ParamSlider
-            label="측정 잡음 σ"
+            label={tr`측정 잡음 σ`}
             value={noiseUm}
             min={0}
             max={4}
@@ -236,7 +243,7 @@ export default function RunUpBodeLab({
             onChange={setNoiseUm}
           />
           <ParamSlider
-            label="운전 회전수 N_op"
+            label={tr`운전 회전수 N_op`}
             value={operatingRpm}
             min={1500}
             max={6000}
@@ -246,7 +253,7 @@ export default function RunUpBodeLab({
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
             <ParamToggle
-              label="런아웃 (8 µm pp ∠60°)"
+              label={tr`런아웃 (8 µm pp ∠60°)`}
               checked={hasRunout}
               onChange={(v) => {
                 setHasRunout(v);
@@ -255,7 +262,7 @@ export default function RunUpBodeLab({
             />
             {hasRunout && (
               <ParamToggle
-                label="Slow roll 보상 (300 rpm)"
+                label={tr`Slow roll 보상 (300 rpm)`}
                 checked={compensate}
                 onChange={setCompensate}
               />
@@ -263,17 +270,17 @@ export default function RunUpBodeLab({
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <ParamSelect
-              label="표시 방식"
+              label={tr`표시 방식`}
               value={viewMode}
               options={[
-                { value: 'bode', label: 'Bode 플롯' },
-                { value: 'polar', label: 'Polar 플롯' },
+                { value: 'bode', label: tr`Bode 플롯` },
+                { value: 'polar', label: tr`Polar 플롯` },
                 { value: 'both', label: 'Bode + Polar' },
               ]}
               onChange={setViewMode}
             />
             <button type="button" className="lab-button" onClick={resetAll} style={{ alignSelf: 'flex-end' }}>
-              처음 값
+              {tr`처음 값`}
             </button>
           </div>
         </>
@@ -288,11 +295,11 @@ export default function RunUpBodeLab({
               />
               <Formula
                 display
-                tex={`\\text{이론}\\ \\frac{1}{2\\zeta} = ${texNumber(theoryAf, 3)},\\quad \\text{오차}\\ ${texNumber(((hp.af - theoryAf) / theoryAf) * 100, 2)}\\%`}
+                tex={`\\text{${tr`이론`}}\\ \\frac{1}{2\\zeta} = ${texNumber(theoryAf, 3)},\\quad \\text{${tr`오차`}}\\ ${texNumber(((hp.af - theoryAf) / theoryAf) * 100, 2)}\\%`}
               />
             </>
           ) : (
-            <Formula display tex={`\\text{0.707 피크 대역 미검출}`} />
+            <Formula display tex={`\\text{${tr`0.707 피크 대역 미검출`}}`} />
           )}
           <Formula
             display
@@ -302,44 +309,43 @@ export default function RunUpBodeLab({
       }
       readouts={
         <ReadoutTable
-          caption="런업 데이터에서 추정한 1X 특성"
+          caption={tr`런업 데이터에서 추정한 1X 특성`}
           rows={[
-            { label: '피크 회전수 N_c', value: hp?.peakRpm ?? Number.NaN, unit: 'rpm', sig: 4 },
-            { label: '피크 진폭', value: peakAmpPp, unit: 'µm pp', sig: 3 },
-            { label: '0.707 대역폭 (N₂ − N₁)', value: hp ? hp.n2 - hp.n1 : Number.NaN, unit: 'rpm', sig: 3 },
-            { label: '추정 AF', value: hp?.af ?? Number.NaN, unit: '', sig: 3 },
-            { label: '이론 1/(2ζ)', value: theoryAf, unit: '', sig: 3 },
-            { label: '운전 속도 N_op', value: operatingRpm, unit: 'rpm', sig: 4 },
-            { label: '분리여유 SM', value: sm, unit: '%', sig: 3 },
+            { label: tr`피크 회전수 N_c`, value: hp?.peakRpm ?? Number.NaN, unit: 'rpm', sig: 4 },
+            { label: tr`피크 진폭`, value: peakAmpPp, unit: 'µm pp', sig: 3 },
+            { label: tr`0.707 대역폭 (N₂ − N₁)`, value: hp ? hp.n2 - hp.n1 : Number.NaN, unit: 'rpm', sig: 3 },
+            { label: tr`추정 AF`, value: hp?.af ?? Number.NaN, unit: '', sig: 3 },
+            { label: tr`이론 1/(2ζ)`, value: theoryAf, unit: '', sig: 3 },
+            { label: tr`운전 속도 N_op`, value: operatingRpm, unit: 'rpm', sig: 4 },
+            { label: tr`분리여유 SM`, value: sm, unit: '%', sig: 3 },
           ]}
         />
       }
       tasks={[
         {
-          question: '기본값(ζ = 0.05, 25 rpm 간격)에서 추정 AF와 1/(2ζ)는 얼마나 일치하나요?',
+          question: tr`기본값(ζ = 0.05, 25 rpm 간격)에서 추정 AF와 1/(2ζ)는 얼마나 일치하나요?`,
           answer:
-            'N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3171 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 세 가지가 각각 약 0.5%씩 낮춥니다: AF ≈ 1/(2ζ)가 근사식이라는 점, 불평형 힘이 회전수 제곱(r²)에 비례해 봉우리가 비대칭이라는 점, 25 rpm 격자에서 피크를 3000 rpm 점으로 잡고 교차점을 직선 보간한다는 점입니다.',
+            tr`N_c = 3000 rpm, N₁ ≈ 2867 rpm, N₂ ≈ 3171 rpm에서 추정 AF는 약 9.84입니다. 이론 1/(2ζ) = 10 대비 약 -1.6% 차이가 납니다. 세 가지가 각각 약 0.5%씩 낮춥니다: AF ≈ 1/(2ζ)가 근사식이라는 점, 불평형 힘이 회전수 제곱(r²)에 비례해 봉우리가 비대칭이라는 점, 25 rpm 격자에서 피크를 3000 rpm 점으로 잡고 교차점을 직선 보간한다는 점입니다.`,
         },
         {
-          question: '감쇠비 ζ를 0.01로 줄였을 때, rpm 간격을 25 → 200 rpm으로 바꾸면 AF는 어떻게 되나요?',
+          question: tr`감쇠비 ζ를 0.01로 줄였을 때, rpm 간격을 25 → 200 rpm으로 바꾸면 AF는 어떻게 되나요?`,
           answer:
-            'ζ = 0.01의 이론 AF는 50이고 Half-power 폭(N₂ - N₁)은 약 60 rpm에 불과합니다. 200 rpm 간격으로 성기게 샘플링하면 피크 주변 점이 부족하여 AF가 21.8 수준으로 심각하게 과소평가됩니다.',
+            tr`ζ = 0.01의 이론 AF는 50이고 Half-power 폭(N₂ - N₁)은 약 60 rpm에 불과합니다. 200 rpm 간격으로 성기게 샘플링하면 피크 주변 점이 부족하여 AF가 21.8 수준으로 심각하게 과소평가됩니다.`,
         },
         {
-          question: '런아웃을 켜면 저속과 피크 진폭에 어떤 변화가 생기고, Slow roll 보상을 켜면 어떻게 되나요?',
+          question: tr`런아웃을 켜면 저속과 피크 진폭에 어떤 변화가 생기고, Slow roll 보상을 켜면 어떻게 되나요?`,
           answer:
-            '런아웃이 더해지면 정지·저속에서도 8 µm pp(변위 peak 4 µm)의 거짓 진동이 남고, 피크 진폭도 107 µm pp로 바뀝니다. 이 예에서는 피크와 0.707 기준이 함께 움직여 AF는 9.84 → 9.90으로 조금만 바뀌지만, 런아웃의 크기·위상에 따라 AF 오차는 커질 수 있습니다. 300 rpm Slow roll 보상을 켜면 참 응답 100 µm pp와 AF ≈ 9.84로 돌아옵니다.',
+            tr`런아웃이 더해지면 정지·저속에서도 8 µm pp(변위 peak 4 µm)의 거짓 진동이 남고, 피크 진폭도 107 µm pp로 바뀝니다. 이 예에서는 피크와 0.707 기준이 함께 움직여 AF는 9.84 → 9.90으로 조금만 바뀌지만, 런아웃의 크기·위상에 따라 AF 오차는 커질 수 있습니다. 300 rpm Slow roll 보상을 켜면 참 응답 100 µm pp와 AF ≈ 9.84로 돌아옵니다.`,
         },
         {
-          question: '운전 회전수 N_op를 3600 rpm에서 3200 rpm으로 낮추면 분리여유 SM은 어떻게 변하나요?',
+          question: tr`운전 회전수 N_op를 3600 rpm에서 3200 rpm으로 낮추면 분리여유 SM은 어떻게 변하나요?`,
           answer:
-            'SM이 약 16.7%에서 약 6.3%로 크게 줄어듭니다. 공진 봉우리 대역(Half-power 대역 N₂ ≈ 3171 rpm)에 근접하여 기계 운전 시 공진 위험이 높아집니다.',
+            tr`SM이 약 16.7%에서 약 6.3%로 크게 줄어듭니다. 공진 봉우리 대역(Half-power 대역 N₂ ≈ 3171 rpm)에 근접하여 기계 운전 시 공진 위험이 높아집니다.`,
         },
       ]}
       footer={
         <p>
-          1자유도 불평형 회전체 모델의 런업 데이터 시뮬레이션입니다. API 684 등 실제 회전기계 진동 규격의
-          구체적인 한계 수치는 관련 규격을 참조하세요.
+          {tr`1자유도 불평형 회전체 모델의 런업 데이터 시뮬레이션입니다. API 684 등 실제 회전기계 진동 규격의 구체적인 한계 수치는 관련 규격을 참조하세요.`}
         </p>
       }
     >
@@ -347,17 +353,17 @@ export default function RunUpBodeLab({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <Plot
             series={bodeAmpSeries}
-            x={{ label: '회전수 [rpm]', range: [0, 6000] }}
-            y={{ label: '1X 진폭 [µm pp]', range: [0, maxPlotAmp] }}
+            x={{ label: tr`회전수 [rpm]`, range: [0, 6000] }}
+            y={{ label: tr`1X 진폭 [µm pp]`, range: [0, maxPlotAmp] }}
             height={220}
-            ariaLabel="회전수 변화에 따른 1X 진폭 Bode 곡선과 0.707 피크 Half-power 선"
+            ariaLabel={tr`회전수 변화에 따른 1X 진폭 Bode 곡선과 0.707 피크 Half-power 선`}
           />
           <Plot
             series={bodePhaseSeries}
-            x={{ label: '회전수 [rpm]', range: [0, 6000] }}
-            y={{ label: '위상 지연 [°]', range: [0, 185] }}
+            x={{ label: tr`회전수 [rpm]`, range: [0, 6000] }}
+            y={{ label: tr`위상 지연 [°]`, range: [0, 185] }}
             height={160}
-            ariaLabel="회전수 변화에 따른 1X 위상 지연 곡선과 90도 공진점"
+            ariaLabel={tr`회전수 변화에 따른 1X 위상 지연 곡선과 90도 공진점`}
           />
         </div>
       )}
@@ -367,7 +373,7 @@ export default function RunUpBodeLab({
             series={polarSeries}
             rMax={maxPlotAmp}
             unit="µm pp"
-            ariaLabel="1X 벡터가 런업 동안 회전하며 그리는 Polar 고리"
+            ariaLabel={tr`1X 벡터가 런업 동안 회전하며 그리는 Polar 고리`}
             maxWidth={420}
           />
         </div>

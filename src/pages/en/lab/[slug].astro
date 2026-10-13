@@ -56,6 +56,9 @@ import PhaseLab from '../../../components/labs/PhaseLab';
 import SlowRollLab from '../../../components/labs/SlowRollLab';
 import ChainQuizLab from '../../../components/labs/ChainQuizLab';
 import AlarmLab from '../../../components/labs/AlarmLab';
+import ShaftCenterlineLab from '../../../components/labs/ShaftCenterlineLab';
+import StabilityLab from '../../../components/labs/StabilityLab';
+import RunUpBodeLab from '../../../components/labs/RunUpBodeLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -116,4 +119,7 @@ const c = lab.component;
   {c === 'SlowRollLab' && <SlowRollLab client:load lang="en" />}
   {c === 'ChainQuizLab' && <ChainQuizLab client:load lang="en" />}
   {c === 'AlarmLab' && <AlarmLab client:load lang="en" />}
+  {c === 'ShaftCenterlineLab' && <ShaftCenterlineLab client:load lang="en" />}
+  {c === 'StabilityLab' && <StabilityLab client:load lang="en" />}
+  {c === 'RunUpBodeLab' && <RunUpBodeLab client:load lang="en" />}
 </LabPageShell>
