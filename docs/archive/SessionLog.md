@@ -6,6 +6,14 @@
 - 고침: 터닝 → turning-gear, centre → center, 영어 라벨 잘림·겹침 2곳(워터폴 랩 y축 제목, P6-4 그림 4 "15 min")
 - 검증: check 0·test 1426·빌드 266쪽·verify:i18n 영어 105쪽 한글 0·링크 8617개 문제 0·P6 4절 그림 도형 수 같음·verify:page 영어 8쪽 OK(모바일 3폭), 조작 검사 한국어 3쪽 OK
 - 다음: M12.10 Part 7 (사용자 지시 대기)
+
+### 2026-10-12 · Codex · M0.15 모바일 그림 대응 (D-053)
+- 요청: 전체 모바일 그림 개선, PC 화면 유지. 640px 이하에만 별도 표시.
+- 변경: Figure 모바일 그래프·범례/제목·확대, Plot 높이·눈금, 랩 여백·그리드·MCK 빈 공간, 가로 애니메이션 8종 세로 분할(원판 2개는 나란히). 계산·그림 데이터 유지.
+- 검증: check 오류0·test1192·build157쪽·링크5080 문제0, 모바일15경로 × 3폭 넘침/조작 통과. PC96개: 93 픽셀·3 Plot 데이터/축/SVG 경로/좌표/선 스타일 동일.
+- 핸드오프: 공용 ResponsiveSvg·useMobileLayout 추가, A 애니메이션은 태그만 연결. QA --visuals/--compare-desktop/--mobile-widths/--mobile-smoke/--desktop-only(PageGuide §5-2).
+- 다음: 모바일 사용자 검토. 자세한 기록은 archive/Milestones.md §M0.15.
+
 ### 2026-10-13 · Claude · M12.8 Part 4 영어판 (Sonnet 에이전트 3개)
 - 요청: 사용자 — "part3 codex 한테 시켜서함. part4 진행 ㄱㄱ"
 - 산출: 영어 P4-1 · P4-3 · P4-4 + 그림 사전 3 + 랩 3개(RunUpBode·ShaftCenterline·Stability) 변환·등록, 옛 한국어 링크 3곳 relink(P1-6·P4-2·P6-3)

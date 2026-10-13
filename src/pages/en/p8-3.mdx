@@ -1,0 +1,266 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P8-3 ST specifics — steam whirl, partial admission, expansion and alignment
+description: Connect load-dependent stability at constant speed with partial admission, bearing centerline shifts, differential expansion, thrust position and shaft-train alignment in steam turbines.
+sectionId: P8-3
+source: p8-3.mdx
+sourceHash: e0ee76ec6c
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import SteamLoadLab from '../../components/labs/SteamLoadLab';
+import * as F from '../../figures/p8-3';
+import { withBase } from '../../lib/site';
+
+# 8-3 ST specifics — steam whirl, partial admission, expansion and alignment
+
+A steam turbine (ST) is running at 3000 rpm. Its speed stays the same, but as load rises, a new vibration component below 1X grows. In another record, the shaft's mean position moves when the valve combination changes. Do these have the same cause?
+
+First, let's distinguish what **growing lateral vibration**, **static center position** and **relative axial displacement** each tell us. Then we will connect steam conditions, bearing load and the thermal state of the rotor and casing.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why steam-induced instability can appear as load changes even at constant speed.
+2. You can connect force direction under partial admission, bearing load and static eccentricity ratio, and describe the calculation's limits.
+3. You can distinguish the questions asked by differential expansion, thrust position, case expansion and eccentricity.
+4. You can view cold and hot alignment of a multi-rotor ST as a problem involving several supports and load sharing.
+
+</Callout>
+
+---
+
+## 1. Why can a turbine become unstable at constant speed?
+
+In <a href={withBase('/en/p4-4/')}>P4-4</a>, we learned that a force perpendicular to displacement can compete with damping when it supplies energy to whirl motion. In an ST, leakage flow through blade rows and swirling steam in seals can contribute to these cross-coupled forces. Steam pressure, flow and valve states change as load rises, so the stability conditions for lateral vibration can change even at constant speed. <Cite ids={['R-30', 'R-31']} />
+
+<Figure {...F.steamMechanism} />
+
+<Callout type="term" title="Steam whirl and steam whip">
+
+These terms describe phenomena in which steam-flow forces sustain or grow the rotor's whirl vibration. Steam whip emphasizes self-excited vibration near a rotor mode. The terms alone do not fix a frequency or threshold load. Check the source's definition together with the modes of the machine concerned.
+
+</Callout>
+
+There is more to observe than a frequency below 1X. Look at **which load and steam conditions make the component appear and grow**, which mode its frequency is close to, and how amplitude, phase and whirl direction relate across several bearings. A single view at constant speed also makes it hard to distinguish a speed-tracking component from one tied to a mode.
+
+Compare frequency lines across records, as in <a href={withBase('/en/p6-2/')}>the waterfall and cascade plots in P6-2</a>, but also label each record with its load and steam conditions during a constant-speed load test. Contact and alignment candidates continue in <a href={withBase('/en/p7-3/')}>P7-3</a>, and subsynchronous differential diagnosis continues in P7-4 (P7-4 planned).
+
+<Callout type="warn" title="It is not always 0.5X, or the cause of every high-load vibration">
+
+One line at 0.5X does not establish steam whirl. Consider other candidates such as <a href={withBase('/en/p4-4/')}>fluid-film instability</a> and contact, together with the measurement conditions. The actual boundary depends on steam flow, seal and blade forces, rotor modes, and the dynamic coefficients of bearings and supports. <Cite ids={['R-30', 'R-31']} />
+
+</Callout>
+
+## 2. Raise load and compare damping with cross-coupled force
+
+Rather than solve the steam flow directly, we will **specify a load-dependent cross-coupling law** in the isotropic two-degree-of-freedom model from P4-4. Set dimensionless load to $\ell\in[0,1]$ and specify $q/k=0.03+0.15\ell$. The damping ratio is $\zeta=0.06$, the equivalent natural frequency is 30 Hz, and shaft spin is 50 Hz. These are hypothetical learning conditions.
+
+$$
+\frac{q}{k}=\frac{q_0}{k}+\frac{q_L}{k}\ell,
+\qquad \frac{q_{\mathrm{crit}}}{k}=2\zeta,
+\qquad \ell_* = \frac{2\zeta-q_0/k}{q_L/k}
+$$
+
+$q_0$ is the baseline cross-coupling, $q_L$ is its increase up to 100% load, and $k$ is the direct stiffness of the equivalent mode. $\ell_*$ is the threshold load fraction. It is the unique boundary in this interval only when $q_L/k>0$ and the calculated $\ell_*$ lies between 0 and 1. At the defaults, it is $(0.12-0.03)/0.15=0.60$. Do not use this boundary as an actual ST allowable load or protection setting.
+
+<Figure {...F.loadThreshold} />
+
+<Callout type="example" title="Read the eigenvalues at 50, 60 and 80% load">
+
+At 50%, the log decrement is $\delta=0.04700>0$, so the free response decays. At 60%, growth rate $\sigma$ and $\delta$ are zero. At 80%, $\sigma=2.813\ \mathrm{s}^{-1}$ and $\delta=-0.09368$, so the response grows. The mode frequency at 80% is about 30.03 Hz, or about 0.6006X relative to shaft spin at 50 Hz.
+
+</Callout>
+
+The frequency line in Figure 2 is a mode read from its eigenvalue. The mode also exists below the boundary. The presence of that line does not mean a spectrum at that amplitude has been measured. Check growth using the real part of the eigenvalue and the log decrement.
+
+<Figure {...F.freeResponse} />
+
+Starting from the same initial mode amplitude of 5 µm Peak gives $A(t)=A_0e^{\sigma t}$. After eight natural periods, or 0.2667 s, the amplitudes at 50, 60 and 80% load are 3.433, 5 and 10.59 µm Peak. The linear growth curve includes no contact, amplitude saturation or protection action.
+
+<Callout type="try" title="Try it — hold speed constant and change only load">
+
+1. With the lab's default full-arc admission, read $\delta$ and the final response amplitude at 50% load.
+2. Change to 60%, then 80%, and compare status, growth rate and mode frequency.
+3. Lower the damping ratio to 4% and check that the hypothetical boundary moves to 33.33%.
+4. Reset, then change only the initial amplitude to 10 µm. Check that the boundary stays the same.
+
+</Callout>
+
+<SteamLoadLab lang="en" client:visible />
+
+Read the lab results this way.
+
+1. The default boundary of 60% follows from the specified $q/k$ law and $\zeta$. It is not a measured operating load limit.
+2. At 80% load, a mode near 0.6006X grows. It is a separate component from 1X=50 Hz.
+3. Doubling the initial amplitude doubles the linear free response at the same time. The eigenvalues and boundary do not change.
+
+## 3. Partial admission can also shift the shaft's mean position
+
+<strong>Partial arc admission</strong> sends steam through only part of the circumference. If the valve combination changes during load control, radial forces from asymmetric pressure and flow can also change. Combined with gravity and other forces, they affect bearing load and mean center position. Calculating the actual force direction and magnitude requires the nozzle and valve arrangement and steam conditions. <Cite ids={['R-31']} />
+
+<Figure {...F.partialAdmission} />
+
+The example below specifies gravity of 1000 N downward and a net radial partial-admission force of $600\sin(\pi\ell)$ N. The force reaches its maximum of 600 N at 50% load. An upward force gives a resultant of 400 N, a downward force 1600 N, and a rightward force $\sqrt{1000^2+600^2}=1166$ N. This calculation does not predict the force from valve opening.
+
+<Figure {...F.centerline} />
+
+We reuse the short journal bearing static equilibrium from <a href={withBase('/en/p4-3/')}>P4-3</a>. Assuming an isotropic cylindrical bearing, we rotate the equilibrium position with the resultant force direction. +X is rightward, +Y is upward, and shaft spin is counterclockwise. The points in Figure 5 are mean center positions, not vibration orbits over time.
+
+<Figure {...F.bearingLoad} />
+
+<Callout type="example" title="How do eccentricity ratio and oil film change when load falls?">
+
+With default full-arc admission, $\epsilon=0.6758$ and the minimum film thickness is 32.42 µm. With the upward force at 50% load, $\epsilon=0.5166$ and the minimum film thickness becomes 48.34 µm. With a downward force, $\epsilon=0.7390$. These are static solutions for the specified load, viscosity and bearing geometry.
+
+</Callout>
+
+Bearing unloading can also matter when evaluating dynamic behavior. In an actual ST case, unloading of a particular cylindrical bearing and alignment problems caused by thermal deformation were linked to instability. But there is no rule that every bearing loses stability by the same proportion as eccentricity ratio decreases. Evaluate the bearing type and dynamic coefficients together with the seals and rotor modes. <Cite ids={['R-33']} />
+
+<Callout type="warn" title="Do not calculate the stability boundary directly from eccentricity ratio">
+
+This lab calculates static center position and modal stability coefficients separately. Even if admission direction or viscosity changes, the boundary stays at 60% when the specified $q/k$ and $\zeta$ stay the same. Actual machine load changes may also affect dynamic coefficients, so a real stability assessment needs a model that calculates this connection.
+
+</Callout>
+
+<Callout type="try" title="Try it — change force direction and read the center position">
+
+1. The lab below starts with upward partial admission. At 50% load, check the resultant of 400 N and eccentricity ratio of 0.5166.
+2. Switch to downward and rightward admission and compare resultant magnitude and the X and Y center positions.
+3. Return to upward admission and change viscosity to 40 mPa·s. Read the eccentricity ratio and hypothetical boundary separately.
+4. Reset and move load from 0 to 100%. Check that the specified steam force is zero at both ends.
+
+</Callout>
+
+<SteamLoadLab lang="en" initialAdmission="up" client:visible />
+
+Read these results as separate evidence about center position and vibration.
+
+1. The upward and downward resultants are 400 and 1600 N. Force direction changes the bearing load.
+2. With the rightward resultant of 1166 N, both X and Y positions change. Check both orthogonal sensors together with the reference gap and coordinates.
+3. Keeping the default coefficients gives the same hypothetical stability boundary of 60% in all three directions. A centerline shift alone cannot establish instability or contact.
+
+## 4. What references do expansion and thrust-position channels use?
+
+An ST's long rotor and casing expand as temperature rises. But protection and diagnostic channels use different sensor references and targets. Before comparing numbers, check the installation drawings, zero, sign and compensation method. <Cite ids={['R-32']} />
+
+| Channel | Question it asks | Check alongside it |
+|---|---|---|
+| Differential expansion (DE) | How much has the relative axial position of rotor and casing changed at the sensor location? | Target and sensor positions, ramp compensation, expansion reference point, temperature history |
+| Thrust position | How much has the shaft moved axially near the thrust reference? | Thrust collar reference, sign and zero, thrust load and bearing condition |
+| Case expansion | How much has the casing moved relative to the foundation or fixed reference? | Fixed point and sliding supports, measurement direction, left–right difference |
+| Low-speed eccentricity | What radial periodic displacement does the sensor see at low speed? | Turning history, thermal bow, runout, measurement conditions, P8-2 |
+
+<Figure {...F.axialChannels} />
+
+Let's use a hypothetical example to check units. For free expansion $\Delta L=\alpha_TL\Delta T$, specify $\alpha_T=12\times10^{-6}/\mathrm{K}$ and a length of 8 m. A rotor temperature rise of 250 K gives 24 mm, while a casing rise of 150 K gives 14.4 mm: an expansion difference of 9.6 mm. This assumes uniform temperature and free expansion; it does not solve the actual temperature distribution or constraints.
+
+<Callout type="example" title="Distinguish expansion difference from whole-shaft translation">
+
+Suppose we compare the right-hand rotor and casing targets from a common reference. If the whole shaft also translates +0.2 mm, the relative displacement in this simple arrangement is $24+0.2-14.4=9.8$ mm. The thermal expansion difference of 9.6 mm and whole-shaft translation of 0.2 mm are separate contributions. How thrust movement enters an actual DE reading depends on the target and reference-point arrangement.
+
+</Callout>
+
+An increase in DE does not necessarily mean movement at the thrust bearing. Conversely, even with little change in thrust position, a long rotor and casing can have different expansion. Connect this with <a href={withBase('/en/p1-6/')}>the thrust bearing in P1-6</a> and <a href={withBase('/en/p3-5/')}>the sensors in P3-5</a>, and read each reference separately. Eccentricity is the radial low-speed record discussed in <a href={withBase('/en/p8-2/')}>P8-2</a>.
+
+## 5. Alignment of a long shaft train involves several bearings
+
+A large ST has HP, IP and LP rotors coupled to a generator and supported by several bearings. Each rotor sags under its own weight, and the supports move under different thermal conditions. Matching level and gap at one cold coupling does not determine the hot alignment and bearing reactions of the whole shaft train.
+
+<Figure {...F.shaftAlignment} />
+
+<Callout type="term" title="Catenary alignment — account for shaft-train sag">
+
+This alignment concept considers the sag and connections of a shaft train on several supports. Here, “catenary” refers to the shaft train's curved shape. It does not mean calculating a rotor with the exact catenary equation of a hanging cable. Even a simple procedure that makes all coupling faces parallel and concentric must assess stress and load sharing. <Cite ids={['R-34']} />
+
+</Callout>
+
+Changing the height of one bearing can also change reactions at neighboring supports. Use the manufacturer's shaft-train model, target reactions and hot movement data alongside actual measurements. Cold offsets account for the expected hot condition; the task is not to arbitrarily put all bearings on a straight line at the same height.
+
+Differential thermal expansion of the casing and supports, or restraint of sliding, are candidates that can change alignment and bearing loads. Some ST cases link this unloading to instability. <Cite ids={['R-32', 'R-33']} /> Figure 8 is schematic and does not calculate exact hot movements, bearing reactions or contact stresses. The single-bearing solution in the earlier lab cannot calculate reactions for a multi-rotor shaft train either.
+
+## 6. Connect observations to responses in this order
+
+First compare records matched for load and steam conditions at the same speed. Where valve states change, place steam pressure, temperature, flow, center position and vibration components on the same time axis. You need to confirm the sensor references and units before comparing what the changes mean.
+
+| Observation | Candidates and additional evidence to check | Data needed to assess a response |
+|---|---|---|
+| A subsynchronous component grows with load at constant speed | Steam cross-coupled forces, fluid-film and support dynamics, contact, etc.; frequency, mode, whirl and relationships across bearings | Repeat history, steam and seal conditions, rotor-dynamics assessment |
+| Valve-combination change and mean center shift | Partial-admission resultant and load change, hot alignment, gap-reference change | Valve sequence and nozzle arrangement, calibration and coordinates, bearing load and temperature |
+| DE and case-expansion changes | Rotor and casing thermal states, reference points, support constraints and compensation method | Installation drawings, temperature trends, sliding-support condition |
+| Thrust-position change | Thrust load and bearing condition, or a measurement-reference change | Thrust reference, sign and zero, operating and protection records |
+
+<Callout type="field" title="Review conditions and evidence through the manufacturer's procedures">
+
+An observed threshold load is a record for those operating conditions. Do not turn it into a stability limit for all conditions. Assess operating adjustments, alignment, and bearing or seal changes with the manufacturer and plant procedures. After a change, confirm stability and protection functions under several conditions. The lab's 60% boundary and expansion example are not decision criteria for actual equipment.
+
+</Callout>
+
+## 7. Review once more
+
+| Starting question | Connected concepts | What still needs checking |
+|---|---|---|
+| Why does a component grow at the same speed? | Competition between steam cross-coupled forces and damping | Steam conditions, modes, bearing dynamic coefficients, other candidates |
+| Why does the center move under partial admission? | Vector sum of forces → bearing load → static eccentricity ratio | Actual force, sensor reference and connection to dynamic behavior |
+| Are DE and thrust position the same value? | Targets, references, expansion and whole-shaft translation | Installation, sign, zero and compensation method |
+| Is aligning one coupling enough? | Weight-induced sag, hot movement and multiple support reactions | Whole shaft-train model and actual load sharing |
+
+## 8. Check your understanding
+
+<details>
+<summary>1. Why can steam-induced instability appear even at constant speed?</summary>
+
+Steam pressure, flow and cross-coupled forces can change with load and valve states. Evaluate rotor modes together with bearing and support damping.
+
+</details>
+
+<details>
+<summary>2. Can the default lab's 60% boundary be used as an actual ST allowable load?</summary>
+
+No. It is the solution for the specified $q/k=0.03+0.15\ell$ and $\zeta=0.06$. It is not a boundary calculated from actual steam flow or machine-specific dynamic coefficients.
+
+</details>
+
+<details>
+<summary>3. Why is bearing load 400 N with an upward force of 600 N at 50% load?</summary>
+
+The vector sum with downward gravity of 1000 N is 400 N downward. A downward force of the same magnitude gives 1600 N, and a rightward force gives about 1166 N.
+
+</details>
+
+<details>
+<summary>4. If upward admission reduces eccentricity ratio, does the stability boundary automatically fall?</summary>
+
+Not in this lab. Static equilibrium and stability coefficients are specified independently. For a real machine, connect them by calculating load-dependent bearing dynamic coefficients, seals and modes.
+
+</details>
+
+<details>
+<summary>5. In the example with DE of 9.8 mm and thrust position of 0.2 mm, what is the thermal expansion difference?</summary>
+
+It is 9.6 mm for this simple arrangement with a common reference. Whole-shaft translation of 0.2 mm is added to give the relative target displacement of 9.8 mm. For actual DE, check the sensor, target and compensation arrangement.
+
+</details>
+
+<details>
+<summary>6. Can a single bearing's static solution determine hot alignment of a multi-rotor ST?</summary>
+
+No. You need measurements and a shaft-train model that includes the connected rotors' weight-induced sag, hot movements and reactions at multiple supports, and coupling conditions.
+
+</details>
+
+---
+
+Reread the ST thermal state and low-speed records alongside <a href={withBase('/en/p8-2/')}>P8-2 on thermal bow and turning gear</a>. Next, P8-4 connects GT compressor and combustion conditions with shaft-train vibration (planned).
+
+## References
+
+<References items={[
+  ['R-30', 'Case overview connecting high-load steam conditions, cross-coupled forces, rotor modes and bearing damping'],
+  ['R-31', 'Partial-admission forces, bearing loads, and destabilizing seal and blade forces'],
+  ['R-32', 'Measurement references and arrangements for differential expansion, thrust position and case expansion'],
+  ['R-33', 'Cases involving thermal alignment, bearing unloading and instability'],
+  ['R-34', 'Alignment, catenary shape and stress assessment of a connected shaft train'],
+]} />

@@ -44,7 +44,7 @@ function polar(p:RunUpPoint[],color:FigColor,title:string):FigPanel {
     {type:'text',x:0,y:69,text:'0° 센서 방향 · 지연 ↻',anchor:'middle',color:'muted'},
     {type:'text',x:102,y:0,text:'90°',anchor:'end',color:'muted'},{type:'text',x:-102,y:0,text:'270°',color:'muted'},
     {type:'text',x:0,y:-108,text:'180° · 좌표 단위 µm pp',anchor:'middle',color:'muted'},
-    ...[1500,3000,3600].map((n,i)=>{const v=p.find(q=>q.rpm===n)!;return {type:'point' as const,x:pp(v.amp)*Math.sin(v.lag),y:pp(v.amp)*Math.cos(v.lag),label:n+' rpm',color:i===2?'c4' as const:color,dx:i===2?-50:15,dy:i===0?-14:16};})]};
+    ...[1500,3000,3600].map((n,i)=>{const v=p.find(q=>q.rpm===n)!;return {type:'point' as const,x:pp(v.amp)*Math.sin(v.lag),y:pp(v.amp)*Math.cos(v.lag),label:n+' rpm',color:i===2?'c4' as const:color,dx:i===2?-50:15,dy:i===0?-28:16};})]};
 }
 export const polarLoops=f(4,'그림 2를 Polar로 읽습니다. 두 공진 구간에서 경로가 둥글게 돌아가지만 베어링 2의 두 번째 경로는 반대쪽입니다. 점은 1500·3000·3600 rpm, 경로는 0→5000 rpm 순서입니다. 고속 벡터가 0으로 돌아가지 않으므로 완전히 닫힌 원 두 개를 요구하지 않습니다. 오빗(시간에 따른 X/Y 축 위치)과 구별하세요.',[
   polar(cold[0],'c1','베어링 1 · 모드 두 개의 굽은 경로'),polar(cold[1],'c2','베어링 2 · 2차 부호 반전')]);

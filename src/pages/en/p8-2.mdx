@@ -1,0 +1,264 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P8-2 Thermal bow · Turning gear · Morton effect
+description: Compare thermal bow during shutdown, turning gear, slow roll eccentricity, Morton-type 1X vector changes during operation, and the heat source of the Newkirk effect.
+sectionId: P8-2
+source: p8-2.mdx
+sourceHash: 512d269bb6
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import TrendLab from '../../components/labs/TrendLab';
+import * as F from '../../figures/p8-2';
+import { withBase } from '../../lib/site';
+
+# 8-2 Thermal bow · Turning gear · Morton effect
+
+You restart a hot machine after a shutdown and find a larger 1X than before. After a period of slow turning, however, the next startup record looks different. In another operating record, the speed stays constant while the 1X vector traces a loop over tens of minutes.
+
+Are both records showing thermal bow? First, separate **bow that develops during shutdown** from **interaction between heating and vibration during operation**, then read amplitude and phase together.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why circumferential temperature differences can bow a stationary shaft and why turning gear is used.
+2. You can distinguish slow roll eccentricity from high-speed 1X response and check the effects of runout and thermal state.
+3. You can add fixed unbalance response and a thermal contribution as vectors to read changes in APHT and Polar plots.
+4. You can distinguish the heat sources of the Morton and Newkirk effects and choose the additional evidence needed.
+
+</Callout>
+
+---
+
+## 1. Why can a stationary shaft bow?
+
+Unlike the spring deformation in Part 1, this involves expansion with temperature. Even in the same material, a hotter region expands more. When a hot rotor stops, natural convection and the surrounding structure can make its circumference cool unevenly. A top-to-bottom temperature difference is one example.
+
+<Figure {...F.thermalBow} />
+
+<Callout type="term" title="Thermal bow">
+
+This is bow caused by an uneven temperature distribution in the shaft. Along with temperature changes along the shaft, **circumferential temperature differences within one cross section** matter. Unlike a permanent mechanical bow, its shape can change with the thermal state.
+
+</Callout>
+
+For a small temperature change, the change in length of one region can be thought of as $\Delta L \approx \alpha_T L\Delta T$. Here, $\alpha_T$ is the material's coefficient of thermal expansion and $L$ is its original length. Different expansions must be accommodated within the same shaft, making it difficult for the shaft to remain straight. Finding the actual bow requires solving for the temperature field, shaft geometry, and support conditions. <Cite ids={['R-25']} />
+
+On restart, the bowed shaft's geometric centerline rotates and produces periodic displacement at a low-speed sensor. As speed rises, excitation from the bow and the dynamic response of the shaft system also appear. This is why adding a hot bow in <a href={withBase('/en/p8-1/')}>P8-1</a> produced a Bode plot different from the cold case.
+
+<Callout type="warn" title="Distinguish bow in a stationary shaft from a 1X record">
+
+At a complete standstill, there is no rotational reference for measuring 1X amplitude and phase. A large 1X during startup does not establish thermal bow as the sole cause either. <a href={withBase('/en/p7-2/')}>P7-2</a> compares mechanical bow with other 1X candidates. Unbalance, resonance, measurement runout, contact, and support conditions can all contribute.
+
+</Callout>
+
+## 2. Turning gear limits the buildup of temperature differences
+
+<strong>Turning gear</strong> is a device that slowly rotates the rotor while its main rotation is stopped. Each material point passes through different thermal environments around the circumference in turn, helping make the temperature more uniform. Its purpose is to reduce thermal bow that can develop when a hot rotor cools at a standstill. <Cite ids={['R-25']} />
+
+<Figure {...F.turningGear} />
+
+In Figure 2, a stationary material point remains in the same thermal environment. During turning, its exposure changes. Slow rotation alone, however, does not immediately make the temperature uniform. The time needed to reduce an existing temperature difference depends on the machine and its thermal state.
+
+<Callout type="field" title="Keep turning history with the startup record">
+
+Record the shutdown time and thermal state, the times when turning started, stopped, or resumed, and the available temperature and eccentricity trends. If turning was interrupted, check the restart conditions against the manufacturer's procedure. This page specifies no universal turning speed or waiting time.
+
+</Callout>
+
+<Callout type="example" title="The same one-hour shutdown can have different thermal states">
+
+If turning continued in one record but was interrupted in another, matching only the elapsed time makes comparison difficult. The cold run-up and hot coastdown comparison in P8-1 also required matching the thermal state and operating history along with speed.
+
+</Callout>
+
+## 3. Eccentricity: what remains at low speed?
+
+<strong>Eccentricity measurement</strong> observes geometric motion at a noncontact displacement probe while the rotor turns slowly. It provides evidence of the pre-start condition of a rotor with thermal bow. Check the system and manufacturer's documentation for display units, speed range, probe location, and assessment conditions. <Cite ids={['R-28']} />
+
+<Figure {...F.eccentricity} />
+
+Figure 3 is a **separate low-speed geometric example**. The bow is $12e^{-t/\tau}$ µm Peak@80°, with constant runout of 4 µm Peak@80°. Since they point in the same direction, their magnitudes add directly; for one sinusoidal component, p-p is twice Peak. With $\tau=20$ minutes, the initial 32 µm pp drops to 9.195 µm pp at 60 minutes, while runout of 8 µm pp remains even after a long time.
+
+This curve is not an actual cooling measurement. It does not convert a high-speed response contribution into an equal low-speed geometric displacement. The observed bow depends on the probe location, and mechanical and electrical runout are also included.
+
+<Callout type="warn" title="Slow roll compensation does not straighten the shaft">
+
+The compensation in <a href={withBase('/en/p3-3/')}>P3-3</a> is data processing: subtracting a reference low-speed vector from the measured vector. Results change if the reference bow differs from the current bow or if dynamic response is present even at low speed. Subtracting a reference with a large thermal bow can reduce the displayed 1X without removing the physical bow.
+
+</Callout>
+
+<Callout type="try" title="Before reading an eccentricity record">
+
+Check that the probe, Keyphasor, and rotation direction are the same, that Peak and p-p are consistent, and when and under what thermal state the low-speed reference was acquired. Then compare it with the manufacturer's startup conditions. The synthetic figure's 9.195 µm pp is not a startup acceptance criterion.
+
+</Callout>
+
+## 4. The thermal contribution can shrink while total 1X changes little
+
+In <a href={withBase('/en/p6-4/')}>P6-4</a>, a vector moved when its phase changed even though its amplitude stayed the same. Now add a fixed response and a thermal contribution that changes with time under constant operating conditions.
+
+<Figure {...F.vectorSum} />
+
+Using the same lag-angle convention in the complex plane, $V(t)=U+Q(t)$. $U$ is the fixed unbalance response, and $Q$ is the **response contribution** that thermal effects add to 1X at this sensor. It is not the geometric shaft bow itself. Think of it as already including the transfer relationship that depends on speed, mode, and sensor location.
+
+<Callout type="term" title="A prescribed exponential decay example">
+
+Set $Q(t)=B_0e^{-t/\tau}e^{-i\beta}$. $B_0$ is the initial thermal contribution amplitude, $\beta$ is its lag angle, and $\tau$ is the time for the contribution to fall to $1/e$ of its initial value. This prescribed exponential shape lets us practice vector addition; it is not a calculated solution of the heat-transfer equations.
+
+</Callout>
+
+<Figure {...F.bowDecay} />
+
+The defaults are $U=20$ µm Peak@350°, $B_0=12$ µm Peak, $\beta=80°$, and $\tau=20$ minutes. The two contributions differ in direction by 90°, so their initial sum is $\sqrt{20^2+12^2}=23.32$ µm Peak. At 60 minutes, the thermal contribution falls to 0.5974, but the sum falls only slightly to 20.01. The **vector change** from the initial value is 11.40 µm Peak.
+
+### Try it: decay time constant and cancellation
+
+1. Keep **Thermal bow contribution decays**, a reference time of 0 minutes, and a selected time of 60 minutes in the lab below. Read the thermal contribution, total 1X, and vector change.
+2. Change the decay time constant $\tau$ to **60 minutes** and compare the thermal contribution and total amplitude.
+3. Return $\tau$ to 20 minutes, set the initial thermal contribution to **20 µm Peak**, its lag angle to **170°**, and the selected time to **0 minutes**.
+4. Check total 1X and the phase assessment, then move the selected time to 60 minutes.
+
+<TrendLab initialScenario="thermal" client:visible lang="en" />
+
+**Reading the result:** In step 1, the thermal contribution is 0.5974, total 1X is 20.01, and the vector change is 11.40 µm Peak. In step 2, the thermal contribution is 4.415 and the sum is 20.48. In step 3, 20 µm Peak@350° and 20 µm Peak@170° cancel, so total 1X=0 and phase and region assessments are withheld. In step 4, total 1X actually increases as the thermal contribution shrinks. **A small total amplitude does not mean a small thermal contribution.**
+
+<Callout type="warn" title="The response angle is not the hot spot location">
+
+In <a href={withBase('/en/p4-1/')}>P4-1</a>, the phase relationship between excitation and response changed through resonance. Likewise, the response angle of the thermal contribution cannot directly be equated with the physical hot spot or the high spot of maximum displacement. You need the Keyphasor and probe orientations and the thermal and dynamic transfer relationships.
+
+</Callout>
+
+## 5. Morton effect: heat and vibration interact during operation
+
+So far, we have considered thermal bow that develops during shutdown and how it changes. The <strong>Morton effect</strong> involves uneven circumferential heating inside a journal bearing during operation. If heat from viscous shear in the oil film is transferred unevenly around the journal, temperature differences and thermal bow can develop. <Cite ids={['R-26']} />
+
+<Figure {...F.mortonFeedback} />
+
+If thermal bow changes the 1X response and the resulting whirl and oil-film state affect the heating distribution again, there is feedback. Heat transfer takes time, so 1X amplitude and phase can change slowly even at constant speed. Repeated vector motion or loops may be observed, but not every case has the same direction, period, or growth pattern. <Cite ids={['R-26', 'R-27']} />
+
+<Callout type="term" title="Slow vector motion differs from rotational frequency">
+
+1X remains a component at the shaft's rotational frequency. A vector that makes one turn in 30 minutes means that the amplitude and phase of that 1X component change slowly. Distinguish the trajectory of the shaft center during one revolution in the orbit of <a href={withBase('/en/p6-3/')}>P6-3</a> from the Polar path of the 1X vector over time.
+
+</Callout>
+
+### Read a prescribed Morton-type curve
+
+The lab prescribes $Q(t)=B_0(1+gt/t_{\rm end})e^{-i(\beta+2\pi t/P)}$. Here, $t_{\rm end}=60$ minutes, $g$ is the fractional radius increase over 60 minutes, and $P$ is the period for the thermal contribution to make one turn. **This is not a Morton prediction model obtained by solving heat transfer and oil-film feedback.**
+
+<Figure {...F.mortonLoops} />
+
+Since $Q$ turns around the tip of fixed $U$, the sum $V$ also moves around that point. The total lag angle in APHT is the angle of $V$ viewed from the origin. Thus, even if the thermal contribution makes two turns, the total phase may not make two turns.
+
+### Try it: growing loops and a closed circle
+
+1. In **Morton-type thermal vector rotation** in the lab below, with reference time 0 minutes and selected time 60 minutes, read the amplitude and angle of the thermal contribution and total 1X.
+2. Move the selected time through **0, 15, 30, and 60 minutes** and compare the selected arrow and thermal contribution arrow in Polar.
+3. Set the <strong>thermal contribution growth over 60 minutes to 0%</strong> and compare vector changes at selected times of 0, 15, and 30 minutes.
+4. Change the rotation period to **60 minutes** and check whether the selected vector returns to the starting point at 30 minutes.
+
+<TrendLab initialScenario="morton" client:visible lang="en" />
+
+**Reading the result:** In step 1, the thermal contribution is 10 µm Peak@80°, total 1X is 22.36 µm Peak@16.57°, and the vector change from the reference is 5 µm Peak. Step 3 gives a closed circle with a radius of 5 µm Peak. The vector change is 10 µm Peak at 15 minutes, but returns to 0 at 30 minutes. In step 4, the longer period puts the vector on the opposite side at 30 minutes, and it returns to the start at 60 minutes. Comparing only the last two points misses the changes in between.
+
+<Callout type="field" title="Compare load and oil conditions at matching times">
+
+Read speed, load, oil supply/discharge temperatures and pressures, bearing temperatures, gap, Keyphasor status, and 1X records from multiple probes together. Oil temperature affects viscosity and heat transfer, but the effect depends on the equipment and conditions. Do not apply the direction of a corrective action from a particular published case to every machine. <Cite ids={['R-27']} />
+
+</Callout>
+
+## 6. Newkirk has a different heat source
+
+The <strong>Newkirk effect</strong> is the interaction between local frictional heating from contact between rotating and stationary parts and thermal bow. Think of the thermal effects of a rub. Other waveforms and candidate causes associated with contact and rub are covered in P7-3.
+
+<Figure {...F.heatSources} />
+
+Morton is associated with journal oil-film shear heating; Newkirk is associated with contact frictional heating. Both can produce slow 1X vector motion or spirals, so **a spiral alone cannot establish the Morton effect**. Changes in thermal state or other excitation can produce similar vector motion. <Cite ids={['R-23', 'R-26']} />
+
+| Evidence to check | Question |
+|---|---|
+| Direct waveform, 1X, and other components | Do distortion, harmonics, or changes at other frequencies accompany contact? Does their absence rule out contact? |
+| Orbits, APHT, and Polar at multiple locations | Which locations and directions change at the same time? Are there sensor or Keyphasor problems? |
+| Gap, temperature, load, and thermal history | Do changes in clearance or thermal conditions accompany vector motion? |
+| Maintenance, contact marks, and the machine model | Is there evidence of contact? Is there information to assess a thermal and dynamic journal oil-film hypothesis? |
+
+<Callout type="warn" title="Accompanying features help narrow the candidates">
+
+Do not rule out contact because the waveform has no harmonics, or establish Morton because the response changed with oil temperature. Compare heat sources, sensors, and operating conditions, then verify the hypothesis through machine-specific analysis and inspection.
+
+</Callout>
+
+## 7. Summary
+
+| Concept | How to read it on this page |
+|---|---|
+| Thermal bow during shutdown | Circumferential temperature differences and unequal expansion; check shutdown and turning history |
+| Turning gear | Slowly turns the rotor to help even out circumferential thermal exposure |
+| Eccentricity | Low-speed geometric motion, runout, and the reference thermal state; check manufacturer startup conditions |
+| Fixed response + thermal contribution | Complex sum $V=U+Q$; distinguish total amplitude from vector change |
+| Morton effect | Interaction of journal oil-film shear heating, thermal bow, and response; slow 1X changes |
+| Newkirk effect | Thermal bow and response from contact frictional heating; compare contact evidence |
+| Spiral/loop | A clue to candidate causes; check multiple locations, operating conditions, and intermediate times |
+
+## 8. Check your understanding
+
+<details>
+<summary>1. How does thermal exposure differ between a stationary hot rotor and a rotor on turning gear?</summary>
+
+At a standstill, each material point remains in the same circumferential thermal environment. During turning, it passes through different environments in turn, helping make the circumferential temperature more uniform. An existing temperature difference does not disappear immediately.
+
+</details>
+
+<details>
+<summary>2. If low-speed eccentricity decreases, can you start the machine immediately?</summary>
+
+A decreasing trend is one piece of evidence. Check the probe, units, runout, thermal state, and turning history, then judge according to the manufacturer's startup conditions for that machine. The numbers on this page are synthetic.
+
+</details>
+
+<details>
+<summary>3. Why do the thermal contribution and total 1X differ after 60 minutes in the default thermal bow example?</summary>
+
+Adding the fixed 20 µm Peak@350° to the thermal contribution of 0.5974 µm Peak gives a sum of 20.01. You cannot read the thermal contribution amplitude from total 1X amplitude alone. The vector change from the initial value is 11.40 µm Peak.
+
+</details>
+
+<details>
+<summary>4. Why does total 1X phase not make two turns when the thermal contribution makes two turns?</summary>
+
+The thermal contribution moves the total vector around the tip of fixed $U$. Total phase is the angle of that tip viewed from the origin, so it differs from the thermal contribution angle. The default values at 60 minutes are Q@80° and total@16.57°.
+
+</details>
+
+<details>
+<summary>5. In the Morton-type example with 0% growth, do equal values at 0 and 30 minutes prove stability?</summary>
+
+The endpoints match, but there is a vector change of 10 µm Peak at 15 minutes. Check the intermediate path and operating conditions. A prescribed curve alone cannot assess the stability of an actual machine either.
+
+</details>
+
+<details>
+<summary>6. What else should you examine to distinguish Morton from Newkirk?</summary>
+
+You need evidence that distinguishes Morton's oil-film shear heating from Newkirk's contact frictional heating. Compare waveforms, orbits, 1X at multiple locations, gap, temperature, load, thermal history, and contact marks together. One spiral cannot establish the cause.
+
+</details>
+
+Next, <a href={withBase('/en/p8-3/')}>P8-3</a> continues with startup, load changes, and expansion-related records in steam turbines (ST). Review <a href={withBase('/en/p8-1/')}>P8-1 Startup and shutdown</a> and <a href={withBase('/en/p6-4/')}>P6-4 APHT and vector trends</a> alongside it.
+
+## References
+
+<References items={[
+  ['R-25', 'Thermal bow during shutdown and the purpose of turning'],
+  ['R-26', 'Comparing Morton and Newkirk heat sources and 1X changes'],
+  ['R-27', 'Cycling vibration and heat-transfer delay'],
+  ['R-28', 'Purpose of eccentricity measurement'],
+  ['R-23', 'Why rub interpretation needs multiple plots and operating conditions'],
+]}>
+
+Times, displacements, and phases in the figures and labs are values from our own synthetic models, rather than actual equipment data or manufacturer startup and protection criteria.
+
+</References>

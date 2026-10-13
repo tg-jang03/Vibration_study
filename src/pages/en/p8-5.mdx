@@ -1,0 +1,296 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: "P8-5 Generator and shaft system: what changes when current changes?"
+description: Stator 2×LF and endwinding resonance, field thermal sensitivity and the 1X vector, shaft voltage and grounding, torsional vibration, SSR and coupling alignment
+sectionId: P8-5
+source: p8-5.mdx
+sourceHash: afb6fb3889
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import GeneratorFieldLab from '../../components/labs/GeneratorFieldLab';
+import {withBase} from '../../lib/site';
+import * as F from '../../figures/p8-5';
+
+# P8-5 Generator and shaft system: what changes when current changes?
+
+After a change in generator reactive power, shaft 1X moves for several minutes. Meanwhile, 100 Hz remains visible on the stator. Can we group both as the same 'electrical vibration'?
+
+Look at **the frequency reference, the moving component and the time taken to change** together. A generator is both a rotating rotor and a machine that exchanges electromagnetic energy. Shaft relative displacement, stator and endwinding vibration, and electrical signals answer different questions.
+
+<Callout type="idea" title="After reading this page">
+
+1. Distinguish 1X from 2×LF using pole count and speed.
+2. Investigate local endwinding resonance separately from shaft vibration.
+3. Interpret thermal lag and vector addition in 1X after a field current change.
+4. Explain the measurement paths for shaft voltage and grounding current.
+5. Choose additional evidence for torsional vibration, SSR and coupling alignment candidates.
+
+</Callout>
+
+---
+
+## 1. Is the stator's 100 Hz the shaft's 2X?
+
+Let LF stand for line frequency. A 2-pole generator synchronized to a 50 Hz grid runs at 3000 rpm, with shaft 1X at 50 Hz. Thus 2×LF=100 Hz is also 2X relative to the shaft. In this machine, the two names refer to the same frequency.
+
+But a 60 Hz, 4-pole generator runs at 1800 rpm, with 1X=30 Hz. Its 2×LF=120 Hz is **4X relative to the shaft**. Do not assume that 2×LF always means 2X just because the machine is a generator.
+
+$$
+n_s=\frac{120f_{LF}}{P},\qquad f_r=\frac{n_s}{60},\qquad \frac{2f_{LF}}{f_r}=P
+$$
+
+Here $P$ is the pole count. This relation assumes synchronous rotation; it does not include induction motor slip.
+
+<Figure {...F.lineForce} />
+
+<Callout type="term" title="Stator core vibration">
+
+Electromagnetic excitation acting on the stator core includes a component at twice line frequency. Squaring a magnetic field in a conceptual example shows why this frequency appears. The actual spatial force distribution, magnitude and structural response depend on machine design. <Cite ids={['R-44']} />
+
+</Callout>
+
+If vibration is high on the core or frame, investigate local acceleration or displacement, frequency and operating conditions. To establish whether 100 Hz in shaft relative displacement has the same origin, also check sensor location and the structural transmission path. **The same frequency does not necessarily mean the same motion.**
+
+<Callout type="warn" title="On a 2-pole machine, 1X=LF also coincides">
+
+A match between 1X and LF does not establish an electrical cause. Unbalance, thermal bow and runout can also produce 1X. Add electrical operating records to the <a href={withBase('/en/p7-2/')}>1X distinctions in P7-2</a>, and connect them with the <a href={withBase('/en/p7-7/')}>electrical frequency distinctions in P7-7</a>.
+
+</Callout>
+
+---
+
+## 2. Why measure the endwinding separately?
+
+The part of the stator winding outside the core is the <strong>endwinding</strong>. It has supports and bracing and moves in its own local modes. Changes in support condition can alter natural frequencies, damping and relative motion. <Cite ids={['R-45']} />
+
+A local mode near 2×LF excitation can produce a large response. The relation between excitation and natural frequency learned in <a href={withBase('/en/p1-4/')}>P1-4 on resonance</a> applies here too.
+
+<Figure {...F.endwinding} />
+
+<Callout type="eq" title="Magnitude and phase of a hypothetical single mode">
+
+$$
+\frac{X}{F_0/k}=\frac{1}{\sqrt{(1-r^2)^2+(2\zeta r)^2}},\qquad r=\frac{f}{f_n}
+$$
+
+With the specified $f_n=120$ Hz, excitation at 120 Hz gives $r=1$. The ratio is 10 for damping ratio 0.05 and 5 for 0.1. The lag relative to excitation is 90° in both cases. This ratio contains neither an actual excitation force nor an actual winding displacement.
+
+</Callout>
+
+Which location moves most depends on the **mode shape**. A sensor near a node can miss a large response elsewhere. Connect FRFs, phase and responses at several positions from a shutdown impact test with endwinding vibration during operation.
+
+<Callout type="check" title="Check the measurement path first">
+
+Check suitable endwinding sensors, insulation, mounting, bandwidth and acquisition conditions. Fiber-optic sensors are also used in this electrical environment. A small shaft 1X at a bearing does not establish endwinding relative motion or support condition. <Cite ids={['R-45']} />
+
+</Callout>
+
+A mode near 2×LF alone does not determine whether operation is acceptable. Manufacturer evaluation also needs excitation force, mode shape, amplitude and stress, support condition and trends. Part 9 continues with structural testing procedures.
+
+---
+
+## 3. Why does 1X move slowly after field current changes?
+
+Field current flows through the rotor field winding. A current change also changes resistive heating $I_f^2R$. Although electrical input changes quickly, temperature distribution and expansion take time.
+
+Uniform circumferential expansion does not necessarily cause bow. Uneven winding heating or expansion, constraints on movement and uneven cooling can create asymmetry that affects rotor bow and the 1X vector. <Cite ids={['R-46']} />
+
+<Figure {...F.thermalChain} />
+
+<Callout type="term" title="Field thermal sensitivity">
+
+This is the tendency of rotor vibration response to change with field current and thermal state. A winding turn short is one candidate; uneven expansion, constraints and cooling problems are others. Observing current and 1X changing together does not establish a short. <Cite ids={['R-46']} />
+
+</Callout>
+
+Align the times of reactive power and field current changes with shaft 1X amplitude and phase records. Put speed, active power in MW, cooling conditions, bearing temperature and shaft centerline position on the same time axis to check for other changes.
+
+<Figure {...F.fieldTrend} />
+
+Figure 4 is a hypothetical example of changing current and then restoring it. Current changes from 50→100% at 0 min, but the thermal state approaches its target exponentially. It remains continuous at the instant current returns at 10 min. Only afterward does 1X slowly return.
+
+<Callout type="eq" title="Thermal lag and vector addition in the lab">
+
+$$
+\tau\dot h+h=i^2,\qquad V=U+Gh e^{-j\beta}
+$$
+
+$i$ is relative field current, $h$ the normalized thermal state, and $\tau$ the time constant. $U$ is the existing 1X vector, $G$ the specified response magnitude for thermal state 1, and $\beta$ the lag of that component. Displacement is calculated internally in m and displayed in µm.
+
+The lag convention is $x=|V|\cos(\theta-\phi)$. Do not interpret thermal state as actual temperature or winding bow length. This is a simple response model with fixed transfer characteristics at constant speed.
+
+</Callout>
+
+### Lab: do current and 1X return at the same time?
+
+Keep current at 50→100%, time constant at 2 min, and thermal component at 15 µm Peak and 90°. Record amplitude and phase at observation time 0 min, then move to 2, 10 and 20 min. Also select 'Instant response comparison' and 'No-change comparison' and predict the differences.
+
+<GeneratorFieldLab client:visible lang="en" />
+
+At 2 min, about 63.2% of the thermal state change is complete. Resultant 1X moves from **20.35 µm Peak and 10.62°** initially to **22.76 µm Peak and 28.50°**. Current is already 100%, but the thermal response has not reached its target.
+
+At 10 min, when current returns, 1X does not jump to its initial value. By 20 min it has largely returned, but mathematically it does not exactly equal the initial value at a finite time. In actual records, also compare noise, repeatability and operating conditions.
+
+<Callout type="warn" title="Hypothetical relative current is not an actual test setting">
+
+Plan an actual field current change test within manufacturer procedures, the capability curve, protection and grid operating conditions. Keep comparison conditions such as active power as steady as possible, record both increases and decreases, and allow sufficient observation time. Do not transfer the lab's 50→100% change and 10 min return into field settings.
+
+</Callout>
+
+---
+
+## 4. Can amplitude decrease when current increases?
+
+Yes. The displayed 1X is the **vector sum** of the existing and thermal components. Even if the thermal component grows, resultant amplitude decreases when it adds in the opposite direction. Reading amplitude trends alone can reverse your interpretation.
+
+<Figure {...F.interference} />
+
+Fix the existing component at 20 µm Peak and 0°. The thermal component is 3.75 µm at 50% current and 15 µm at the 100% steady state. At 90°, resultant magnitude is $\sqrt{20^2+15^2}=25$ µm. At 180°, it is $|20-15|=5$ µm.
+
+<Callout type="check" title="What should you compare beyond amplitude?">
+
+Compare the vector difference $\Delta V=V_{\text{after}}-V_{\text{before}}$ using the same sensor, keyphasor and angle reference. Look at amplitude, phase and time together, as in <a href={withBase('/en/p6-4/')}>P6-4 on APHT and Polar</a>. Near zero resultant amplitude, phase is sensitive or undefined; do not read it as an established direction.
+
+</Callout>
+
+### Lab: what if the thermal component points the other way?
+
+This lab starts with thermal component lag at 180°. Record the initial amplitude and predict whether it increases or decreases at 2 min. Set both currents to 100% and thermal component G to 20 µm to check complete cancellation too.
+
+<GeneratorFieldLab initialLagDeg={180} client:visible lang="en" />
+
+The response heads from 16.25 µm initially toward 5 µm at the high-current steady state. With complete cancellation, 1X=0 and phase is withheld. This example follows a straight vector path back and forth with fixed direction; it does not represent every actual thermal sensitivity path.
+
+Also distinguish it from the <a href={withBase('/en/p8-2/')}>residual thermal bow and Morton-type changes in P8-2</a>. Check relationships with field current, lubrication and bearing conditions, and thermal history before startup, while allowing for overlapping mechanisms. The next evidence is whether return is repeatable over current increases and decreases and whether other bearings move in the same way.
+
+---
+
+## 5. How do shaft voltage and the grounding brush relate to vibration?
+
+Possible sources of shaft potential differences include electrostatic charging, magnetic induction and capacitive coupling from the excitation system. If the designed grounding path is inadequate, current can flow through unintended paths such as bearings. <Cite ids={['R-47']} />
+
+<Figure {...F.grounding} />
+
+<Callout type="term" title="Shaft voltage and shaft current">
+
+Shaft voltage is the potential difference between the shaft and a specified reference point. Shaft current is current flowing through a specified path. One voltage measurement cannot describe every bearing current or discharge condition. If current is measured in the grounding brush path, clearly identify that path.
+
+</Callout>
+
+Brush contact, wear, contamination and connections affect the designed current path. Bearing insulation can prevent unwanted circulating loops. **Check grounding and insulation against the complete machine arrangement.** <Cite ids={['R-47']} />
+
+<Callout type="warn" title="Does adding grounding always help?">
+
+Arbitrarily grounding several points or bypassing bearing insulation can create unintended loops. Evaluate shaft voltage, grounding current and insulation condition using manufacturer drawings and test procedures. This conceptual diagram is not a procedure for touching a brush or changing wiring during operation.
+
+</Callout>
+
+Electrical erosion can cause surface damage, but a single shaft 1X peak is not a direct signature of that damage. Alongside vibration trends, connect electrical measurements, bearing temperature and lubrication condition, and surface marks found during inspection. Investigate electrical damage in rolling bearings together with the defect signals and inspection evidence in <a href={withBase('/en/p7-5/')}>P7-5</a>.
+
+---
+
+## 6. How do shaft torsional vibration and SSR differ from lateral vibration?
+
+Shaft relative displacement so far has mainly described lateral motion of the shaft center. <strong>Torsional vibration</strong> is a small angular variation superimposed on mean rotation. The shaft twists and returns between turbine and generator inertias.
+
+<Figure {...F.torsion} />
+
+<Callout type="eq" title="Elastic torsional mode of two hypothetical inertias">
+
+$$
+J_1\ddot\theta_1+K_t(\theta_1-\theta_2)=0,\quad
+J_2\ddot\theta_2+K_t(\theta_2-\theta_1)=0
+$$
+
+$$
+f_t=\frac{1}{2\pi}\sqrt{K_t\left(\frac{1}{J_1}+\frac{1}{J_2}\right)}
+$$
+
+Without external restraint, the two-inertia rigid-body mode is 0 Hz, and the elastic mode at the specified values is 19.49 Hz. The angular variations shown satisfy $J_1\theta_1+J_2\theta_2=0$. Only the small variations have opposite signs on top of the same mean forward rotation.
+
+</Callout>
+
+<Callout type="term" title="Subsynchronous resonance (SSR)">
+
+This involves energy exchange between electrical oscillations below line frequency LF and the mechanical shaft system. A representative investigation concerns interaction between a series-compensated grid and turbine–generator torsional modes. Actual evaluation needs a multi-inertia shaft system, damping, electrical network and protection models. <Cite ids={['R-48']} />
+
+</Callout>
+
+The mechanical mode value of 19.49 Hz alone does not imply SSR or instability. The equations above contain no electrical network, electromagnetic torque feedback or damping. Energy transfer between the electrical and mechanical systems must be evaluated separately.
+
+<Figure {...F.shaftSystem} />
+
+For SSR candidates, connect generator current and voltage, shaft angular or speed variations and torque-related measurements, grid change times and torsional mode data. Lateral bearing probes alone cannot describe the complete torsional response. <Cite ids={['R-48']} />
+
+Distinguish the measured motion first from the <a href={withBase('/en/p7-4/')}>lateral subsynchronous motion in P7-4</a>. SSR's electrical frequency reference is LF, distinct from lateral motion referenced to shaft 1X. A low frequency alone does not make oil whirl and SSR the same cause. <a href={withBase('/en/p7-9/')}>P7-9</a> continues with torsional and torque distinctions.
+
+---
+
+## 7. What evidence helps evaluate turbine–generator coupling alignment?
+
+If 1X, 2X or axial vibration at several bearings changes after connecting the turbine and generator, alignment is a candidate. A particular order alone does not establish misalignment. Add hot shaft-system conditions to the <a href={withBase('/en/p7-3/')}>alignment, looseness and rub distinctions in P7-3</a>.
+
+Cold and operating centerlines can differ with thermal growth, bearing position and load. Collect axial and lateral amplitude and phase on both sides of the coupling, startup and load history, cold alignment values, and predicted or measured hot growth.
+
+<Callout type="check" title="Keep different questions for the same load change">
+
+A slowly changing 1X after a field current change is evidence for a thermal sensitivity candidate. Turbine and generator thermal growth, responses at several bearings and axial responses support an alignment investigation. Put speed, MW, field current, cooling and shaft centerline position on one time axis to compare repeatable relationships with operating conditions.
+
+</Callout>
+
+Choose operating responses using the evidence and machine procedures. For a sudden change, apply protection and operating judgment first. For a stable trend, connect repeatability under the same conditions, additional channels and manufacturer evaluation. Do not use this page's hypothetical amplitudes or frequency ratios as alarm or trip limits.
+
+---
+
+## 8. Explain it yourself
+
+| Observation | Evidence to connect first |
+|---|---|
+| Stator or endwinding 2×LF | Pole count and LF, sensor position, local modes and support condition |
+| Delayed 1X after field current changes | Vectors with the same reference, MW, cooling and thermal history, repeatability over increases and decreases |
+| Shaft voltage or grounding current changes | Reference point and path, brush and insulation arrangement, inspection evidence |
+| Torsional vibration or SSR candidate | Electrical network and angular/speed variations or torque, multi-inertia modes |
+| Coupling alignment candidate | Several bearing and axial responses, cold and hot centerlines |
+
+1. On a 60 Hz, 4-pole generator, what are 1X and 2×LF in Hz, and how many X is 2×LF?
+2. To investigate a 120 Hz local endwinding resonance, what evidence is needed beyond bearing shaft 1X?
+3. Why does 1X in the hypothetical model stay unchanged at the instant field current returns to its original value?
+4. If resultant 1X decreases when current increases, can thermal sensitivity be ruled out?
+5. Why are shaft voltage and grounding brush current different measurements?
+6. If a component below 1X appears, what else should you check to distinguish lateral oil whirl from torsional vibration or SSR?
+
+<details>
+<summary>Check your answers</summary>
+
+<Callout type="check" title="Answer hints">
+
+1. 1X=30 Hz, 2×LF=120 Hz=4X.
+2. Endwinding vibration at suitable locations, mode shapes, FRFs and phase at several locations, support condition and operating conditions.
+3. Thermal state changes continuously and recovers according to its time constant.
+4. No. Adding opposite to the existing component reduces magnitude; also examine phase and the vector difference.
+5. Potential difference between reference points and current through a specified path are different physical quantities.
+6. Direction of motion and sensor type, angular/speed variations and torque data, electrical network records and torsional modes.
+
+</Callout>
+
+</details>
+
+Part 8 connected startup and shutdown, thermal history, and ST, GT and generator phenomena with existing rotor and signal concepts. Part 9 moves on to structural testing, balancing and alignment to narrow down causes and verify corrective actions.
+
+## References
+
+<References items={[
+  ['R-44', 'Stator core and end structures of large 2-pole generators'],
+  ['R-45', 'Endwinding vibration monitoring'],
+  ['R-46', 'Field thermal sensitivity and field current testing'],
+  ['R-47', 'Shaft voltage and the designed grounding path'],
+  ['R-48', 'Shaft torsional vibration and SSR measurements'],
+]}>
+
+Concepts from public sources are summarized here; actual limits and procedures are not reproduced.
+
+</References>

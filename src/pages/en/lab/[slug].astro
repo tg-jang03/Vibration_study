@@ -78,6 +78,10 @@ import ElectricLab from '../../../components/labs/ElectricLab';
 import ImpactLab from '../../../components/labs/ImpactLab';
 import BalanceLab from '../../../components/labs/BalanceLab';
 import AlignmentLab from '../../../components/labs/AlignmentLab';
+import GeneratorFieldLab from '../../../components/labs/GeneratorFieldLab';
+import MultiModeBodeLab from '../../../components/labs/MultiModeBodeLab';
+import GasPressureLab from '../../../components/labs/GasPressureLab';
+import SteamLoadLab from '../../../components/labs/SteamLoadLab';
 
 export const getStaticPaths = (() =>
   LABS.flatMap((lab, i) =>
@@ -160,4 +164,8 @@ const c = lab.component;
   {c === 'ImpactLab' && <ImpactLab client:load lang="en" />}
   {c === 'BalanceLab' && <BalanceLab client:load lang="en" />}
   {c === 'AlignmentLab' && <AlignmentLab client:load lang="en" />}
+  {c === 'GeneratorFieldLab' && <GeneratorFieldLab client:load lang="en" />}
+  {c === 'MultiModeBodeLab' && <MultiModeBodeLab client:load lang="en" />}
+  {c === 'GasPressureLab' && <GasPressureLab client:load lang="en" />}
+  {c === 'SteamLoadLab' && <SteamLoadLab client:load lang="en" />}
 </LabPageShell>
