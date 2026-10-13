@@ -7,14 +7,13 @@
 
 | 트랙 | 담당 | 작업 폴더 | 지금 세부 | 상태 |
 |---|---|---|---|---|
-| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.2 완료 → 다음 M12.3 시범 번역 | 진행 중 |
+| **A** | Claude | `진동공부` | **M12 영어판·검색 노출** (D-054, Claude 단독) — M12.3 완료(영어 5절) → 다음 M12.4 Part 2 | 진행 중 |
 | **B** | Codex | 진동공부-Codex | 없음 (M0.15 완료) | 대기 |
 
 - 사이트: https://tg-jang03.github.io/Vibration_study/ (push → GitHub Actions 검사·배포)
 - M0 ~ M11 세부 완료. **사용자 확인 대기**: P1-1 ~ P11-3 전 페이지·랩·레퍼런스 허브, M0.15 모바일 그림.
 
 ## 핸드오프 — 공통
-
 - **문서 보관 (2026-10-12, M0.16·D-055)**: `Curriculum.md` → `archive/`, Contents 개념 척추·기준값 → `archive/ContentsBuild.md`, Roadmap 세부 표 → `archive/Milestones.md` 끝, Progress 구축 핸드오프 → `archive/Handoffs.md`. 지금 기준은 페이지·코드·테스트·`Glossary.md`·`PageGuide.md`.
 - **재사용 계산**: `lib/` 목록은 Roadmap §4-2 — 새 랩·그림은 있는 모듈부터 찾는다. 참고자료 **다음 번호 R-96** (`references.ts` 머리).
 - **영어판 뼈대 (2026-10-12, M12.2·D-054) — 공용 코어 변경**: `BaseLayout`·`MdxLayout`이 주소(/en/)로 언어를 정함(html lang·hreflang·언어 전환 버튼·KO 표시). 홈·Part·랩 모음·랩 단독 페이지 본문은 `components/site/*`(lang prop)로 옮기고 `pages/`·`pages/en/`은 얇은 껍데기. `LabFrame`에 `lang`·`slug`, 공용 UI(읽음값·재생 막대·Plot·Polar)는 `ui/lang.tsx`의 LangContext로 문구를 고름. `Figure`·`Callout`·`References`는 영어 페이지에서 사전으로 옮김. 한국어 화면은 그대로. 만드는 법 PageGuide §13.
@@ -22,29 +21,28 @@
 - **함정**: 유효숫자 인자, 이론상 0 → 0 표시(hydration), MDX 함정 PageGuide §8. Node·gh는 PATH에 있음, Python 없음. rebase 충돌 때 다른 트랙의 행·절·로그는 origin 쪽 그대로 (I-026).
 
 ## 핸드오프 — 트랙 A (Claude)
-- **M12.1 완료 (2026-10-12)**: `@astrojs/sitemap`(`/sitemap-index.xml`, `/dev/` 제외 158개), `BaseLayout`에 canonical·OG/Twitter·`public/og.png`(1200×630)·JSON-LD(홈 WebSite, 안쪽 BreadcrumbList, 절·랩 LearningResource)·`/dev/` noindex, props `crumbs`·`jsonLd`·`ogType`·`noindex`(하위 호환). 순수 함수 `lib/seo.ts`(+ 테스트). 제목: 절 "주제 (P2-3) | 사이트", 랩 "이름 · 인터랙티브 랩 (ID)", Part 설명 = 질문 + 절 제목들.
-- **사용자 할 일**: Search Console(**소유 확인 태그 넣음 2026-10-12** → 확인·sitemap 제출 남음, URL 접두어 `https://tg-jang03.github.io/Vibration_study/`)·네이버 서치어드바이저·Bing에서 "HTML 태그" 소유 확인 → content 값을 받으면 `lib/site.ts`의 `SITE_VERIFICATION`에 넣고 push → 각 도구에 `sitemap-index.xml` 제출. 네이버가 하위 경로를 거부하면 `tg-jang03.github.io` 저장소로 루트 페이지를 만드는 방법(D-054).
+- **M12.1 완료 (2026-10-12)**: sitemap(`/sitemap-index.xml`)·canonical·OG·JSON-LD·`/dev/` noindex(`lib/seo.ts`). **사용자 할 일**: Search Console 확인·sitemap 제출(소유 확인 태그는 `lib/site.ts`에 넣음), 네이버는 보류.
 - **M12.2 완료 (2026-10-12)**: `src/i18n/`(경로·`ui.ts` 문구·`translate.ts` 사전·`lab.ts` tr/k·`routes.ts` 영어판 목록·`en/` 목차·랩 모음·그림·랩 사전), 영어 홈·Part 11·랩 모음·랩 3·**P2-3 전체**(본문·그림 8·SMP-01~03). 검사: `src/i18n/*.test.ts`(빠진 영어·감싸지 않은 한글·그림 사전), `npm run verify:i18n`(CI에 추가), `npm run i18n:status`. sitemap에 ko↔en 짝. 레퍼런스는 아직 한국어만(영어 메뉴에 KO 표시).
-- **다음 M12.3**: P2-5 · P5-6 · P6-3 · P4-2 (본문·그림·랩) → 사용자 품질 확인. 랩 변환은 하위 에이전트 병렬이 잘 됐다(랩 하나에 약 3분, 지시는 이번 AafLab 지시문 형식).
+- **M12.3 완료 (2026-10-13)**: 영어 P2-3 · P2-5 · P4-2 · P5-6 · P6-3, 랩 13개(SMP·WIN·JEF·ENV·SK·ORB). 고침: Plot 범례 끝 잘림(Plotly 글꼴 이름), `translateDeep`이 Float64Array(그림 heatmap z)를 평범한 객체로 바꾸던 것. 확인법: 한·영 그림의 도형 수 비교(5절 모두 같음).
+- **다음 M12.4 ~ (Part별)**: 사용자 시범 품질 확인 뒤 Part 2 나머지부터. 하위 에이전트는 **Sonnet**(사용자 제안), 3 ~ 4개 병렬, 지시문 `archive/TranslationBrief.md`. 공유 파일(`labsReady.ts`·`en/lab/[slug].astro`·`en/references.ts`)은 Claude가 등록. 세션 한도에 걸려도 파일이 남게 절마다 저장·커밋.
 
 ## 핸드오프 — 트랙 B (Codex)
-
 - 배정 없음. M0.15 모바일 그림 대응 완료(D-053), 사용자 모바일 검토 대기. 영어판(M12) 파일은 Claude 단독이라 건드리지 않는다.
 
 ## 세션 로그 — 트랙 A (Claude) · 최근 2개, 최신이 위
 
+### 2026-10-13 · Claude · M12.3 시범 번역 4절 + 범례 잘림·heatmap 번역 버그
+- 요청: 사용자 — "문제사항 고치고 다음 작업 진행" → 한도 끊김 뒤 "이어서", "단순 번역은 Sonnet subagent로"
+- 산출: 영어 P2-5(직접 마무리)·P4-2·P5-6·P6-3, 랩 7개 변환·등록, 참고자료 서지 사전 전체, `scan-lab.mjs --check`, 번역 지시문
+- 고침: Plot 범례 끝 잘림(한·영 공통), 영어 그림 heatmap 칸 사라짐(typed array), Orbit 선택 상자 문구 짧게
+- 검증: check 0·test 1300·빌드 189쪽·verify:i18n 영어 28쪽 한글 0·링크 6450개 문제 0·verify:page 영어 4·한국어 1쪽 OK, P2-5는 깨끗한 worktree에서 따로 검증 후 push
+- 다음: 사용자 시범 품질 확인 → M12.4 Part 2 (Sonnet 에이전트)
 ### 2026-10-12 · Claude · M12.2 영어판 뼈대 + P2-3 영어판
 - 요청: 사용자 — "M12.2로 영어 기반부터 마련하자" (네이버 등록은 보류)
 - 산출: i18n 코어·영어 목차/랩 모음 데이터(절 61·랩 80), 홈·Part·랩 페이지 공용 컴포넌트화, 레이아웃 언어 인식, P2-3 영어판·그림 사전, SamplingLab·StrobeDisk 변환(AafLab·AdcLab은 하위 에이전트 2개 병렬), 검사 스크립트 2개
 - 고침: 영어 라벨이 길어 스트로브 원판 제목이 겹침·범례 잘림 → 영어를 짧게
 - 검증: check 0·test 1280·빌드 178쪽·verify:i18n 영어 17쪽 한글 0·링크 6166개 문제 0·verify:page 7쪽(영어 5·한국어 2) OK
 - 다음: M12.3 시범 번역 4쪽
-### 2026-10-12 · Claude · M12 계획(D-054) · M0.16 문서 보관(D-055) · M12.1 기본 검색 설정
-- 요청: 사용자 — "검색이 잘되도록 영어도 … 기획" → 도메인은 안 삼·단계적·영어 이름 OK·Claude 단독, "구축 문서는 토큰 절약을 위해 아카이브로"
-- 산출: D-054(영어판·검색 노출, I-031 종결)·D-055, Roadmap §6-3 M12 표. 문서 보관(위 공통 핸드오프), AGENTS 9.1 → 8.1 KB·Progress 25 → 약 5 KB, PageGuide·README·`curriculum.ts` 주석의 옛 경로 고침
-- M12.1: sitemap·canonical·OG 카드·JSON-LD·/dev/ noindex·주제어 먼저 제목 (위 핸드오프)
-- 검증: check 0·test 1231·빌드 161쪽(sitemap 158)·링크 5404개 문제 0·빌드 결과 머리 태그 확인
-- 다음: 사용자 검색엔진 등록 → M12.2
 ## 세션 로그 — 트랙 B (Codex) · 최근 2개, 최신이 위
 ### 2026-10-12 · Codex · M0.15 모바일 그림 대응 (D-053)
 - 요청: 전체 모바일 그림 개선, PC 화면 유지. 640px 이하에만 별도 표시.

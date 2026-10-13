@@ -1,0 +1,283 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: P5-6 Envelope Analysis · Spectral Kurtosis
+description: Envelope analysis, which demodulates the impacts of a rolling-element bearing fault that ring a kHz resonance whose size rises and falls at the fault frequency (band-pass → magnitude of the analytic signal → spectrum), why band choice matters, kurtosis and spectral kurtosis, choosing the band with a kurtogram, and the 1X sidebands of an inner-race fault
+sectionId: P5-6
+source: p5-6.mdx
+sourceHash: 05b04b899b
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
+import EnvelopeLab from '../../components/labs/EnvelopeLab';
+import KurtogramLab from '../../components/labs/KurtogramLab';
+import * as F from '../../figures/p5-6';
+
+# 5-6 Envelope Analysis · Spectral Kurtosis: Pulling the Rhythm of Impacts Out of High Frequencies
+
+In P1-8 we saw that when the outer race of a rolling-element bearing has a defect, each ball passing over it makes a short impact, and that impact rings the housing in the kHz range. We said the fault frequency BPFO shows up only as the **interval** at which the ringing repeats.
+
+But open the acceleration spectrum and there is almost nothing at BPFO, while the kHz range is cluttered with other components and noise. How do you read that interval? This page covers **envelope analysis**, which pulls out only the change in the size of the ringing and measures its rhythm, and **spectral kurtosis · the kurtogram**, which choose the band to pull out by numbers.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain why a bearing fault hardly shows up at the fault frequency in the raw-signal spectrum.
+2. You can build an envelope spectrum in the order band-pass → envelope (magnitude of the analytic signal) → spectrum.
+3. You know how the result goes wrong when the band and its width are chosen badly.
+4. You can say what kurtosis and spectral kurtosis measure, and choose a band with a kurtogram.
+5. You know how the envelope spectra of outer-race and inner-race faults differ.
+
+</Callout>
+
+---
+
+## 1. Why doesn't BPFO show up in the spectrum?
+
+Let's look at the housing acceleration of a machine whose 6205 bearing (3000 rpm, BPFO 179.2 Hz) has a defect on the outer race.
+
+<Figure {...F.rawSignal} />
+
+The largest thing in the acceleration of Figure 1 is the 1200 Hz gear mesh (1 g); the 3.3 kHz hump rung by the fault is low at 0.045 g. Look at 0 to 1000 Hz and there is 0.009 g at BPFO 179.2 Hz — practically nothing.
+
+It is not that the fault signal is missing. What a ball makes each time it passes the defect is not a smooth 179 Hz shaking but a short impact, and the impact rings a housing resonance (here 3.3 kHz) (P1-8 §4). So the fault signal is **the size of a 3.3 kHz ringing that jumps up and dies away every 5.58 ms**. In the words of P2-8, it is a 3.3 kHz carrier amplitude-modulated at BPFO.
+
+In P2-8, amplitude modulation put up sidebands on both sides of the carrier, spaced at the modulation frequency. Here too, lines spaced 179 Hz apart are hidden inside the 3.3 kHz hump. But if the balls slip a little and the rhythm wavers by just 1 %, at 3.3 kHz — around the 18th harmonic — that wavering grows 18 times and the lines smear. Reading the spacing from the hump is hard.
+
+**To read the rhythm, pull out only the change in the size of the ringing.** The size change takes the rhythm wavering only once (×1), so the BPFO lines stay sharp.
+
+---
+
+## 2. Envelope analysis: band-pass → envelope → spectrum
+
+How do you pull out the change in the size of the ringing? In three steps.
+
+1. **Band-pass**: keep only the band the fault rings (here 2800 to 3800 Hz). The gear, 1X and noise in other bands drop out
+2. **Envelope**: connect the outer peaks of what is left (the envelope of P2-8 §1)
+3. **Spectrum**: subtract the mean from the envelope and take the FFT → **envelope spectrum**
+
+<Figure {...F.envelopeSteps} />
+
+At the top of Figure 2 the band signal (blue) jumps up at every impact, and the envelope (orange) keeps only the change in its size. In the envelope spectrum below, lines stand at BPFO 179.2 Hz with 0.11 g, and at 2× and 3× with 0.072 and 0.026 g — about 180 times the floor. At the same spot, the raw-signal spectrum of Figure 1 had 0.009 g.
+
+### 2.1 The envelope is the magnitude of the analytic signal
+
+How do you "connect the peaks" by calculation?
+
+<Figure {...F.analytic} />
+
+Make a partner signal in which every component of the signal is delayed by 90°. A cos becomes a sin, and a sin becomes −cos. The complex number with this partner attached as the imaginary part is the **analytic signal**.
+
+$$
+x_a(t) = x(t) + j\,\mathcal{H}\{x(t)\}, \qquad \mathrm{env}(t) = \lvert x_a(t)\rvert = \sqrt{x^2 + \mathcal{H}\{x\}^2}
+$$
+
+- $\mathcal{H}\{x\}$: Hilbert transform — the signal with every frequency component delayed by 90°
+- For a signal whose size changes slowly, like $x = A(t)\cos(\omega t)$, $x_a \approx A(t)\,e^{j\omega t}$, so $\lvert x_a\rvert = A(t)$
+
+As in Figure 3, when $x$ crosses zero, $\mathcal{H}\{x\}$ is at a peak, so the magnitude from squaring and adding the two connects the outer peaks without rippling. Just as the tracking filter of P5-5 rotated the signal back by the shaft's rotation angle, the analytic signal strips off the fast rotation of the ringing and keeps only its size.
+
+<Callout type="term" title="Analytic signal · Hilbert transform">
+
+The analytic signal is the complex signal formed by attaching to a real signal $x$, as the imaginary part, its partner $\mathcal{H}\{x\}$ with every component delayed by 90°. It is easy to make with an FFT — set the negative frequencies of the spectrum to 0, double the positive frequencies, and take the inverse FFT. Its magnitude is the envelope and its angle is the instantaneous phase. Instead of the envelope, its square (the squared envelope) is sometimes taken through the FFT. The spectrum of the squared envelope lies exactly within 0 to the band width, which makes it clean to interpret, so Randall's book recommends it <Cite ids={['R-01']} />.
+
+</Callout>
+
+Old analog instruments made the envelope by rectifying (taking the absolute value of) the band-passed signal and then smoothing it with a low-pass filter. The idea is the same; the analytic signal is more accurate.
+
+<Callout type="field" title="The same idea under different names on each instrument">
+
+Field instruments have impact measures with different names, such as PeakVue, gSE, Spike Energy and SEE. The principle is the same in all of them: "keep only the high frequencies and catch their peak or envelope". But the filter band, detection method and unit are each instrument's own convention, so **their numbers cannot be compared with one another**. Read them only as trends on the same instrument with the same settings. And since they measure the kHz range, the accelerometer must be mounted firmly (P3-1 §5; a magnet or a handheld probe gives a narrower usable band).
+
+</Callout>
+
+---
+
+## 3. The band decides success or failure
+
+What happens if you choose the wrong band?
+
+<Figure {...F.bandChoice} />
+
+The same signal was analyzed with only the band changed.
+
+- **Gear-mesh band (700 to 1700 Hz)**: a single large 1X (50 Hz) line stands, because the size of the gear mesh rises and falls at 1X (P2-8). The line has nothing to do with the fault, and there is nothing at BPFO
+- **Noise band from another source (5500 to 6500 Hz)**: no lines. The fault ringing is buried in noise
+- **Band the fault rings (2800 to 3800 Hz)**: the BPFO harmonics stand
+
+The **width** of the band matters too. The envelope cannot change faster than the band width, so the envelope spectrum only holds 0 up to the band width. To see up to 3× BPFO (538 Hz), the width must be wider than 538 Hz. That is the minimum; for the lines to stand at full height you need more margin. In this example, even with a width of 800 Hz the 3× line was only about 30 % of what it was with a width of 1000 Hz. So set the width to about twice the highest line you want to see. On the other hand, widening it too much mixes in other components and raises the floor.
+
+<Callout type="warn" title="'If there is a line in the envelope spectrum, it is a bearing fault'">
+
+If you choose the gear-mesh band, as at the top of Figure 4, a large 1X line stands even with no fault. Check both whether the line's frequency matches a fault frequency such as BPFO or BPFI, and whether the band is really where the impacts ring.
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state (outer race, band 2800 to 3800 Hz), look at "BPFO line ÷ floor" in the readouts and at the frequency of the largest line.
+2. Move the band center to 1200 Hz, then to 6000 Hz. Where does the largest line stand? (Keep the width at 1000 Hz.)
+3. Return the band center to 3300 Hz and reduce the width to 250 Hz. What happens to the BPFO × 2 line?
+4. Return the width to 1000 Hz and change the bearing state to "inner-race defect".
+
+</Callout>
+
+<EnvelopeLab client:visible lang="en" />
+
+In step 1 the BPFO line is about 180 times the floor. In step 2, at 1200 Hz the largest line changes to 50 Hz (1X), and at 6000 Hz the BPFO line is buried at about twice the floor. In step 3, with a width of 250 Hz, the 2× line drops from 0.072 g to 0.005 g and almost disappears — the envelope of a 250 Hz-wide band cannot change at 358 Hz. Step 4 is covered in the next section.
+
+---
+
+## 4. Inner-race fault: 1X sidebands on both sides of BPFI
+
+How is the envelope spectrum different when the inner race has a defect?
+
+<Figure {...F.innerRace} />
+
+The outer race is stationary, so the defect always meets the balls at the same place. A defect on the inner race turns with the shaft and passes in and out of the loaded lower side (the load zone) once every 1X. In the load zone the impacts are strong; at the top they are weak. So the size of the impacts at the BPFI rhythm again rises and falls at 1X, and the envelope spectrum shows **1X-spaced sidebands on both sides of BPFI** and **1X itself** (Figure 5). The patterns of each fault are summarized in P7-5.
+
+---
+
+## 5. Impulsiveness as a number: kurtosis
+
+If you don't know in advance which band the fault rings, how do you choose? First you need a way to measure "impacts are mixed in" with a single number.
+
+<Figure {...F.kurtosisIntro} />
+
+The three signals in Figure 6 all have an RMS of 1. But they differ in how much they are mixed with rare, large spikes. The measure of this is **kurtosis**.
+
+$$
+K = \frac{E[(x - \mu)^4]}{\sigma^4}
+$$
+
+- $\mu$: mean, $\sigma$: standard deviation (RMS with the mean removed), $E[\ ]$: average
+- Gaussian noise 3, a sine 1.5, sparse spiky impacts far above 3 (Figure 6: 2.93, 1.5, 17.9)
+
+Because of the fourth power, rare large values dominate the result. Taken on their own, the fault impacts of Figure 1 have K = 8.91.
+
+<Callout type="warn" title="'If the kurtosis of the raw signal is below 3, there are no impacts'">
+
+The whole raw signal of Figure 1 has K = 2.31 even though there is a fault. The gear mesh, whose size is almost constant (close to a sine, K ≈ 1.9), dominates the signal and buries the share of the impacts. Impulsiveness shows up only when you measure it **after keeping only the band that has the impacts**.
+
+</Callout>
+
+---
+
+## 6. Spectral kurtosis: kurtosis at each frequency
+
+Then what if we measured the kurtosis in each frequency band?
+
+<Figure {...F.skVsPower} />
+
+If you cut the signal into short frames and take the FFT of each (the STFT of P5-2), each frequency bin gets as many values as there are frames. A bin with impacts is large only in the frames that contain an impact and small in the rest, so its values spike now and then. Measuring that spikiness with kurtosis for each bin gives the <strong>spectral kurtosis (SK)</strong>.
+
+$$
+\mathrm{SK}(f) = \frac{E\lvert X(f)\rvert^4}{\left(E\lvert X(f)\rvert^2\right)^2} - 2
+$$
+
+- $X(f)$: the complex value of that frequency bin in each frame (corresponding to the envelope of that band)
+- With only Gaussian noise the ratio in front is 2, so subtracting 2 sets **noise = 0**. A sine of constant size gives −1; sparse impacts mixed in give a positive value
+
+In the average power at the top of Figure 7, the gear mesh and the 5 to 7 kHz noise are the largest, but in the SK below, the noise band is near 0, the gear mesh is negative, and only the 2.8 to 4.5 kHz band the fault rings rises positive. **The band with the largest size and the band with the impacts are different.**
+
+The frames must be shorter than the impact interval. Here they were cut to 64 points (3.9 ms), shorter than the BPFO interval of 5.58 ms. If each frame holds several impacts, all frames look alike and the spikiness disappears. But they must be longer than the time one ringing takes to die away (here about 1 ms) so that a ringing fits in one frame. In exchange, short frames have a coarse frequency step of 256 Hz (the trade-off of P5-2).
+
+---
+
+## 7. Kurtogram: choosing the band center and width together
+
+Envelope analysis needs both the center and the width of the band. Can you choose both at once?
+
+<Figure {...F.kurtogramFig} />
+
+The **kurtogram** is a map made by changing the band width in several steps and, at each width, moving the band from 0 Hz in half-band steps and measuring the SK of that band's envelope. Level 1 has a width of 4096 Hz, and each level deeper halves the width. The darkest cell is **the band where the impacts are clearest**.
+
+In Figure 8 the darkest cell is 2560 to 3584 Hz at level 3 (width 1024 Hz, SK 1.01), which contains the 3.3 kHz the fault rings. If the width is wider than this, other components such as the gear 2× (2400 Hz) mix in and the SK drops. If it is narrower, only two or three lines spaced at the BPFO interval (179 Hz) remain in the cell. Then each impact spreads out by 1/width and overlaps its neighbors, the envelope loses its spikes and ripples smoothly, and the SK falls to near 0 or below. Envelope analysis with this band makes the BPFO line stand about 150 times the floor.
+
+<Callout type="term" title="Kurtogram">
+
+A map that colors the SK of the band's envelope for each band center frequency (horizontal) and width (vertical). The largest cell is used as the band for envelope analysis. It was proposed by J. Antoni, and the Fast Kurtogram, which speeds up the calculation, is widely used (this page uses the simple method of moving in half-band steps).
+
+</Callout>
+
+<Callout type="try">
+
+1. In the initial state, look at the band the kurtogram chose, its SK, and the kurtosis of the whole raw signal.
+2. Reduce the impact size to 0.1 g. Then change the bearing state to "no fault". What happens to the chosen cell and the SK?
+3. Return the fault to outer race · 0.6 g, and change the gear mesh to 0 and then to 3 g.
+
+</Callout>
+
+<KurtogramLab client:visible lang="en" />
+
+In step 1 the chosen band is 2560 to 3584 Hz (SK about 1.0), and the kurtosis of the whole raw signal is 2.31. In step 2, with a 0.1 g impact the same band is chosen but the SK drops to 0.28. With no fault, a single narrow cell at level 6 is chosen, and its SK is also 0.28. Looking only at the largest SK, you cannot tell a weak fault from no fault. In step 3, removing the gear also removes the gear 2× at 2400 Hz, so the wider 2048 to 4096 Hz (SK about 2.5) is chosen; raising it to 3 g leaves the chosen band unchanged.
+
+<Callout type="warn" title="'The band the kurtogram chose = the band the fault rings'">
+
+The kurtogram always picks "the largest cell", even with no fault. The narrower the cell, the more its SK swings from noise alone, so, as in step 2, an SK of 0.28 comes out even with no fault (at level 3, with no fault, even the largest cell is 0.05). So compare the SK of **the same band at the same level** with a record from when there was no fault — at 2560 to 3584 Hz, no fault is −0.07 and a 0.1 g fault is 0.28. Then check whether lines at the fault frequency stand in the envelope spectrum of that band.
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Why it is invisible | Fault = a kHz resonance ringing amplitude-modulated at the fault frequency. There is almost nothing at the fault frequency, and the high-frequency sidebands smear with rhythm wavering |
+| Envelope analysis | Band-pass → envelope → subtract the mean and FFT. Envelope = magnitude of the analytic signal $x + j\mathcal{H}\{x\}$ |
+| Band and width | A band where the fault rings and other components are small. The envelope spectrum holds only 0 to the band width |
+| Outer / inner race | Outer race: BPFO harmonics. Inner race: 1X sidebands on both sides of BPFI + 1X |
+| Kurtosis | $K = E[(x-\mu)^4]/\sigma^4$: noise 3, sine 1.5, impacts ≫ 3. Can be buried in the whole raw signal |
+| SK · kurtogram | Kurtosis of the envelope in each band (noise 0, sine −1). Largest kurtogram cell = candidate envelope band; compare the SK of the same band with the no-fault case |
+
+## 9. Check yourself
+
+<details>
+<summary><strong>Q1. A 6205 bearing turns at 1800 rpm. If it has an outer-race fault, at what frequencies do lines stand in the envelope spectrum?</strong></summary>
+
+BPFO is proportional to the speed. At 3000 rpm it is 179.2 Hz (3.585X), so at 1800 rpm (30 Hz) it is 3.585 × 30 = **107.5 Hz**, plus its 2× (215 Hz) and 3× (323 Hz). On real machines the balls slip a little, so the lines often stand 1 to 2 % below the calculated value (about 105 to 106 Hz).
+</details>
+
+<details>
+<summary><strong>Q2. You want to see up to 3× BPFO. For the machine of Q1, what is the minimum band width in Hz?</strong></summary>
+
+The envelope cannot change faster than the band width, so the width must be wider than 3 × 107.5 ≈ **323 Hz**. That is the minimum; for the lines to stand at full height, use about twice that (650 Hz or more).
+</details>
+
+<details>
+<summary><strong>Q3. The envelope spectrum shows only clear lines spaced 50 Hz apart (1X = 50 Hz). Is it a bearing fault?</strong></summary>
+
+Not from this alone. Lines spaced at 1X also stand when you have chosen the band of a component modulated at 1X, such as the gear mesh. Check whether the band is where the impacts ring (SK · kurtogram) and whether there are BPFO or BPFI lines. For an inner-race fault, **BPFI and the sidebands on both sides of it** should stand along with 1X.
+</details>
+
+<details>
+<summary><strong>Q4. Put the kurtosis of a sine, Gaussian noise and a sparse impact train in order from largest to smallest.</strong></summary>
+
+Sparse impact train (far above 3) > Gaussian noise (3) > sine (1.5). Even at the same RMS, the more rare large spikes there are, the larger the kurtosis.
+</details>
+
+<details>
+<summary><strong>Q5. A bearing has a fault, but the kurtosis of the whole raw signal was 2.3. Can you conclude there is no fault?</strong></summary>
+
+No. When a large component of almost constant size (a component close to a sine, such as the gear mesh, with kurtosis 1.5 to 2) dominates the signal, the share of the impacts is buried and the overall kurtosis falls below 3. The impacts show up only when you split the signal into bands and look at the SK.
+</details>
+
+<details>
+<summary><strong>Q6. When computing SK with an STFT, you made the frames long (100 ms), and the SK was near 0 even in the fault band. Why, and what do you do?</strong></summary>
+
+The frames are much longer than the BPFO interval (a few ms), so every frame holds several impacts; the values become similar from frame to frame and the spikiness disappears. Recalculate with **frames shorter than the impact interval**. If the frame length is hard to choose, use a kurtogram, which tries the band width in several steps.
+</details>
+
+---
+
+The next page (P5-7) covers the cepstrum and autocorrelation, which find whole families of equally spaced lines such as harmonics and sidebands at once, and how to read time-domain features such as RMS, crest factor and kurtosis as trends while a fault progresses.
+
+## References
+
+<References items={[
+  ['R-01', 'Envelope analysis, spectral kurtosis, band selection'],
+  ['R-11', 'Kurtogram'],
+  ['R-10', 'Dimensions of the 6205 test bearing'],
+]} />

@@ -1,0 +1,288 @@
+---
+layout: ../../layouts/MdxLayout.astro
+title: 'P4-2 The Jeffcott rotor: the basics of rotor response'
+description: 'Starting from spin and whirl and from rigid-body and bending modes, we calculate the circular and elliptical orbits of the Jeffcott rotor, their forward and reverse components, and the high-speed rotation about the center of mass (self-centering).'
+sectionId: P4-2
+source: p4-2.mdx
+sourceHash: 2dff224f04
+---
+
+import Figure from '../../components/content/Figure.astro';
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import JeffcottLab from '../../components/labs/JeffcottLab';
+import * as F from '../../figures/p4-2';
+import { withBase } from '../../lib/site';
+
+# 4-2 The Jeffcott rotor: which way does the shaft center turn?
+
+The shaft is turning counterclockwise, yet the path of the shaft center drawn from two displacement sensors goes around clockwise. Are the sensors wired the wrong way round, or is the shaft center really turning the other way?
+
+In P4-1 we looked at the amplitude and phase in one direction at each speed. This time we calculate the horizontal X and the vertical Y together and look at the path traced by the shaft center at one cross-section. First, let's sort out what is turning and what is bending.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can tell spin from whirl, and rigid-body translation and tilt from shaft bending.
+2. You can combine the two-direction response of the Jeffcott model into one complex coordinate.
+3. You can explain the circular orbit of isotropic supports and the two response peaks of anisotropic supports.
+4. You can calculate the forward and reverse components yourself and decide the whirl direction.
+5. You can explain the rotation about the center of mass at high speed, what rigid and flexible rotors mean, and where the model applies.
+
+</Callout>
+
+---
+
+## 1. Spin and whirl: they follow different points
+
+In P1-6, spin was the rotation of the shaft itself. If you mark a point on the face of the disk and follow it as it goes around the shaft center, you are watching <strong>spin</strong>. This time, follow the geometric center C of the shaft instead.
+
+<Figure {...F.spinWhirl} />
+
+In Figure 1, the motion of C around the fixed reference point O is <strong>whirl</strong>. G is the center of mass, and the distance e from C to G is the unbalance eccentricity. The spin direction of the disk and the whirl direction of C can be stated separately.
+
+<Callout type="term" title="Orbit, and forward and reverse whirl">
+
+An <strong>orbit</strong> is the path of the shaft center, drawn by pairing the x and y taken at the same instant and joining them up. If it turns the same way as the spin, it is forward whirl; if it turns the opposite way, it is reverse (backward) whirl. On this page we always look from the same end of the shaft and take the spin as counterclockwise.
+
+</Callout>
+
+If the whirl has the same frequency as the spin, it is called <strong>synchronous whirl</strong>. The excitation in the model below is 1X, so the steady-state response is also 1X. Even when the whirl is reverse, the orbit is traced once per revolution, so the magnitude of the frequency is the same.
+
+<Callout type="warn" title="An orbit and a Polar curve are different records">
+
+An orbit joins the x and y positions that change within one revolution. A Polar plot (P3-3, P4-1) joins the tips of the amplitude–phase vectors obtained at each speed. Do not mix up the X and Y coordinates of an orbit with the sensor-referenced 0° of a Polar plot.
+
+</Callout>
+
+---
+
+## 2. Does the whole shaft move, or does the shaft line bend?
+
+The modes in P1-5 were shapes in which several locations move together. On a shaft too, looking at how the two ends and the middle move relative to each other lets you tell modes in which the supports move from modes in which the shaft bends.
+
+<Figure {...F.modeShapes} />
+
+In Figure 2, <strong>rigid-body translation</strong> is the shape in which the whole straight shaft shifts in the same direction (also called the cylindrical mode), and <strong>rigid-body tilt</strong> is the shape in which the straight shaft tilts (the conical mode). In these the deformation goes mainly into the support system. In a <strong>bending mode</strong>, the shaft line itself bends into a curve. The difference from rigid-body tilt is not that the displacement differs from place to place, but that the displacement does not change linearly with position.
+
+Even if the shaft is stiff, a mode close to a rigid-body mode can appear when the bearings and pedestals are flexible. Conversely, a mode in which the middle of the shaft bends can appear even when the supports hardly move. The model we use from here on is a simple example of the first bending mode, with the disk in the middle moving; the flexibility of the bearings and pedestals is lumped into the equivalent stiffness below.
+
+<Callout type="field" title="The path at one cross-section does not fix the whole mode">
+
+Even if similar elliptical orbits appear at the same cross-section, other locations along the shaft may move in the same direction or in the opposite one. To confirm the whole mode shape, you have to look at the amplitude and phase at several locations together (P1-5; actual testing in Part 9).
+
+</Callout>
+
+---
+
+## 3. What do we keep: one disk and an elastic shaft?
+
+Before calculating the whole shaft, let's keep only one mass disk in the middle and the elasticity of the shaft. This <strong>Jeffcott rotor</strong> concentrates the mass m in the disk and neglects the mass of the shaft. The horizontal and vertical equivalent stiffnesses kx and ky (directions fixed in space), which combine the bending stiffness of the shaft with the stiffness of the bearings and pedestals, and the damping c in fixed coordinates resist the lateral vibration of the disk. The shaft itself is taken to be axisymmetric. If the shaft itself is asymmetric, as with a keyed shaft or a two-pole generator rotor, the direction of the stiffness turns with the shaft, and that is a different problem from this one (2X excitation).
+
+<Figure {...F.model} />
+
+The x and y in Figure 3 are displacements of the shaft center measured from the static equilibrium position. The static deflection due to gravity is included in this reference position, and we calculate only the two directional projections of the rotating unbalance force. Disk tilt, the gyroscopic moment due to rotation and the cross-coupling of the oil film are neglected here.
+
+If the force turns counterclockwise, cos goes into the x direction and sin into the y direction. The damping coefficient c is taken to be the same in both directions.
+
+$$
+m\ddot x+c\dot x+k_xx=me\Omega^2\cos\Omega t,
+\qquad m\ddot y+c\dot y+k_yy=me\Omega^2\sin\Omega t
+$$
+
+m is the disk mass [kg], e is the distance between C and G [m], Ω is the spin angular speed [rad/s], k is the stiffness in each direction [N/m], and c is the damping coefficient [N·s/m]. One dot and two dots are time derivatives, that is, velocity and acceleration.
+
+<Callout type="example" title="The rotor values fixed in the lab">
+
+With a mass of 10 kg and an x-direction natural speed of 3000 rpm, $\omega_x=100\pi$ rad/s. So $k_x=m\omega_x^2\approx0.987$ MN/m, and with $\zeta_x=0.05$, $c=2\zeta_xm\omega_x\approx314$ N·s/m. The eccentricity e is 10 µm. Changing the stiffness ratio changes only $k_y$, and the same c applies to both directions.
+
+</Callout>
+
+---
+
+## 4. Isotropic supports: the unbalance response from one direction becomes a circle
+
+If the stiffnesses in the two directions are equal, the supports are <strong>isotropic</strong>. You could solve x and y separately, but if you use the complex notation of P2-2 and combine them as $z=x+jy$, you can write a single equation.
+
+$$
+m\ddot z+c\dot z+kz=me\Omega^2e^{j\Omega t},
+\qquad z=Ze^{j\Omega t},\quad
+Z=\frac{me\Omega^2}{k-m\Omega^2+jc\Omega}
+$$
+
+j is the imaginary unit and Z is the steady-state complex amplitude. Splitting both sides into real and imaginary parts takes you back to the x and y equations of the previous section. Since $Z=\lvert Z\rvert e^{-j\varphi}$, the lag angle φ is the same as in P4-1.
+
+<Figure {...F.isotropic} />
+
+In Figure 4, x and y have equal amplitudes and a phase difference of 90°. So $x^2+y^2=\lvert Z\rvert^2$ stays constant, and the orbit is a circle. Writing $r=\Omega/\omega_n$, the radius of the circle is the Peak amplitude of the P4-1 response formula. The P4-1 example used e=5 µm and pp, while here we use e=10 µm and Peak, so do not compare the numbers directly.
+
+$$
+\frac{\lvert Z\rvert}{e}=\frac{r^2}{\sqrt{(1-r^2)^2+(2\zeta r)^2}}
+$$
+
+<Callout type="example" title="What is the radius of the circle at 3000 rpm?">
+
+With $r=1$, $\zeta=0.05$ and e = 10 µm, the radius is $e/(2\zeta)=100$ µm. The amplitude of X and of Y is also 100 µm Peak each, and the peak-to-peak amplitude in each direction is 200 µm pp. Do not write the radius of the circle and the peak-to-peak amplitude as the same number.
+
+</Callout>
+
+---
+
+## 5. Anisotropic supports: two peaks, and the whirl can reverse
+
+If the horizontal and vertical stiffnesses differ, the supports are <strong>anisotropic</strong>. For example, if $k_y=1.3k_x$, the natural angular frequencies in the two directions are $\omega_x=\sqrt{k_x/m}$ and $\omega_y=\sqrt{k_y/m}$, and their ratio is $\sqrt{1.3}\approx1.140$.
+
+<Figure {...F.anisotropic} />
+
+The natural speeds in Figure 5 are 3000 rpm and about 3421 rpm. These two values are undamped critical speeds; the amplitude peaks of the damped unbalance response occur slightly above each of them (P4-1 §2). At 3200 rpm, X is about 65.3 µm Peak and Y about 58.6 µm Peak.
+
+This speed is past the x-direction critical speed but not yet at the y-direction critical speed. Without damping, the x response would be opposite to its own excitation force and the y response in the same direction as its force, so the orbit would turn against the spin. With damping the phases change gradually, so the range in which the whirl is reverse can become narrower or disappear.
+
+<Callout type="warn" title="The whole range between the two natural speeds is not always reverse">
+
+If φX and φY are the cos-referenced lags from the Keyphasor, the signed area swept in one cycle is πAXAY sin(φY−φX). A counterclockwise area is positive. In the example above, damping ratio 0.05 at 3200 rpm gives reverse whirl, but raising the damping ratio to 0.2 makes it forward. Do not decide the direction just because you are between the two peaks; check the phase relationship of the two channels or the forward and reverse components of the next section.
+
+</Callout>
+
+Also, because we used a common c, $\zeta_y=c/(2m\omega_y)=\zeta_x/\sqrt{1.3}$. That is a different condition from a model that puts the same damping ratio in x and y. The lab on this page lets you set ζx and applies the same c to both directions.
+
+---
+
+## 6. Can we split the ellipse into a forward circle and a reverse circle?
+
+If you write the ellipse as the sum of two circles turning in opposite directions, you can compare whirl directions with numbers. First write the steady-state solution as $x=\operatorname{Re}(\tilde Xe^{j\Omega t})$ and $y=\operatorname{Re}(\tilde Ye^{j\Omega t})$. Both complex amplitudes are cos-referenced.
+
+$$
+\tilde X=\frac{me\Omega^2}{k_x-m\Omega^2+jc\Omega},\qquad
+\tilde Y=\frac{-jme\Omega^2}{k_y-m\Omega^2+jc\Omega}
+$$
+
+Like the two arrows turning in opposite directions in P2-2 §3, a real signal can be written as the sum of two complex rotating components that are conjugates of each other. We apply this decomposition to both directions.
+
+The −j in the numerator of Y is there because $\sin\Omega t=\operatorname{Re}(-je^{j\Omega t})$. Expanding $z=x+jy$ then gives the following two components.
+
+$$
+z=A_fe^{j\Omega t}+A_be^{-j\Omega t},\qquad
+A_f=\frac{\tilde X+j\tilde Y}{2},\qquad
+A_b=\frac{\tilde X^*+j\tilde Y^*}{2}
+$$
+
+The asterisk is the complex conjugate (the sign of the imaginary part flipped). $A_f$ is the forward component and $A_b$ the reverse component, and the magnitude of each is the radius of a circle. With isotropic supports $\tilde Y=-j\tilde X$, so $A_b=0$.
+
+<Figure {...F.components} />
+
+In Figure 6, at 3200 rpm $\lvert A_f\rvert=36.11$ µm and $\lvert A_b\rvert=50.45$ µm. The reverse circle has the larger radius, so the actual ellipse turns clockwise. If the two radii are equal, the orbit becomes a straight back-and-forth line, and if both are 0, the shaft center stands still.
+
+<Callout type="try">
+
+1. In the initial state (3000 rpm, stiffness ratio 1, damping ratio 0.05), confirm the circle radius of 100 µm and the reverse component of 0. When you turn on playback, which way does it turn?
+2. Change the stiffness ratio to 1.3 and the speed to 3200 rpm, then play it again. Which is larger, the forward or the reverse component?
+3. At the same speed, raise the damping ratio to 0.2. How do the whirl direction and the two radii change?
+4. Press Reset, then bring the speed down to 0. Check the orbit and the readouts.
+
+</Callout>
+
+<JeffcottLab client:visible lang="en" />
+
+In 1, the orbit is a counterclockwise circle of radius 100 µm, and the reverse component is 0. In 2, the reverse 50.45 µm is larger than the forward 36.11 µm, so it turns clockwise. In 3, the forward component is 23.73 µm and the reverse 8.339 µm, so it turns counterclockwise. In 4, the unbalance force is also 0, so the displacement and both components are 0, and the phase is undefined. Playback runs at 1/50 of the real speed and stops when you change an input.
+
+<Callout type="field" title="Here the components are calculated straight from the model">
+
+This lab solves for X and Y from the equations and then calculates the forward and reverse components. The <strong>full spectrum</strong>, which extracts the same components from two measured channels by FFT, is covered in P5-3, and reading real orbits while checking the sensor and viewing directions is covered in P6-3.
+
+</Callout>
+
+---
+
+## 7. Where do things settle at high speed? Telling the shaft center from the center of mass
+
+In P1-7 we said that far above the critical speed, the amplitude approaches the eccentricity. Does that mean the center of mass G of the disk also swings by the same amount?
+
+<Figure {...F.selfAlignment} />
+
+For the isotropic rotor in Figure 7, the complex displacement of the shaft center C is $z_C=Ze^{j\Omega t}$, and that of the center of mass is $z_G=(Z+e)e^{j\Omega t}$. At high speed $Z\to-e$, so C goes around on a radius of e while G approaches the static equilibrium point O. Here O is a fixed reference point; keep it apart from the O used for the geometric center in P1-7. This is called the tendency toward <strong>self-centering</strong> (rotation about the center of mass).
+
+At a speed ratio of 5 (15000 rpm), C is at 10.41 µm and G at about 0.466 µm. The figure is the steady-state solution of a linear model, not a calculation of the transient response during start-up or of real contact or bearing nonlinearity.
+
+<Callout type="term" title="Are rigid-body modes and rigid rotors the same classification?">
+
+Rigid-body and bending <strong>modes</strong> are shapes of motion (Figure 2). A <strong>rigid rotor</strong> is a rotor whose bending deformation can be neglected over the operating range of interest, and a <strong>flexible rotor</strong> is one where the effect of bending modes has to be taken into account. When you run near or through the first bending critical speed, you need to check the bending response.
+
+</Callout>
+
+Checking whether the operating speed is above the first bending critical speed is where the classification starts. But being below the critical speed does not by itself mean the bending effect can always be ignored. You also need to tell a rigid-body mode resonance of the support system from a bending resonance of the shaft.
+
+<Callout type="warn" title="Don't settle the rotor model from a single casing sensor">
+
+This page calculates the displacement of the shaft center at the disk. A casing sensor reads motion that has been transmitted through the support system, so it is not the same value (P1-6, P3-1). If the multiple disks, distributed mass, oil films and gyroscopic effects of a real shaft train matter, a single Jeffcott model cannot settle the critical speeds or the stability.
+
+</Callout>
+
+---
+
+## 8. Summary
+
+| Topic | What to remember |
+|---|---|
+| Spin / whirl | The disk itself turning / the shaft center going around. Compare direction and frequency separately |
+| Rigid-body / bending mode | Translation and tilt of a straight shaft / deformation of the shaft line itself |
+| Jeffcott model | Steady-state solution in two directions for one mass disk + a massless elastic shaft |
+| Isotropic supports | Equal X and Y amplitudes, Y lags X by 90° → forward circle, $A_b=0$ |
+| Anisotropic supports | Different natural frequencies, amplitudes and phases in the two directions → ellipse; reverse whirl can appear |
+| Forward/reverse components | Whichever of $\lvert A_f\rvert$ and $\lvert A_b\rvert$ is larger sets the whirl direction |
+| High speed · model limits | C approaches e, G approaches O. Detailed analysis of a real shaft train is a separate job |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. The shaft spins counterclockwise and the shaft center goes around clockwise once per revolution. What is this?</strong></summary>
+
+Reverse synchronous whirl. The spin and whirl directions differ, but both have a frequency magnitude of 1X. Reverse whirl does not by itself confirm instability or contact.
+</details>
+
+<details>
+<summary><strong>Q2. For an isotropic rotor with e = 10 µm, damping ratio 0.05 and r = 1, what are the Peak and the peak-to-peak amplitude of X?</strong></summary>
+
+$e/(2\zeta)=100$ µm Peak, and the peak-to-peak amplitude is 200 µm pp. The orbit radius is 100 µm.
+</details>
+
+<details>
+<summary><strong>Q3. If kᵧ/kₓ = 1.3 and Nₓ = 3000 rpm, what is Nᵧ?</strong></summary>
+
+$3000\sqrt{1.3}\approx3421$ rpm. It is not 3900 rpm, which you would get by multiplying the speed by the stiffness ratio 1.3 directly. This value is the undamped critical speed.
+</details>
+
+<details>
+<summary><strong>Q4. With 36.11 µm forward and 50.45 µm reverse, what is the whirl direction, and what are the semi-major and semi-minor axes of the ellipse?</strong></summary>
+
+Reverse. The semi-major axis is the sum of the two radii, 86.56 µm, and the semi-minor axis is the absolute value of their difference, 14.34 µm. The amplitudes along the X and Y coordinate directions, 65.3 and 58.6 µm, are not the semi-major and semi-minor axes of the ellipse.
+</details>
+
+<details>
+<summary><strong>Q5. Between the two critical speeds, raising the damping ratio made the whirl forward. Is the model wrong?</strong></summary>
+
+No. At stiffness ratio 1.3 and 3200 rpm with damping ratio 0.2, the forward 23.73 µm is larger than the reverse 8.339 µm. The direction condition for the undamped case must not be applied to every damped case.
+</details>
+
+<details>
+<summary><strong>Q6. Can you tell the bending mode and the whirl direction of the shaft from one horizontal casing amplitude?</strong></summary>
+
+That value alone does not settle them. Whirl needs the displacements in two directions at the same cross-section and their phase relationship, and the whole mode shape needs the amplitude and phase at several locations. Casing displacement and shaft displacement are also different measured quantities.
+</details>
+
+Next, in <a href={withBase('/p4-3/')}>P4-3 Fluid-film bearings and shaft centerline</a>, we look at how the oil film holding up the shaft supports the load and shifts the average shaft position. You can check the learning order in the <a href={withBase('/en/parts/4/')}>Part 4 table of contents</a>.
+
+## References
+
+<References items={[
+  ['R-55', 'The disk–elastic shaft model and the distinction between spin and whirl, the two lateral equations of motion, passing through the critical speed and the center of mass', [
+    ['Jeffcott model', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module2/lec2/1.html'],
+    ['Equations of motion', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module2/lec2/2.html'],
+    ['Passing the critical speed and the center of mass', 'https://archive.nptel.ac.in/content/storage2/courses/112103024/module2/lec2/4.html'],
+  ]],
+]}>
+
+The anisotropic values and the forward/reverse components on this page were calculated directly from the two equations of motion given in the text.
+
+</References>

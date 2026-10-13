@@ -12,4 +12,9 @@ export const EN_LAB_COMPONENTS: ReadonlySet<string> = new Set([
   'WindowLeakageLab',
   'WindowComparisonLab',
   'WindowCorrectionLab',
+  // P4-2 · P5-6 · P6-3
+  'JeffcottLab',
+  'EnvelopeLab',
+  'KurtogramLab',
+  'OrbitLab',
 ]);

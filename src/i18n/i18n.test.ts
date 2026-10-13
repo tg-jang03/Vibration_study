@@ -138,3 +138,12 @@ describe('참고자료 서지의 한국어가 모두 사전에 있다', () => {
     expect([...missing]).toEqual([]);
   });
 });
+
+describe('깊은 번역은 숫자 배열을 건드리지 않는다', () => {
+  it('Float64Array는 같은 객체 그대로 (그림 heatmap의 z)', () => {
+    const z = new Float64Array([1, 2, 3]);
+    const out = translateDeep({ label: '샘플', z }, compileDict({ 샘플: 'Samples' }));
+    expect(out.label).toBe('Samples');
+    expect(out.z).toBe(z);
+  });
+});

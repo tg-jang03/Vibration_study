@@ -1,0 +1,281 @@
+---
+layout: ../../layouts/MdxLayout.astro
+sectionId: P6-3
+title: 'Orbit: Shape, Direction and the Time Order of the Dots'
+description: 'Compare direct and 1X-filtered orbits, and read the time order of the Keyphasor dots, the shape patterns and the conditions behind the number of dots.'
+source: p6-3.mdx
+sourceHash: 7a3f2f8906
+---
+
+import Callout from '../../components/content/Callout.astro';
+import References from '../../components/content/References.astro';
+import Figure from '../../components/content/Figure.astro';
+import OrbitLab from '../../components/labs/OrbitLab';
+import * as F from '../../figures/p6-3';
+import { withBase } from '../../lib/site';
+
+# 6-3 Orbit: Shape, Direction and the Time Order of the Dots
+
+The direct orbit is distorted, but the 1X-filtered orbit is a smooth ellipse. Same shaft, same record — which one should you trust? And if you see two black dots, does that mean 2X?
+
+This page carries <a href={withBase('/en/p4-2/')}>the orbits and whirl of P4-2</a> and <a href={withBase('/p5-3/')}>the forward and reverse components of P5-3</a> over to the measurement screen. Here we observe the shape and choose which evidence to check next.
+
+<Callout type="idea" title="After reading this page">
+
+1. You can explain what the direct orbit and the 1X-filtered orbit each show and hide.
+2. You can read forward and reverse whirl after checking the X/Y axes, the viewing direction and the time order.
+3. You can connect circles, ellipses, bananas, figure-eights, inner loops, petals and flat sides to their components.
+4. You can tell fixed dots from moving dots, and you will not decide the order from the number of dots alone.
+5. When narrowing a shape down to candidate causes, you can choose which other signals and operating conditions to look at.
+
+</Callout>
+
+---
+
+## 1. What is drawn: pairing X and Y at the same instant
+
+Here are the two X/Y time waveforms side by side. Where was the shaft center at a given instant?
+
+<Figure {...F.measurement} />
+
+In Figure 1 the two displacements at the same instant are read from the top panel and turned into a single point in the bottom panel. Connecting these points in time order gives the <strong>orbit</strong>. It traces the motion of the shaft center, not a mark on the shaft surface.
+
+This page views the machine from one shaft end (in the field, usually the driver end), with X to the right and Y up. Real proximity probes are mounted in the same plane 90° apart (often ±45° from vertical), so we assume their angles and polarities have been rotated into these coordinates. The shaft rotation in the examples is counterclockwise. When you compare with an instrument screen, match these conditions first.
+
+Combining the two displacements into one complex number gives a compact way to write the position.
+
+$$z(t)=x(t)+jy(t)$$
+
+$x,y$ are the displacements at the same instant and $j$ is the imaginary unit. This notation by itself does not mean forward whirl. You have to look at which way the point moves as time goes on.
+
+<Callout type="example" title="A 20 µm radius and 40 µm p-p">
+
+3000 rpm is $f_r=3000/60=50$ Hz, and one revolution is $T_r=1/50=20$ ms. If $x=20\cos\theta$ and $y=20\sin\theta$ µm, the circle has a radius of 20 µm. The maximum minus minimum of X and of Y is 40 µm p-p each. The circle radius and the channel p-p are not the same number.
+
+</Callout>
+
+<Callout type="warn" title="The middle of the orbit is not the bearing center">
+
+Only the AC displacement is drawn here. Placing the middle of the orbit at the screen origin does not mean the shaft really sits in the middle of the bearing. To compare with the average position and clearance you need the DC and probe reference, as in <a href={withBase('/p4-3/')}>P4-3 Shaft centerline</a>.
+
+</Callout>
+
+---
+
+## 2. Direct vs 1X-filtered: remember what was removed
+
+A smooth ellipse appeared. Did the shaft motion become smooth, or did we change the component we are looking at?
+
+<Figure {...F.filterCompare} />
+
+The <strong>direct orbit</strong> plots the acquired X/Y signals together. It can contain 1X, harmonics, asynchronous components and noise. The signal has passed through the instrument's probes, bandwidth and filters, so it does not show every frequency without limit either.
+
+The <strong>1X-filtered orbit</strong> extracts the 1X component, synchronous with rotation, from both channels and plots it. <a href={withBase('/p5-5/')}>The tracking filter of P5-5</a> is applied to both channels with the same reference and settings.
+
+Figure 2 has X 1X 20 µm Peak and Y 1X 12 + 2X 12 µm Peak. The distortion on the left almost disappears on the right. Only the X/Y 1X of about 20/12 µm Peak remains on the right. A steady-speed signal with one 1X per channel can make an ellipse, a circle or a straight line depending on the phase difference.
+
+| What you want to see | Orbit to choose | What to look at with it |
+|---|---|---|
+| Size and phase of the rotation-synchronous 1X | 1X-filtered | X/Y 1X vectors · filter bandwidth |
+| Distortion made by 2X or sub-synchronous components | Direct | X/Y waveforms · spectrum · full spectrum |
+| Whether small components are hidden under a large 1X | Compare direct and filtered | Not-1X · filters in other bands |
+| How close the average shaft position is to the clearance | Link the AC orbit to the DC reference | Shaft centerline · clearance · probe position |
+
+<Callout type="warn" title="An ellipse after the filter is not a clean bill of health">
+
+A 1X filter can hide a large 2X or sub-synchronous component. Conversely, a complicated direct orbit can come from probe runout, noise or a combination of components. Compare at the same time and the same scale, and check the removed components in the spectrum. A real filter has finite attenuation and delay, so a small residue remains. 1X runout on the shaft surface passes straight through a 1X filter, so check whether slow roll compensation was applied to the 1X-filtered orbit too (<a href={withBase('/p3-3/')}>P3-3</a>).
+
+</Callout>
+
+---
+
+## 3. Read direction from the time order, not from the dot position
+
+There is one black dot on the right side of a circle. Can you tell from this alone whether the motion is counterclockwise or clockwise?
+
+<Figure {...F.marksDirection} />
+
+<Callout type="term" title="The Keyphasor blank and dot (Blank–Bright)">
+
+<a href={withBase('/p3-3/')}>The Keyphasor of P3-3</a> gives a reference instant once per shaft revolution. A dot on the orbit is the X/Y coordinate at that instant. Figure 3 and the lab use the blank→dot convention, which leaves a short gap in the trace just before the pulse and then places the dot (the other figures show only the dot). So gap → dot → the continuing trace is the order of increasing time.
+
+</Callout>
+
+In Figure 3 the left trace leaves the dot at the right end of the circle and goes up, so it is counterclockwise whirl. The right trace goes down, so it is clockwise. With counterclockwise shaft rotation these are forward and reverse whirl. If the shaft rotated clockwise, the forward/reverse names would swap.
+
+<strong>Do not decide the direction by drawing a straight line to the next dot.</strong> At 1X the next pulse returns to the same spot, and at 2X the orbit can go around twice in between. Follow the actual trace between dots and the time order of the X/Y waveforms.
+
+Changing the viewing direction or the X/Y order, or flipping the sign of only one channel, reverses the displayed direction. Correctly rotating both coordinates together, on the other hand, does not reverse it. Match the installation drawing and the display settings before judging forward or reverse.
+
+<Callout type="field" title="For complex orbits, separate the local progression from the component directions">
+
+In figure-eights and loops the direction of travel can change from segment to segment. One arrow does not represent the whirl direction of every frequency. Use the <a href={withBase('/p5-3/')}>full spectrum</a> to see which frequency has a forward or reverse component. If 1X is nearly zero, do not decide the direction from the tiny trace or phase of that filter.
+
+</Callout>
+
+---
+
+## 4. Link shape to components and phase, then check the cause further
+
+Is every ellipse a sign of anisotropy? Does an inner loop mean fluid-film instability straight away?
+
+<Figure {...F.oneXAndTwoX} />
+
+The top of Figure 4 has 1X only. Equal X/Y sizes with a 90° difference give a circle; different sizes give an ellipse. Other phase differences change the ellipse as well. Directional differences in stiffness or load can produce such a response, but probe sensitivity and angle errors also change the shape.
+
+The banana below is a synthetic example made by adding 2X to Y. The figure-eight was made with X at 1X only and Y at 2X only. Filtering this figure-eight at 1X makes Y almost vanish, leaving a straight line. <strong>Shape names and single fault names do not map one to one.</strong>
+
+<Figure {...F.complexShapes} />
+
+The left of Figure 5 adds two components, 1X 20 + 1/2X 12 µm, to make an inner loop. The right uses 1X 20 + 3X 8 µm to make a petal shape; because the forward 3X is large (3 × 8 > 20), two small inner loops also appear inside the petals. An inner loop is not a sign of sub-synchronous components only. Forward components tend to make inner loops, and reverse components outer loops. Changing the amplitude and phase of the components also changes the size and position of the loops or petals.
+
+| Shape seen | Signal features to check first | Further evidence to narrow the candidates |
+|---|---|---|
+| Circle | Mostly 1X? X/Y sizes and phase difference | Isotropic response · unbalance candidate, probe correction · speed dependence |
+| Ellipse | 1X sizes and phase difference, forward/reverse 1X | Support anisotropy · load · preload candidates, probe sensitivity and angle |
+| Banana · figure-eight | 2X · phase relation · waveform asymmetry | Alignment · preload candidates, axial signals · coupling · operating changes |
+| Inner loop | Sub-synchronous or forward harmonic? Hz/order · forward/reverse | Fluid-film instability · contact and other candidates, start-up path · oil temperature · other bearings |
+| Petals · distortion | Several harmonics · phase · impacts | Rub · looseness and other candidates, time trend · contact marks · measurement chain |
+| Flat side | Repeated clipping in the direct waveform | Tell a clearance-contact candidate from probe/ADC saturation |
+
+<Callout type="warn" title="The formula that made a loop does not solve for its cause">
+
+These figures are synthetic signals for reading shapes. They are not solutions for the onset of fluid-film instability, contact forces or preload. A circle or an ellipse does not guarantee the absence of a fault either. Part 7 tells causes apart by linking frequency, phase, direction and operating conditions together.
+
+</Callout>
+
+---
+
+## 5. Number of dots: tell pulse count from distinct positions
+
+We recorded 8 revolutions. The dot was placed 8 times, but only two positions are visible on the screen. Under what conditions does this happen?
+
+<Figure {...F.dotCounts} />
+
+Let the single component be $q$X, with steady speed, amplitude and starting phase. With the rotation reference $\theta=2\pi f_rt$, the Keyphasor instants are $t_k=k/f_r$. At these instants the phase of the component changes by the following amount every revolution.
+
+$$\Delta\psi=2\pi q$$
+
+$q=f/f_r$ is the order of the comparison component and $k$ is the shaft revolution number. For a single reverse circle the sign is opposite. A dot is the X/Y coordinate sensed by the probes, not the physical position of a mark on the shaft surface.
+
+<Callout type="example" title="1/2X and 1/3X give 2 and 3 positions">
+
+1/2X moves 180° per pulse and alternates between two positions; 1/3X moves 120° each time and places three. For a single 1/nX circle over a long enough steady record, you get n distinct positions. If coordinates overlap or spread because of the origin, degeneration to a straight line, overlapping components or noise, this simple count no longer holds as it is.
+
+</Callout>
+
+In general, if the order is the reduced fraction $p/n$, the pattern repeats after n revolutions. For example, 2/3X also gives three positions. On the other hand, a steady signal whose orders are all integers, such as 1X+2X, returns to the same coordinate every shaft revolution, so the dots pile up in one position. The number of dots is not the order.
+
+The 0.43X in Figure 6 moves $360\times0.43=154.8^\circ$ every revolution. In an 8-revolution window it gives 8 positions (although k = 0 and k = 7 differ by only 3.6° and look almost on top of each other in the figure), and when the window moves on, the dots do not stay at the previous window's positions. An exact 0.43 is 43/100, so it repeats after 100 revolutions. But an estimate of 0.43 from a real measurement does not let you assert a 100-revolution period.
+
+<Callout type="warn" title="Two dots in a short window do not mean exactly 1/2X">
+
+Even 0.43X gives only two pulses if you show only two shaft revolutions. A non-integer order can still repeat over a long period if it is rational, and the order of an asynchronous component can change as the speed changes. Move the time window and check the spectral frequency and the Keyphasor status together. Here, a duplicate pulse at the end time of the display is not counted.
+
+</Callout>
+
+---
+
+## 6. Flat sides: go back to the direct waveform and the measurement chain
+
+The 1X filter turns it back into an ellipse. Can you ignore the flat side that was in the direct orbit?
+
+<Figure {...F.flatEvidence} />
+
+Figure 7 is a signal whose X top has been clipped at 12 µm. It is plotted as AC after removing the mean following the clipping, so the screen coordinate of the flat side differs from the original clipping level of 12 µm. The maximum minus minimum is still $12-(-20)=32$ µm p-p.
+
+The 1X cosine component of this waveform is 17.15 µm Peak. So the 1X filter shows an ellipse of X/Y 17.15/20 µm Peak, because the filter has reduced the other harmonics that formed the flat top. With the units matched, 1X 17.15 µm Peak is 34.3 µm p-p, larger than the clipped direct X of 32 µm p-p. That is why the filtered ellipse in Figure 7 is wider than the direct orbit. Instruments usually display proximity-probe displacement and 1X vectors in p-p, so match the units before comparing.
+
+A flat side can appear with real clearance contact, but probe or ADC saturation also produces a similar screen. Go back to <a href={withBase('/p6-1/')}>clipping and saturation in P6-1</a> and <a href={withBase('/p3-4/')}>the P3-4 measurement chain</a> to check the raw voltage, the valid range, other channels and the operating conditions.
+
+<Callout type="field" title="Record four things before judging the cause">
+
+Keep the direct/filtered orbits at the same instant with the X/Y waveforms and spectra; the probe directions, polarities and whether acquisition was simultaneous; the speed, load and temperature; and the average position and clearance reference. The start-up and shutdown paths, the <a href={withBase('/p6-2/')}>P6-2 Cascade</a> and the <a href={withBase('/p6-4/')}>P6-4 trends</a> confirm how the candidate causes change over time. Rub, too, is read from several plots together.
+
+</Callout>
+
+---
+
+## 7. Lab: change the shape, time window and filter of the same record
+
+<Callout type="try">
+
+1. In the initial state (circle · counterclockwise · 2 revolutions · start 0), look at the direct/1X orbits and 40 µm p-p. If you switch the whirl sign to clockwise, which of these change — dot position, size, arrow? Then switch back to counterclockwise.
+2. Change the shape to banana (extra 12 µm). Compare the distortion of the direct orbit with the filtered X/Y of about 20/12 µm Peak. How much Y 1X remains for the figure-eight?
+3. Choose the single comparison component with 8 revolutions, and change it 1/2X → 1/3X → 0.43X → 2X. Count the dot positions, then for 0.43X move the start revolution from 0 → 1 or turn on time-window playback.
+4. Turn playback off and choose the flat side. Compare direct X 32 µm p-p with the filtered 17.15 µm Peak (= 34.3 µm p-p). Can a 1X ellipse alone confirm contact?
+
+</Callout>
+
+<OrbitLab client:visible lang="en" />
+
+In step 1 the size stays the same and the arrow reverses. In step 2 the real tracking filter reduces the 2X of the banana and leaves an ellipse, while for the figure-eight the theoretical Y 1X is 0, so the filtered orbit is almost a straight line. Do not read a tiny filter residue as a new 1X.
+
+The distinct positions in step 3 are 2, 3, 8 and 1. For 0.43X the dots move when you move the time window. 2X goes around twice but returns to the same dot every shaft revolution. As in step 4, even if the filtered orbit becomes smooth, the clipping in the direct signal has not gone away, so hold off on the cause.
+
+---
+
+## 8. Summary: six questions to ask when looking at an orbit
+
+| Question | What to check |
+|---|---|
+| Whose motion is it? | Simultaneous X/Y in the same plane, AC center vs DC position |
+| Were the sizes read on the same basis? | Same X/Y scale, radius vs Peak vs p-p |
+| What did the signal keep? | Direct acquisition bandwidth vs 1X filter · bandwidth · settling time |
+| Which way does it travel? | Time order of gap → dot → trace, shaft rotation · viewing direction · probe settings |
+| Do the dots stay fixed? | Pulse count vs distinct positions, order · displayed span · moving the time window |
+| Which causes need further checks? | Shape + waveform · spectrum · operating conditions · other probes, measurement chain check |
+
+---
+
+## 9. Check questions
+
+<details>
+<summary><strong>Q1. At 3000 rpm the X and Y 1X are each 20 µm Peak, and Y lags X by 90°. In this page's coordinates, what are the shape, direction and p-p?</strong></summary>
+
+$X=20\cos\theta$, $Y=20\sin\theta$, so it is a 20 µm radius circle, counterclockwise. With counterclockwise shaft rotation it is forward, and X and Y are each 40 µm p-p. Do not read the circle radius as 40.
+</details>
+
+<details>
+<summary><strong>Q2. A direct banana became an ellipse after the 1X filter. Is it right to conclude that the machine condition improved?</strong></summary>
+
+You changed the component you are looking at in the same record. The filter may have reduced 2X or other distorting components. Only after checking the direct signal, the spectrum and the operating conditions can you talk about a change in condition.
+</details>
+
+<details>
+<summary><strong>Q3. A single 1/3X was recorded over 8 shaft revolutions. How many pulses and how many distinct dot positions?</strong></summary>
+
+Excluding the duplicate pulse at the end, as on this page, there are 8 pulses. For a steady single circle the dots move 120° each time and pile up in three positions. Neither the pulse count of 8 nor the 3 positions is the order itself.
+</details>
+
+<details>
+<summary><strong>Q4. For 0.43X, how much does the dot phase change per revolution? If it is exactly 43/100X, when does it repeat?</strong></summary>
+
+A single forward circle changes by 154.8° each time, a reverse one by −154.8°. The reduced fraction is 43/100, so it repeats after 100 shaft revolutions. A measured 0.43X, which is rounded, is not guaranteed to have the same period.
+</details>
+
+<details>
+<summary><strong>Q5. In how many positions do the dots of a steady 1X+2X signal pile up? Is it different for a single 2X circle?</strong></summary>
+
+In both cases the signal returns to the same coordinate every shaft revolution, so there is one position. A single 2X circle goes around twice in between. Even when several dots overlap, you can count the number of loops by following the time waveform and the trace.
+</details>
+
+<details>
+<summary><strong>Q6. You see a flat side and a reverse component. What do you check before confirming rub?</strong></summary>
+
+Check the X/Y directions, polarities and viewing reference; the valid range of the probe/ADC and the raw waveform; the average position and clearance; the frequency and time behavior of the harmonic/sub-synchronous components; and other bearings and the operating conditions. The X clipping at 32 µm p-p and the 1X of 17.15 µm Peak in this example are consequences of the waveform and do not establish contact as the cause.
+</details>
+
+The four reading screens of Part 6 are now linked. Revisit changes over time with <a href={withBase('/p6-4/')}>P6-4 trends and APHT</a>, and in <a href={withBase('/p7-1/')}>the P7-1 diagnostic frequency map</a> tie frequency, phase, direction and operating conditions to candidate causes.
+
+## References
+
+<References items={[
+  ['R-63', 'X/Y in the same plane, AC/DC, the Keyphasor, and direct and filtered orbits'],
+  ['R-23', 'A rub case that reads evidence from waveforms, orbits, trends and the full spectrum together'],
+  ['R-64', 'Cases linking phase and orbit changes during operation to other plots'],
+]}>
+
+The figures on this page are synthetic examples made for this site, not reproductions of figures from the sources.
+
+</References>

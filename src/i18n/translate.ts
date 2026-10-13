@@ -60,7 +60,9 @@ export function translateDeep<T>(value: T, dict: CompiledDict, missing?: Set<str
     return (en ?? value) as T;
   }
   if (Array.isArray(value)) return value.map((v) => translateDeep(v, dict, missing)) as T;
-  if (value && typeof value === 'object') {
+  // 숫자 배열(Float64Array 등)·Map 같은 특별한 객체는 그대로 둔다 — 평범한 객체만 들어간다 (그림 heatmap의 z가 typed array)
+  const proto = value && typeof value === 'object' ? Object.getPrototypeOf(value) : undefined;
+  if (value && typeof value === 'object' && (proto === Object.prototype || proto === null)) {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(value)) out[k] = translateDeep(v, dict, missing);
     return out as T;

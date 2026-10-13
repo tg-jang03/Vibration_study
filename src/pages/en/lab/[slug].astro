@@ -13,6 +13,10 @@ import AdcLab from '../../../components/labs/AdcLab';
 import WindowLeakageLab from '../../../components/labs/WindowLeakageLab';
 import WindowComparisonLab from '../../../components/labs/WindowComparisonLab';
 import WindowCorrectionLab from '../../../components/labs/WindowCorrectionLab';
+import JeffcottLab from '../../../components/labs/JeffcottLab';
+import EnvelopeLab from '../../../components/labs/EnvelopeLab';
+import KurtogramLab from '../../../components/labs/KurtogramLab';
+import OrbitLab from '../../../components/labs/OrbitLab';
 import SamplingLab from '../../../components/labs/SamplingLab';
 
 export const getStaticPaths = (() =>
@@ -32,4 +36,8 @@ const c = lab.component;
   {c === 'WindowLeakageLab' && <WindowLeakageLab client:load lang="en" />}
   {c === 'WindowComparisonLab' && <WindowComparisonLab client:load lang="en" />}
   {c === 'WindowCorrectionLab' && <WindowCorrectionLab client:load lang="en" />}
+  {c === 'JeffcottLab' && <JeffcottLab client:load lang="en" />}
+  {c === 'EnvelopeLab' && <EnvelopeLab client:load lang="en" />}
+  {c === 'KurtogramLab' && <KurtogramLab client:load lang="en" />}
+  {c === 'OrbitLab' && <OrbitLab client:load lang="en" />}
 </LabPageShell>
