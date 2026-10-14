@@ -154,7 +154,7 @@ const lf5 = grid(2, Math.log10(30000), 500);
 const mountBands = MKEYS.map((k) => flatBand('accelerometer', MOUNTS[k].fn, MOUNTS[k].zeta).hi);
 export const mountingResponse: FigureSpec = {
   id: 'fig-p3-1-5',
-  caption: `그림 5. 같은 가속도계를 붙이는 방법만 바꿨다 (설치 공진은 예시값: ${MKEYS.map((k) => `${SHORT[k]} ${formatNumber(MOUNTS[k].fn / 1000, 2)} kHz`).join(', ')} — I-025). 붙이는 방법이 무를수록 센서와 기계 사이에 스프링이 하나 더 생긴 셈이라 공진이 내려온다. ±10 % 안에서 쓸 수 있는 상한도 ${mountBands.map((b) => `${formatNumber(b / 1000, 2)} kHz`).join(' → ')}로 줄어든다. 자석으로 붙이고 수 kHz의 성분을 재면 실제보다 크게 읽힌다.`,
+  caption: `그림 5. 같은 가속도계를 붙이는 방법만 바꿨다 (설치 공진은 예시값: ${MKEYS.map((k) => `${SHORT[k]} ${formatNumber(MOUNTS[k].fn / 1000, 2)} kHz`).join(', ')}). 붙이는 방법이 무를수록 센서와 기계 사이에 스프링이 하나 더 생긴 셈이라 공진이 내려온다. ±10 % 안에서 쓸 수 있는 상한도 ${mountBands.map((b) => `${formatNumber(b / 1000, 2)} kHz`).join(' → ')}로 줄어든다. 자석으로 붙이고 수 kHz의 성분을 재면 실제보다 크게 읽힌다.`,
   panels: [
     {
       series: MKEYS.map((k) => ({ x: lf5, y: lf5.map((l) => sensorResponse('accelerometer', 10 ** l, MOUNTS[k].fn, MOUNTS[k].zeta).ratio), color: MCOL[k], width: 2.2, label: MOUNTS[k].label })),

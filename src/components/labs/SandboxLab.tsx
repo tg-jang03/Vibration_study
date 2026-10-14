@@ -133,7 +133,7 @@ export default function SandboxLab({ initialPurpose = 'custom', lang = 'ko' }: S
     <LabFrame id="LAB-SBX-01" title={tr`Signal Lab: 내 설정으로 무엇이 보이나`} lang={lang}
       controls={<>
         <ParamSelect label={tr`목적 (설정 도우미)`} value={purpose} options={PURPOSES.map((o) => ({ ...o, label: tr(o.label) }))} onChange={choose}
-          hint={tr`고르면 출발점 설정을 채웁니다. 예시값이므로 기계마다 다시 정합니다 (I-014).`} />
+          hint={tr`고르면 출발점 설정을 채웁니다. 예시값이므로 기계마다 다시 정합니다.`} />
         <ParamSelect label="F_max" value={settings.fmax} options={FMAX_OPTIONS.map((f) => ({ value: f, label: `${f} Hz (f_s ${formatNumber(2.56 * f, 5)} Hz)` }))} onChange={(v) => setS({ fmax: v })} />
         <ParamSelect label={tr`라인 수`} value={settings.lor} options={LOR_OPTIONS.map((l) => ({ value: l, label: tr`${l} 라인 (Δf ${formatNumber(settings.fmax / l, 3)} Hz)` }))} onChange={(v) => setS({ lor: v })} />
         <ParamSelect label={tr`윈도우`} value={settings.window} options={WINDOWS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={(v) => setS({ window: v })} />

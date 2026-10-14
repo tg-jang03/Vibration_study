@@ -92,7 +92,7 @@ export const protection: FigureSpec = {
 // ─────────────────────────────────────────────────────────────────────────────
 export const peak: FigureSpec = {
   id: 'fig-p10-2-3',
-  caption: `그림 3. P4-1의 예시 로터(ζ 0.05)를 25 rpm 간격으로 읽은 런업(P4-1 §4와 같은 자료). 위 — 진폭: 피크 ${fmt(HP.peakRpm, 4)} rpm, 0.707배 지점 ${fmt(HP.n1, 5)}·${fmt(HP.n2, 5)} rpm에서 AF = ${fmt(HP.af, 3)}. 운전 회전수 ${OP} rpm(보라)까지의 분리여유는 ${fmt(SM, 3)} %. 아래 — 위상 지연은 피크 근처에서 90°를 지납니다.`,
+  caption: `그림 3. P4-1의 예시 로터(ζ 0.05)를 25 rpm 간격으로 읽은 런업(P4-1 4절과 같은 자료). 위 — 진폭: 피크 ${fmt(HP.peakRpm, 4)} rpm, 0.707배 지점 ${fmt(HP.n1, 5)}·${fmt(HP.n2, 5)} rpm에서 AF = ${fmt(HP.af, 3)}. 운전 회전수 ${OP} rpm(보라)까지의 분리여유는 ${fmt(SM, 3)} %. 아래 — 위상 지연은 피크 근처에서 90°를 지납니다.`,
   panels: [
     {
       height: 150, x: { range: [1500, 5000], label: '회전수 [rpm]' }, y: { range: [0, 115], label: '1X 진폭 [µm p-p]' },

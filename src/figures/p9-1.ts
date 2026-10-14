@@ -271,7 +271,7 @@ export const DOUBLE_HIT = {
 };
 export const doubleFig: FigureSpec = {
   id: 'fig-p9-1-5',
-  caption: `그림 5. 해머가 튀어 한 번 더 맞은 더블 히트(플라스틱 팁, 평균 5회). 위: 첫 펄스가 시작되고 ${fmt(DOUBLE_HIT.delayMs, 2)} ms 뒤 첫 펄스의 ${fmt(DOUBLE_HIT.scale, 2)}배인 두 번째 펄스가 선다(주황). 회색 띠는 Force 윈도우가 남기는 구간이라 두 번째 펄스는 지워진다. 가운데: 두 펄스가 다 실린 힘 스펙트럼에는 1/(2 × 간격) = ${fmt(DOUBLE_HIT.dipHz, 3)} Hz 자리에 골(${fmt(DOUBLE_HIT.dipDb, 2)} dB)이 생기고, 간격이 칠 때마다 달라 골 자리도 바뀐다. 아래 두 칸: Force 윈도우를 거친 힘으로 구한 FRF(주황, 정상 = 파랑, 참 = 회색 점선)는 1차 봉우리를 ${fmt(V.dbl[0].peak * 1000, 3)}(참 ${fmt(V.trueAt[0] * 1000, 3)}), 2차를 ${fmt(V.dbl[1].peak * 1000, 3)}(참 ${fmt(V.trueAt[1] * 1000, 3)}) (m/s²)/kN로 읽는다. 응답에는 두 번 친 결과가, 힘에는 한 번만 남았기 때문이다. 정상 기록도 2차가 참값보다 낮은 것은 Δf 1 Hz와 잘림 탓이다(§3·§5).`,
+  caption: `그림 5. 해머가 튀어 한 번 더 맞은 더블 히트(플라스틱 팁, 평균 5회). 위: 첫 펄스가 시작되고 ${fmt(DOUBLE_HIT.delayMs, 2)} ms 뒤 첫 펄스의 ${fmt(DOUBLE_HIT.scale, 2)}배인 두 번째 펄스가 선다(주황). 회색 띠는 Force 윈도우가 남기는 구간이라 두 번째 펄스는 지워진다. 가운데: 두 펄스가 다 실린 힘 스펙트럼에는 1/(2 × 간격) = ${fmt(DOUBLE_HIT.dipHz, 3)} Hz 자리에 골(${fmt(DOUBLE_HIT.dipDb, 2)} dB)이 생기고, 간격이 칠 때마다 달라 골 자리도 바뀐다. 아래 두 칸: Force 윈도우를 거친 힘으로 구한 FRF(주황, 정상 = 파랑, 참 = 회색 점선)는 1차 봉우리를 ${fmt(V.dbl[0].peak * 1000, 3)}(참 ${fmt(V.trueAt[0] * 1000, 3)}), 2차를 ${fmt(V.dbl[1].peak * 1000, 3)}(참 ${fmt(V.trueAt[1] * 1000, 3)}) (m/s²)/kN로 읽는다. 응답에는 두 번 친 결과가, 힘에는 한 번만 남았기 때문이다. 정상 기록도 2차가 참값보다 낮은 것은 Δf 1 Hz와 잘림 탓이다(3·5절).`,
   panels: [
     {
       title: '채널 1: 힘 (앞 25 ms)',

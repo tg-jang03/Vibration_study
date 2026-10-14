@@ -31,7 +31,7 @@ const EN: Dict = {
   "읽은 값 ÷ 실제 속도": "Read ÷ actual velocity",
   "고유진동수 10 Hz": "Natural frequency 10 Hz",
   "위상 차이 [°] (높은 주파수 기준)": "Phase difference [°] (high-frequency reference)",
-  "그림 5. 같은 가속도계를 붙이는 방법만 바꿨다 (설치 공진은 예시값: 스터드 25 kHz, 접착 18 kHz, 자석 7 kHz, 손 2 kHz — I-025). 붙이는 방법이 무를수록 센서와 기계 사이에 스프링이 하나 더 생긴 셈이라 공진이 내려온다. ±10 % 안에서 쓸 수 있는 상한도 7.5 kHz → 5.4 kHz → 2.1 kHz → 0.61 kHz로 줄어든다. 자석으로 붙이고 수 kHz의 성분을 재면 실제보다 크게 읽힌다.": "Figure 5. Only the mounting method of the same accelerometer changes (example mounted resonances: stud 25 kHz, adhesive 18 kHz, magnet 7 kHz, hand-held 2 kHz — I-025). Softer mounting acts like another spring between sensor and machine, lowering resonance. The ±10 % upper limit falls from 7.5 kHz → 5.4 kHz → 2.1 kHz → 0.61 kHz. A magnet-mounted sensor overreads components at several kHz.",
+  "그림 5. 같은 가속도계를 붙이는 방법만 바꿨다 (설치 공진은 예시값: 스터드 25 kHz, 접착 18 kHz, 자석 7 kHz, 손 2 kHz). 붙이는 방법이 무를수록 센서와 기계 사이에 스프링이 하나 더 생긴 셈이라 공진이 내려온다. ±10 % 안에서 쓸 수 있는 상한도 7.5 kHz → 5.4 kHz → 2.1 kHz → 0.61 kHz로 줄어든다. 자석으로 붙이고 수 kHz의 성분을 재면 실제보다 크게 읽힌다.": "Figure 5. Only the mounting method of the same accelerometer changes (example mounted resonances: stud 25 kHz, adhesive 18 kHz, magnet 7 kHz, hand-held 2 kHz). Softer mounting acts like another spring between sensor and machine, lowering resonance. The ±10 % upper limit falls from 7.5 kHz → 5.4 kHz → 2.1 kHz → 0.61 kHz. A magnet-mounted sensor overreads components at several kHz.",
   "스터드 (나사 고정)": "Stud (screw mounting)",
   "접착": "Adhesive",
   "자석": "Magnet",

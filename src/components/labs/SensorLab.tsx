@@ -87,7 +87,7 @@ export default function SensorLab({ lang = 'ko', initialKind = 'accelerometer', 
     <LabFrame lang={lang} id="LAB-SNS-01" title={tr("센서 = 질량-스프링 계: 어디서 평탄한가")}
       controls={<>
         <ParamSelect label={tr("센서")} value={kind} options={[{ value: 'accelerometer', label: tr('가속도계 (압전)') }, { value: 'velocity', label: tr('동전형 속도계') }]} onChange={chooseKind} />
-        {acc && <ParamSelect label={tr("마운팅 (설치 공진)")} value={mount} options={mountOptions} onChange={chooseMount} hint={tr("설치 공진은 예시값입니다 (I-025)")} />}
+        {acc && <ParamSelect label={tr("마운팅 (설치 공진)")} value={mount} options={mountOptions} onChange={chooseMount} hint={tr("설치 공진은 예시값입니다")} />}
         {acc
           ? <ParamSlider label={tr("가속도계 공진 (설치 상태 포함)")} value={accFn} min={1} max={50} step={0.5} unit="kHz" onChange={(v) => { setAccFn(v); setMount('custom'); }} />
           : <ParamSlider label={tr("속도계 고유진동수")} value={velFn} min={4} max={20} step={0.5} unit="Hz" onChange={setVelFn} />}

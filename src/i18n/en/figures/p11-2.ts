@@ -26,7 +26,7 @@ const EN: Dict = {
   '② 평균 스펙트럼 (Hann, 50 % 겹침)': '② Average spectrum (Hann, 50 % overlap)',
   'Kurtogram 대역': 'Kurtogram band',
 
-  '그림 4. 예시 B의 Kurtogram(P5-6 §7): 세로는 대역폭, 가로는 대역의 가운데 주파수, 진하기는 그 대역 포락선의 SK입니다. 가장 진한 칸은 1500 ~ 4500 Hz(폭 3000 Hz, SK 3.83)로 3.2 kHz 공진을 담습니다. 레벨이 셋뿐인 것은 대역 폭을 가장 높은 결함 주파수(BPFI 162.2 Hz)의 3배(487 Hz)보다 좁게 자르지 않기 때문입니다 — 엔벨로프 스펙트럼에는 대역 폭보다 높은 줄이 설 수 없습니다.':
+  '그림 4. 예시 B의 Kurtogram(P5-6 7절): 세로는 대역폭, 가로는 대역의 가운데 주파수, 진하기는 그 대역 포락선의 SK입니다. 가장 진한 칸은 1500 ~ 4500 Hz(폭 3000 Hz, SK 3.83)로 3.2 kHz 공진을 담습니다. 레벨이 셋뿐인 것은 대역 폭을 가장 높은 결함 주파수(BPFI 162.2 Hz)의 3배(487 Hz)보다 좁게 자르지 않기 때문입니다 — 엔벨로프 스펙트럼에는 대역 폭보다 높은 줄이 설 수 없습니다.':
     'Figure 4. Kurtogram of example B (P5-6 §7): the vertical axis is bandwidth, the horizontal axis the band center frequency, and the shade is the SK of that band\'s envelope. The darkest cell is 1500 to 4500 Hz (width 3000 Hz, SK 3.83), which contains the 3.2 kHz resonance. There are only three levels because the band width is not cut narrower than 3 times (487 Hz) the highest defect frequency (BPFI 162.2 Hz) — a line higher than the band width cannot stand in the envelope spectrum.',
   '← 가장 큰 SK 3.83 (1500 ~ 4500 Hz)': '← Largest SK 3.83 (1500 to 4500 Hz)',
 

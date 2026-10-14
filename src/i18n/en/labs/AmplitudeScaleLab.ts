@@ -33,7 +33,7 @@ const EN: Dict = {
   '모양은 그대로이고 모든 값이 20 log₁₀(10⁶) = 120 dB만큼 올라갑니다. dB 숫자는 기준값을 함께 적어야 뜻이 있습니다.': 'The shape stays the same and every value rises by 20 log₁₀(10⁶) = 120 dB. A dB number means something only together with its reference.',
   '표기를 Peak → RMS로 바꾸면 dB 값은 얼마나 달라지나요?': 'How much do the dB values change when you switch the notation from Peak to RMS?',
   'RMS = Peak/√2이므로 20 log₁₀ √2 ≈ 3.01 dB 낮아집니다. 모든 성분이 같은 만큼 내려가므로 성분 사이의 차이(dB)는 그대로입니다.': 'RMS = Peak/√2, so every value drops by 20 log₁₀ √2 ≈ 3.01 dB. All components go down by the same amount, so the differences between components (dB) stay the same.',
-  '스펙트럼은 Hann 윈도우, 한 프레임. 스펙트럼의 "Peak"는 성분 하나하나를 정현파로 보고 √2 × RMS로 바꾼 값입니다 — 성분 하나에는 정확합니다. ISO 1683 기준값(속도 1 nm/s, 가속도 1 µm/s²)은 원문 대조가 남아 있습니다 (I-006).': 'The spectrum uses a Hann window and one frame. The spectrum "Peak" treats each component as a sine and converts it to √2 × RMS, which is exact for a single component. The ISO 1683 reference values (velocity 1 nm/s, acceleration 1 µm/s²) are still to be checked against the original text (I-006).',
+  '스펙트럼은 Hann 윈도우, 한 프레임. 스펙트럼의 "Peak"는 성분 하나하나를 정현파로 보고 √2 × RMS로 바꾼 값입니다 — 성분 하나에는 정확합니다. ISO 1683 기준값(속도 1 nm/s, 가속도 1 µm/s²)은 원문 대조가 남아 있습니다.': 'The spectrum uses a Hann window and one frame. The spectrum "Peak" treats each component as a sine and converts it to √2 × RMS, which is exact for a single component. The ISO 1683 reference values (velocity 1 nm/s, acceleration 1 µm/s²) are still to be checked against the original text.',
   '시간 파형과 세 가지 크기': 'Time waveform and three measures of size',
   '시간 [ms]': 'Time [ms]',
   '시간 파형과 진짜 Peak, √2 × RMS, RMS': 'Time waveform with the true peak, √2 × RMS and RMS',

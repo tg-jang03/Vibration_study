@@ -61,7 +61,7 @@ const EN: Dict = {
   '저장된 값': 'Stored values',
   '신호 0.2 V, 레인지 ±1 V: 3칸만 쓴다': 'Signal 0.2 V, range ±1 V: uses only 3 steps',
   // 그림 8
-  '그림 8. 진폭 1 V인 50 Hz 정현파를 레인지 ±0.7 V로 받으면 꼭대기와 바닥이 잘린다(클리핑). 잘린 파형은 사각파에 가까워지므로(P2-2 §1.2) 기계에 없던 홀수 하모닉 — 150 Hz(0.11), 250 Hz(0.02) … — 이 스펙트럼에 생긴다. 측정 과정이 만든 가짜이므로 시간파형에서 잘린 모양을 먼저 확인한다.':
+  '그림 8. 진폭 1 V인 50 Hz 정현파를 레인지 ±0.7 V로 받으면 꼭대기와 바닥이 잘린다(클리핑). 잘린 파형은 사각파에 가까워지므로(P2-2 1.2절) 기계에 없던 홀수 하모닉 — 150 Hz(0.11), 250 Hz(0.02) … — 이 스펙트럼에 생긴다. 측정 과정이 만든 가짜이므로 시간파형에서 잘린 모양을 먼저 확인한다.':
     'Figure 8. A 50 Hz sine of 1 V amplitude recorded with a ±0.7 V range has its peaks and troughs cut off (clipping). The clipped waveform is closer to a square wave (P2-2 §1.2), so odd harmonics the machine never had — 150 Hz (0.11), 250 Hz (0.02), … — appear in the spectrum. They are fakes made by the measurement, so check the time waveform for the cut shape first.',
   '시간파형: 레인지(±0.7 V)에서 잘림': 'Time waveform: cut at the range (±0.7 V)',
   '저장된 신호': 'Stored signal',

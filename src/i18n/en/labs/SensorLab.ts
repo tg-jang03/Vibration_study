@@ -19,7 +19,7 @@ const EN: Dict = {
   "가속도계 (압전)": "Accelerometer (piezoelectric)",
   "동전형 속도계": "Velocity pickup",
   "마운팅 (설치 공진)": "Mounting (mounted resonance)",
-  "설치 공진은 예시값입니다 (I-025)": "Mounted resonance values are examples (I-025)",
+  "설치 공진은 예시값입니다": "Mounted resonance values are examples",
   "가속도계 공진 (설치 상태 포함)": "Accelerometer resonance (including mounting)",
   "속도계 고유진동수": "Velocity pickup natural frequency",
   "감쇠비 ζ": "Damping ratio ζ",

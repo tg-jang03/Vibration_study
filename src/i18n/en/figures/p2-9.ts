@@ -32,7 +32,7 @@ const EN: Dict = {
   'AAF 없음': 'No AAF',
   '접혀 들어온 울림 (2.7 ~ 3.3 kHz → 140 ~ 740 Hz)': 'Folded-in ringing (2.7–3.3 kHz → 140–740 Hz)',
   // 그림 4
-  '그림 4. 같은 기계를 목적만 바꿔 쟀다 (§4 표의 설정). 위: 밸런싱 전 1X — F_max 500 Hz, Flat top. 1X를 2.83 mm/s RMS로 읽는다 (실제 2.828). 가운데: 0.4 ~ 0.5X 확인 — F_max 200 Hz, 800 라인(Δf 0.25 Hz), dB. 1X보다 22 dB 작은 22.5 Hz 성분이 1X와 또렷이 갈린다. 아래: 구름베어링 충격 — F_max 5000 Hz, dB. 3 kHz 근처의 울림 대역이 바닥보다 17 dB 높게 선다. 한 가지 설정으로는 셋을 모두 잘 보기 어렵다.':
+  '그림 4. 같은 기계를 목적만 바꿔 쟀다 (4절 표의 설정). 위: 밸런싱 전 1X — F_max 500 Hz, Flat top. 1X를 2.83 mm/s RMS로 읽는다 (실제 2.828). 가운데: 0.4 ~ 0.5X 확인 — F_max 200 Hz, 800 라인(Δf 0.25 Hz), dB. 1X보다 22 dB 작은 22.5 Hz 성분이 1X와 또렷이 갈린다. 아래: 구름베어링 충격 — F_max 5000 Hz, dB. 3 kHz 근처의 울림 대역이 바닥보다 17 dB 높게 선다. 한 가지 설정으로는 셋을 모두 잘 보기 어렵다.':
     'Figure 4. The same machine measured with only the purpose changed (the setups of the §4 table). Top: 1X before balancing — F_max 500 Hz, Flat top. 1X reads 2.83 mm/s RMS (actual 2.828). Middle: checking 0.4 to 0.5X — F_max 200 Hz, 800 lines (Δf 0.25 Hz), dB. The 22.5 Hz component, 22 dB below 1X, separates clearly from 1X. Bottom: rolling-element bearing impacts — F_max 5000 Hz, dB. The ringing band near 3 kHz stands 17 dB above the floor. It is hard to see all three well with a single setup.',
   '밸런싱 전 1X (F_max 500 Hz, 400 라인, Flat top)': 'Before balancing, 1X (F_max 500 Hz, 400 lines, Flat top)',
   '0.4 ~ 0.5X 확인 (F_max 200 Hz, 800 라인, Hann, dB)': 'Checking 0.4–0.5X (F_max 200 Hz, 800 lines, Hann, dB)',

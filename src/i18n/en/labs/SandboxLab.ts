@@ -49,7 +49,7 @@ const EN: Dict = {
   '스펙트럼': 'Spectrum',
   'Signal Lab: 내 설정으로 무엇이 보이나': 'Signal Lab: what can I see with my setup?',
   '목적 (설정 도우미)': 'Purpose (setup helper)',
-  '고르면 출발점 설정을 채웁니다. 예시값이므로 기계마다 다시 정합니다 (I-014).': 'Choosing one fills in a starting-point setup. These are example values, so decide again for each machine (I-014).',
+  '고르면 출발점 설정을 채웁니다. 예시값이므로 기계마다 다시 정합니다.': 'Choosing one fills in a starting-point setup. These are example values, so decide again for each machine.',
   '라인 수': 'Number of lines',
   '{0} 라인 (Δf {1} Hz)': '{0} lines (Δf {1} Hz)',
   '윈도우': 'Window',

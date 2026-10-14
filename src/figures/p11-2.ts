@@ -201,7 +201,7 @@ function kurtogramPanel(kg: Kurtogram, title: string, zMax: number): FigPanel {
 const BB = B.kg.best;
 export const kurtogramFig: FigureSpec = {
   id: 'fig-p11-2-4',
-  caption: `그림 4. 예시 B의 Kurtogram(P5-6 §7): 세로는 대역폭, 가로는 대역의 가운데 주파수, 진하기는 그 대역 포락선의 SK입니다. 가장 진한 칸은 ${fmt(BB.f1, 4)} ~ ${fmt(BB.f2, 4)} Hz(폭 ${fmt(BB.bw, 4)} Hz, SK ${fmt(BB.sk, 3)})로 3.2 kHz 공진을 담습니다. 레벨이 셋뿐인 것은 대역 폭을 가장 높은 결함 주파수(BPFI ${fmt(CWRU_DE.bpfi * FR, 4)} Hz)의 3배(${fmt(3 * CWRU_DE.bpfi * FR, 3)} Hz)보다 좁게 자르지 않기 때문입니다 — 엔벨로프 스펙트럼에는 대역 폭보다 높은 줄이 설 수 없습니다.`,
+  caption: `그림 4. 예시 B의 Kurtogram(P5-6 7절): 세로는 대역폭, 가로는 대역의 가운데 주파수, 진하기는 그 대역 포락선의 SK입니다. 가장 진한 칸은 ${fmt(BB.f1, 4)} ~ ${fmt(BB.f2, 4)} Hz(폭 ${fmt(BB.bw, 4)} Hz, SK ${fmt(BB.sk, 3)})로 3.2 kHz 공진을 담습니다. 레벨이 셋뿐인 것은 대역 폭을 가장 높은 결함 주파수(BPFI ${fmt(CWRU_DE.bpfi * FR, 4)} Hz)의 3배(${fmt(3 * CWRU_DE.bpfi * FR, 3)} Hz)보다 좁게 자르지 않기 때문입니다 — 엔벨로프 스펙트럼에는 대역 폭보다 높은 줄이 설 수 없습니다.`,
   panels: [kurtogramPanel(B.kg, '③ Kurtogram', 4)],
 };
 

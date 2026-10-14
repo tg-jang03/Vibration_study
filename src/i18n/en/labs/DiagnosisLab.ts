@@ -39,7 +39,7 @@ const EN: Dict = {
   '1년 전 27°에서 56°로 늘었습니다. H1(가진만 증가)은 위상이 그대로라고 예측하므로 위상 오차가 약 12°, H2는 약 1.6°입니다. 위상이 가장 분명하게 가릅니다.': 'It grew from 27° a year ago to 56°. H1 (excitation only) predicts unchanged phase, so its phase error is about 12°; H2 is about 1.6°. Phase discriminates most clearly.',
   '숨은 원인을 "둘 다 조금씩"으로 바꾸면?': 'What if you change the hidden cause to "A bit of both"?',
   '어느 가설도 흩어짐 안에서 맞지 않습니다(진폭 1.4 ~ 1.7 µm, 위상 5 ~ 7°). 한 원인만 가정한 설명을 버리고, 가진과 강성을 함께 보는 가설이나 다른 원인을 검토합니다.': 'Neither hypothesis fits within the scatter (amplitude 1.4 ~ 1.7 µm, phase 5 ~ 7°). Drop the single-cause explanation and consider a hypothesis that includes both excitation and stiffness, or another cause.',
-  '"맞음"의 기준은 기록 흩어짐의 2배 이내로 둔 학습용 규칙입니다. 실제 판단에는 같은 조건의 반복 기록과 다른 증거(P10-3 §3)를 함께 씁니다.': 'The "fits" criterion — within twice the record scatter — is a rule of thumb for learning. Real judgments also use repeated records under the same conditions and other evidence (P10-3 §3).',
+  '"맞음"의 기준은 기록 흩어짐의 2배 이내로 둔 학습용 규칙입니다. 실제 판단에는 같은 조건의 반복 기록과 다른 증거(P10-3 3절)를 함께 씁니다.': 'The "fits" criterion — within twice the record scatter — is a rule of thumb for learning. Real judgments also use repeated records under the same conditions and other evidence (P10-3 §3).',
   '회전수 [rpm]': 'Speed [rpm]',
   '1X 진폭 [µm p-p]': '1X amplitude [µm p-p]',
   '1년 전과 지금의 코스트다운 1X 진폭, 두 가설의 예측': '1X coastdown amplitude a year ago and now, with the predictions of the two hypotheses',

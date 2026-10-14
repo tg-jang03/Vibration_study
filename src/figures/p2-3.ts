@@ -281,7 +281,7 @@ const TC = 0.04;
 const showN = Math.round(TC * FSC);
 export const clippingFigure: FigureSpec = {
   id: 'fig-2-8',
-  caption: `그림 8. 진폭 1 V인 50 Hz 정현파를 레인지 ±0.7 V로 받으면 꼭대기와 바닥이 잘린다(클리핑). 잘린 파형은 사각파에 가까워지므로(P2-2 §1.2) 기계에 없던 홀수 하모닉 — 150 Hz(${formatNumber(harmonics[1].a, 2)}), 250 Hz(${formatNumber(harmonics[2].a, 2)}) … — 이 스펙트럼에 생긴다. 측정 과정이 만든 가짜이므로 시간파형에서 잘린 모양을 먼저 확인한다.`,
+  caption: `그림 8. 진폭 1 V인 50 Hz 정현파를 레인지 ±0.7 V로 받으면 꼭대기와 바닥이 잘린다(클리핑). 잘린 파형은 사각파에 가까워지므로(P2-2 1.2절) 기계에 없던 홀수 하모닉 — 150 Hz(${formatNumber(harmonics[1].a, 2)}), 250 Hz(${formatNumber(harmonics[2].a, 2)}) … — 이 스펙트럼에 생긴다. 측정 과정이 만든 가짜이므로 시간파형에서 잘린 모양을 먼저 확인한다.`,
   panels: [
     {
       title: '시간파형: 레인지(±0.7 V)에서 잘림',

@@ -262,7 +262,7 @@ const mm = (y: number[]) => y.map((v) => v * 1e3);
 
 export const waveDelay: FigureSpec = {
   id: 'fig-p5-1-5',
-  caption: `그림 5. 예시 기계(1500 rpm, 1X = 25 Hz)의 속도 파형에서 맞물림 500 Hz 성분을 걷어 내 1X ~ 3X 모양을 보려 한다. 위: 원래 파형(회색)과 걸러서 얻고 싶은 목표(초록 점선). 아래: 4차 Butterworth로 한 번 거르면(파랑) 모양은 목표와 비슷하지만 전체가 약 ${fmt(V.fam.butterworth.gd25, 2)} ms 늦다 — 1X로 치면 위상 ${fmt(-V.fam.butterworth.ph25, 2)}°다. 두 번 거르면(초록 실선, §3) 목표와 겹친다.`,
+  caption: `그림 5. 예시 기계(1500 rpm, 1X = 25 Hz)의 속도 파형에서 맞물림 500 Hz 성분을 걷어 내 1X ~ 3X 모양을 보려 한다. 위: 원래 파형(회색)과 걸러서 얻고 싶은 목표(초록 점선). 아래: 4차 Butterworth로 한 번 거르면(파랑) 모양은 목표와 비슷하지만 전체가 약 ${fmt(V.fam.butterworth.gd25, 2)} ms 늦다 — 1X로 치면 위상 ${fmt(-V.fam.butterworth.ph25, 2)}°다. 두 번 거르면(초록 실선, 3.1절) 목표와 겹친다.`,
   panels: [
     {
       title: '원래 파형과 목표 (1X ~ 3X)',

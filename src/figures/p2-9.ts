@@ -116,7 +116,7 @@ const subView = view(rSub, 0, 200, true);
 const bearView = view(rBear, 0, 5000, true);
 export const purposeViews: FigureSpec = {
   id: 'fig-p2-9-4',
-  caption: `그림 4. 같은 기계를 목적만 바꿔 쟀다 (§4 표의 설정). 위: 밸런싱 전 1X — F_max 500 Hz, Flat top. 1X를 ${formatNumber(item(rBal, '1x').value * MM, 4)} mm/s RMS로 읽는다 (실제 ${formatNumber((DEFAULT_MACHINE.x1 / Math.SQRT2) * MM, 4)}). 가운데: 0.4 ~ 0.5X 확인 — F_max 200 Hz, 800 라인(Δf ${formatNumber(rSub.df, 2)} Hz), dB. 1X보다 ${formatNumber(20 * Math.log10(item(rSub, '1x').value / item(rSub, 'sub').value), 2)} dB 작은 22.5 Hz 성분이 1X와 또렷이 갈린다. 아래: 구름베어링 충격 — F_max 5000 Hz, dB. 3 kHz 근처의 울림 대역이 바닥보다 ${formatNumber(item(rBear, 'ring').marginDb, 2)} dB 높게 선다. 한 가지 설정으로는 셋을 모두 잘 보기 어렵다.`,
+  caption: `그림 4. 같은 기계를 목적만 바꿔 쟀다 (4절 표의 설정). 위: 밸런싱 전 1X — F_max 500 Hz, Flat top. 1X를 ${formatNumber(item(rBal, '1x').value * MM, 4)} mm/s RMS로 읽는다 (실제 ${formatNumber((DEFAULT_MACHINE.x1 / Math.SQRT2) * MM, 4)}). 가운데: 0.4 ~ 0.5X 확인 — F_max 200 Hz, 800 라인(Δf ${formatNumber(rSub.df, 2)} Hz), dB. 1X보다 ${formatNumber(20 * Math.log10(item(rSub, '1x').value / item(rSub, 'sub').value), 2)} dB 작은 22.5 Hz 성분이 1X와 또렷이 갈린다. 아래: 구름베어링 충격 — F_max 5000 Hz, dB. 3 kHz 근처의 울림 대역이 바닥보다 ${formatNumber(item(rBear, 'ring').marginDb, 2)} dB 높게 선다. 한 가지 설정으로는 셋을 모두 잘 보기 어렵다.`,
   panels: [
     {
       title: '밸런싱 전 1X (F_max 500 Hz, 400 라인, Flat top)',

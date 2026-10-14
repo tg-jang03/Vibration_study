@@ -37,7 +37,7 @@ const EN: Dict = {
   '정지': 'stop',
   '버퍼 출력 → 상태감시 · 진단 장비 (보호 경로 밖)': 'Buffered output → monitoring · diagnostics (outside protection path)',
   // 그림 3
-  '그림 3. P4-1의 예시 로터(ζ 0.05)를 25 rpm 간격으로 읽은 런업(P4-1 §4와 같은 자료). 위 — 진폭: 피크 3000 rpm, 0.707배 지점 2866.5·3171.5 rpm에서 AF = 9.84. 운전 회전수 3600 rpm(보라)까지의 분리여유는 16.7 %. 아래 — 위상 지연은 피크 근처에서 90°를 지납니다.':
+  '그림 3. P4-1의 예시 로터(ζ 0.05)를 25 rpm 간격으로 읽은 런업(P4-1 4절과 같은 자료). 위 — 진폭: 피크 3000 rpm, 0.707배 지점 2866.5·3171.5 rpm에서 AF = 9.84. 운전 회전수 3600 rpm(보라)까지의 분리여유는 16.7 %. 아래 — 위상 지연은 피크 근처에서 90°를 지납니다.':
     'Figure 3. Run-up of the P4-1 example rotor (ζ 0.05) read at 25 rpm steps (same data as P4-1 §4). Top — amplitude: peak 3000 rpm, 0.707 points 2866.5·3171.5 rpm, so AF = 9.84. The separation margin to the operating speed of 3600 rpm (purple) is 16.7 %. Bottom — the phase lag passes 90° near the peak.',
   '1X 진폭 [µm p-p]': '1X amplitude [µm p-p]',
   '피크 × 0.707': 'Peak × 0.707',

@@ -153,7 +153,7 @@ export default function AmplitudeScaleLab({ initialSignal = 'impact', initialSca
         { question: tr('표기를 Peak → RMS로 바꾸면 dB 값은 얼마나 달라지나요?'),
           answer: tr('RMS = Peak/√2이므로 20 log₁₀ √2 ≈ 3.01 dB 낮아집니다. 모든 성분이 같은 만큼 내려가므로 성분 사이의 차이(dB)는 그대로입니다.') },
       ]}
-      footer={<p>{tr('스펙트럼은 Hann 윈도우, 한 프레임. 스펙트럼의 "Peak"는 성분 하나하나를 정현파로 보고 √2 × RMS로 바꾼 값입니다 — 성분 하나에는 정확합니다. ISO 1683 기준값(속도 1 nm/s, 가속도 1 µm/s²)은 원문 대조가 남아 있습니다 (I-006).')}</p>}
+      footer={<p>{tr('스펙트럼은 Hann 윈도우, 한 프레임. 스펙트럼의 "Peak"는 성분 하나하나를 정현파로 보고 √2 × RMS로 바꾼 값입니다 — 성분 하나에는 정확합니다. ISO 1683 기준값(속도 1 nm/s, 가속도 1 µm/s²)은 원문 대조가 남아 있습니다.')}</p>}
     >
       <h4>{tr('시간 파형과 세 가지 크기')}</h4>
       <Plot series={wave} x={{ label: tr('시간 [ms]'), range: [0, setup.showMs] }} y={{ label: `[${setup.unit}]` }} height={260} ariaLabel={tr('시간 파형과 진짜 Peak, √2 × RMS, RMS')} />
