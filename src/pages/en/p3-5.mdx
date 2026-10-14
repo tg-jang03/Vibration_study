@@ -4,7 +4,7 @@ title: P3-5 Transient data acquisition and protection systems
 description: Collecting data while speed changes (time-interval and speed-interval triggers, synchronous sampling and order spectra, Bode, Polar and Cascade plots from runup data), protection system channels and alarm logic (Alert and Danger levels, time delay, voting, startup trip multiply and Danger bypass), and the difference between protection and condition monitoring systems
 sectionId: P3-5
 source: p3-5.mdx
-sourceHash: 7a7d3961f4
+sourceHash: 6f08bfb972
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -94,7 +94,7 @@ Who stops the machine when vibration becomes dangerous, and on what basis?
 
 <Figure {...F.channels} />
 
-A <strong>machinery protection system</strong> continuously monitors sensor signals. It raises an alarm when vibration exceeds a set level, and automatically stops the machine at a higher level. Its input channels include X·Y shaft vibration sensors at each bearing, an <strong>axial position sensor</strong> at the shaft end (how far the shaft has moved back or forth — indicating thrust bearing wear, P1-6), a Keyphasor, and casing sensors when needed. For critical machines such as power-generation turbines, standards (including API 670) define the basic framework of channels and logic (the standard's numerical requirements are not reproduced on this site, I-009).
+A <strong>machinery protection system</strong> continuously monitors sensor signals. It raises an alarm when vibration exceeds a set level, and automatically stops the machine at a higher level. Its input channels include X·Y shaft vibration sensors at each bearing, an <strong>axial position sensor</strong> at the shaft end (how far the shaft has moved back or forth — indicating thrust bearing wear, P1-6), a Keyphasor, and casing sensors when needed. For critical machines such as power-generation turbines, standards (including API 670) define the basic framework of channels and logic (the standard's numerical requirements are not reproduced on this site).
 
 <Callout type="term" title="Alert, Danger and trip">
 
