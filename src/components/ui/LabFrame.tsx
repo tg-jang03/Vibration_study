@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { LABS } from '../../data/labs';
 import { withBase } from '../../lib/site';
 import type { Lang } from '../../i18n';
@@ -51,6 +51,9 @@ function standaloneHref(id: string | undefined, title: string, lang: Lang, slug?
 export default function LabFrame({ id, title, controls, children, formulas, readouts, tasks, footer, lang = 'ko', slug }: LabFrameProps) {
   const open = standaloneHref(id, title, lang, slug);
   const t = UI[lang];
+  // React가 붙기 전(서버 HTML만 보일 때) 바꾼 선택은 붙는 순간 무시된다 → 그동안은 조작을 잠근다. 첫 렌더는 서버와 같게 false
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   return (
     <LangContext.Provider value={lang}>
     <section className="lab-frame" aria-label={id ? `${id} ${title}` : title}>
@@ -60,7 +63,7 @@ export default function LabFrame({ id, title, controls, children, formulas, read
         {open && <a className="lab-open" href={open}>{t.labOpen}</a>}
       </header>
 
-      {controls && <div className="lab-controls">{controls}</div>}
+      {controls && <fieldset className="lab-controls" disabled={!ready} aria-busy={!ready}>{controls}</fieldset>}
 
       <div className="lab-plots">{children}</div>
 

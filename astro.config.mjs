@@ -8,6 +8,7 @@ import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypePageLinks from './src/lib/pageLinks.mjs';
 
 // GitHub Pages: https://tg-jang03.github.io/Vibration_study/ (D-018)
 export default defineConfig({
@@ -32,7 +33,8 @@ export default defineConfig({
     // 본문 수식 $...$, $$...$$ → KaTeX (D-008). MDX도 이 처리기를 그대로 쓴다.
     processor: unified({
       remarkPlugins: [remarkMath],
-      rehypePlugins: [rehypeKatex],
+      // 본문의 'P7-2 6절'·'6절'·'Part 7' 표기 → 사이트 안 링크 (src/lib/pageLinks.mjs)
+      rehypePlugins: [rehypeKatex, [rehypePageLinks, { base: '/Vibration_study', pagesDir: 'src/pages' }]],
     }),
   },
 });

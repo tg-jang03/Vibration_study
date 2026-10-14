@@ -4,7 +4,7 @@ title: P2-8 Modulation · Sidebands · Beating
 description: Why a vibration whose amplitude rises and falls (AM) puts sidebands on both sides of the carrier, how the sideband spacing points to the causing shaft, frequency-modulated vibration (FM) and Bessel functions, the asymmetry when AM and FM are present together, and telling sidebands from beating
 sectionId: P2-8
 source: p2-8.mdx
-sourceHash: d9b5e3094e
+sourceHash: 1b5127cc75
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p2-8';
 
 # 2-8 Modulation · Sidebands · Beating
 
-In the Zoom FFT of P2-4 we saw small bars attached at regular spacing on both sides of a large bar. That spacing was exactly the rotation frequency of one shaft. Why do the bars appear there, and what does the spacing tell you?
+In the Zoom FFT of P2-4 §4 we saw small bars (sidebands) attached 5 Hz away on both sides of the 1200 Hz bar. At the time we only said that such bars appear when the size of the vibration changes periodically. Why do the bars appear there, and what does the spacing tell you?
 
 When neighboring machines run together, the vibration level sometimes swells and fades with a period of a few seconds. This looks similar, but the cause is completely different. This page is about reading **the small bars that stand on both sides of a large bar in the spectrum**.
 
@@ -65,17 +65,17 @@ $$
 A(1 + m\cos 2\pi f_m t)\cos 2\pi f_c t = A\cos 2\pi f_c t + \frac{Am}{2}\cos 2\pi(f_c - f_m)t + \frac{Am}{2}\cos 2\pi(f_c + f_m)t
 $$
 
-An AM vibration is the sum of three sinusoids: $A$ at the carrier, and $Am/2$ at $f_c \pm f_m$ on both sides. The small bars beside the carrier were called <strong>sidebands</strong> in P2-4.
+An AM vibration is the sum of three sinusoids: $A$ at the carrier, and $Am/2$ at $f_c \pm f_m$ on both sides. The small bars beside the carrier were called <strong>sidebands</strong> in P2-4 §4.
 
-- **Spacing** = modulating frequency $f_m$ → what is shaking the size
-- **Height** = $m/2$ times the carrier → how much it shakes
+- **Spacing** = modulating frequency $f_m$: tells you what is shaking the size
+- **Height** = $m/2$ times the carrier: tells you how much it shakes
 
 <Callout type="example" title="Reading the fluctuation from the sideband height">
 
 - $m = 0.5$ → sideband 0.25 times → $20\log_{10} 0.25 \approx -12.0$ dB (Figure 2)
 - $m = 0.2$ → 0.1 times → −20 dB
 
-Conversely, if the sidebands are 26 dB below the carrier, they are 0.05 times → $m = 0.1$, meaning the size fluctuates by ±10 %. Small sidebands show up only on a dB axis (P2-7).
+Conversely, if the sidebands are 26 dB below the carrier, they are 0.05 times, so $m = 0.1$, meaning the size fluctuates by ±10 %. Small sidebands show up only on a dB axis (P2-7).
 
 </Callout>
 
@@ -83,20 +83,20 @@ Conversely, if the sidebands are 26 dB below the carrier, they are 0.05 times �
 
 <Figure {...F.spacingTellsCause} />
 
-A gearbox has several shafts turning (P2-6). If what shakes the size of the 300 Hz gear mesh is shaft A turning at 20 Hz, the sidebands are 20 Hz apart; if it is shaft B at 12.5 Hz, they are 12.5 Hz apart. **Measuring the sideband spacing lets you point to the causing shaft.**
+A gearbox has several shafts turning (P2-6 §6). If what shakes the size of the 300 Hz gear mesh is shaft A turning at 20 Hz, the sidebands are 20 Hz apart; if it is shaft B at 12.5 Hz, they are 12.5 Hz apart. **Measuring the sideband spacing lets you point to the causing shaft.**
 
 <Figure {...F.pulseModulation} />
 
-If the size change is not smooth like a sinusoid but grows **briefly** once per revolution, several pairs of sidebands appear, as in Figure 4. A brief change contains many integer multiples of $f_m$ (the same principle as the pulse train in P2-2). Even so, the spacing is always $f_m$.
+If the size change is not smooth like a sinusoid but grows **briefly** once per revolution, several pairs of sidebands appear, as in Figure 4. A brief change contains many integer multiples of $f_m$. It is the same principle we saw with the pulse train in P2-2 §1: what is short in time is wide in frequency. Even so, the spacing is always $f_m$.
 
 <Callout type="field" title="Where sidebands appear">
 
-- **Gears**: if a gear sits slightly crooked (eccentric) on its shaft, the mesh gets stronger once per revolution → gear mesh frequency (<a href={withBase('/en/p1-8/')}>P1-8</a>) ± 1X of that shaft. If one tooth is damaged, the mesh gets stronger only briefly, so several pairs of sidebands appear (looking at only that shaft with the TSA of P2-6 makes this clearer).
-- **Rolling bearings**: a defect on the inner ring turns with the shaft and passes the loaded bottom zone once per revolution → defect frequency ± 1X. For how to count the defect frequency (the rate at which a ball passes one point on the inner ring), see <a href={withBase('/en/p1-8/')}>P1-8</a>; telling defects apart is covered in Part 7.
+- **Gears**: if a gear is mounted with its center slightly off the shaft axis (eccentric), the mesh gets stronger once per revolution. So sidebands stand at the gear mesh frequency (<a href={withBase('/en/p1-8/')}>P1-8</a>) ± 1X of that shaft. If one tooth is damaged, the mesh gets stronger only briefly, at the moment that tooth meshes, so several pairs of sidebands appear (looking at only that shaft with the TSA of P2-6 §6 makes this clearer).
+- **Rolling bearings**: a defect on the inner ring turns with the shaft and passes the loaded bottom zone once per revolution. So the size of the impacts rises and falls once per revolution, and sidebands stand at the defect frequency ± 1X. For how to count the defect frequency (the rate at which a ball passes one point on the inner ring), see <a href={withBase('/en/p1-8/')}>P1-8</a>; telling defects apart is covered in Part 7.
 
 </Callout>
 
-The **rotating arrows** at the top of the lab draw each bar of the spectrum as one arrow (P1-2 · P2-2). The carrier arrow makes $f_c$ turns per second, the upper sideband $f_c + f_m$ turns, and the lower sideband $f_c - f_m$ turns. All three are far too fast, so the figure is viewed **rotating along with the carrier at the same speed**. It is like looking at the next horse from a horse on the carousel: it seems to stand still. Then the carrier arrow looks stationary, and only the two sideband arrows turn in opposite directions at $f_m$ turns per second from the tip of the carrier. In AM the sum of the two sidebands always points in the same direction as the carrier, so it only lengthens and shortens the carrier. **The length of the sum**, drawn on the right, **is the envelope**.
+The **rotating arrows** at the top of the lab draw each bar of the spectrum as one arrow (P1-2 · P2-2). The carrier arrow makes $f_c$ turns per second, the upper sideband $f_c + f_m$ turns, and the lower sideband $f_c - f_m$ turns. All three are far too fast, so the figure is viewed **rotating along with the carrier at the same speed**. It is like looking at the next horse from a horse on the carousel: it seems to stand still. Then the carrier arrow looks stationary, and only the two sideband arrows turn in opposite directions at $f_m$ turns per second from the tip of the carrier. In AM the sum of the two sideband arrows always lies parallel to the carrier arrow, so it only lengthens and shortens the carrier. **The length of the sum**, drawn on the right, **is the envelope**.
 
 <Callout type="try">
 
@@ -116,7 +116,7 @@ In step 1 the sideband is 0.25 mm/s, −12.0 dB below the carrier. In step 2 it 
 
 <Callout type="warn" title="'I can't see sidebands' does not mean 'there is no modulation'">
 
-To separate a sideband from the carrier, the spacing $f_m$ must be at least about 3.5 bins with Hann (P2-4). For $f_m$ = 1 Hz (a shaft turning at 60 rpm), that means Δf ≤ 0.29 Hz, i.e. a measurement of 3.5 s or longer. If the sidebands are small (−40 dB, etc.), they are invisible on a linear axis, so look in dB.
+To separate a sideband from the carrier, the spacing $f_m$ must be at least about 3.5 bins with Hann (P2-4 §2). For $f_m$ = 1 Hz (a shaft turning at 60 rpm), that means Δf ≤ 0.29 Hz, i.e. a measurement of 3.5 s or longer. If the sidebands are small (−40 dB, etc.), they are invisible on a linear axis, so look in dB.
 
 </Callout>
 
@@ -136,13 +136,13 @@ $$
 \beta = \frac{\text{largest frequency deviation}}{f_m},\qquad x(t) = A\cos(2\pi f_c t + \beta\sin 2\pi f_m t)
 $$
 
-In Figure 5, 40 Hz swings by ±10 Hz and $f_m$ = 5 Hz, so $\beta = 10/5 = 2$.
+In Figure 5, the frequency swings by ±10 Hz around 40 Hz and $f_m$ = 5 Hz, so $\beta = 10/5 = 2$.
 
 ### 3.2 Several pairs of sidebands, heights given by Bessel functions
 
 <Figure {...F.fmSpectra} />
 
-FM also makes sidebands on both sides of the carrier at spacing $f_m$. Unlike AM, several pairs appear, and the $n$-th sideband has height $J_n(\beta)$ times the carrier.
+FM also makes sidebands on both sides of the carrier at spacing $f_m$. Unlike AM, several pairs appear, and the $n$-th sideband has height $J_n(\beta)$ times the unmodulated carrier amplitude $A$.
 
 $$
 A\cos(2\pi f_c t + \beta\sin 2\pi f_m t) = A\sum_{n} J_n(\beta)\cos 2\pi(f_c + n f_m)t
@@ -157,8 +157,8 @@ A mathematical function that sets the heights of the FM sidebands. You do not ne
 What to read in Figure 6:
 
 - **When β is small** (0.5), only the first pair of sidebands is visible, which is similar to AM.
-- **As β grows**, the number of significant sideband pairs rises to roughly β + 1 (β = 5 → about 6 pairs).
-- **Near β = 2.4** the carrier almost vanishes. "The carrier is gone" does not mean the component has disappeared.
+- **As β grows**, the number of significant sideband pairs rises to roughly β + 1 (β = 5 gives about 6 pairs).
+- **Near β = 2.4** the carrier almost vanishes. Even so, the vibration has not become weaker; its power has simply moved into the sidebands.
 
 <Callout type="try">
 
@@ -207,7 +207,7 @@ If the two sidebands have different heights, it is not AM alone. Then calculatin
 
 ### 5.1 Two components adding up and cancelling
 
-In P2-4 we said that adding two sinusoids of slightly different frequency makes the size swell with a period of $1/\lvert f_1 - f_2\rvert$ seconds (beating). Since the envelope rises and falls, it looks similar to AM.
+In P2-4 §1 we said that adding two sinusoids of slightly different frequency makes the size swell with a period of $1/\lvert f_1 - f_2\rvert$ seconds (beating). Since the envelope rises and falls, it looks similar to AM.
 
 <Figure {...F.beatWave} />
 
@@ -223,7 +223,7 @@ But the spectra differ.
 <Callout type="field" title="Where beating is seen">
 
 - **Two neighboring machines** with slightly different speeds (two pumps, 1800 rpm and 1770 rpm): the vibration meter reading swells and fades with a period of a few seconds (Figure 8: 2 seconds).
-- In an induction motor, when twice the running speed (2X) and twice the line frequency (2LF, 120 Hz on a 60 Hz grid) are very close (P2-4).
+- In an induction motor, when twice the running speed (2X) and twice the line frequency (2LF, 120 Hz on a 60 Hz grid) are very close (P2-4 §2).
 
 </Callout>
 
@@ -239,7 +239,7 @@ But the spectra differ.
 
 <ModulationLab lang="en" client:visible initialMode="beat" />
 
-In step 1 the envelope swings between 0.4 and 1.6 mm/s with a 2-second period, and the spectrum has only two bars. In step 2 the period is 1/0.25 = 4 seconds. In step 3, with T = 2 s the 0.25 Hz difference is 0.5 bin, so the two bars merge into one; this is the state where the envelope swells and fades yet the spectrum has only a single bar. In step 4, when the two sizes are equal the envelope falls to 0 and the vibration seems to nearly stop and then grow again. In step 5 the f₂ arrow is 0.5 Hz slower than f₁, so viewed rotating with f₁ it turns **backwards** (clockwise) at 0.5 turn per second from the tip of f₁. The sum is 1.6 at the moment they point the same way and 0.4 when opposite, and one turn takes 2 seconds, so the beat period is 2 seconds. With the rotating view off, the two arrows turn at almost the same speed, drift apart little by little, and overlap again. This is the same principle as the strobe disk in P2-3. If you follow a fast rotation at the same speed, all that remains is the difference of the two speeds.
+In step 1 the envelope swings between 0.4 and 1.6 mm/s with a 2-second period, and the spectrum has only two bars. In step 2 the period is 1/0.25 = 4 seconds. In step 3, with T = 2 s the 0.25 Hz difference is 0.5 bin, so the two bars merge into one; this is the state where the envelope swells and fades yet the spectrum has only a single bar. In step 4, when the two sizes are equal the envelope falls to 0 and the vibration seems to nearly stop and then grow again. In step 5 the f₂ arrow is 0.5 Hz slower than f₁, so viewed rotating with f₁ it turns **backwards** (clockwise) at 0.5 turn per second from the tip of f₁. The sum is 1.6 at the moment they point the same way and 0.4 when opposite, and one turn takes 2 seconds, so the beat period is 2 seconds. With the rotating view off, the two arrows turn at almost the same speed, drift apart little by little, and overlap again. This is the same principle as the disk viewed under a flashing strobe in a dark room in P2-3 §1. If you follow a fast rotation at the same speed, all that remains is the difference of the two speeds.
 
 <Callout type="warn" title="'The size swells and fades' does not mean 'a defect'">
 

@@ -4,7 +4,7 @@ title: P2-3 Sampling · Aliasing · AAF · ADC
 description: The fake frequencies you get when you read a signal too rarely (aliasing), the filter and the f_s = 2.56 F_max rule that prevent them, and the bits, range and clipping of the ADC that writes voltages down as numbers
 sectionId: P2-3
 source: p2-3.mdx
-sourceHash: d722e110da
+sourceHash: e51da097d0
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -176,8 +176,8 @@ As step 4 shows, with $f_s = 2F_{max}$ a component just above $F_{max}$ folds in
 
 When you see a bar you cannot explain, **change $F_{max}$ (and with it $f_s$) slightly and measure again.**
 
-- If the bar stays where it was → it is a real component.
-- If the bar moves to another frequency → it is an alias whose fold position changed with $f_s$.
+- If the bar stays where it was, it is a real component.
+- If the bar moves to another frequency, it is an alias whose fold position changed with $f_s$.
 
 </Callout>
 
@@ -195,7 +195,7 @@ $$
 
 <Figure {...F.quantSteps} />
 
-The difference between the real value and the recorded one (at most ±½ LSB) looks like a little noise riding on the signal; this is <strong>quantization noise</strong>. The ratio of a full-range sine to the quantization noise (SQNR) is set by the number of bits.
+The difference between the real value and the recorded one (at most ±½ LSB) looks like a little noise riding on the signal; this is <strong>quantization noise</strong>. The ratio of a full-range sine to the quantization noise (SQNR, signal-to-quantization-noise ratio) is set by the number of bits.
 
 $$
 \mathrm{SQNR} \approx 6.02\,b + 1.76\ \mathrm{dB}

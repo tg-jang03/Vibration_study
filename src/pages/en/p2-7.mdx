@@ -4,7 +4,7 @@ title: P2-7 Spectrum Scaling and Vibration Units
 description: Why changing the number of lines leaves the tone alone and moves only the noise floor, choosing among amplitude, power and PSD, getting the overall level (band RMS) from a spectrum and the ENBW, √2 × RMS versus the true peak, converting µm pp, mm/s rms, in/s pk and g, and dB with its reference value
 sectionId: P2-7
 source: p2-7.mdx
-sourceHash: f8a295370c
+sourceHash: 3b8ea8b140
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -37,7 +37,7 @@ There are also two reports. One says the same pump runs at "0.25 in/s pk", the o
 
 <Figure {...F.linesVsFloor} />
 
-Figure 1 shows the same signal measured twice. It is a 50 Hz sine (tone) of 1 mm/s RMS plus white noise (P2-6) of 1 mm/s RMS spread evenly over 0 – 640 Hz. The vertical axis is the dB of P2-3, with 0 dB set to 1 mm/s.
+Figure 1 shows the same signal measured twice, at 400 lines and at 3200 lines. It is a 50 Hz sine (tone) of 1 mm/s RMS plus white noise (P2-6) of 1 mm/s RMS spread evenly over 0 – 640 Hz. The vertical axis is in dB (P2-3 §2), with 0 dB set to 1 mm/s.
 
 What you can read from Figure 1:
 
@@ -54,9 +54,9 @@ The signal did not change, only the height of the floor. The reason is that with
 
 <Figure {...F.binBasket} />
 
-In P2-5 we saw that a bin collects the components near its own frequency over a width of **ENBW × Δf** (1.5 bins for Hann). Figure 2 gives an easy picture. Noise lies evenly along the frequency axis, and a bin is a basket placed on top of it.
+In P2-5 §4 we saw that a bin collects the components near its own frequency over a width of **ENBW × Δf**. The ENBW (equivalent noise bandwidth) is a number fixed by the window: 1.5 bins for Hann. Figure 2 gives an easy picture. Noise lies evenly along the frequency axis, and a bin is a basket placed on top of it.
 
-- **Noise**: a wide basket collects more, a narrow one less. With 8 times as many lines the basket is 1/8 as wide, so the noise power in one bin is also 1/8. But there are 8 times as many baskets, so the total within 10 Hz stays the same (Figure 2: 0.0213 and 0.0227 (mm/s)²).
+- **Noise**: a wide basket collects more, a narrow one less. With 8 times as many lines the basket is 1/8 as wide, so the noise power in one bin is also 1/8. But there are 8 times as many baskets, so the total within 10 Hz stays the same. In Figure 2 the two totals are 0.0213 and 0.0227 (mm/s)², nearly equal.
 - **Tone**: it sits at a single frequency, so it falls into one bin whole, whatever the basket width. That is why the bar height does not change.
 
 <Callout type="term" title="Power Spectrum">
@@ -132,7 +132,7 @@ In step 2, in amplitude (RMS) the tone stays at 0 dB, and the noise floor drops 
 
 ### 4.1 Band RMS
 
-A vibration meter sometimes shows the overall level as a single number, such as "overall 4.2 mm/s rms". You can also get the RMS of the time waveform (P2-1) from the spectrum. By Parseval's theorem (P2-2), **adding the power of the components gives the total power**. If you add only the frequency range you want, you get the level of that band, which is called the <strong>Band RMS</strong>.
+A vibration meter sometimes shows the overall level as a single number, such as "overall 4.2 mm/s rms". You can also get the RMS of the time waveform (P2-1) from the spectrum. By Parseval's theorem (P2-2 §1), **adding the power of the components gives the total power**. If you add only the frequency range you want, you get the level of that band, which is called the <strong>Band RMS</strong>.
 
 $$
 \text{Band RMS} = \sqrt{\frac{\sum_{k} PS_k}{\mathrm{ENBW}}}
@@ -208,7 +208,7 @@ In P2-1 you learned displacement, velocity and acceleration, and Peak, Peak-Peak
 
 <Callout type="term" title="mil, in/s, g">
 
-**mil** is 1/1000 inch = 25.4 µm, and **in/s** is inch/s = 25.4 mm/s. **g** is the standard gravitational acceleration, 9.80665 m/s². Changing only the unit is a single multiplication, but mistakes become frequent when Peak ↔ RMS (a factor of √2) and displacement ↔ velocity ↔ acceleration (which needs the frequency) get mixed in.
+**mil** is 1/1000 inch = 25.4 µm, and **in/s** is inch/s = 25.4 mm/s. **g** is the standard gravitational acceleration, 9.80665 m/s². Changing only the unit is a single multiplication, but mistakes become frequent when conversions between Peak and RMS (a factor of √2) and among displacement, velocity and acceleration (which need the frequency) get mixed in.
 
 </Callout>
 

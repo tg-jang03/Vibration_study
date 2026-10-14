@@ -4,7 +4,7 @@ title: P2-1 Signal and Spectrum Basics
 description: Reading the time waveform a sensor recorded by its quantity, unit and amplitude convention, and connecting the spectrum to the sampling settings
 sectionId: P2-1
 source: p2-1.mdx
-sourceHash: f4ed1f088a
+sourceHash: 191859abe0
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -143,7 +143,7 @@ RMS expresses the size over the whole recorded interval, and even a large impact
 
 The <strong>DC component</strong> (direct-current component, 0 Hz component) is the mean of the signal, that is, how far the whole signal is shifted to one side.
 The formula above includes the DC. An RMS computed after subtracting the mean shows only the shaking around that mean.
-Why the mean gap of a sensor and the vibration component are looked at separately continues in Part 3.
+Why the mean gap between shaft and sensor (DC) and the vibration around it are looked at separately continues in P3-2 §3.
 
 </Callout>
 
@@ -251,19 +251,19 @@ The samples sit at $0,\Delta t,\ldots,(N-1)\Delta t$, but the frame length is wr
 
 </Callout>
 
-If you record for longer, the basic frequency grid gets finer. However, the ability to actually separate two components close to the grid spacing does not mean exactly the same thing.
+If you record for longer, the basic frequency grid gets finer. However, a finer grid is not exactly the same thing as the ability to actually tell two close components apart.
 We look at that difference and the resolution in <a href={withBase('/en/p2-4/')}>P2-4</a>.
 
 ### 6.1 Read too rarely, and it looks like another frequency
 
 <Figure {...F.enoughSamples} caption="Figure 7. The same 10 Hz signal read at two rates. Top: reading 100 times a second (10 per period), the original shape survives when you connect the dots. Bottom: reading only 12 times a second (1.2 per period), the dots draw a slow 2 Hz wave (dotted line) — aliasing, where a frequency that is not really there appears. You need more than 2 samples per period (details in P2-3)." />
 
-In the lower part of Figure 7 a real 10 Hz signal was read at 12 Hz, and you can also draw a 2 Hz wave through the same points.
+In the lower part of Figure 7 a real 10 Hz signal was read 12 times a second (sampling frequency 12 Hz), and you can also draw a 2 Hz wave through the same points.
 This phenomenon, where a high frequency appears folded down to a low one, is <strong>aliasing</strong>. From the stored points alone you cannot tell the two signals apart.
 
 <Callout type="warn" title="Is it enough to match the sampling limit exactly?">
 
-Under the condition that you must read at more than twice the highest frequency in the signal, the <strong>Nyquist frequency</strong> is $f_N=f_s/2$.
+The sampling frequency must be more than twice the highest frequency in the signal. Put the other way, when you read at $f_s$, the boundary up to which components keep their own frequency is $f_N=f_s/2$, called the <strong>Nyquist frequency</strong>.
 Reading at 2560 Hz puts the boundary at 1280 Hz. A sine wave sitting exactly on the boundary can also be missed depending on its phase, so this does not mean "everything up to 1280 Hz is accurate without exception".
 We experiment with the real settings, including the filter that limits components above the boundary beforehand, in <a href={withBase('/en/p2-3/')}>P2-3</a>.
 
@@ -328,7 +328,7 @@ If several components are mixed, it is also not appropriate to convert the overa
 <summary><strong>Q6. If you keep the number of samples and double the sampling frequency, what happens to the measurement time and the spacing?</strong></summary>
 
 The measurement time is halved to 0.2 s, and the basic spacing doubles to 5 Hz.
-You changed how fast the sensor reads, so the machine's own rotating frequency does not double.
+You changed how fast the analyzer reads the signal, so the machine's own rotating frequency does not double.
 
 </details>
 
@@ -336,7 +336,7 @@ You changed how fast the sensor reads, so the machine's own rotating frequency d
 <summary><strong>Q7. If the 1X spectrum bar got bigger, does the unbalance excitation force necessarily get bigger?</strong></summary>
 
 It may, but you cannot say so for certain. The response characteristics of the structure or the measurement conditions may have changed.
-As in P1-9, check the speed, phase, location, operating conditions and so on together.
+Check it against the five pieces of evidence listed in P1-9 §3 (frequency, amplitude, phase, direction, and change with operating conditions).
 
 </details>
 

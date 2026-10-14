@@ -7,6 +7,7 @@
 //         --anim-smoke (움직이는 그림 재생 확인·캡처)
 //         --visuals --mobile-widths 360,390,430 --compare-desktop <수정 전 캡처 폴더>
 //         --mobile-smoke (모바일 그림 잘림·확대/닫기·세로 분할·재생/멈춤)
+//         --controls-smoke (랩의 선택 상자·체크·누름 버튼을 바꾸면 바로 반영되는지)
 // 결과: 경로마다 한 줄 요약 + JSON(<out>/report.json). 오류가 있으면 종료 코드 1.
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -53,6 +54,7 @@ const orbitSmoke = flag('orbit-smoke');
 const bodeSmoke = flag('bode-smoke');
 const severitySmoke = flag('severity-smoke'); // LAB-ISO-01 사용자 경계·변화·조건
 const animSmoke = flag('anim-smoke'); // 움직이는 그림 패널(.anim-panel)마다 재생 확인·캡처 (D-044)
+const controlsSmoke = flag('controls-smoke'); // 모든 랩의 선택 상자·체크·누름 버튼: 바꾸면 바로 반영되는지 (늦게 반영 = 다른 조작 뒤에야 바뀜)
 // Git Bash는 '/p3-5/'를 'C:/Program Files/Git/p3-5/'로 바꿔 넘긴다 → 되돌린다
 const paths = (args.length ? args : ['/']).map((p) => p.replace(/^[A-Za-z]:[\/].*?[\/]Git(?=[\/]|$)/, '') || '/');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -190,6 +192,74 @@ for (const p of paths) {
   await sleep(2000);
   const labs = await ev(`[...document.querySelectorAll('.lab-frame')].map(f => ({ id: f.querySelector('.lab-id')?.textContent ?? '?', plots: f.querySelectorAll('.js-plotly-plot').length, svgs: f.querySelectorAll('svg').length }))`);
   const unhydrated = (labs ?? []).filter((l) => l.plots === 0 && l.svgs === 0).map((l) => l.id);
+  if (controlsSmoke) {
+    // 조작마다: 바꾼 뒤 화면(그림·읽음값) A → 다른 조작을 바꿨다 되돌린 뒤 화면 B. 상태가 같으니 A = B여야 한다.
+    // A ≠ B면 "바꾼 직후 화면이 늦다"(다른 것을 눌러야 반영), A = 바꾸기 전이면 "바꿔도 그대로"(참고).
+    const smoke = await ev(`(async () => {
+      const wait=ms=>new Promise(r=>setTimeout(r,ms));const settle=()=>wait(600);
+      const setRange=(n,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(n,String(v));n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));};
+      const choose=(s,i)=>{s.value=String(i);s.dispatchEvent(new Event('change',{bubbles:true}));};
+      const stale=[];const inert=[];let checks=0;
+      for(const lab of document.querySelectorAll('.lab-frame')){
+        const id=lab.querySelector('.lab-id')?.textContent??'?';
+        lab.scrollIntoView({block:'center'});await wait(300);
+        // 화면 서명: Plotly는 넘긴 데이터 요약·축 범위·그려진 계열 수, 그 밖의 SVG는 내용, 글은 글자만 (HTML 직렬화·1px 폭 차이는 무시)
+        const sum=a=>{if(!a)return '';const f=Array.from(a).flat(2);let s=0;f.forEach((v,i)=>{if(Number.isFinite(+v))s+=(+v)*(1+i%7);});return f.length+':'+s.toPrecision(7);};
+        const plotSig=gd=>JSON.stringify([(gd.data||[]).map(t=>[t.type,t.name,t.mode,sum(t.x),sum(t.y),sum(t.z),t.marker?.color,t.line?.color,t.line?.dash]),
+          ['xaxis','yaxis'].map(k=>{const ax=gd._fullLayout?.[k];return [ax?.range?.map(v=>+(+v).toPrecision(5)),ax?.title?.text,ax?.type];}),
+          (gd.layout?.shapes||[]).length,gd.querySelectorAll('.scatterlayer .trace, .barlayer .trace, .heatmaplayer .hm').length]);
+        const textOf=root=>{const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let s='';while(w.nextNode()){if(!w.currentNode.parentElement.closest('.js-plotly-plot'))s+=w.currentNode.data;}return s.replace(/\\s+/g,' ');};
+        const norm=h=>h.replace(/style="([^"]*)"/g,(m,s)=>'style="'+s.replace(/\\s+/g,'').replace(/;$/,'')+'"');
+        const sig=()=>[...lab.querySelectorAll('.js-plotly-plot')].map(plotSig).join('|')+'#'+[...lab.querySelectorAll('.lab-plots svg, .lab-results svg')].filter(s=>!s.closest('.js-plotly-plot')).map(s=>norm(s.innerHTML)).join('|')+'#'+[...lab.querySelectorAll('.lab-plots, .lab-results')].map(textOf).join('|');
+        const live=()=>[...lab.querySelectorAll('.lab-controls select, .lab-controls input[type="checkbox"], .lab-controls button[aria-pressed]')].filter(n=>!n.disabled);
+        // 다른 조작 하나를 바꿨다 되돌린다. 그 조작이 시험 중인 조작의 값까지 바꾸면(목적 → 직접 설정 등) 다음 후보로.
+        const state=n=>n.tagName==='SELECT'?n.value:n.type==='checkbox'?String(n.checked):n.getAttribute('aria-pressed');
+        const nudge=async(k)=>{
+          const target=live()[k];const want=target&&state(target);
+          const cands=[...lab.querySelectorAll('.lab-controls input[type="range"]'),...lab.querySelectorAll('.lab-controls select')].filter(n=>n!==target&&!n.disabled&&(n.tagName!=='SELECT'||n.options.length>1));
+          for(const c of cands){
+            const v=c.value;
+            if(c.tagName==='SELECT'){choose(c,v==='0'?1:0);await settle();choose(c,v);}
+            else{setRange(c,Number(v)===Number(c.min)?c.max:c.min);await settle();setRange(c,v);}
+            await settle();
+            const now=live()[k];
+            if(now&&state(now)===want)return true;
+            if(now&&now.tagName==='SELECT'){choose(now,want);await settle();}else if(now){now.click();await settle();}
+          }
+          return false;
+        };
+        const diff=(a,b)=>{let i=0;while(i<a.length&&a[i]===b[i])i++;return a.slice(Math.max(0,i-60),i+80)+' ≠ '+b.slice(Math.max(0,i-60),i+80);};
+        const name=n=>(n.closest('.param')?.querySelector('label span, span')?.textContent??n.textContent??'').trim().slice(0,30);
+        const total=live().length;
+        for(let k=0;k<total;k++){
+          const n=live()[k];if(!n)break;
+          const label=name(n);
+          const steps=n.tagName==='SELECT'?[...n.options].map((_,i)=>i).filter(i=>String(i)!==n.value).slice(0,6):[null];
+          const orig=n.tagName==='SELECT'?n.value:null;
+          for(const i of steps){
+            const node=live()[k];if(!node)break;
+            const before=sig();
+            if(node.tagName==='SELECT')choose(node,i);else node.click();
+            await settle();
+            const a=sig();
+            if(!(await nudge(k))){if(node.tagName!=='SELECT'){live()[k]?.click();await settle();}break;}
+            const b=sig();checks++;
+            const what=id+' · '+label+(i===null?'':' → '+(node.options[i]?.textContent??i));
+            if(a!==b)stale.push(what+'\\n         '+diff(a,b).replace(/\\s+/g,' '));else if(a===before)inert.push(what);
+            if(node.tagName!=='SELECT'){const again=live()[k];again?.click();await settle();}
+          }
+          const back=live()[k];if(back&&orig!==null&&back.value!==orig){choose(back,orig);await settle();}
+        }
+      }
+      return {checks,stale,inert};
+    })()`);
+    if (!smoke) errors.push('조작 반영 검사: 평가 실패');
+    else {
+      for (const s of smoke.stale) errors.push('바꾼 직후 화면이 늦음 (다른 조작 뒤에야 반영): ' + s);
+      console.log(`     조작 반영 ${smoke.checks}건 · 늦음 ${smoke.stale.length} · 바꿔도 그대로 ${smoke.inert.length}`);
+      for (const s of smoke.inert) console.log('       (그대로) ' + s);
+    }
+  }
   if (severitySmoke) {
     const smoke = await ev(`(async () => {
       const labs=[...document.querySelectorAll('.lab-frame')].filter(l=>l.querySelector('.lab-id')?.textContent==='LAB-ISO-01');

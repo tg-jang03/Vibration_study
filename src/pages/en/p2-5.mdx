@@ -4,7 +4,7 @@ title: P2-5 Windows
 description: Why a bar spreads out (leakage) and comes out low (scalloping loss) when a component lies between bins, what a window does and what it costs, choosing a window by its main lobe and side lobes, and amplitude versus energy correction
 sectionId: P2-5
 source: p2-5.mdx
-sourceHash: f4627e86da
+sourceHash: 018609832b
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -36,7 +36,7 @@ It is not a machine problem, and the analyzer is not broken. It comes from the w
 
 ### 1.1 The FFT assumes the frame repeats
 
-In P2-2 we said that a DFT bin is "a template that repeats exactly $k$ times within the measurement time $T$". Turned around, this means the FFT is effectively computing **a signal in which the measured frame repeats identically before and after**. If the signal repeats a whole number of times within the frame, this assumption holds; otherwise it does not.
+In P2-2 §2.1 we said that a DFT bin is "a template that repeats exactly $k$ times within the measurement time $T$". Turned around, this means the FFT is effectively computing **a signal in which the measured frame repeats identically before and after**. If the signal repeats a whole number of times within the frame, this assumption holds; otherwise it does not.
 
 <Figure {...F.frameEnds} />
 
@@ -77,13 +77,13 @@ A weight $w$ multiplied onto each sample in the frame before the FFT. The weight
 
 <Figure {...F.uniformVsHann} />
 
-In Figure 4 the Hann window greatly reduces the far leakage (at 70 Hz, −29 dB → −69 dB) and also brings the highest bar from 0.64 → 0.85, closer to the real value of 1.
+In Figure 4 the Hann window greatly reduces the far leakage (at 70 Hz, from −29 dB to −69 dB) and also raises the highest bar from 0.64 to 0.85, closer to the real value of 1.
 
-There is a price, too. **The central peak gets wider.** Because the two ends are turned down, the part of the 1-second frame that is really "seen well" is effectively shorter. As we saw in P2-4, looking for a shorter time makes frequency separation coarser, so the peak gets wider. The Hann peak is twice as wide as the one with no window (the "Hann window (preview)" box in P2-4).
+There is a price, too. **The central peak gets wider.** Because the two ends are turned down, the part of the 1-second frame that is really "seen well" is effectively shorter. As we saw in P2-4 §1, looking for a shorter time makes frequency separation coarser, so the peak gets wider. The Hann peak is twice as wide as the one with no window (the "Hann window (preview)" box in P2-4 §2.1).
 
 <Callout type="try">
 
-1. In the starting state (no window, δ = 0 bin), check that a single bar of 1.000 stands at 60 Hz. The readout "10 bins away" is −120 dB (effectively 0).
+1. δ is how far the component sits from the 60 Hz grid line, in bins. In the starting state (no window, δ = 0 bin), check that a single bar of 1.000 stands at 60 Hz. The readout "10 bins away" is −120 dB (effectively 0).
 2. Slowly raise δ to 0.5. How do the highest bar, the scalloping loss and the size 10 bins away change?
 3. At δ = 0.5, switch the window from Hann → Flat top and read the highest bar each time. In the time waveform, also watch the outline of the weighted signal take on the shape of the window.
 4. Turn on "Show in dB" and compare no window with Blackman-Harris.
@@ -122,7 +122,7 @@ Each window draws a single component with a different shape. It is easier to com
 <Callout type="term" title="Main lobe and side lobes">
 
 - <strong>Main lobe</strong>: the central peak at the component's position. Its width is given as the distance to the first zero (the half-width). The narrower it is, the less two close components merge.
-- <strong>Side lobes</strong>: the row of small peaks outside the main lobe. They are exactly the "far leakage" of section 1. The lower they are, the less a small component next to a large one is hidden.
+- <strong>Side lobes</strong>: the row of small peaks outside the main lobe. They are exactly the leakage that spreads far out, which we saw in §1.2. The lower they are, the less a small component next to a large one is hidden.
 
 </Callout>
 
@@ -170,7 +170,7 @@ Collecting the readouts gives the table below. The key point is that the order f
 
 <Callout type="warn" title="Do not separate close components with Flat top">
 
-Flat top gives accurate amplitudes, but its main lobe is ±5 bins, so by the P2-4 criterion two components must be about 8 bins apart before they separate. Two components 1 Hz apart can be separated in 3.5 seconds with Hann, but Flat top needs 8 seconds.
+Flat top gives accurate amplitudes, but its main lobe is ±5 bins, so by the P2-4 §2.1 criterion two components must be about 8 bins apart before they separate. Two components 1 Hz apart can be separated in 3.5 seconds with Hann, but Flat top needs 8 seconds.
 
 </Callout>
 
@@ -193,7 +193,7 @@ $$
 \mathrm{ENBW} = \left(\frac{\mathrm{ACF}}{\mathrm{ECF}}\right)^2\ [\mathrm{bin}]
 $$
 
-A bar drawn over a symbol, as in $\overline{w}$, means the mean over the whole frame. The third number, the <strong>equivalent noise bandwidth (ENBW)</strong>, is "how many bins' worth of noise one bin actually collects when noise is present". For Hann it is 1.5 bins, so in an amplitude-corrected spectrum the noise bars look 1.5 times larger in power than they really are.
+A bar drawn over a symbol, as in $\overline{w}$, means the mean over the whole frame. The third number, the <strong>equivalent noise bandwidth (ENBW)</strong>, is "how many bins' worth of noise one bin actually collects when noise is present". For Hann it is 1.5 bins, so in an amplitude-corrected spectrum the noise bars look 1.5 times larger in power (amplitude squared) than they really are.
 
 | Window | ACF | ECF | ENBW |
 |---|---|---|---|

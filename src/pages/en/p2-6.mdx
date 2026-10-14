@@ -4,7 +4,7 @@ title: P2-6 Averaging and TSA
 description: Why the noise floor of a single spectrum is ragged, power averaging (smoother but not lower) and vector averaging (noise cancels when there is a trigger), exponential averaging and peak hold, overlap and total measurement time, and TSA (time synchronous averaging) for picking out one shaft's components and locating a fault
 sectionId: P2-6
 source: p2-6.mdx
-sourceHash: bbc9046026
+sourceHash: 01e666ea7c
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -19,7 +19,7 @@ import * as F from '../../figures/p2-6';
 
 A small bar is barely visible on the floor of the spectrum. Measure again and it is gone, and the next time a similar bar stands somewhere else. Is it a real component, or did the noise just happen to spike?
 
-This is when you switch on the analyzer's **averaging** function. But does averaging lower the noise floor? The answer is "it depends on the averaging method." This page uses figures and labs to check what shrinks and what stays the same for each method. In the last section, the same idea is applied to the time waveform, and we look at TSA, which picks out the components of one shaft in a machine where several shafts turn together.
+This is when you switch on the analyzer's **averaging** function. But does averaging lower the noise floor? The answer is "it depends on the averaging method." This page uses figures and labs to check what shrinks and what stays the same for each method. In Section 6, the same idea is applied to the time waveform, and we look at TSA, which picks out the components of one shaft in a machine where several shafts turn together.
 
 <Callout type="idea" title="After reading this page">
 
@@ -37,11 +37,11 @@ This is when you switch on the analyzer's **averaging** function. But does avera
 
 <Callout type="term" title="Random Noise">
 
-Fluctuation whose value changes irregularly from moment to moment. Its causes are fluid flow, neighboring machines, electrical noise and so on. Noise spread evenly over all frequencies is called <strong>White Noise</strong>. The quantization noise in P2-3 is one kind of such noise.
+Fluctuation whose value changes irregularly from moment to moment. Its causes are fluid flow, neighboring machines, electrical noise and so on. Noise spread evenly over all frequencies is called <strong>White Noise</strong>. The quantization noise that arises when the ADC writes a voltage down as stepped numbers (P2-3 §3) is one kind of such noise.
 
 </Callout>
 
-If you cut random noise into 1-second frames and draw the spectrum of each, the noise magnitude in each bin also differs from frame to frame. In P2-2 we said the phase of a noise-only bin is random; the magnitude is likewise different every time.
+If you cut random noise into 1-second frames and draw the spectrum of each, the noise magnitude in each bin also differs from frame to frame. In P2-2 §3 we said the phase of a noise-only bin is random; the magnitude is likewise different every time.
 
 <Figure {...F.jaggedFloor} />
 
@@ -305,7 +305,7 @@ As gears turn, their teeth mesh one after another and exchange force. A gear wit
 
 <Figure {...F.tsaMixture} />
 
-Two things to see in Figure 9. The components of shaft A (the mesh and the fault impact) return to the same place with the same shape between the dotted Keyphasor lines. The component of shaft B, on the other hand, oscillates 13.4 times while shaft A turns once, so on the next revolution it starts at a place shifted by 0.4 of a cycle. TSA uses this difference.
+Two things to see in Figure 9. The components of shaft A (the mesh and the fault impact) return to the same place with the same shape between the dotted Keyphasor lines. The component of the neighboring shaft B, on the other hand, oscillates 13.4 times while shaft A turns once, so on the next revolution it starts at a place shifted by 0.4 of a cycle. TSA uses this difference.
 
 ### 6.2 Average the same angles together
 
@@ -369,11 +369,11 @@ In step 2, at M = 64 the residual noise falls to 0.1 m/s² and the blue line alm
 
 The TSA result still contains large regular components of shaft A (1X, the mesh), so a small fault impact shows up only as a slight distortion of the waveform. So we look at **what remains after subtracting the regular components** from the TSA result. In gear diagnosis this is called the <strong>Residual signal</strong>.
 
-The way to subtract is simple. The TSA result is a waveform that repeats every revolution, so like the Fourier series of P2-2 it can be written as a sum of harmonics 1, 2, 3, and so on. You just delete the terms of orders 1, 15 and 30.
+The way to subtract is simple. The TSA result is a waveform that repeats every revolution, so like the Fourier series of P2-2 §1 it can be written as a sum of harmonics 1, 2, 3, and so on. You just delete the terms of order 1 (1X), order 15 (the mesh) and order 30 (twice the mesh).
 
 <Figure {...F.tsaResidual} />
 
-Below Figure 12, the ringing is only at the 120° position. Since the position is visible as an angle within one revolution, you can even point to "which tooth." One tooth spans 24°, so counting from 0° it is the sixth tooth (120° to 144°).
+Below Figure 12, the ringing is only at the 120° position. Since the position is visible as an angle within one revolution, you can even point to "which tooth." The 15 teeth divide one revolution, so one tooth spans 24° (360° ÷ 15), and counting from 0° it is the sixth tooth (120° to 144°).
 
 <Callout type="try">
 
@@ -391,7 +391,7 @@ With one revolution alone, the fault ringing (about 1 m/s² at most) is buried i
 
 TSA keeps only the components tied to shaft A, which has the Keyphasor, and cancels the rest. A fault on shaft B is in fact cancelled in the TSA of shaft A. To look at shaft B you must run a separate TSA with a reference aligned to shaft B's rotation (shaft B's Keyphasor, or shaft B's angle calculated from the gear ratio).
 
-Also, a real machine's speed wobbles a little, so the number of samples per revolution differs every time. So each revolution is re-divided into the same number of angle points before averaging (sampling aligned to the rotation angle, P2-4 §3 → in detail P5-4).
+Also, a real machine's speed wobbles a little, so the number of samples per revolution differs every time. So each revolution is re-divided into the same number of angle points before averaging. This way of sampling in step with the rotation angle was briefly introduced as order tracking in P2-4 §3, and P5-4 covers it in detail.
 
 </Callout>
 

@@ -86,6 +86,6 @@ describe('P2-1 측정 기초 (M2.9)', () => {
     expect(2560 / 1024).toBe(2.5);
     expect(2560 / 2).toBe(1280);
     expect(source).toContain('평균을 빼고 계산한 RMS');
-    expect(source).toContain('눈금 간격과 가까운 두 성분을 실제로 구별하는 능력');
+    expect(source).toContain('가까운 두 성분을 실제로 구별해 내는 능력');
   });
 });

@@ -4,7 +4,7 @@ title: P2-2 Fourier Basics
 description: Building a waveform by stacking sinusoids (harmonics), picking out components by multiplying with a template (DFT), the single-sided spectrum, the truth about zero padding, and the FFT
 sectionId: P2-2
 source: p2-2.mdx
-sourceHash: 68aa194983
+sourceHash: 6a94e6cca6
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -84,7 +84,7 @@ You can also watch the adding in motion. In P1-2 we drew one sinusoid as "the he
 
 <FourierHarmonicsLab client:load lang="en" />
 
-In step 5, the square wave's chain is a big 1st-order arrow turning slowly, with small 3rd and 5th arrows on its tip turning 3 and 5 times faster and shaking the end up and down. Near the top the higher arrows point in opposite directions, so the height stays flat; when the 1st arrow passes the side, the higher arrows all line up on the same side and the end jumps quickly across. That is the corner. The sawtooth wave has arrows at every order, so the end climbs slowly and then drops in one step.
+In step 5, the square wave's chain is a big 1st-order arrow turning slowly, with small 3rd and 5th arrows on its tip turning 3 and 5 times faster and shaking the end up and down. Near the top the higher arrows point in opposite directions, so the height stays flat; when the 1st arrow passes the side (height 0), the higher arrows all line up on the same side and the end jumps quickly across. That is the corner. The sawtooth wave has arrows at every order, so the end climbs slowly and then drops in one step.
 
 The lab's "highest order N" is **how far up in order to add**, and the number of components actually added differs by waveform. The sawtooth wave has every order at $2/(n\pi)$; the square wave has only the odd orders, at $4/(n\pi)$.
 Even if you raise N to 15, the small horn beside the corner does not go away; it only gets narrower. This means that making a sharp corner exactly takes very high orders.
@@ -108,7 +108,7 @@ $$
 x_{rms}^2 = A_0^2 + \sum_{n=1}^{\infty} \frac{A_n^2}{2}
 $$
 
-The RMS² of one sinusoid is $A^2/2$ (P2-1 §4), so it says to add that value for each component. If you turn on "shuffle phases" in the lab above, the RMS readout stays the same and only Peak and Crest factor change.
+The RMS² of one sinusoid is $A^2/2$ (P2-1 §4), so it says to add that value for each component. If you turn on "shuffle phases" in the harmonics lab of §1.2, the RMS readout stays the same and only Peak and Crest factor change.
 
 <Callout type="idea">
 
@@ -122,7 +122,7 @@ Change the width of a pulse (a signal that switches on briefly and off again) an
 
 <Figure {...F.pulseWidth} />
 
-When the pulse width becomes 4 times narrower, the range over which the spectrum spreads becomes 4 times wider. In the lab above, set the waveform to "pulse train" and reduce the duty ratio from 0.5 to 0.05 to check.
+When the pulse width becomes 4 times narrower, the range over which the spectrum spreads becomes 4 times wider. In the harmonics lab of §1.2, set the waveform to "pulse train" and reduce the duty ratio from 0.5 to 0.05 to check.
 Because of this property, if you strike a structure briefly with a hammer, a wide frequency range is shaken at once, and from the response you can find several natural frequencies in one go (impact test, P9-1).
 
 ---
@@ -146,7 +146,7 @@ The size of the sum is proportional to the component's amplitude. For a componen
 <Callout type="term" title="bin">
 
 The DFT does not set the template at just any frequency; it uses only **templates that repeat exactly $k$ times within the measurement time $T$** ($k = 0, 1, 2, \dots$). This $k$th template, or the one bar it produces, is called a <strong>bin</strong>.
-The frequency of the $k$th bin is $k/T = k\,\Delta f$. In the example above $T = 1\ \mathrm{s}$, so bin $k$ = $k$ Hz. The resolution $\Delta f = 1/T$ that we saw in P2-1 is exactly the **spacing between bins**.
+The frequency of the $k$th bin is $k/T = k\,\Delta f$. In the example above $T = 1\ \mathrm{s}$, so bin $k$ = $k$ Hz. The frequency spacing $\Delta f = 1/T$ that we saw in P2-1 §6 is exactly the **spacing between bins**.
 Because the template repeats a whole number of times within $T$, if the signal is also at a bin frequency that repeats a whole number of times, the sum of its product with any other bin is exactly 0.
 
 </Callout>
@@ -187,7 +187,7 @@ $2\pi k n / N$ is $2\pi \times (k\,\Delta f) \times (n\,\Delta t)$, that is, the
 
 <DftCorrelationLab client:load lang="en" />
 
-As you saw in step 4, if the signal frequency lies between bins, it matches no template exactly, so it **shows up spread over several bins, and even the largest bin's amplitude comes out lower than the true value**. This is called <strong>spectral leakage</strong>, and P2-5 covers windows that reduce this problem.
+As you saw in step 4, if the signal frequency lies between bins, it matches no template exactly, so it **shows up spread over several bins, and even the largest bin's amplitude comes out lower than the true value**. This is called <strong>spectral leakage</strong>, and P2-5 covers windows (weights multiplied onto each sample before the FFT) that reduce this problem.
 The smooth curve at the bottom of the lab is drawn by moving the template frequency $k$ continuously through non-integer values. The curve that zero padding draws in §4 is exactly this.
 
 ---
@@ -206,7 +206,7 @@ $$
 \cos(2\pi f t) = \frac{1}{2}e^{\,j 2\pi f t} + \frac{1}{2}e^{-j 2\pi f t}
 $$
 
-We simply call the one turning counterclockwise $+f$ and the one turning clockwise $-f$; physically it does not mean shaking a "negative number" of times. The vertical components of the two arrows cancel and only the horizontal components remain, giving a real signal.
+We simply call the one turning counterclockwise $+f$ and the one turning clockwise $-f$; physically it does not mean shaking a "negative number" of times. Unlike the arrows of §1.2 and P1-2 (where the height is the signal value), here we follow the convention for complex numbers and put the real part horizontal. Then the vertical components of the two arrows cancel and only the horizontal components remain, giving a real signal.
 
 </Callout>
 
@@ -236,7 +236,7 @@ Then what happens if two components are close enough that their humps overlap a 
 
 <Callout type="try">
 
-1. With tone spacing Δ = 0.5 Hz and N = 32 (1 second), raise the zero-padding factor from ×1 to ×16. Does the "visible peak count" become 2?
+1. With the two-tone spacing Δ (the gap between two sinusoidal components sitting close together) = 0.5 Hz and N = 32 (1 second), raise the zero-padding factor from ×1 to ×16. Does the "visible peak count" become 2?
 2. Leave the padding as it is and change N to 128 (4 seconds).
 3. Set Δ = 1 Hz, N = 32 and padding ×16. Does it look like two peaks? Do the peak positions match the real tone positions (gray dotted lines)?
 
@@ -328,7 +328,7 @@ Zero padding will not work. With a 0.5-second measurement the hump of one compon
 No. The phase of a bin with a very small amplitude is a random value set by the noise, so it has no meaning to begin with. Interpret phase only at bins with a clear component (for example 1X).
 </details>
 
-In the next page (P2-3) we return to the question we only tasted in P2-1 §6 — when a component higher than $f_s/2$ comes in, what shows up in the spectrum, and how does the analyzer prevent it?
+In the next page (P2-3) we return to the aliasing question we only tasted in P2-1 §6.1 — when a component higher than $f_s/2$ comes in, what shows up in the spectrum, and how does the analyzer prevent it?
 
 ## References
 
