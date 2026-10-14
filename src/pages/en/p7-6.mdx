@@ -4,7 +4,7 @@ title: P7-6 Gears
 description: Mesh frequency from the tooth counts and the speeds of the two shafts, telling which shaft is faulty from the sideband spacing, the hunting tooth frequency, the spectra and waveforms of wear, eccentricity, a broken tooth and backlash, finding which tooth with a per-shaft TSA, Residual, FM4 and the cepstrum, and telling faults apart and confirming them with the five evidence elements
 sectionId: P7-6
 source: p7-6.mdx
-sourceHash: ce3a9d3587
+sourceHash: 7f16ece664
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p7-6';
 
 # 7-6 Gears: which shaft's gear is damaged, and how
 
-In P7-1, we divided the 571.2 Hz line by the pinion's 23 teeth to find the input shaft speed (24.83 Hz). But that line is present even when the gears are perfectly healthy. So what do we look at to tell that a gear is damaged? If small lines line up beside the mesh line, is the damaged part the small gear on the input shaft (the pinion) or the large gear on the output shaft?
+In P7-1 §4.2, for a reducer whose speed was unknown (23-tooth pinion, 61-tooth gear), we divided its 571.2 Hz mesh line by the pinion's 23 teeth to find the input shaft speed (24.83 Hz). But that line is present even when the gears are perfectly healthy. So what do we look at to tell that a gear is damaged? If small lines line up beside the mesh line, is the damaged part the small gear on the input shaft (the pinion) or the large gear on the output shaft?
 
 In P1-8 we learned the mesh frequency, in P2-8 sidebands, and in P2-6 and P5-7 the TSA and the cepstrum. This page ties them together into gear diagnosis.
 
@@ -80,7 +80,7 @@ To tell these spacings apart, the resolution must be sufficient (P2-4). To separ
 
 If tooth 6 of the pinion and tooth 18 of the gear are both damaged, how often do they meet?
 
-Counting engagements from 0, at the nth engagement pinion tooth n mod 23 meets gear tooth n mod 61. For the same pair to meet again, n must advance by a common multiple of 23 and 61, so it happens once every least common multiple, LCM(23, 61) = 1403 engagements.
+Counting engagements from 0, at the nth engagement the pinion tooth numbered by the remainder of n divided by 23 (n mod 23) meets the gear tooth numbered by the remainder of n divided by 61 (n mod 61). For the same pair to meet again, n must advance by a common multiple of 23 and 61, so it happens once every least common multiple, LCM(23, 61) = 1403 engagements.
 
 $$
 f_{HT} = \frac{\text{GMF}}{\text{LCM}(z_1, z_2)} = \frac{f_1 \cdot \text{GCD}(z_1, z_2)}{z_2}
@@ -153,7 +153,7 @@ As in Figure 6, the GMF line grows with load whether the gear is healthy or has 
 
 <GearSpectrumLab client:visible lang="en" />
 
-In step 1, the GMF is 0.86 g, 2×GMF ÷ GMF is 0.35, and no sideband exceeds 1 %. In step 2 with eccentricity, the first pair stands at about 19 % of the GMF on the spacing scale of the chosen gear, and four sidebands exceed 1 %: ±1 and ±2. In step 3 with a broken tooth, all 30 sidebands at the chosen gear's spacing out to ±15 exceed 1 %, and the impact spacing in the waveform is 106.8 ms (gear) or 40.27 ms (pinion). In step 4, the 2× and 3×GMF ratios and the resonance band RMS change the most. In step 5 with backlash, the resonance band RMS goes 0.044 → 0.14 → 0.020 g, and at 100 % load it equals the healthy value. The large impacts of the hunting tooth are about 2.46 s apart. In the gear drawing of step 6, the broken tooth (red) comes to the mesh position only once per turn of its own gear, so the large bar appears every pinion turn (40.27 ms) if it is on the pinion, or every gear turn (106.8 ms) if it is on the gear. In the hunting tooth case, each of the two red teeth raises a small bar once per turn, and they come to the mesh position at the same moment only once every 61 pinion turns (= 23 gear turns). The spacing of the large bar at that moment is the hunting tooth period, 2.456 s.
+In step 1, the GMF is 0.86 g, 2×GMF ÷ GMF is 0.35, and no sideband exceeds 1 %. In step 2 with eccentricity, the first pair stands at about 19 % of the GMF on the spacing scale of the chosen gear, and four sidebands exceed 1 %: ±1 and ±2. In step 3 with a broken tooth, all 30 sidebands at the chosen gear's spacing out to ±15 exceed 1 %, and the impact spacing in the waveform is 106.8 ms (gear) or 40.27 ms (pinion). In step 4, the 2× and 3×GMF ratios and the resonance band RMS change the most. In step 5 with backlash, the resonance band RMS is 0.044 g at 80 % load, 0.14 g at 30 % and 0.020 g at 100 %, and at 100 % load it equals the healthy value. The large impacts of the hunting tooth are about 2.46 s apart. In the gear drawing of step 6, the broken tooth (red) comes to the mesh position only once per turn of its own gear, so the large bar appears every pinion turn (40.27 ms) if it is on the pinion, or every gear turn (106.8 ms) if it is on the gear. In the hunting tooth case, each of the two red teeth raises a small bar once per turn, and they come to the mesh position at the same moment only once every 61 pinion turns (= 23 gear turns). The spacing of the large bar at that moment is the hunting tooth period, 2.456 s.
 
 ---
 
@@ -176,7 +176,7 @@ The kurtosis (P5-7) of the Difference signal. The Difference of a healthy gear i
 
 <Figure {...F.tsaResidual} />
 
-As in the top of Figure 7, if the peak in the Residual cut by the gear shaft stands at 102°, counting in cells (5.9°) of one gear turn (360°) divided into 61 teeth, it is tooth 18. Cutting the same record with the pinion shaft, that impact comes at a different pinion angle every turn (because the speed ratio 2.652 is not an integer) and vanishes in the average. FM4 also separates, at about 100 and 3.5 (3.6 for a healthy reducer).
+As in the top of Figure 7, if the peak in the Residual cut by the gear shaft stands at 102°, counting in cells (5.9°) of one gear turn (360°) divided into 61 teeth, it is tooth 18. Cutting the same record with the pinion shaft, that impact comes at a different pinion angle every turn (because the speed ratio 2.652 is not an integer) and vanishes in the average. FM4 also separates: about 100 when cut by the gear shaft and 3.5 when cut by the pinion shaft (3.6 for a healthy reducer).
 
 The cepstrum (P5-7) gathers the spacing of a group of sidebands into a single peak.
 
@@ -250,7 +250,7 @@ $f_1$ = 30 Hz, so GMF = 20 × 30 = **600 Hz** and $f_2$ = 600 ÷ 47 = <strong>12
 </details>
 
 <details>
-<summary><strong>Q2. In the P7-1 reducer, a pair of sidebands 9.36 Hz apart stands large, about 20 % of the GMF, on both sides of the 571.2 Hz GMF, and the other sidebands are small. What do you suspect?</strong></summary>
+<summary><strong>Q2. In the P7-1 reducer (23 → 61 teeth, input 1490 rpm), a pair of sidebands 9.36 Hz apart stands large, about 20 % of the GMF, on both sides of the 571.2 Hz GMF, and the other sidebands are small. What do you suspect?</strong></summary>
 
 The 9.36 Hz spacing is the speed of the output shaft (gear), and since only one pair is large, you suspect a problem that changes gently over one turn, such as **eccentricity on the gear (output shaft) side** or crooked mounting. Check in the waveform whether the size of the mesh rises and falls about every 107 ms, and also look at the output shaft's 1X and runout.
 </details>

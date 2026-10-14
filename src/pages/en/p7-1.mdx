@@ -4,7 +4,7 @@ title: P7-1 The diagnosis map and estimating running speed
 description: Narrowing the candidate faults by line order (frequency → cause) with a diagnosis map, separating candidates at the same spot by phase, direction and operating condition, the fingerprint of each cause from a fault synthesizer, and finding 1X when the speed is unknown (harmonic clusters, cepstrum, autocorrelation, sidebands, operating condition, nameplate and slip)
 sectionId: P7-1
 source: p7-1.mdx
-sourceHash: 42fcb263f8
+sourceHash: df12d8916e
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -57,7 +57,7 @@ Figure 1 is the map of a pump driven by a 2-pole motor (3575 rpm, 1X = 59.58 Hz)
 | Blades × X, teeth × X | Blade pass, gear mesh | P1-8 |
 | Fixed spot, independent of speed | Electrical (2×LF), structural resonance | P1-8, P1-9 |
 
-For this table to work you need to know **1X accurately**. If 1X is off by 1 %, 10X is off by 10 %, and you can no longer even tell whether a line is an integer multiple or not. Section 4 covers how to find 1X when the speed is unknown.
+For this table to work you need to know **1X accurately**. If 1X is off by 1 %, the 10X spot shifts by 0.1X (10 % of the 1X spacing), and you can no longer even tell whether a line is an integer multiple or not. Section 4 covers how to find 1X when the speed is unknown.
 
 <Callout type="warn" title="'It sits at 1X, so it is unbalance'">
 
@@ -73,16 +73,16 @@ How do we separate candidates that sit at the same spot?
 
 <Figure {...F.sameLine} />
 
-Figure 2 shows the same pump with unbalance and with misalignment put in separately (fault synthesizer, section 3). Looking only at horizontal 1X, both are large. But the **direction** and the **phase** differ.
+Figure 2 shows the pump of Figure 1 with unbalance and with misalignment (P7-3) put in separately (fault synthesizer, section 3). Looking only at horizontal 1X, both are large. But the **direction** and the **phase** differ.
 
 - Unbalance: the radial directions (horizontal 4.91, vertical 3.53 mm/s) are large, and axial 1X is 0.49 mm/s. Vertical lags horizontal by **90°** — a force that rotates with the shaft pushes horizontally first and vertically a quarter turn later
 - Misalignment: axial 1X is the largest at 3.10 mm/s, and 2X (axial 2.57) is large too. The horizontal-vertical phase difference is 26°, far from 90° — a force that pushes in one direction
 
 <Figure {...F.twoXvsLine} />
 
-In a 2-pole motor, 2X and twice the line frequency (2×LF, 120 Hz on a 60 Hz grid) sit only 0.83 Hz apart. As in Figure 3, if the record is short and Δf is 2 Hz, the two merge into one line and you cannot tell the causes apart. With Δf = 1/T (P2-4) set to 0.5 Hz they appear separately. Another way is the **operating condition** — the moment power is cut, the electrical component vanishes at once, while the mechanical component fades slowly as the rotation slows (P7-7).
+In a 2-pole motor, 2X and twice the line frequency (2×LF, 120 Hz on a 60 Hz grid) sit very close together. For this pump (2X = 119.17 Hz) they are only 0.83 Hz apart. As in Figure 3, if the record is short and the frequency resolution Δf (= 1/T, P2-4) is 2 Hz, the two merge into one line and you cannot tell the causes apart. Lengthen the record so that Δf is 0.5 Hz, and they appear separately. Another way is the **operating condition** — the moment power is cut, the electrical component vanishes at once, while the mechanical component fades slowly as the rotation slows (P7-7).
 
-The lab below is a tool that uses the map of Figure 1 in reverse. Enter the machine information and the frequency of the measured line, and it shows the matching candidates and their five pieces of evidence.
+The lab below turns the map of Figure 1 (frequency to cause) into a tool. Enter the machine information and the frequency of the measured line, and it shows the matching candidates and their five pieces of evidence.
 
 <Callout type="try">
 
@@ -95,7 +95,7 @@ The lab below is a tool that uses the map of Figure 1 in reverse. Enter the mach
 
 <FaultMapLab lang="en" client:visible />
 
-In step 1 the closest candidate is electrical (2×LF), and at the 2X spot 0.83 Hz away, misalignment, looseness, crack and rub remain. With evidence that the line is independent of speed, as in step 2, only electrical remains. At 1X in step 3, all seven candidates — unbalance, shaft bow, crack, resonance, misalignment, looseness and rub — appear; it is a typical spot that frequency alone cannot narrow down. At 0.43X in step 4, oil whirl, oil whip and rotating stall come up as candidates. On a rolling-bearing machine, oil whirl drops out of the candidates.
+In step 1 the closest candidate is electrical (2×LF), and at the 2X spot 0.83 Hz away, misalignment, looseness, crack and rub remain. With evidence that the line is independent of speed, as in step 2, only electrical remains. At 1X in step 3, all seven candidates — unbalance, shaft bow, crack, resonance, misalignment, looseness and rub — appear; it is a typical spot that frequency alone cannot narrow down. At 0.43X in step 4, oil whirl, oil whip and rotating stall (a stalled flow region in a compressor that rotates slower than the shaft when the flow drops too far, P7-4) come up as candidates. On a rolling-bearing machine, oil whirl and whip drop out of the candidates.
 
 ---
 
@@ -136,11 +136,11 @@ In many field records the speed was not kept, or the machine has no keyphasor. H
 
 <Figure {...F.rpmMethods} />
 
-- **Harmonic cluster**: 1X usually brings integer harmonics with it. For each candidate f₀, gather the line heights at f₀, 2f₀, 3f₀ … and subtract the heights at the half-step positions (½f₀, 1½f₀ …); pick the f₀ with the highest score. Subtracting the half-step positions is meant to avoid wrongly picking twice f₀
+- **Harmonic cluster**: 1X usually brings integer harmonics with it. For each candidate f₀, gather the line heights at f₀, 2f₀, 3f₀ … and subtract the heights at the half-step positions (½f₀, 1½f₀ …); pick the f₀ with the highest score. Subtracting the half-step positions is meant to avoid wrongly picking twice the true 1X
 - **Cepstrum**: gathers a cluster of equally spaced lines into a quefrency peak (P5-7)
 - **Autocorrelation**: finds the period at which the waveform repeats (P5-7)
 
-Applying the three methods to the same three records, each one fails in some case (speed: true / estimated).
+Applying the three methods to the same three records, each method fails on one of them. The parentheses in the first column give the true speed; the other cells give each method's estimated speed (rpm).
 
 | Record (true speed) | Harmonic cluster | Cepstrum | Autocorrelation |
 |---|---|---|---|
@@ -148,9 +148,9 @@ Applying the three methods to the same three records, each one fails in some cas
 | Gearbox input shaft (1490 rpm) | 1492 | 1490 | **1558** (buried by the mesh) |
 | Loose fan (1180 rpm) | **590** (half) | **590** (half) | 1180 |
 
-For the pump, the cepstrum picked twice the 1X spacing instead of the 1X spacing; for the gearbox, the autocorrelation was buried by the short period of the largest component, the gear mesh (571 Hz) (same reason as Figure 3 of P5-7). For the loose fan, the ½X fractional harmonics create a cluster with ½X spacing, so the harmonic cluster and the cepstrum picked half.
+For the pump, the cepstrum picked the quefrency peak at twice the 1X period instead of the 1X period, and so gave half the speed. For the gearbox, the autocorrelation was buried by the short period of the largest component, the gear mesh (571 Hz) — the same reason the autocorrelation of the gear signal in Figure 5 of P5-7 was buried by the mesh period. For the loose fan, the ½X fractional harmonics create a cluster with ½X spacing, so the harmonic cluster and the cepstrum picked half.
 
-<Callout type="warn" title="'The speed one method gave'">
+<Callout type="warn" title="'The speed one method gave is the answer'">
 
 Any method can be wrong by an integer factor (twice or half). Check against two or more methods, the nameplate speed range and the machine structure (blade count, teeth), and if possible measure it once with a keyphasor or tachometer.
 
@@ -166,7 +166,7 @@ You can also back-calculate the speed from the spacing of a line cluster and the
 
 <Figure {...F.conditionChange} />
 
-Overlaying two records taken at different operating conditions is also powerful. As in Figure 6, when the load rises and the speed drops by 30 rpm, lines related to rotation move in proportion to their order (7X by 3.5 Hz), while electrical and structural lines stay put. It is the same idea as separating slanted lines from vertical lines in a spectrogram (P5-2).
+Overlaying two records taken at different operating conditions is also a useful method. As in Figure 6, when the load rises and the speed drops by 30 rpm, lines related to rotation move in proportion to their order (7X by 3.5 Hz), while electrical and structural lines stay put. It is the same idea as separating slanted lines from vertical lines in a spectrogram (P5-2).
 
 ### 4.3 Nameplate speed and slip
 
@@ -187,7 +187,7 @@ $$
 
 </Callout>
 
-If there is a gear, count the speed of the other shaft with the gear ratio. If the gearbox input is 1490 rpm and the gears are 23 → 61 teeth, the output is 1490 × 23/61 = 561.8 rpm.
+If there is a gear, count the speed of the other shaft with the gear ratio. If the gearbox input is 1490 rpm and a 23-tooth pinion drives a 61-tooth gear, the output is 1490 × 23/61 = 561.8 rpm.
 
 <Callout type="try">
 
@@ -199,7 +199,7 @@ If there is a gear, count the speed of the other shaft with the gear ratio. If t
 
 <RpmLab lang="en" client:visible />
 
-In step 1, the harmonic cluster's about 3573 rpm and the autocorrelation's about 3576 rpm are within the 2-pole motor range (3560 to 3600 rpm), while the cepstrum's about 1792 rpm is outside it, which shows it picked half. In the gearbox of step 2, the autocorrelation is buried by the mesh and gives about 1558 rpm. In the loose fan of step 3, two methods give 590 rpm and only the autocorrelation gives 1180 rpm; the correct answer is 1180 rpm — choose not by majority vote but by what agrees with the machine information.
+In step 1, the harmonic cluster's about 3573 rpm and the autocorrelation's about 3576 rpm are within the 2-pole motor range (3560 to 3600 rpm), while the cepstrum's about 1792 rpm is outside it, which shows it picked half. In the gearbox of step 2, the autocorrelation is buried by the mesh and gives about 1558 rpm. In the loose fan of step 3, the harmonic cluster and the cepstrum give 590 rpm and only the autocorrelation gives 1180 rpm; the correct answer is 1180 rpm — choose not by majority vote but by what agrees with the machine information.
 
 ---
 

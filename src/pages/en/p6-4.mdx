@@ -4,7 +4,7 @@ title: P6-4 Trend · Vector Trend · APHT
 description: The phase shift that Overall hides, APHT and the Polar vector path, change relative to a reference, and reading a learning-purpose acceptance region
 sectionId: P6-4
 source: p6-4.mdx
-sourceHash: 6a5a7b6cef
+sourceHash: f7c21db880
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -40,7 +40,7 @@ The horizontal axis of a vibration trend is time. What is on the vertical axis? 
 
 The <strong>scalar trend</strong> in Figure 1 writes down one magnitude per time point, in time order. A value that adds up the energy of the components in a band, like <a href={withBase('/en/p2-7/')}>P2-7 Overall RMS</a>, carries no phase between the components.
 
-This example assumes a constant 1X of 20 µm Peak and 2X of 2 µm Peak at every time point. If you capture a whole number of turns of both components, they are orthogonal, so the overall RMS is
+This example assumes a constant 1X of 20 µm Peak and 2X of 2 µm Peak at every time point. If you capture a whole number of turns of both components, they are orthogonal (P2-2), so the overall RMS is
 
 $$x_{\rm RMS}=\sqrt{\frac{A_1^2+A_2^2}{2}}$$
 
@@ -70,7 +70,7 @@ This page also follows the P3-3 convention. $\varphi$ is the lag angle from the 
 
 </Callout>
 
-A shaft that bends from heat (thermal bow), a rub in which local frictional heating slowly rotates the 1X vector (Rub, the Newkirk effect), the Morton effect (a thermal phenomenon in which uneven heating of the journal couples to shaft bow, P8-2), load changes, and changes in the sensor or phase reference can all produce this kind of time variation. Parts loss (balance weight, blade) can appear as a step change in the vector, and a crack as a change in the 1X and 2X vectors. APHT shows when and by how much something changed. Confirm the cause with other channels and the operating record, and the thermal phenomena of GT/ST continue in P8-2.
+Many causes can produce this kind of time variation: a shaft that bends from heat (thermal bow); a thermal rub, in which frictional heat from the shaft touching a stationary part slowly rotates the 1X vector (Rub, the Newkirk effect, P7-3); the Morton effect, in which uneven heating of the journal bows the shaft (P8-2); load changes; and changes in the sensor or phase reference. Parts loss (balance weight, blade) can appear as a step change in the vector, and a crack (P7-2) as a change in the 1X and 2X vectors. APHT shows when and by how much something changed. Confirm the cause with other channels and the operating record; the thermal phenomena of gas and steam turbines (GT/ST) continue in P8-2.
 
 ---
 
@@ -127,7 +127,7 @@ The ±20% and ±30° on this page are arbitrary learning values and are not stan
 
 </Callout>
 
-The general evaluation in ISO 20816 also looks at vibration magnitude and its change together. Application to specific machines is covered in P10-1, and the 1X vector difference here is not used as-is as the standard's scalar vibration change.
+The general evaluation in ISO 20816, the international standard for evaluating machine vibration, also looks at vibration magnitude and its change together. Application to specific machines is covered in P10-1. The 1X vector change on this page is not used as-is as the change in vibration magnitude that the standard refers to.
 
 Changing the reference time changes the question being asked. If you change the reference of Figure 3 from 0 min to 30 min, the phase difference to 60 min is 60° and the vector change is 20 µm Peak. If you build the reference by mixing records with different load, speed and temperature, normal operating changes can look like departures.
 
@@ -163,7 +163,7 @@ The **continuous phase display** shows the path across the boundary as joined up
 
 <Callout type="warn" title="Do not take 'a large phase change in a small 1X' at face value">
 
-If the amplitude is close to the noise floor, a small error can swing the vector direction a lot. Interpret phase when the keyphasor reference is valid and 1X is extracted stably. The calculation core withholds phase and region judgments at or below 1 µm Peak, but this value is for learning and is not a limit common to all machines.
+If the amplitude is close to the noise floor, a small error can swing the vector direction a lot. Interpret phase when the keyphasor reference is valid and 1X is extracted stably. This lab's calculation withholds phase and region judgments when the amplitude is at or below 1 µm Peak, but this value is for learning and is not a limit common to all machines.
 
 </Callout>
 
@@ -180,7 +180,7 @@ Compare the records of Figures 1 to 6 in the same lab. Look at how operations th
 1. In the initial state, with 'only 1X phase shifts', final +120°, reference 0 min and selected 60 min, compare Overall 14.21 µm RMS, amplitude difference 0 and vector change 34.64 µm Peak.
 2. Leave the selected time at 60 min and change the reference time to 30 min. What is the vector change? Put the reference back to 0 min.
 3. Change the lag-angle tolerance from 30° to 120°. Does the 60 min vector come inside the boundary? Return it to 30° and find the first departing sample.
-4. Choose '1X unchanged, 2X grows'. Compare the growth of Overall and Not-1X, then in the phase-shift scenario turn off the continuous phase display and look at the 0° boundary.
+4. Choose '1X unchanged, 2X grows'. Compare the growth of Overall and Not-1X, then go back to the 'Only 1X phase shifts' scenario, turn off the continuous phase display and look at the 0° boundary.
 
 </Callout>
 

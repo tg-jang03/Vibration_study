@@ -4,7 +4,7 @@ title: P7-3 Misalignment · Looseness · Rub
 description: Why nonlinearities such as contact, clearance and coupling forces make harmonics, subharmonics and reverse components; misalignment by 1X, 2X, axial, phase across the coupling, orbit and shaft position; structural and rotating looseness; clues and severity of partial, full annular and thermal (Newkirk) rub; separating and confirming them with the five evidence elements
 sectionId: P7-3
 source: p7-3.mdx
-sourceHash: 43ee158f73
+sourceHash: 0ea52602db
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p7-3';
 
 # 7-3 Misalignment · looseness · rub: machines that do not answer with a sine wave
 
-In the causes of P7-2, a 1X force made a 1X vibration. Twice the force gave twice the vibration, and only 1X (2X for a crack) stood in the spectrum. But field spectra show 2X and 3X standing in a row, and sometimes half of 1X (½X). The waveform is flat on one side (P6-1), and the orbit draws a banana, a figure eight or an inner loop (P6-3). What makes such shapes?
+In the causes of P7-2 (unbalance, bow, crack, eccentric pulley, structural resonance), a 1X force made a 1X vibration. Twice the force gave twice the vibration, and only 1X (up to 2X for a crack) stood in the spectrum. But field spectra show 2X and 3X standing in a row, and sometimes half of 1X (½X). The waveform is flat on one side (P6-1), and the orbit draws a banana, a figure eight or an inner loop (P6-3). What makes such shapes?
 
 The three causes on this page — misalignment, looseness and rub — all arise where the force is not proportional to the displacement, that is, where things **touch and separate** or where parts are **forced together**. We build where those shapes come from with the same rotor model, and then sort out the evidence that separates the three.
 
@@ -59,17 +59,17 @@ The rotor of this page is the Jeffcott rotor of P4-2 (an elastic shaft carrying 
 
 Misalignment (P3-3) means the centerlines of two shafts are offset (parallel) or bent (angular). The coupling flexes to connect them, but at a price of three things.
 
-1. **Static preload**: it pulls the two shafts toward each other and changes the position of the shaft in the bearing.
-2. **1X and 2X forces**: a flexed coupling bends and straightens once or twice per revolution. This force is not a rotating force but a force with a **fixed direction** (P7-2 §5).
+1. **Static preload** (a constant force that is always present during operation): it pulls the two shafts toward each other and changes the position of the shaft in the bearing.
+2. **1X and 2X forces**: a flexed coupling bends and straightens once or twice per revolution. This force is not a rotating force but a force with a fixed direction: like the eccentric pulley of P7-2 §5, it pushes the shaft in one direction only.
 3. **Axial force**: angular misalignment pushes the two shafts in opposite axial directions.
 
 ### 2.2 Orbit and shaft position
 
 <Figure {...F.misalignOrbits} />
 
-Figure 3 is the orbit at 2400 rpm when a misalignment force is added to the same rotor. The 1X and 2X with fixed directions are added to the circle of unbalance, and the shape is a banana when the 2X is 0.6 times the 1X, and a figure eight when it is 1.5 times. These shapes are as read in P6-3.
+Figure 3 is the orbit at 2400 rpm when a misalignment force is added to the same rotor. The 1X and 2X with fixed directions are added to the circle of unbalance, and the shape is a banana when the 2X is 0.6 times the 1X, and a figure eight when it is 1.5 times. These are the same shapes as the banana and figure eight built in P6-3 §4 by adding 2X to 1X.
 
-More decisive is the <strong>cross (mean position)</strong>. With good alignment the shaft sits at the gravity-sag position (−70 µm), but under strong misalignment the preload lifted the shaft up to −28 µm. For a journal bearing, the shaft centerline (P4-3) is away from the normal position, on the side opposite the load or sideways. If the preload **unloads** one bearing, that bearing becomes lightly loaded and an oil whirl (P4-4) can appear. This is the path by which misalignment becomes a cause of instability.
+More decisive is the <strong>cross in the figure (the mean position of the orbit)</strong>. With good alignment the shaft sits at the gravity-sag position (−70 µm), but under strong misalignment the preload lifted the shaft up to −28 µm. For a journal bearing, the shaft centerline (P4-3) is away from the normal position, on the side opposite the load or sideways. If the preload **unloads** one bearing, that bearing becomes lightly loaded and an oil whirl (P4-4) can appear. This is the path by which misalignment becomes a cause of instability.
 
 ### 2.3 Phase across the coupling
 
@@ -130,7 +130,7 @@ In the full spectrum the **reverse component** grows. This is because contact fr
 
 <Figure {...F.fullRubFig} />
 
-When partial rub becomes severe (Figure 8 top), the whole orbit turns against the rotation, and the largest components of the full spectrum stand in reverse at −0.92X · −0.84X · −0.78X. The orders differ with speed, but the frequency stays almost the same at about 120 · 118 · 117 Hz. The reverse whirl is **locked** to the natural frequency rather than to the speed (dry whip). With more friction (Figure 8 middle and bottom) the reverse whirl grows every turn and in 11 turns exceeded 1.8 times the clearance (dry whirl).
+When partial rub becomes severe (Figure 8 top: severity 100 % at 7800 · 8400 · 9000 rpm), the whole orbit turns against the rotation, and the largest components of the full spectrum stand in reverse at −0.92X · −0.84X · −0.78X. The orders differ with speed, but the frequency stays almost the same at about 120 · 118 · 117 Hz. The reverse whirl is **locked** not to the speed but to the natural frequency of the system stiffened by contact, which lies above the 50 Hz critical speed (dry whip). With more friction (Figure 8 middle and bottom) the reverse whirl grows every turn and in 11 turns exceeded 1.8 times the clearance (dry whirl).
 
 <Callout type="warn" title="If the reverse whirl grows, stop immediately">
 
@@ -140,11 +140,11 @@ Full annular rub can badly damage the seal, shaft and bearings within seconds. I
 
 ### 4.3 Thermal rub: Newkirk effect
 
-If the shaft touches on one side only, that side (the high spot, P4-1) is heated by friction and expands, and the shaft bows toward it. The bent shaft changes the 1X, like the bow of P7-2, and the changed vibration in turn moves the place of contact.
+If the shaft touches on one side only, that side (the high spot, P4-1) is heated by friction and expands, and the shaft bows toward it. The bent shaft changes the 1X, like the bow of P7-2 §3 (a bent shaft that shows 1X even at low speed), and the changed vibration in turn moves the place of contact.
 
 <Figure {...F.newkirkFig} />
 
-Below the critical speed the response of the bow lags the high spot a little (lag 40°), so the contact place moves a little at a time against the direction of rotation, and the 1X vector rotates against the rotation while growing. Over 4 hours it goes 1.6 ∠40° → 4.6 ∠140° (as a ratio to the response of unbalance alone). Above the critical speed the bow tends to reduce the vibration, so it hardly changes. If in APHT (P6-4) the 1X vector draws a circle or a spiral over several minutes to several hours, suspect a thermal cause. The Morton effect, which makes the same shape, arises from the heat of the journal oil film without contact, and the evidence that separates the two is covered in <a href={withBase('/en/p8-2/')}>P8-2</a>.
+Below the critical speed the response of the bow lags the high spot a little (lag 40°), so the contact place moves a little at a time against the direction of rotation, and the 1X vector rotates against the rotation while growing. Over 4 hours the 1X goes from 1.6 ∠40° to 4.6 ∠140° (as a ratio, taking the response with unbalance alone as 1). Above the critical speed the bow tends to reduce the vibration, so it hardly changes. If in APHT (P6-4) the 1X vector draws a circle or a spiral over several minutes to several hours, suspect a thermal cause. The Morton effect, which makes the same shape, arises from the heat of the journal oil film without contact, and the evidence that separates the two is covered in <a href={withBase('/en/p8-2/')}>P8-2</a>.
 
 ---
 
@@ -161,7 +161,7 @@ Below the critical speed the response of the bow lags the high spot a little (la
 
 <NonlinearLab client:visible lang="en" />
 
-For 1, the 2X is about 0.6 times the 1X at 25 % (banana) and about 1.5 times at 80 % (figure eight), and the mean position lifts −70 → −57 → −28 µm. For 2, at 4200 rpm the 1X (radius 85 µm) is the main one and a 2X appears, and at 7800 rpm the ½X (132 µm p-p) exceeds the 1X (25 µm p-p). For 3, at 3600 rpm there are a truncated waveform and 2X to 5X, and at 4200 rpm a ½X and 1½X cluster. For 4, from 7800 rpm the orbit turns against the rotation (forward ratio 0 %) and the largest reverse component stays near about 118 Hz, then the calculation stops at 9600 rpm.
+For 1, the 2X is about 0.6 times the 1X at 25 % (banana) and about 1.5 times at 80 % (figure eight), and the mean position lifts from −70 µm with good alignment to −57 µm at 25 % and −28 µm at 80 %. For 2, at 4200 rpm the 1X (radius 85 µm) is the main one and a 2X appears, and at 7800 rpm the ½X (132 µm p-p) exceeds the 1X (25 µm p-p). For 3, at 3600 rpm there are a truncated waveform and 2X to 5X, and at 4200 rpm a ½X and 1½X cluster. For 4, from 7800 rpm the orbit turns against the rotation (forward ratio 0 %) and the largest reverse component stays near about 118 Hz, then at 9600 rpm the reverse whirl grows without limit into full annular rub (dry whirl) and the calculation stops.
 
 ---
 
@@ -179,7 +179,7 @@ For 1, the 2X is about 0.6 times the 1X at 25 % (banana) and about 1.5 times at 
 
 - **Unbalance and bow (P7-2)**: the 1X is a plain sine, the harmonics are small, and the horizontal-vertical phase difference is about 90°.
 - **Oil whirl and whip (P7-4)**: components below 1X, but not exactly at ½X (0.38 to 0.48X), and forward. Whip stays at the mode frequency even when the speed changes. If the ½X follows exactly half the speed, it is on the rub or looseness side.
-- **Measurement chain (P3-4, P6-1)**: if one side is cut off by exceeding the sensor range, harmonics appear, but the shaft does not move that way. Look at the gap voltage and other sensors together.
+- **Measurement chain (P3-4, P6-1)**: if one side is cut off by exceeding the sensor range, harmonics appear, but the shaft does not move that way. Look at the gap voltage (P3-2) and other sensors together.
 - **Electrical causes (P7-7)**: the 2×LF disappears the moment power is cut.
 
 **How to confirm**:

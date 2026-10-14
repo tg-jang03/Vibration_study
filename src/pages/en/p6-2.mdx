@@ -4,7 +4,7 @@ title: P6-2 Spectrum · Waterfall · Cascade
 description: Reading a spectrum from 1X, tracking the shaft speed versus locking onto a frequency, records held at constant speed, and reading a full spectrum cascade
 sectionId: P6-2
 source: p6-2.mdx
-sourceHash: 1058c7c340
+sourceHash: e5e99251dd
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -18,19 +18,21 @@ import { withBase } from '../../lib/site';
 
 During a start-up, a line below 1X has grown large. At first it moved along with the shaft speed, but now the machine runs faster and that line stays at the same frequency. What is this line telling you? If you had kept only one spectrum, could you have reached the same judgment?
 
-This time you read the <a href={withBase('/en/p5-2/')}>waterfall and cascade built in P5-2</a> as a reading procedure. With <a href={withBase('/en/p5-3/')}>P5-3 Full spectrum</a> you will also separate the forward and backward components. Rather than learning how to build them again, decide what to check first in the same record.
+This time you read the <a href={withBase('/en/p5-2/')}>waterfall and cascade built in P5-2</a> (spectra stacked in order of recording time or shaft speed) following a reading procedure. With <a href={withBase('/en/p5-3/')}>P5-3 Full spectrum</a> you will also separate the forward and backward whirl components. Rather than learning how to build them again, decide what to check first in the same record.
 
 <Callout type="idea" title="After reading this page">
 
 1. You can check the shaft speed and read a spectrum starting from 1X.
-2. You can tell order tracking, a fixed frequency, and tracking followed by locking apart.
+2. You can tell apart a line that moves with shaft speed (order tracking), a line that stays at one frequency, and a line that follows and then stops (tracking followed by locking).
 3. You can calculate why the order goes down even though the Hz stays constant.
 4. You can explain why records held at constant speed must be checked in time order.
-5. You can tell the forward and backward radii of a full spectrum from the peak of a single channel.
+5. You can tell the forward and backward circle radii read from a full spectrum from the peak of a single-channel spectrum.
 
 </Callout>
 
-The figures and the lab are a learning example made by synthesizing constant-speed 2-second records separately. They do not predict the onset limit or the amplitude of a real oil-film instability. Check first that the quantity is displacement and whether a value is a peak or a circle radius. Every component is placed exactly at the center of a 0.5 Hz bin so that the Hann amplitude comes out exactly. In a real record, a line that falls between bins can read up to about 15 % low (P2-5).
+The figures and the lab on this page are a learning example made by synthesizing, separately for each speed, a 2-second record taken at constant speed. They are not a model that predicts when a real oil-film instability starts or how large it grows. The vertical axis is displacement; a single-channel spectrum shows Peak, and a full spectrum shows circle radius, so check which one you are reading first.
+
+Every component is placed exactly at the center of a 0.5 Hz bin so that the Hann amplitude comes out exactly. In a real record, a line that falls between bins can read up to about 15 % low (P2-5).
 
 ---
 
@@ -51,15 +53,15 @@ Figure 1 is the displacement spectrum of one channel, X. Once you fix the positi
 | ⑤ High frequency | 320 Hz · 2 µm Peak | element frequencies, measurement band, filters, installation resonance |
 | ⑥ Floor | 140 ~ 180 Hz zoom after adding noise | band, window, number of averages, conditions before and after the measurement |
 
-③ and ④ are not completely separate classes. An asynchronous component can also be below 1X. The reading order is not a procedure that sorts the cause of a line into one answer box; it is a checklist that reduces the ranges you miss.
+③ and ④ are not completely separate classes. An asynchronous component can also be below 1X. These six steps are not a table that puts the cause of each line into one box; they are a checklist so that you do not skip any range.
 
 <Callout type="term" title="Subsynchronous and asynchronous are not the same word">
 
-A subsynchronous component is one with a frequency lower than 1X. An asynchronous component is one that is not synchronized with the shaft rotation. For example, a stable repeating 0.5X and a separate 73 Hz excitation may relate to the shaft speed differently. Read the position of the line together with its relation to time and shaft speed.
+A subsynchronous component (P2-1) is one with a frequency lower than 1X. An asynchronous component is one that is not synchronized with the shaft rotation. For example, a line that always sits at exactly 0.5X and a 73 Hz line from another excitation source may relate to the shaft speed differently. Read where the line sits together with how it moves with time and shaft speed.
 
 </Callout>
 
-Use <a href={withBase('/en/p1-8/')}>P1-8 Element frequencies</a> to find the places of interest and <a href={withBase('/en/p2-7/')}>P2-7 Units and scaling</a> to check the vertical axis. The high-frequency line in this example is a plain sinusoid; it does not stand in for a real impact band or an envelope result.
+Use <a href={withBase('/en/p1-8/')}>P1-8 Element frequencies</a> to find the places of interest and <a href={withBase('/en/p2-7/')}>P2-7 Units and scaling</a> to check the vertical axis. The high-frequency line in this example (320 Hz) is just one sinusoid, so it cannot stand in for the band where real bearing impacts ring or for the result of envelope analysis (P5-6).
 
 ---
 
@@ -69,37 +71,37 @@ There is a big line at 120 Hz and a small one at 40 Hz. Does each follow the sha
 
 <Figure {...F.orderLines} />
 
-In Figure 2, follow the horizontal position of the spectrum from the bottom record to the top record. 1X and 2X move to the right as the shaft speed rises. 73 Hz stays at the same horizontal position throughout. The line below 1X is a path that first moves and then stays at 40 Hz.
+In Figure 2, follow the horizontal position of each line from the bottom record to the top record. 1X and 2X move to the right as the shaft speed rises. The 73 Hz line stays at the same place throughout. The line below 1X first moves and then stays at 40 Hz.
 
-As in <a href={withBase('/en/p5-2/')}>P5-2 §4</a>, a waterfall is stacked by recording time and a cascade by recorded shaft speed. In the stacked figures on this page, the displayed amplitude height is added to each baseline. Do not read the vertical coordinate of a peak top as the actual shaft speed or time. Read the amplitude values from the spectrum of the selected record.
+As in <a href={withBase('/en/p5-2/')}>P5-2 §4</a>, a waterfall uses the recording time as its vertical reference and a cascade the shaft speed at recording. The stacked figures on this page draw a baseline for each record at the height of its time or speed, and add the amplitude on top of it as height. So the vertical coordinate of a peak top must not be read as a shaft speed or a time. Read the amplitude values from a spectrum drawn separately for one chosen record (Figure 1, or the lab's selected record).
 
 <Callout type="warn" title="Match the comparison conditions before stacking records">
 
-If the sensor, direction, unit, band, window or record length differ, the size of a line and the floor can also differ. A missing keyphasor or a wrong speed estimate changes the order reading. Confirm that the records come from the same operating range, and also read the time and speed order shown on the screen.
+If the sensor, direction, unit, band, window or record length differ, the size of a line and the floor can also differ. If keyphasor pulses are missing or the speed is estimated wrongly, the orders are read wrongly too. Confirm that the records come from the same operating range, and also read the time and speed order shown on the screen.
 
 </Callout>
 
-An order line follows $f=o f_r$. $f_r$ is the rotating frequency and $o$ is the order. If the order is constant, the Hz is proportional to the shaft speed. A fixed-Hz line, by contrast, stays at the same horizontal position even when the shaft speed changes.
+A line with a constant order (an order line) follows $f=o f_r$. $f_r$ is the rotating frequency and $o$ is the order. If the order is constant, the Hz is proportional to the shaft speed. A fixed-Hz line, by contrast, stays at the same horizontal position even when the shaft speed changes.
 
 At one speed, 73 Hz may happen to lie near some order. Do not conclude from the division result of one record that it is a shaft-speed-tracking (constant-order) component; check whether the relation continues at other speeds too.
 
 ---
 
-## 3. The path from wheel-type tracking to whip-type locking
+## 3. The path from whirl-type tracking to whip-type locking
 
 A line below 1X moved and then stopped. How does it differ from a line that was fixed from the start?
 
 <Figure {...F.transition} />
 
-Recall the frequency relations from <a href={withBase('/en/p4-4/')}>P4-4 Wheel and whip</a>. Oil whirl and oil whip are both fluid-induced instabilities. Whirl produces a subsynchronous component that follows a fraction of the shaft speed, and whip locks near the natural frequency of the rotor.
+Recall the frequency relations from <a href={withBase('/en/p4-4/')}>P4-4 Whirl and whip</a>. Oil whirl and oil whip are both fluid-induced instabilities. Whirl produces a subsynchronous component that moves with the shaft speed at a fixed fraction of it, and whip is the state where that frequency has locked near the natural frequency of the rotor.
 
-In Figure 3, blue is tracking only, orange is tracking followed by locking, and green is fixed from the start. A line that follows the speed and then stays at a known mode frequency, like the orange one, strongly supports the whip hypothesis. You still need other evidence — the bearing, operating conditions, orbit direction — before judging the real cause.
+In Figure 3, blue is a line that keeps tracking the speed to the end, orange is a line that tracks and then locks, and green is a line fixed from the start. A line that follows the speed and then stays at a known mode frequency, like the orange one, strongly supports the whip hypothesis. You still need other evidence — the bearing, operating conditions, orbit direction — before judging the real cause.
 
 The locking path in the lab follows this simple frequency law.
 
 $$f_{\rm sub}=\min(q f_r, f_n)$$
 
-$q$ is the learning tracking ratio (default 0.45) and $f_n$ is the learning mode frequency (default 40 Hz). This is not the condition or the boundary equation of a real instability, and the sub amplitude of 12 µm in this example is also simply chosen.
+$q$ is the learning tracking ratio (default 0.45) and $f_n$ is the learning mode frequency (default 40 Hz). This equation does not describe the condition or boundary at which a real instability appears. The amplitude of the component below 1X (the sub component from here on), 12 µm, is also simply chosen for this example.
 
 <Callout type="example" title="Calculating the model crossing speed">
 
@@ -117,9 +119,9 @@ An excitation fixed at 40 Hz from the start sits at the same place as the lockin
 
 </Callout>
 
-The fixed 40 Hz reference line is not subsynchronous from the very start. At 1200 rpm in the first record, 1X is 20 Hz, so this line coincides with 2X. After the shaft speed rises, it comes below 1X. The same line changes its relative position.
+The reference line fixed at 40 Hz (green) is not below 1X from the very start. In the first record (1200 rpm), 1X is 20 Hz, so this line coincides with 2X. As the shaft speed rises, it comes below 1X. Even for the same line, its position relative to 1X changes with speed.
 
-A real natural frequency can change with operating conditions. This lab is a simple example with a constant $f_n$. Even when a line moves a little with load or temperature, do not finish the judgment with only "is it perfectly horizontal?"
+A real natural frequency can change with operating conditions. This lab is a simple example with a constant $f_n$. In a real machine even a locked line can move a little with load or temperature, so do not finish the judgment with only "is it perfectly horizontal?"
 
 ---
 
@@ -135,11 +137,11 @@ $$o_{\rm sub}=\frac{f_{\rm sub}}{f_r},\qquad f_r=\frac{N}{60}$$
 
 $o_{\rm sub}$ is the order of the sub component and $N$ is in rpm. At 6000 rpm it is $40/100=0.4$X, and at 7200 rpm $40/120\approx0.333$X. The 40 Hz stays the same, but the denominator has grown.
 
-The 0.45X line that only tracks goes up in the Hz plot (Figure 3), moves to the right in the cascade of Figure 2, and sits at the same place in the order plot. After locking, the opposite relation appears. Checking on the two axes, Hz and order, makes "tracking" and "locking" easy to explain.
+The 0.45X line that only tracks goes up in the Hz plot (Figure 3) and sits at the same place in the order plot (Figure 4); in the cascade of Figure 2 it moves to the right. A line that has locked does the opposite: it stays put in the Hz plot and goes down in the order plot. Checking on the two axes, Hz and order, makes "tracking" and "locking" easy to explain.
 
 <Callout type="warn" title="Changing the order axis does not create more information">
 
-It only divides the frequency coordinate of the same FFT record by the shaft speed. This lab uses constant-speed records, so that conversion is possible. In a real fast run-up where the speed changes within the window, smearing appears, and dividing the coordinate alone does not solve it. Recall <a href={withBase('/en/p5-4/')}>P5-4 Order tracking</a>.
+It only divides the frequency coordinate of the same FFT record by the shaft speed. This lab uses constant-speed records, so that conversion is possible. In a real fast run-up the speed changes within one frame and the lines smear, and dividing the coordinate does not remove that smearing. Recall <a href={withBase('/en/p5-4/')}>P5-4 Order tracking</a>.
 
 </Callout>
 
@@ -151,15 +153,15 @@ The speed stays at 7200 rpm, but the vibration has grown. From the cascade alone
 
 <Figure {...F.hold} />
 
-Records 10, 11 and 12 are at times 100, 110 and 120 s, all at 7200 rpm. X 1X goes 20 → 25 → 30 µm Peak. The waterfall separates the time baselines, but the speed baselines of the cascade overlap. On a screen where the three lines are overlaid, the order of the records can be hidden.
+Records 10, 11 and 12 in Figure 5 were taken at 100, 110 and 120 s, all at 7200 rpm. Over that time the 1X of the X channel grows to 20, 25 and 30 µm Peak. In the waterfall the three baselines are separated by time, but in the cascade the speed is the same, so the baselines overlap in one place. When the three spectra are drawn on top of each other, which record came first can be hidden.
 
 <Callout type="field" title="Check start-up and shutdown separately from constant-speed segments">
 
-In start-up and shutdown, check the relation between the lines and the shaft speed; in constant-speed segments, check the relation with time and with load and temperature. If you drop the records of the holding segment or merge them into one rpm, the time of the change can disappear. As in <a href={withBase('/en/p6-4/')}>P6-4 Trend · APHT</a>, return to the time trend and the selected spectrum.
+In start-up and shutdown, check the relation between the lines and the shaft speed; in constant-speed segments, check the relation with time and with load and temperature. If you drop the records of the constant-speed segment or merge them into one record at that rpm, when the change happened can disappear. As in <a href={withBase('/en/p6-4/')}>P6-4 Trend · APHT</a> (a trend of amplitude and phase against time), look at the time trend and then pick the spectrum at the time of the change.
 
 </Callout>
 
-In this example the final amplitude increase is a record that was set by hand. Real causes of an increase — thermal bow, load change, sensor problems — are not reproduced here. Record down to "which component changed, and when", and tie the cause to separate evidence.
+In this example the final amplitude increase is simply a value put in by hand. It does not imitate real causes such as thermal bow (the shaft bending from heat), a load change or sensor problems. Record down to "which component changed, and when", and tie the cause to separate evidence.
 
 ---
 
@@ -169,7 +171,7 @@ The 1X size of the X channel is the same, yet can the whirl-direction components
 
 <Figure {...F.full} />
 
-In Figure 6, both +1X and −1X follow the shaft speed. The component below 1X tracks on the + side and then locks at 40 Hz. The spectrum of a single channel cannot separate the forward and backward components of the same frequency like this.
+In Figure 6, both +1X (forward 1X) and −1X (backward 1X) follow the shaft speed. The sub component tracks the speed on the + side and then locks at 40 Hz. The spectrum of a single channel cannot separate the forward and backward components of the same frequency like this.
 
 <Callout type="term" title="On this page, +f is counterclockwise and −f is clockwise">
 
@@ -181,11 +183,11 @@ As in the <a href={withBase('/en/p5-3/')}>P5-3 convention</a>, X points right, Y
 
 In Figure 7 the 1X radii are 15 µm on the + side and 5 µm on the − side. In this example the phase references of the two circular components are matched so that the X amplitude is their sum, 20 µm Peak. This does not mean that the X amplitude can in general be calculated as the simple sum of the two radii.
 
-If you change the backward share to 50 %, + and − are 10/10 µm and X 1X stays at 20 µm Peak. Even such a straight-line motion has equal sizes on both sides when split into forward and backward circular components. Having a backward component does not always mean rub or instability.
+If you change the backward share to 50 % in the lab, the forward and backward radii become 10 µm each, and the 1X of the X channel stays at 20 µm Peak. The shaft then moves back and forth along a straight line (equal radii give a straight line, P4-2). Even such a straight-line motion has equal sizes on both sides when split into forward and backward circular components, so having a backward component does not always mean rub or instability.
 
 <Callout type="warn" title="Check the sensor conditions before reading the direction components">
 
-Check the simultaneity, sensitivity, angle, polarity, axis direction and phase convention of X/Y. Sensitivity or angle errors in the sensors can create a false backward component (P5-3). Also consider anisotropic response and runout, and connect to the orbit, the time waveform, the phase and the operating records. Do not confirm a fault from a ± bar alone.
+Check the simultaneity, sensitivity, angle, polarity, axis direction and phase convention of X/Y. Sensitivity or angle errors in the sensors can create a false backward component (P5-3). Also consider anisotropic response (from support stiffness that differs by direction, P4-2) and runout, and connect to the orbit, the time waveform, the phase and the operating records. Do not confirm a fault from a ± bar alone.
 
 </Callout>
 
@@ -197,20 +199,20 @@ Choose the records of Figures 1 ~ 7 yourself. Rather than reading the amplitude 
 
 <Callout type="try">
 
-1. With the initial lock, 40 Hz and ratio 0.45, change the selected record from 6 (4800 rpm) to 10 (7200 rpm). Write down the Hz and order of the sub component, then change the scenario to tracking only and compare the last line.
-2. Go back to locking and change the mode to 50 Hz. Calculate the model crossing speed and compare it with the readout. Then, at 40 Hz again, pick the fixed-from-the-start scenario and look at the earlier records too.
-3. Return to the initial lock, then pick records 10 → 11 → 12 in the waterfall. Check the change in the size of 1X at the same rpm, then switch to the cascade and look at how the baselines overlap.
-4. In record 10 with the full cascade, change the backward share from 25 to 50 %. Compare X 1X with the ±1X radii, and also check Hz → order axis and adding noise.
+1. In the initial state (scenario "Ratio tracking → locking onto the mode frequency", mode 40 Hz, tracking ratio 0.45), change the selected record from 6 (4800 rpm) to 10 (7200 rpm). Write down the Hz and order of the sub component, then change the scenario to "Ratio tracking only" and compare the line in the last record.
+2. Go back to the locking scenario and change the mode to 50 Hz. Calculate the model crossing speed and compare it with the readout. Then return the mode to 40 Hz, pick the "Fixed frequency from the start" scenario and look at the earlier records too.
+3. Return to the locking scenario, then pick records 10, 11 and 12 in turn in the waterfall. Check the change in the size of 1X at the same rpm, then switch to the cascade and look at how the baselines overlap.
+4. Select record 10 and, in the full spectrum cascade, change the backward share from 25 to 50 %. Compare the 1X of the X channel with the ±1X radii. Also try switching the horizontal axis from Hz to order, and adding noise.
 
 </Callout>
 
 <WaterfallLab client:visible lang="en" />
 
-In the lock of item 1 it is 36 → 40 Hz and 0.45 → 0.333X; with tracking only, the last record is 54 Hz and 0.45X. The model crossing point in item 2 is about 6667 rpm. A 40 Hz line fixed from the start and a line locked after tracking have different histories even if their last records are the same.
+In the locking scenario of item 1, the sub component goes from 36 Hz (0.45X) to 40 Hz (0.333X); with tracking only, it is 54 Hz (0.45X) in the last record. The model crossing point in item 2 is about 6667 rpm. A 40 Hz line fixed from the start and a line locked after tracking sit at the same place in the last record but have come by different paths.
 
-In item 3, with the speed held at 7200 rpm, X 1X goes 20 → 25 → 30 µm Peak. You only separate the records by looking in time order. In item 4, X 1X stays at 20, yet the +/− radii change from 15/5 to 10/10 µm. Write down the forward/backward phase condition of this example together with the sensor axis convention.
+In item 3, while the speed is held at 7200 rpm, the 1X of the X channel grows to 20, 25 and 30 µm Peak. Only when they are placed in time order, as in the waterfall, are the three records separated. In item 4, the 1X of the X channel stays at 20 µm Peak, yet the forward and backward radii change from 15 µm and 5 µm to 10 µm and 10 µm. When you record such a result, write down the forward/backward phase condition together with the sensor axis convention.
 
-If you pick record 2 (2400 rpm) in fixed-from-the-start with 40 Hz, both the specified sub component and 1X are at 40 Hz. That bin of X adds up to 20+12=32 µm Peak. In this example the two components have the same phase, so they add simply; in general the value lies between 8 and 32 µm depending on the phase. A line in the FFT is a combined response, not a list split by cause name.
+If you pick record 2 (2400 rpm) in the "Fixed frequency from the start" scenario (40 Hz), both the sub component and 1X stand at 40 Hz. So that bin of the X spectrum adds up to 20 + 12 = 32 µm Peak. In this example the two components have the same phase, so they add simply; in general the value lies between 8 and 32 µm depending on the phase. One line in the FFT is a response in which several causes are combined, not a list split by cause.
 
 ---
 
@@ -236,7 +238,7 @@ If you pick record 2 (2400 rpm) in fixed-from-the-start with 40 Hz, both the spe
 </details>
 
 <details>
-<summary><strong>Q2. From 6000 to 7200 rpm the 40 Hz stays, yet it went down from 0.4 to 0.333X. Is that a contradiction?</strong></summary>
+<summary><strong>Q2. While the speed rises from 6000 to 7200 rpm, the line stays at 40 Hz, yet its order went down from 0.4X to 0.333X. Is that a contradiction?</strong></summary>
 
 No. The frequency stayed the same and the rotating frequency grew from 100 to 120 Hz. The order is the value divided by the rotating frequency of each record.
 </details>
@@ -250,22 +252,22 @@ You cannot judge from one plot. Check the history of tracking and then locking n
 <details>
 <summary><strong>Q4. The speed is the same, so can I merge records 10 ~ 12 into one?</strong></summary>
 
-In this example X 1X changes 20 → 25 → 30 µm Peak, so you need the time information. Keep the waterfall, the time trend and the selected records along with the cascade.
+In this example the 1X of the X channel grows to 20, 25 and 30 µm Peak, so you need the time information. Keep the waterfall, the time trend and the selected records along with the cascade.
 </details>
 
 <details>
 <summary><strong>Q5. With +1X = 15 µm and −1X = 5 µm, can I report a fault?</strong></summary>
 
-A backward component alone does not confirm a fault. Check whether they are forward and backward circle radii, and whether the shaft rotation direction and the sensor conditions match, and connect to other evidence. The X value of 20 µm Peak in this example is a specific combined condition with the phases of the two circular components matched.
+A backward component alone does not confirm a fault. Check whether they are forward and backward circle radii, and whether the shaft rotation direction and the sensor conditions match, and connect to other evidence. In this example the X channel reads 20 µm Peak only because the two circular components were combined with matched phases, a special case.
 </details>
 
 <details>
 <summary><strong>Q6. The neighboring bins of the 2-second Hann FFT also went up. Is it a new component?</strong></summary>
 
-This example has a resolution of 0.5 Hz, and the neighbor of a 1X placed on a bin shows half the amplitude through the Hann main lobe. Do not assign a different cause to one neighboring bin; check the line width, record length and window (P2-4, P2-5).
+This example has a resolution of 0.5 Hz, and 1X is placed at the center of a bin. The Hann window's main lobe (P2-5) is wide, so the bin right next to it also shows half the line's size. Do not assign a different cause to one neighboring bin; check the line width, record length and window (P2-4, P2-5).
 </details>
 
-In the next page, P6-3, you will look at the same X/Y records as an orbit and read the direct and 1X-filtered shapes and the keyphasor marks. First recall <a href={withBase('/en/p4-2/')}>P4-2 Orbit · forward/backward whirl</a> and <a href={withBase('/en/p5-5/')}>P5-5 Tracking filter</a>.
+On the next page, P6-3, you will draw the same X and Y records as an orbit and read the shapes of the direct orbit and the 1X filtered orbit, and the keyphasor marks. First recall <a href={withBase('/en/p4-2/')}>P4-2 Orbit · forward/backward whirl</a> and <a href={withBase('/en/p5-5/')}>P5-5 Tracking filter</a>.
 
 ## References
 

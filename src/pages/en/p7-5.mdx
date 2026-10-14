@@ -4,7 +4,7 @@ title: P7-5 Rolling-Element Bearings
 description: Fault-frequency formulas including the contact angle, the approximations and slip, whether BSF is used once or twice, the envelope patterns of outer-race, inner-race, ball and cage faults, the four fault stages and where the fault shows up in each, and telling it apart with five pieces of evidence and confirming it
 sectionId: P7-5
 source: p7-5.mdx
-sourceHash: ba6ab16924
+sourceHash: a2b40584d3
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p7-5';
 
 # 7-5 Rolling-Element Bearings: Where Is the Flaw, and How Far Has It Progressed?
 
-In the pump of P7-1, a line stood at 211 Hz in the envelope spectrum. The outer-race fault frequency of a 6205 bearing is calculated as 213.6 Hz, which differs by about 3 Hz (1 %). Is it an outer-race fault? If so, how far has it progressed?
+In the pump whose cause map was drawn in P7-1 (driven by a 2-pole motor at 3575 rpm, on 6205 bearings), a line stood at 211 Hz in the envelope spectrum. The outer-race fault frequency of this bearing is calculated as 213.6 Hz, which differs by about 3 Hz (1 %). Is it an outer-race fault? If so, how far has it progressed?
 
 P1-8 showed why the four frequencies of a rolling-element bearing (FTF, BPFO, BPFI, BSF) are not integer multiples of 1X, and P5-6 taught envelope analysis, which pulls that rhythm out of the kHz ringing. This page ties the two together as diagnosis. It calculates the fault frequencies including the contact angle, tells which part has the flaw from the shape of the spectrum, and follows **where the fault shows up first** as the failure progresses.
 
@@ -77,7 +77,7 @@ As in Figure 2, a larger contact angle raises BPFO and lowers BPFI. For the same
 
 Balls and the cage do not roll exactly as the formulas say; they slip a little. If the cage turns slower than calculated, BPFO stands lower and BPFI higher, because the inner race catches up with the cage more often. If the cage is 2 % slow, BPFO is 209.3 Hz (−2 %) and BPFI 326.9 Hz (+1.3 %).
 
-The 211 Hz line in the introduction is 1 % below the calculated 213.6 Hz. This is a difference that slip commonly produces. So we do not expect a measured line to match the calculated value exactly. We look for a **line that is not an integer multiple** within ±2 % of the calculated value, together with its **group of harmonics** and its **sideband spacing**. A sideband spacing of 1X is exactly 1X even with slip, and an FTF spacing is also only 1 to 2 % off the calculated value. That is why the spacing, whether 1X or about 0.4X (FTF), can tell the fault location (Section 3).
+The 211 Hz line of the pump in the introduction is 1 % below the calculated 213.6 Hz. This is a difference that slip commonly produces. So we do not expect a measured line to match the calculated value exactly. We look for a **line that is not an integer multiple** within ±2 % of the calculated value, and confirm it with its group of harmonics and its sideband spacing. A sideband spacing of 1X is exactly 1X even with slip, and an FTF spacing is also only 1 to 2 % off the calculated value. That is why the spacing, whether 1X or about 0.4X (FTF), can tell the fault location (Section 3).
 
 Where do you get the bearing information? If you know the bearing number (for example 6205), you can get FTF, BPFO, BPFI and BSF as multiples of 1X from the manufacturer's fault-frequency table or a calculation tool. Even with the same number, the ball count and dimensions can differ by manufacturer, so use the data of the manufacturer of the bearing actually installed in the machine. If you do not know the number, search first with the approximations and the "group of non-integer harmonics".
 
@@ -92,7 +92,7 @@ Where do you get the bearing information? If you know the bearing number (for ex
 
 <BearingCalcLab client:visible lang="en" />
 
-In 1, the difference between BPFO of 213.6 Hz (3.585X) and the approximation 214.5 Hz is 0.4 %. At α = 40° in 2, BPFO is 226.4 Hz and BPFI 309.9 Hz, approaching each other, and the sum stays at 9X, so that cell remains 1. In 3, the dashed line of BPFO stands on the left (209.3 Hz) and that of BPFI on the right (326.9 Hz). In the angular contact ball preset of 4 (12 balls, α 40°), BPFO is 5.051X, and the approximation 4.8X is about 5 % low. For a bearing with a large contact angle, do not use the approximations.
+In 1, the difference between BPFO of 213.6 Hz (3.585X) and the approximation 214.5 Hz is 0.4 %. At α = 40° in 2, BPFO is 226.4 Hz and BPFI 309.9 Hz, approaching each other, and the sum stays at 9X, so the "(BPFO + BPFI) ÷ (N_r × 1X)" cell remains 1. In 3, the dashed line of BPFO stands on the left (209.3 Hz) and that of BPFI on the right (326.9 Hz). In the angular contact ball preset of 4 (12 balls, α 40°), BPFO is 5.051X, and the approximation 4.8X is about 5 % low. For a bearing with a large contact angle, do not use the approximations.
 
 ---
 
@@ -125,7 +125,7 @@ The four locations differ in the **rhythm** of the impacts and in the **modulati
 - **Outer race**: the outer race is stationary and the flaw is usually at the bottom, which carries the load (the load zone). Every ball strikes with the same strength, so only BPFO and its harmonics stand, with no sidebands.
 - **Inner race**: the flaw turns with the shaft and enters and leaves the load zone once per 1X. **Sidebands spaced at 1X** stand on both sides of BPFI, and 1X itself stands (P5-6 §4).
 - **Ball**: 2×BSF is the largest, with **sidebands spaced at FTF** on both sides, and FTF and BSF standing on the low side.
-- **Cage**: the signal is weak, about as much as a broken divider hitting once per turn (7 to 14 times smaller than the other locations). FTF and its harmonics stand; the fundamental FTF (about 0.4X) is below 1X, and the harmonics continue above 1X.
+- **Cage**: the signal is weak, about as much as a broken divider (the bar separating the balls) hitting once per cage turn (7 to 14 times smaller than the other locations). FTF and its harmonics stand; the fundamental FTF (about 0.4X) is below 1X, and the harmonics continue above 1X.
 
 | Location | Impact rhythm | What changes the size | Lines in the envelope |
 |---|---|---|---|
@@ -150,7 +150,7 @@ The bearing drawing at the top of the lab below animates this table. The outer r
 
 <BearingStageLab client:visible initial={{ fault: 'outer', stage: 3, band: 'res' }} lang="en" />
 
-In 1, the outer race has only BPFO (211 Hz) and its double (423 Hz), with no sidebands. In 2, the inner race has sidebands spaced at 59.6 Hz (1X) on both sides of BPFI (325 Hz), and a large line also stands at the 1X position. In 3, the ball has 2×BSF (278 Hz) as the largest line, and the spacing of the sidebands on both sides is 23.5 Hz (FTF). In 4, the cage has lines only at 23.5 Hz (FTF) and its multiples, and the fundamental FTF stands below 1X (59.6 Hz). The harmonics continue above 1X, and the line size is 7 to 14 times smaller than the fault lines of the other locations. In 5, the outer race gives bars of even height 3.58 times per shaft turn (213.6 ÷ 59.6). That is because the fault stays in the load zone, so every ball strikes with the same force. The inner race strikes more often, 5.42 times per turn (322.7 ÷ 59.6), but the bars are tall only while the fault passes through the lower load zone and become low as it moves up. This rise and fall repeating every shaft turn is the identity of the 1X-spaced sidebands (the AM of P2-8).
+In 1, the outer race has only BPFO (211 Hz) and its double (423 Hz), with no sidebands. In 2, the inner race has sidebands spaced at 59.6 Hz (1X) on both sides of BPFI (325 Hz), and a large line also stands at the 1X position. In 3, the ball has 2×BSF (278 Hz) as the largest line, and the spacing of the sidebands on both sides is 23.5 Hz (FTF). In 4, the cage has lines only at 23.5 Hz (FTF) and its multiples, and the fundamental FTF stands below 1X (59.6 Hz). The harmonics continue above 1X, and the line size is 7 to 14 times smaller than the fault lines of the other locations. In 5, the outer race gives bars of even height 3.58 times per shaft turn (213.6 ÷ 59.6). That is because the fault stays in the load zone, so every ball strikes with the same force. The inner race strikes more often, 5.42 times per turn (322.7 ÷ 59.6), but the bars are tall only while the fault passes through the lower load zone and become low as it moves up. This rise and fall repeating every shaft turn is the identity of the 1X-spaced sidebands (the amplitude modulation, AM, of P2-8).
 
 ---
 
@@ -181,7 +181,7 @@ P3-1 said the range where an accelerometer can be trusted is below one third of 
 | 3 | The flaw is visible to the eye | Fault frequency, harmonics and sidebands also in the velocity spectrum (BPFO 0.72 mm/s), kurtosis 5.6 | Velocity and acceleration spectrum + envelope |
 | 4 | The damage spreads | The fault lines get blurred (envelope 4.6 times, velocity BPFO 0.23 mm/s), the broadband floor rises and 1X grows to 2.9 mm/s (the clearance opens), and kurtosis comes back down to 3.2 | Trend of overall and RMS, 1X, height of the floor |
 
-The number that shows the fault best shifts from stage to stage: ultrasonic band → resonance-band envelope → fault line in the velocity spectrum → floor and 1X. As seen in P5-7, kurtosis rises and then falls again at stage 4.
+The number that shows the fault best shifts from stage to stage: from the ultrasonic band to the resonance-band envelope, then to the fault line in the velocity spectrum, and finally to the floor and 1X. As seen in P5-7, kurtosis rises and then falls again at stage 4.
 
 <Callout type="warn" title="No fault frequency visible, so the bearing is fine?">
 
@@ -252,7 +252,7 @@ Is every line that is not an integer multiple a bearing?
 <details>
 <summary><strong>Q1. A 6205 bearing runs at 1785 rpm in a 4-pole motor. What are BPFO and BPFI?</strong></summary>
 
-$f_r$ = 1785 ÷ 60 = 29.75 Hz. Multiples of 1X do not depend on the speed, so BPFO = 3.5848 × 29.75 = **106.6 Hz** and BPFI = 5.4152 × 29.75 = **161.1 Hz**. Allowing for slip, search within ±2 %.
+$f_r$ = 1785 ÷ 60 = 29.75 Hz. The fault frequencies written as multiples of 1X (3.585X and 5.415X in the Section 1 example) do not depend on the speed, so BPFO = 3.5848 × 29.75 = **106.6 Hz** and BPFI = 5.4152 × 29.75 = **161.1 Hz**. Allowing for slip, search within ±2 %.
 </details>
 
 <details>

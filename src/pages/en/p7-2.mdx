@@ -4,7 +4,7 @@ title: P7-2 The 1X Family — Unbalance · Bow · Crack · Eccentricity · Reson
 description: When 1X is large — separating unbalance (static, couple, dynamic), bow, runout, a crack, a directional force (eccentric pulley) and structural resonance by magnitude versus speed, the slow roll vector, phase between two bearings and two directions, and 2X, plus the order of the checks and how to confirm
 sectionId: P7-2
 source: p7-2.mdx
-sourceHash: edeb1d835a
+sourceHash: 2e1144dfc2
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -37,7 +37,7 @@ This page puts one cause at a time into the same rotor and looks at how the magn
 
 <Figure {...F.rotorModes} />
 
-Every figure and lab on this page is computed with the rotor of Figure 1. It is a flexible-support rotor whose operating speed of 3000 rpm is below the two rigid-body modes (the rigid translation and tilting of P4-2). So that each cause has the same sense of size, the "severity" is set from 0 to 100 %, and the numbers in the text use a severity of 60 %. The 1X is the vector recorded every 25 rpm, taken in a coastdown from 3000 rpm (P2-4); the amplitude is in µm p-p and the phase is the lag angle (P3-3).
+Every figure and lab on this page is computed with the rotor of Figure 1. It is a rigid rotor (on flexible supports) whose operating speed of 3000 rpm is below its two rigid-body modes (the rigid translation and tilting of P4-2). So that each cause has the same sense of size, the "severity" is set from 0 to 100 %, and the numbers in the text use a severity of 60 %. The 1X is the vector recorded every 25 rpm, taken in a coastdown from 3000 rpm (P2-4); the amplitude is in µm p-p and the phase is the lag angle (P3-3).
 
 ---
 
@@ -57,7 +57,7 @@ This distinction decides the fix. Static unbalance can be reduced with one balan
 
 ### 2.2 Speed and direction: the fingerprint of unbalance
 
-The force of unbalance is the centrifugal force m_u e Ω², so it grows with the square of the speed. Well below resonance the response does too, almost exactly.
+The force of unbalance is the centrifugal force m_u e Ω² (unbalance mass m_u, eccentricity e, angular speed Ω, P1-7), so it grows with the square of the speed. Well below resonance the response does too, almost exactly.
 
 <Figure {...F.unbalanceBode} />
 
@@ -77,7 +77,7 @@ The 1X from unbalance is close to zero at low speed. So what is it when 1X is al
 
 <Callout type="term" title="Bow">
 
-The shaft is not straight but bent. It can sag under its own weight after standing for a long time, bend from a temperature difference between top and bottom while stopped (thermal bow, only named in P3-3, explained in P8-2), or bend from the frictional heat of a rub (P7-3). A bent shaft carries its bent side past the sensor once per turn, so 1X is visible even when it turns very slowly.
+The shaft is not straight but bent. It can sag under its own weight after standing for a long time, bend from a temperature difference between top and bottom while stopped (thermal bow, only named in P3-3, explained in P8-2), or bend from the frictional heat of a rub (a rotating part touching and rubbing a stationary part, P7-3). A bent shaft carries its bent side past the sensor once per turn, so 1X is visible even when it turns very slowly.
 
 </Callout>
 
@@ -85,8 +85,8 @@ The shaft is not straight but bent. It can sag under its own weight after standi
 
 In the top of Figure 4, runout and bow are both already a little over 30 µm p-p at 300 rpm. The difference appears when the speed is raised.
 
-- **Runout** is a problem of the surface the sensor reads, so it stays the same regardless of speed (32 → 34 µm). The shaft does not actually move.
-- **Bow**: the bent shape itself pushes the mode, so like unbalance it grows as the speed rises (31 → 47 µm). The response to a bow b is b ÷ (1 − r² + j2ζr): it is b at low speed and grows as it nears resonance (r = speed ÷ natural speed, P4-1).
+- **Runout** is a problem of the surface the sensor reads, so it stays the same regardless of speed (32 µm at 300 rpm, 34 µm at 3000 rpm). The shaft does not actually move.
+- **Bow**: the bent shape itself pushes the mode, so like unbalance it grows as the speed rises (31 µm at 300 rpm, 47 µm at 3000 rpm). The response to a bow b is b ÷ (1 − r² + j2ζr): it is b at low speed and grows as it nears resonance (r = speed ÷ natural speed, ζ = damping ratio, P4-1).
 
 $$
 \text{Bow: } \frac{b}{1 - r^2 + j\,2\zeta r}, \qquad \text{Unbalance: } \frac{e\,r^2}{1 - r^2 + j\,2\zeta r}
@@ -168,9 +168,11 @@ Putting the evidence so far into an order gives Figure 8. Before settling on a s
 
 <OneXLab client:visible lang="en" />
 
-For 1, the speed ratio is 4.5, the phase difference between the two bearings is about −3°, and the horizontal-to-vertical phase difference is about 89°. Switching to couple unbalance, the speed ratio is similar at 4.4 but the phase difference between the two bearings becomes about −164°. For 2, the bow grows from 31 µm at slow roll to 47 µm at 3000 rpm and 17 µm remains after compensation, while the runout stays at 32 → 34 µm and disappears to 1.7 µm when compensated. For 3, the crack makes a 2X peak of 20 µm p-p at 2500 rpm (horizontal). For 4, the cases are: 1 bow, 2 static unbalance, 3 structural resonance, 4 runout, 5 directional force, 6 crack, 7 couple unbalance. Cases 3 and 5 split at ①, 1 and 4 at ②, and 2 and 7 at ③. Case 6 looks like a bow at ② (slow roll 1X 11.5 µm, growing with speed) but is separated by the 2X peak at ④.
+For 1, the speed ratio is 4.5, the phase difference between the two bearings is about −3°, and the horizontal-to-vertical phase difference is about 89°. Switching to couple unbalance, the speed ratio is similar at 4.4 but the phase difference between the two bearings becomes about −164°. For 2, the bow grows from 31 µm at slow roll to 47 µm at 3000 rpm and 17 µm remains after compensation, while the runout stays at 32 → 34 µm and disappears to 1.7 µm when compensated. For 3, the crack makes a 2X peak of 20 µm p-p at 2500 rpm (horizontal). For 4, the cases are: 1 bow, 2 static unbalance, 3 structural resonance, 4 runout, 5 directional force, 6 crack, 7 couple unbalance. Cases 3 and 5 split at question ① of Figure 8, 1 and 4 at ②, and 2 and 7 at ③. Case 6 looks like a bow at ② (slow roll 1X 11.5 µm, growing with speed) but is separated by the 2X peak at ④.
 
-The rotor drawing in 5 connects the 1X read by two vertical sensors with straight lines to show how the shaft shakes. In static unbalance, the orange dots on the two disks are at the same angle, so when the heavy side comes up the whole shaft lifts together. It is a **cylindrical** motion in which the waveforms of the two sensors overlap (phase difference about 0°). In couple unbalance, the orange dots are on opposite sides, so when one disk lifts the other drops and the shaft tilts like a seesaw around the middle. It is a **conical** motion in which the two waveforms are almost inverted (about −164°). The phase difference is not exactly 180° because the small static unbalance and runout that even a healthy rotor has (2 µm and 1 µm in this model) are added to both bearings on the same side. Dynamic unbalance is a mix of the two, so the phase difference lies in between. This difference in shape is why the phase difference between the two bearings separates the causes.
+The rotor drawing in 5 connects the 1X read by two vertical sensors with straight lines to show how the shaft shakes. In static unbalance, the orange dots on the two disks are at the same angle, so when the heavy side comes up the whole shaft lifts together. It is a **cylindrical** motion in which the waveforms of the two sensors overlap (phase difference about 0°). In couple unbalance, the orange dots are on opposite sides, so when one disk lifts the other drops and the shaft tilts like a seesaw around the middle. It is a **conical** motion in which the two waveforms are almost inverted (about −164°).
+
+The phase difference is not exactly 180° because the small static unbalance and runout that even a healthy rotor has (2 µm and 1 µm in this model) are added to both bearings on the same side. Dynamic unbalance is a mix of the two, so the phase difference lies in between. This difference in shape is why the phase difference between the two bearings separates the causes.
 
 ---
 

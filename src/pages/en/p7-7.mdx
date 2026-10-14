@@ -4,7 +4,7 @@ title: P7-7 Electrical Causes (Motors · Generators)
 description: 2×LF from magnetic force being the square of the current, stator and static air-gap eccentricity, synchronous speed, slip and pole-pass frequency of induction motors (PPF = 2×LF − P·X), the 1X ± PPF sidebands of rotor bars and dynamic air-gap eccentricity and record length, the power-cut test, 1X = LF of a 2-pole synchronous generator and the field-cut test, inverter drives, shaft voltage and bearing electrical damage, and a table for telling electrical from mechanical
 sectionId: P7-7
 source: p7-7.mdx
-sourceHash: 2edeffcf93
+sourceHash: c31527f6e5
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -39,7 +39,7 @@ A motor or generator turns the iron core into a magnet with the current in its c
 
 The force with which a magnet pulls iron is proportional to the **square** of the magnetic flux (the strength of the magnetic field), and the flux is proportional to the current. So the iron is pulled equally whether the current flows positive or negative. As in Figure 1, a 60 Hz current has one + peak and one − peak per cycle (16.7 ms), and the pull is strong at both, so it surges every 8.33 ms, that is, at <strong>120 Hz (2×LF)</strong>. In an equation, $\cos^2(2\pi f_L t) = \tfrac{1}{2}\left[1 + \cos(2\pi\, 2f_L\, t)\right]$ — a constant pull on average (0 Hz) and a surge at $2f_L$.
 
-This frequency **follows only the line frequency and is independent of speed**. Even if the load changes and the speed moves by a few rpm, 2×LF stays at 120 Hz (100 Hz on a 50 Hz grid). This is why electrical causes sat at "fixed positions independent of speed" on the P7-1 map.
+This frequency **follows only the line frequency and is independent of speed**. Even if the load changes and the speed moves by a few rpm, 2×LF stays at 120 Hz (100 Hz on a 50 Hz grid). This is why electrical causes sat at "fixed positions independent of speed" on the frequency-to-cause map of P7-1 (Figure 1).
 
 ---
 
@@ -104,7 +104,7 @@ That is true only for 2-pole motors. A 4-pole 50 Hz motor has a 1X of about 24.7
 
 ## 4. Rotor bars and dynamic air-gap eccentricity: PPF sidebands around 1X
 
-The rotor of an induction motor is a cage made of aluminum or copper bars (rotor bars) tied together by rings at both ends. If one bar cracks or its joint to the ring breaks, current cannot flow through that bar, and the magnetic force is weak only at that place on the rotor. This weak spot passes the poles at the slip frequency, so the size of the force pulling on the rotor **rises and falls at the PPF**. The size of 1X is modulated at the PPF (the AM of P2-8), so **1X ± PPF sidebands** stand on both sides of 1X.
+The rotor of an induction motor is a cage made of aluminum or copper bars (rotor bars) tied together by rings at both ends. If one bar cracks or its joint to the ring breaks, current cannot flow through that bar, and the magnetic force is weak only at that place on the rotor. This weak spot passes the poles at the slip frequency, so the size of the force pulling on the rotor **rises and falls at the PPF**. The size of 1X is modulated at the PPF (the amplitude modulation, AM, of P2-8), so **1X ± PPF sidebands** stand on both sides of 1X.
 
 <Figure {...F.rotorBar} />
 
@@ -118,7 +118,7 @@ The rotor bar sidebands have other fingerprints as well.
 
 <Callout type="warn" title="'1X is large and there are no sidebands, so it is unbalance'">
 
-In a 2 s record spectrum, the 1X of a rotor bar fault is also a clean single line like unbalance (Figure 4, top). Before drawing a conclusion, measure again under load with a record longer than $3/\mathrm{PPF}$. Conversely, if the broken bar heats unevenly and the rotor bends (thermal bow, P7-2), 1X remains even when the power is cut, so do not rule out a rotor bar fault from the power-cut test result alone.
+In a 2 s record spectrum, the 1X of a rotor bar fault is also a clean single line like unbalance (Figure 4, top). Before drawing a conclusion, measure again under load with a record longer than $3/\mathrm{PPF}$. Conversely, if the broken bar makes the rotor heat unevenly and bend (thermal bow, P7-2), 1X remains even when the power is cut, so do not rule out a rotor bar fault from the power-cut test result alone.
 
 </Callout>
 
@@ -162,7 +162,7 @@ Cutting the power stops the process. Do it in line with the shutdown plan, or se
 
 <ElectricLab client:visible lang="en" />
 
-In step 1, at 1 s (Δf 1 Hz) the PPF of 0.8 Hz is only 0.8 bin, so 119.2 Hz and 120 Hz are one lump. At 8 s (6.4 bins), 120 Hz is large at 3.2 mm/s and 119.2 Hz is only a little over 0.2 mm/s. The moment the power is cut, the 120 Hz line disappears and the size remaining after 0.5 s is 0.19. In step 2, the misalignment at 8 s has 119.2 Hz large at about 2.9 mm/s (the line lies between bins, so it reads a little lower than the actual 3.25), and even when the power is cut the 2X bends with the speed and remains, at 0.71 after 0.5 s and 0.35 after 2 s. In step 3, the PPF is 0.27 → 0.8 → 1.33 Hz and the sidebands are 0.1 → 0.3 → 0.5 mm/s. The 0.27 Hz at 20 % load is 2.1 bins at 8 s, so it is buried in the skirt of the 1X peak, and shows up at 16 s (4.3 bins) when seen on the dB axis. Step 4 is: 1 stator, 2 misalignment, 3 rotor bar (4-pole, load 80 %, 1X ± 1.6 Hz), 4 unbalance, 5 generator stator magnetic force, 6 generator mechanical 2X, 7 dynamic air-gap eccentricity.
+In step 1, at 1 s (Δf 1 Hz) the PPF of 0.8 Hz is only 0.8 bin, so 119.2 Hz and 120 Hz are one lump. At 8 s (6.4 bins), 120 Hz is large at 3.2 mm/s and 119.2 Hz is only a little over 0.2 mm/s. The moment the power is cut, the 120 Hz line disappears and the size remaining after 0.5 s is 0.19. In step 2, the misalignment at 8 s has 119.2 Hz large at about 2.9 mm/s (the line lies between bins, so it reads a little lower than the actual 3.25), and even when the power is cut the 2X bends with the speed and remains, at 0.71 after 0.5 s and 0.35 after 2 s. In step 3, raising the load to 20 %, 60 % and 100 % widens the PPF to 0.27, 0.8 and 1.33 Hz and grows the sidebands to 0.1, 0.3 and 0.5 mm/s. The 0.27 Hz at 20 % load is 2.1 bins at 8 s, so it is buried in the skirt of the 1X peak, and shows up at 16 s (4.3 bins) when seen on the dB axis. Step 4 is: 1 stator, 2 misalignment, 3 rotor bar (4-pole, load 80 %, 1X ± 1.6 Hz), 4 unbalance, 5 generator stator magnetic force, 6 generator mechanical 2X, 7 dynamic air-gap eccentricity.
 
 ---
 
@@ -172,7 +172,7 @@ In a synchronous machine the rotor turns exactly with the magnetic field and the
 
 <Figure {...F.generator} />
 
-An overlapped line cannot be separated no matter how long the record. Instead, use a test that changes only the magnetic force. If you disconnect the generator from the grid and, keeping the rated speed (no-load rated speed), reduce or cut the field current — the current of the rotor electromagnet — the magnetic force falls within a few seconds following the flux, while the mechanical component does not change because the speed is unchanged (Figure 6: after 2 s the stator side goes 3.4 → 0.46 and the mechanical side 3.38 → 3.26 mm/s).
+An overlapped line cannot be separated no matter how long the record. Instead, use a test that changes only the magnetic force. If you disconnect the generator from the grid and, keeping the rated speed (no-load rated speed), reduce or cut the field current (the current in the rotor electromagnet), the magnetic force falls within a few seconds following the flux, while the mechanical component does not change because the speed is unchanged. In Figure 6, after 2 s the stator side drops from 3.4 to 0.46 mm/s, while the mechanical side stays almost the same, from 3.38 to 3.26 mm/s.
 
 <Callout type="field" title="A 1X that responds slowly to the field current">
 
@@ -184,7 +184,7 @@ After the field current is changed, the 1X vector sometimes turns slowly **over 
 
 ## 8. Shaft voltage and bearing electrical damage
 
-Electricity does not only make the force of vibration; it can also damage bearings directly. A voltage arises between the shaft and the housing when the magnetic circuit is uneven, when static electricity builds up on the shaft from steam or belt friction, or when an inverter puts a voltage on the shaft. When this voltage punches through the bearing's oil film and discharges, small melted marks form on the races, and these pile up into washboard-like stripes (fluting).
+Electricity does not only make the force of vibration; it can also damage bearings directly. A voltage arises between the shaft and the housing when the magnetic circuit is uneven, when static electricity builds up on the shaft from steam or belt friction, or when an inverter puts a voltage on the shaft. When this voltage punches through the bearing's oil film and discharges, small melted marks form on the raceways of the outer and inner rings, and these pile up into washboard-like stripes (fluting).
 
 - **In vibration**: high-frequency components and fault frequencies similar to a rolling bearing fault (P7-5) appear. From vibration alone it is hard to separate from ordinary fatigue damage.
 - **Confirmation**: measure the shaft voltage, and look at the stripes on the surface of a removed bearing and the black discoloration of the lubricant.

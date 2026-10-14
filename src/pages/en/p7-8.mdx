@@ -4,7 +4,7 @@ title: P7-8 Fluid and Aerodynamic Causes
 description: Blade pass frequency (N_b × X) and the clearance and operating point that change its size, the pump best efficiency point (BEP), low-flow recirculation and hydraulic unbalance, cavitation (NPSH, high-frequency broadband) and how to tell it from a rolling bearing defect, the compressor map, rotating stall, surge and anti-surge control, combustion dynamics, tests that change the operating point, and a differential table
 sectionId: P7-8
 source: p7-8.mdx
-sourceHash: 62d39629c3
+sourceHash: dc64558371
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -37,7 +37,7 @@ The impeller of a centrifugal pump (P1-6) throws water outward between its blade
 
 <Figure {...F.vanePass} />
 
-The pump in Figure 1 has 7 blades, so the pressure surges 7 times per revolution, and the frequency is the blade pass frequency (P1-8)
+The pump in Figure 1, like the pump in the introduction, runs at 3575 rpm (1X = 59.58 Hz) and has 7 blades, so the pressure surges 7 times per revolution, and the frequency is the blade pass frequency (P1-8)
 
 $$
 f_{BP} = N_b\, f_r = 7 \times 59.58 = 417.1\ \text{Hz}
@@ -53,7 +53,7 @@ The blade pass component is always present, even in a healthy pump. The issue is
 
 <Callout type="warn" title="'A large blade pass means the impeller is damaged'">
 
-Check the operating point and the clearance first. Even the same pump at 40 % flow is a little over twice its BEP level (Figure 2). Compare records at the same flow; if it is still larger, look at clearance and damage, and if it is large only at a particular speed, look at resonance. Also check whether number of blades × X falls near gear mesh (P7-6) or a bearing defect frequency (P7-5).
+Check the operating point and the clearance first. Even in the same pump, the blade pass component at 40 % flow is a little over twice its level at the BEP (Figure 2). Compare records at the same flow; if it is still larger, look at clearance and damage, and if it is large only at a particular speed, look at resonance. Also check whether number of blades × X falls near gear mesh (P7-6) or a bearing defect frequency (P7-5).
 
 </Callout>
 
@@ -72,7 +72,7 @@ Even at the same speed, a pump's head (the height it lifts the water, that is, i
 Away from the BEP, the angle at which water enters the blades is off, so the flow separates from the blade tips and eddies form. As in the middle of Figure 2, the blade pass component is smallest at the BEP (0.6 mm/s) and grows on both sides. If you reduce the flow a lot, something else appears.
 
 - **Low-flow recirculation**: When the flow falls below 60 % of BEP (in this model), part of the water at the impeller inlet and outlet flows back and swirls strongly. This swirl has no regular rhythm, so in the spectrum it appears **not as a line but as a broad hump at low frequency** (Figure 3 top, 5 to 40 Hz). The sound is also an irregular rattle.
-- **Hydraulic unbalance**: If the impeller passages are uneven as cast, each blade pushes with a different force and a 1X appears. It is the same 1X as mechanical unbalance, but **its size changes when you change the flow** (Figure 2 purple: 1.6 at BEP, 2.56 mm/s at 60 % flow). Mechanical unbalance (gray) does not depend on flow.
+- **Hydraulic unbalance**: If the impeller passages are uneven as cast, each blade pushes with a different force and a 1X appears. It is the same 1X as mechanical unbalance, but **its size changes when you change the flow** (purple curve in Figure 2: 1.6 mm/s at the BEP, 2.56 mm/s at 60 % flow). Mechanical unbalance (gray) does not depend on flow.
 
 <Figure {...F.flowSpectra} />
 
@@ -104,7 +104,7 @@ The bubbles collapse at random times, so cavitation produces no lines but raises
 - **Amplitude and operating condition**: it decreases when suction pressure goes up or flow goes down, and grows when flow goes up (lab: it disappears at suction margin +0.2 or at 70 % flow).
 - **Sound**: like gravel rolling. It is often found by ear as well.
 
-A rise in the high-frequency band resembles stages 2 and 3 of a rolling bearing defect (P7-5). The key to telling them apart is the **rhythm**. A bearing defect rings regularly each time a ball passes the defect, so the envelope spectrum (P5-6) of the same band shows lines such as BPFO (213.6 Hz). Cavitation is irregular, so its envelope spectrum is flat with no lines (Figure 4 bottom). And a bearing defect does not respond to suction pressure.
+A rise in the high-frequency band resembles stages 2 and 3 of a rolling bearing defect (P7-5). The key to telling them apart is the **rhythm**. A bearing defect rings regularly each time a ball passes the defect, so the envelope spectrum (P5-6) of the same band shows lines such as BPFO (213.6 Hz for the 6205 bearing of P7-5). Cavitation is irregular, so its envelope spectrum is flat with no lines (Figure 4 bottom). And a bearing defect does not respond to suction pressure.
 
 ---
 
@@ -154,7 +154,7 @@ When the flame in a gas turbine combustor and the acoustic resonance of the comb
 
 <FlowLab client:visible lang="en" />
 
-In step 1 the 1X stays at 0.8 mm/s, and blade pass goes 0.6 → 1.25 → 0.71 mm/s, smallest at the BEP. The 5 to 40 Hz band rises to about 1.8 mm/s only at 40 %. Step 2 shows a broadband of about 1 g at 100 %, it disappears at suction +0.2 or flow 70 %, and it gets larger at 110 %. In step 3 the hydraulic unbalance goes 2.56 → 1.6 → 2.32 mm/s, smallest at the BEP, while mechanical unbalance stays at 4.3 mm/s. In step 4, stall appears at 32.1 Hz (0.214X) and 2 µm at 0.70, and at 29.4 Hz (0.196X) and 8 µm at 0.64; even if you request 0.50, anti-surge holds 0.62 and only stall (28.5 Hz, 10 µm) remains. With anti-surge off, the discharge pressure swings by about 40 % and the axial position by about 120 µm at 0.7 Hz. The hidden cases are 1 cavitation, 2 low-flow recirculation, 3 tongue clearance, 4 hydraulic unbalance, 5 rotating stall, 6 surge and 7 mechanical unbalance.
+In step 1 the 1X stays at 0.8 mm/s, and blade pass is 0.6, 1.25 and 0.71 mm/s at 100 %, 40 % and 125 % flow, smallest at the BEP. The 5 to 40 Hz band rises to about 1.8 mm/s only at 40 %. Step 2 shows a broadband of about 1 g at 100 %; it disappears when the suction pressure is raised by 0.2 or the flow is cut to 70 %, and it gets larger at 110 %. In step 3 the hydraulic unbalance is 2.56, 1.6 and 2.32 mm/s at 60 %, 100 % and 130 % flow, smallest at the BEP, while mechanical unbalance stays at 4.3 mm/s. In step 4, stall appears at 32.1 Hz (0.214X) and 2 µm at 0.70, and at 29.4 Hz (0.196X) and 8 µm at 0.64; even if you request 0.50, anti-surge holds 0.62 and only stall (28.5 Hz, 10 µm) remains. With anti-surge off, the discharge pressure swings by about 40 % and the axial position by about 120 µm at 0.7 Hz. If you switch the view mode to "guess the hidden cause", cases 1 to 7 are 1 cavitation, 2 low-flow recirculation, 3 tongue clearance, 4 hydraulic unbalance, 5 rotating stall, 6 surge and 7 mechanical unbalance.
 
 ---
 
@@ -170,7 +170,7 @@ In step 1 the 1X stays at 0.8 mm/s, and blade pass goes 0.6 → 1.25 → 0.71 mm
 | Surge | Large pulsation below a few Hz | Flow ↑, anti-surge → stops | — | Discharge pressure, axial position, temperature |
 | Combustion dynamics (GT) | Pressure pulsation of hundreds to thousands of Hz | Fuel distribution, load | — | Combustor dynamic pressure sensor (P8-4) |
 
-There is one decisive test in common: **does it change when you change flow and pressure with the speed held?** If it does, it is the fluid; if it stays, it is mechanical or electrical. Conversely, mechanical causes respond to the speed, not the operating point (P7-1 §4).
+There is one decisive test in common: **does it change when you change flow and pressure with the speed held?** If it does, it is the fluid; if it stays, it is mechanical or electrical. Conversely, mechanical causes respond to the speed, not the operating point (P7-1 §4.2).
 
 ---
 

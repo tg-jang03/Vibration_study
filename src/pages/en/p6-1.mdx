@@ -4,7 +4,7 @@ title: P6-1 Reading the Time Waveform
 description: Read the period, symmetry, events per revolution and impacts, then compare beating, AM, truncation and clipping in a pattern gallery and quiz
 sectionId: P6-1
 source: p6-1.mdx
-sourceHash: cd1132cd68
+sourceHash: ac99157986
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -34,17 +34,17 @@ In Part 5 you pulled components out of a signal. Here you read **the repetition,
 
 ## 1. What is plotted: time, displacement and the rotation reference
 
-Within the 60 ms on the horizontal axis, the waveform repeats three times. Is that three events in one revolution, or one event in each of three revolutions? The waveform alone has no rotation reference, so look at the Keyphasor too.
+Within the 60 ms on the horizontal axis, the waveform repeats three times. Is that three events in one revolution, or one event in each of three revolutions? The waveform alone does not tell you where a revolution starts, so look at the Keyphasor too.
 
 <Figure {...F.reading} />
 
-Figure 1 plots the **displacement** of one sensor against time. The gray dashed lines are the once-per-revolution reference points of the <a href={withBase('/en/p3-3/')}>P3-3 Keyphasor</a>. One sine cycle repeats at every 20 ms dashed-line interval, so it is 1X. This shows the motion in this sensor's direction only; it does not show the shaft's two-dimensional path or the whole direction of the force.
+Figure 1 plots the **displacement** of one sensor against time. The gray dashed lines are the reference times that the <a href={withBase('/en/p3-3/')}>P3-3 Keyphasor</a> marks once per revolution. One sine cycle repeats at every 20 ms dashed-line interval, so it is 1X. This waveform shows only the motion in one sensor direction; it does not carry the two-dimensional path the shaft draws (the orbit) or the direction of the force.
 
 If you read the speed $N_{\rm rpm}$ in rpm, the rotation period is
 
 $$T_r=\frac{60}{N_{\rm rpm}},\qquad f_r=\frac{N_{\rm rpm}}{60}$$
 
-$T_r$ is the time of one revolution [s] and $f_r$ is the 1X frequency [Hz]. The 3000 rpm in Figure 1 is 50 Hz, or 0.020 s per revolution.
+$T_r$ is the time of one revolution [s] and $f_r$ is the 1X frequency [Hz]. At the 3000 rpm of Figure 1, 1X is 50 Hz and one revolution takes 0.020 s.
 
 | Reading order | What to look for on the screen | What to write down |
 |---|---|---|
@@ -67,19 +67,19 @@ If the size above and below changes slowly, what should you read? Rather than on
 
 <Figure {...F.envelopes} />
 
-The two signals in Figure 2 are the shapes you learned in <a href={withBase('/en/p2-8/')}>P2-8 Beating and AM</a>. The top one adds 50 Hz and 55 Hz components of 10 µm Peak each. The difference is 5 Hz, so the size change repeats every 200 ms. The bottom one modulates the amplitude of the 50 Hz component at 5 Hz. With depth 0.5, the amplitude envelope runs from 10 to 30 µm.
+The two signals in Figure 2 are the shapes you learned in <a href={withBase('/en/p2-8/')}>P2-8 Beating and AM</a>. The top one adds 50 Hz and 55 Hz components of 10 µm Peak each. The difference is 5 Hz, so the size change repeats every 200 ms. The bottom one makes the amplitude of the 50 Hz component rise and fall at a 5 Hz rhythm (amplitude modulation). The modulation index (P2-8) is 0.5, so the envelope swings between 10 and 30 µm.
 
 In both, at 3000 rpm you need to **see 10 revolutions to fit one cycle of the size change**. If you look at only two revolutions, 40 ms, a stretch where the signal is growing or shrinking can look like a change in vibration during operation. Check a long view as in Figure 2 together with a view zoomed in on a few revolutions.
 
 <Callout type="example" title="The size-change rhythm is the same, but the components differ">
 
-The beating example has two lines, 50 and 55 Hz. The AM example has three lines, 45, 50 and 55 Hz, with Peak amplitudes of 5, 20 and 5 µm. Over the full 200 ms the RMS values are 10 and 15 µm respectively. The waveform shows when the size changes; the spectrum shows which components take part in that change.
+The beating example has two lines, 50 and 55 Hz. The AM example has three lines, 45, 50 and 55 Hz, with Peak amplitudes of 5, 20 and 5 µm. Over the full 200 ms the RMS is 10 µm for beating and 15 µm for AM. The waveform shows when the size changes; the spectrum shows which components make that change.
 
 </Callout>
 
 <Callout type="warn" title="Do not decide between AM and beating from the 'wavering shape' alone">
 
-These two examples can be told apart with the Keyphasor. In beating the carrier is 1.05X, so the peaks slip gradually relative to the dashed lines, and where the envelope falls to zero (100 ms) the phase flips by 180°. In AM the peaks stay fixed on the dashed lines every revolution, and the envelope minimum is 10 µm. In real data, though, several components, noise and short records can make them look alike. Write down the envelope period you observed first, then check the component frequencies and the measurement length together.
+These two examples can be told apart with the Keyphasor. In beating the fast-swinging carrier (P2-8) is 1.05X, so the peaks slip gradually relative to the dashed lines, and where the envelope falls to zero (100 ms) the phase flips by 180°. In AM the peaks stay fixed on the dashed lines every revolution, and the envelope minimum is 10 µm. In real data, though, several components, noise and short records can make them look alike. Write down the envelope period you observed first, then check the component frequencies and the measurement length together.
 
 </Callout>
 
@@ -91,7 +91,7 @@ There are several peaks in a short stretch. Is each one an impact, or is it one 
 
 <Figure {...F.impacts} />
 
-New ringing starts at each orange dot in Figure 3. **Count an event at the start of ringing, and count the peaks inside the ringing separately.** New ringing starts three times within the 20 ms Keyphasor interval, so the event repetition rate is three times the rotation speed.
+New ringing starts at each orange dot in Figure 3. **Count an event where ringing starts, and do not count the peaks that swing inside the ringing as events.** New ringing starts three times within the 20 ms Keyphasor interval, so the events repeat at three times the rotating frequency.
 
 $$\Delta t_e=\frac{T_r}{n_e}$$
 
@@ -99,13 +99,15 @@ $n_e$ is the number of events repeating at equal intervals in one revolution, an
 
 <Callout type="term" title="Impact: a shock that starts suddenly, and its ringing">
 
-When a shock excites a structure, it rocks near its natural frequency and then decays (<a href={withBase('/en/p1-8/')}>P1-8 Impact ringing in machine elements</a>). The fast vibration inside the ringing and the rhythm at which the impacts repeat are different time scales. This figure is an imaginary signal that shows a pattern; it does not model real bearing fault frequencies. It is drawn as displacement to compare shapes, but short impact ringing shows up well in an acceleration waveform. In a displacement waveform, high-frequency components shrink by 1/(2πf)² and are hard to see (P5-1 integration). Also, if the sampling rate is low, the Peak of a short impact is shaved off and CF comes out smaller.
+When a shock excites a structure, it rocks near its natural frequency and then decays (<a href={withBase('/en/p1-8/')}>P1-8 Impact ringing in machine elements</a>). The fast vibration inside the ringing and the rhythm at which the impacts repeat are different time scales.
+
+This figure is an imaginary signal made to show a pattern; it does not model real bearing fault frequencies. It is drawn as displacement to compare shapes, but short impact ringing shows up well in an acceleration waveform. Converting acceleration to displacement shrinks high-frequency components by a factor of 1/(2πf)², so they are hard to see (P5-1 §4, integration is a filter too). Also, if the sampling rate is low, the Peak of a short impact is shaved off and CF comes out smaller.
 
 </Callout>
 
 <Callout type="field" title="Is the event at the same position in every revolution?">
 
-Over several revolutions, compare the interval between the start of ringing and the Keyphasor. If it stays at the same rotation position, that is a clue to a rotation-synchronous event. If the position drifts, check for asynchronous repetition or a change in speed. The event dots in the model are times set in advance, not the result of automatic detection on a real signal.
+Over several revolutions, compare the interval between the start of ringing and the Keyphasor. If the ringing starts at the same rotation position every revolution, that is a clue to a rotation-synchronous event. If the position drifts, check whether it is a repetition not synchronized with rotation or a change in speed. The orange event dots in Figure 3 and the lab are times set in advance in the model, not the result of automatic detection on a real signal.
 
 </Callout>
 
@@ -117,9 +119,9 @@ The top or bottom of the waveform has gone flat. How do you tell whether the mot
 
 <Figure {...F.limits} />
 
-The top of Figure 4 limits the bottom side at −5 µm to make a **truncation** shape. When part of the motion is restricted by rub (contact between rotating and stationary parts) or looseness (weakened constraint in a fastening or support), this shape can be a clue. The detailed differentiation is covered in P7-3.
+The top of Figure 4 cuts the bottom of a sine wave at −5 µm to make a **truncation** shape. When the motion is blocked on one side by rub (contact between rotating and stationary parts) or looseness (weakened constraint in a fastening or support), this shape can appear. The detailed differentiation is covered in P7-3.
 
-The bottom is an example of **clipping**, limiting both sides at ±13 µm. If the signal leaves the linear input range of the sensor, signal conditioner or ADC, flat parts can appear (<a href={withBase('/en/p3-4/')}>P3-4 Measurement-chain pitfalls</a>). Saturation on one side is also possible, so you cannot conclude machine contact from the top figure.
+The bottom is an example of **clipping**, limiting both sides at ±13 µm. If the signal leaves the linear input range of the sensor, signal conditioner or ADC, flat parts can appear (<a href={withBase('/en/p3-4/')}>P3-4 Measurement-chain pitfalls</a>). Saturation of the measurement chain on one side only can also produce the top shape, so you cannot conclude machine contact from the top figure alone.
 
 | Check | What to compare | What to leave in the interpretation |
 |---|---|---|
@@ -130,7 +132,7 @@ The bottom is an example of **clipping**, limiting both sides at ±13 µm. If th
 
 <Callout type="warn" title="'One side is rub, both sides are the ADC' is not a rule for telling them apart">
 
-The limiting equations in this figure are for comparing shapes. The Pk-Pk of the two signals, 25 and 26 µm, is almost the same, yet the shapes differ. Which stage limited the signal has to be checked with the measurement chain and other evidence.
+The one-sided and two-sided cuts in Figure 4 were chosen to compare shapes. The Pk-Pk of the two signals, 25 and 26 µm, is almost the same, yet the shapes differ. Whether the machine or the measurement chain cut the signal has to be checked by inspecting the measurement chain and with other evidence.
 
 </Callout>
 
@@ -152,19 +154,19 @@ Shift a 20 µm Peak sine wave up by 5 µm and the upper side becomes 25 µm and 
 
 </Callout>
 
-The DC value of a probe displacement is tied to the mean shaft position (<a href={withBase('/en/p4-3/')}>P4-3 Shaft centerline</a>). Do not directly read the mean produced in this page's truncated signal as a change in actual shaft position, either. Check the channel's AC/DC processing and reference point first.
+The DC value of the displacement read by a proximity probe indicates the mean shaft position (<a href={withBase('/en/p4-3/')}>P4-3 Shaft centerline</a>). But a mean produced because the waveform was cut, as in the truncated signal of Figure 4, should not be read directly as a real change in shaft position. First check whether the channel keeps or blocks DC (AC/DC processing) and where its zero reference is.
 
 ---
 
 ## 6. What it hides: a single number and the limits of an amplitude spectrum
 
-Have you seen the whole waveform once you read RMS and CF? Even when the two values are the same, the event times and the phase between components are gone.
+Have you seen the whole waveform once you read RMS and CF? The two values do not carry when events happened or the phase between components.
 
 <Figure {...F.noise} />
 
-Figure 6 is an example that adds noise with a standard deviation of 2 µm to a noise-free sine wave. Even in the same 60 ms, Peak and CF change. To find out whether it is a real impact, check the start of repeating ringing rather than a single large isolated sample.
+Figure 6 compares a noise-free sine wave (top) with the same wave plus noise of standard deviation 2 µm (bottom). Over the same 60 ms, adding the noise changes Peak and CF. To find out whether it is a real impact, check the start of repeating ringing rather than a single large isolated sample.
 
-<a href={withBase('/en/p2-1/')}>CF and Pk-Pk in P2-1</a> are useful for a quick summary. CF is the maximum absolute value divided by RMS, and Pk-Pk is the maximum minus the minimum. If the Peak is shaken by noise, or the RMS contains DC, the interpretation of CF changes too. When comparing with AC-coupled equipment, match the same processing conditions.
+<a href={withBase('/en/p2-1/')}>CF and Pk-Pk in P2-1</a> are useful for a quick summary. CF is the maximum absolute value divided by RMS, and Pk-Pk is the maximum minus the minimum. If the Peak is shaken by noise, or the RMS contains DC, the interpretation of CF changes too. When comparing with AC-coupled equipment, which blocks DC (P3-4), match the same processing conditions.
 
 <Figure {...F.phase} />
 
@@ -172,7 +174,7 @@ The two signals in Figure 7 have the same Peak amplitude per component and the s
 
 <Callout type="field" title="Four things to record with the waveform">
 
-Write down the measurement location, sensor type and unit; the speed and Keyphasor reference; the record length and sampling rate; and the filter, AC/DC processing and input range. A <a href={withBase('/en/p5-1/')}>P5-1 filter</a> can cut or delay fast components and change the ringing and flat parts. Even if the instrument labels it a "direct waveform", check the measurement bandwidth and the AAF.
+Write down the measurement location, sensor type and unit; the speed and Keyphasor reference; the record length and sampling rate; and the filter, AC/DC processing and input range. A <a href={withBase('/en/p5-1/')}>P5-1 filter</a> can cut or delay fast components and change the ringing and flat parts. Even if the instrument labels it a "direct waveform" (unfiltered, P5-5), check the measurement bandwidth and the AAF (the anti-aliasing filter that cuts high frequencies before sampling, P2-3).
 
 </Callout>
 
@@ -193,7 +195,7 @@ Now change the waveforms yourself. In the gallery, connect each name to its shap
 
 <TimeWaveformLab client:visible lang="en" />
 
-In step 2 you see three events per revolution. The event interval is 6.667 ms at 3000 rpm and 3.333 ms at 6000 rpm. The two patterns in step 3 show one cycle of the size change in 10 revolutions but only part of it in 2 revolutions. Do not expect the 10-revolution RMS values of 10 and 15 µm to hold in a short view as well.
+In step 2 you see three events per revolution. The event interval is 6.667 ms at 3000 rpm and 3.333 ms at 6000 rpm. The two patterns in step 3 show one cycle of the size change in 10 revolutions but only part of it in 2 revolutions. Do not expect the RMS measured over 10 revolutions (10 µm for beating, 15 µm for AM) to come out the same in a 2-revolution view.
 
 Problem 1 in step 4 is the both-side clipping shape, and problem 3 is repeated impact ringing. What this quiz tests is **the shape of an imaginary waveform**. For real data that looks similar on screen, the cause of a fault has to be confirmed with the measurement conditions and other evidence.
 
@@ -217,7 +219,7 @@ Problem 1 in step 4 is the both-side clipping shape, and problem 3 is repeated i
 <details>
 <summary><strong>Q1. At 3600 rpm, what is the Keyphasor marker interval in ms?</strong></summary>
 
-$60/3600=1/60$ s, so about 16.67 ms. 60 Hz is the 1X frequency, not 60 ms.
+$60/3600=1/60$ s, so about 16.67 ms. 60 Hz is the 1X frequency, and the marker interval is its reciprocal. Be careful not to read it as 60 ms.
 </details>
 
 <details>
@@ -241,7 +243,7 @@ First report the observation: "a waveform that is repeatedly flattened on one si
 <details>
 <summary><strong>Q5. The upper Peak about zero is 25 µm and the lower magnitude is 15 µm. Is it a nonlinear waveform?</strong></summary>
 
-You cannot tell from that information alone. Shifting a 20 µm Peak sine wave up by 5 µm gives the same pair of Peaks. Check the shape and skewness after removing the mean, and if asymmetry remains, check other possibilities such as a sum of components.
+You cannot tell from that information alone. Shifting a 20 µm Peak sine wave up by 5 µm gives the same pair of Peaks. Check the shape and skewness after removing the mean, and even if asymmetry remains, check whether it comes from components adding up, as in Figure 5.
 </details>
 
 <details>
@@ -250,7 +252,7 @@ You cannot tell from that information alone. Shifting a 20 µm Peak sine wave up
 No. Figure 7 has the same 1X and 2X amplitudes and the same RMS of 14.98 µm, but the 2X phase differs, so the shape differs. The amplitude spectrum does not carry the phase between components.
 </details>
 
-In the next section, <a href={withBase('/en/p6-2/')}>P6-2</a>, you read the lines in the spectrum, waterfall and cascade. A way to view the same signal split into time and frequency is in <a href={withBase('/en/p5-2/')}>P5-2 Time-frequency analysis</a>.
+On the next page, <a href={withBase('/en/p6-2/')}>P6-2</a>, you read the lines in the spectrum, waterfall and cascade. A way to view the same signal split into time and frequency is in <a href={withBase('/en/p5-2/')}>P5-2 Time-frequency analysis</a>.
 
 ## References
 

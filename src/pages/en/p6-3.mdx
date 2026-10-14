@@ -4,7 +4,7 @@ sectionId: P6-3
 title: 'Orbit: Shape, Direction and the Time Order of the Dots'
 description: 'Compare direct and 1X-filtered orbits, and read the time order of the Keyphasor dots, the shape patterns and the conditions behind the number of dots.'
 source: p6-3.mdx
-sourceHash: 7a3f2f8906
+sourceHash: afbf363e36
 ---
 
 import Callout from '../../components/content/Callout.astro';
@@ -25,7 +25,7 @@ This page carries <a href={withBase('/en/p4-2/')}>the orbits and whirl of P4-2</
 1. You can explain what the direct orbit and the 1X-filtered orbit each show and hide.
 2. You can read forward and reverse whirl after checking the X/Y axes, the viewing direction and the time order.
 3. You can connect circles, ellipses, bananas, figure-eights, inner loops, petals and flat sides to their components.
-4. You can tell fixed dots from moving dots, and you will not decide the order from the number of dots alone.
+4. You can tell fixed dots from moving dots, and explain why the number of dots alone does not decide the order.
 5. When narrowing a shape down to candidate causes, you can choose which other signals and operating conditions to look at.
 
 </Callout>
@@ -117,7 +117,7 @@ In figure-eights and loops the direction of travel can change from segment to se
 
 ## 4. Link shape to components and phase, then check the cause further
 
-Is every ellipse a sign of anisotropy? Does an inner loop mean fluid-film instability straight away?
+Is every ellipse caused by anisotropic support (P4-2)? Does an inner loop mean fluid-film instability straight away?
 
 <Figure {...F.oneXAndTwoX} />
 
@@ -140,7 +140,7 @@ The left of Figure 5 adds two components, 1X 20 + 1/2X 12 µm, to make an inner 
 
 <Callout type="warn" title="The formula that made a loop does not solve for its cause">
 
-These figures are synthetic signals for reading shapes. They are not solutions for the onset of fluid-film instability, contact forces or preload. A circle or an ellipse does not guarantee the absence of a fault either. Part 7 tells causes apart by linking frequency, phase, direction and operating conditions together.
+These figures are synthetic signals for reading shapes. They are not solutions for the onset of fluid-film instability, contact forces or preload (a static force, such as from a misaligned coupling, that pushes the shaft to one side, P7-3). A circle or an ellipse does not guarantee the absence of a fault either. Part 7 tells causes apart by linking frequency, phase, direction and operating conditions together.
 
 </Callout>
 
@@ -190,7 +190,7 @@ A flat side can appear with real clearance contact, but probe or ADC saturation 
 
 <Callout type="field" title="Record four things before judging the cause">
 
-Keep the direct/filtered orbits at the same instant with the X/Y waveforms and spectra; the probe directions, polarities and whether acquisition was simultaneous; the speed, load and temperature; and the average position and clearance reference. The start-up and shutdown paths, the <a href={withBase('/en/p6-2/')}>P6-2 Cascade</a> and the <a href={withBase('/en/p6-4/')}>P6-4 trends</a> confirm how the candidate causes change over time. Rub, too, is read from several plots together.
+Keep the direct/filtered orbits at the same instant with the X/Y waveforms and spectra; the probe directions, polarities and whether acquisition was simultaneous; the speed, load and temperature; and the average position and clearance reference. The start-up and shutdown paths, the <a href={withBase('/en/p6-2/')}>P6-2 Cascade</a> and the <a href={withBase('/en/p6-4/')}>P6-4 trends</a> confirm how the candidate causes change over time. Rub (a rotating part touching and rubbing a stationary part, P7-3), too, is read from several plots together, not from one.
 
 </Callout>
 
@@ -202,7 +202,7 @@ Keep the direct/filtered orbits at the same instant with the X/Y waveforms and s
 
 1. In the initial state (circle · counterclockwise · 2 revolutions · start 0), look at the direct/1X orbits and 40 µm p-p. If you switch the whirl sign to clockwise, which of these change — dot position, size, arrow? Then switch back to counterclockwise.
 2. Change the shape to banana (extra 12 µm). Compare the distortion of the direct orbit with the filtered X/Y of about 20/12 µm Peak. How much Y 1X remains for the figure-eight?
-3. Choose the single comparison component with 8 revolutions, and change it 1/2X → 1/3X → 0.43X → 2X. Count the dot positions, then for 0.43X move the start revolution from 0 → 1 or turn on time-window playback.
+3. Set the shape to the comparison component alone and the shaft turns displayed to 8, then change the comparison component order through 1/2X, 1/3X, 0.43X and 2X. Count the dot positions, then for 0.43X move the start revolution from 0 → 1 or turn on time-window playback.
 4. Turn playback off and choose the flat side. Compare direct X 32 µm p-p with the filtered 17.15 µm Peak (= 34.3 µm p-p). Can a 1X ellipse alone confirm contact?
 
 </Callout>
@@ -266,7 +266,7 @@ In both cases the signal returns to the same coordinate every shaft revolution, 
 Check the X/Y directions, polarities and viewing reference; the valid range of the probe/ADC and the raw waveform; the average position and clearance; the frequency and time behavior of the harmonic/sub-synchronous components; and other bearings and the operating conditions. The X clipping at 32 µm p-p and the 1X of 17.15 µm Peak in this example are consequences of the waveform and do not establish contact as the cause.
 </details>
 
-The four reading screens of Part 6 are now linked. Revisit changes over time with <a href={withBase('/en/p6-4/')}>P6-4 trends and APHT</a>, and in <a href={withBase('/en/p7-1/')}>the P7-1 diagnostic frequency map</a> tie frequency, phase, direction and operating conditions to candidate causes.
+After the waveform (P6-1) and the spectrum (P6-2), we have now read the orbit. Next, <a href={withBase('/en/p6-4/')}>P6-4 trends and APHT</a> reads how the 1X vector changes over time, and after that <a href={withBase('/en/p7-1/')}>the P7-1 diagnostic frequency map</a> ties frequency, phase, direction and operating conditions to candidate causes.
 
 ## References
 

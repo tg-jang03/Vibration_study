@@ -4,7 +4,7 @@ title: P7-4 Fluid-Film and Fluid-Force Instability
 description: A candidate map for components below 1X (subsynchronous), the evidence for oil whirl and whip (following 0.38 to 0.48X, then locking to a mode, forward direction, scattered keyphasor dots, hysteresis), the load threshold of steam and seal fluid-force whirl, tests that change oil temperature, bearing load and process load, and a subsynchronous discrimination table with checks and countermeasure directions
 sectionId: P7-4
 source: p7-4.mdx
-sourceHash: 11d5e3fdd7
+sourceHash: 0e3695f19f
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -15,7 +15,7 @@ import * as F from '../../figures/p7-4';
 
 # 7-4 Fluid-Film and Fluid-Force Instability: Finding the Owner of a Line Below 1X
 
-A compressor on plain bearings suddenly shakes hard at 7200 rpm (120 Hz). The spectrum shows a line at 50 Hz (0.42X) that is bigger than 1X. Is it oil whip, the rub of P7-3, or rotating stall caused by a drop in flow? The region below 1X is crowded with dangerous causes, and the right response differs completely from one cause to the next.
+A compressor on plain bearings suddenly shakes hard at 7200 rpm (120 Hz). The spectrum shows a line at 50 Hz (0.42X) that is bigger than 1X. Is it oil whip, the rub seen in P7-3 (a rotating part touching and rubbing a stationary one), or rotating stall caused by a drop in flow? The region below 1X is crowded with dangerous causes, and the right response differs completely from one cause to the next.
 
 P4-4 showed how cross-coupling pushes the orbit around, and explained oil whirl and whip. P6-2 showed in the cascade how whirl locks into whip. P7-3 covered the ½X of rub and looseness. This page ties them together as **discrimination**. It uses an explanatory model in which one cause at a time is put into the same machine, and shows how position, direction, keyphasor dots and the response to operating conditions differ.
 
@@ -37,7 +37,7 @@ Subsynchronous (P2-1) is the **name of a position**: a frequency lower than 1X. 
 
 <Figure {...F.candidateMap} />
 
-The machine in Figure 1 is a compressor rotor whose first critical speed is 3000 rpm (50 Hz). Look around 0.4 to 0.5X at 6000 to 7200 rpm: oil whirl (0.45X), oil whip (50 Hz), fluid-force whirl (about 49 Hz), the ½X of rub and looseness (47.5 to 57.5 Hz) and, if the bearings are rolling-element, the cage FTF (0.4X) are all packed within a few Hz of each other. Deciding "it is near 0.45X, so it is oil whirl" from one spectrum is easy to get wrong. That is why we look at **how the line moves when speed or operating conditions change**.
+The machine in Figure 1 is a compressor rotor whose first critical speed is 3000 rpm (50 Hz). Look around 0.4 to 0.5X at 6000 to 7200 rpm: oil whirl (0.45X), oil whip (50 Hz), fluid-force whirl (about 49 Hz), the ½X of rub and looseness (47.5 to 57.5 Hz) and, if the bearings are rolling-element, the cage rotation frequency FTF (0.4X, P1-8) are all packed within a few Hz of each other. Deciding "it is near 0.45X, so it is oil whirl" from one spectrum is easy to get wrong. That is why we look at **how the line moves when speed or operating conditions change**.
 
 <Callout type="term" title="Rotating stall">
 
@@ -59,13 +59,13 @@ At the journal surface the oil moves at journal speed, and at the bearing surfac
 
 <Figure {...F.subOrbits} />
 
-The evidence for fluid-film instability shows up in all five places.
+The evidence for fluid-film instability shows up in all five areas: frequency, amplitude, phase, direction and operating conditions.
 
 - **Frequency**: it follows the speed at 0.38 to 0.48X (whirl), then locks to the first-mode frequency (whip). It is not exactly ½X.
 - **Amplitude**: it appears **suddenly** at a threshold speed, and once it is whip it can grow large enough to fill the clearance. In Figure 2 it appears at 4800 rpm and reaches 65 µm at 7200 rpm.
 - **Phase and keyphasor dots**: it is not tied to the rotating speed, so the dots land in a different place every turn (Figure 4, left). The orbit is a forward inner loop (P6-3).
 - **Direction**: close to a forward circle. In the full spectrum it stands on the forward (+) side (P5-3).
-- **Operating conditions**: it appears readily when the bearing load is small (when the eccentricity ratio is small, P4-3) and when the oil temperature is low so the viscosity is high. Sometimes misalignment has unloaded one bearing (P7-3 §2.2). On the way down it persists to a lower speed than where it appeared (Figure 2, **hysteresis**: appears at 4800 rpm, remains down to 4200 rpm).
+- **Operating conditions**: it appears readily when the bearing load is small (when the eccentricity ratio is small, P4-3) and when the oil temperature is low so the viscosity is high. It can also start when the preload from misalignment unloads one bearing (P7-3 §2.2). On the way down it persists to a lower speed than where it appeared (Figure 2, **hysteresis**: appears at 4800 rpm, remains down to 4200 rpm).
 
 ---
 
@@ -75,7 +75,7 @@ Cross-coupling force is not produced only in the oil film. In the blade-tip clea
 
 <Figure {...F.steamThreshold} />
 
-In Figure 5, keep the speed fixed and raise the process load: the moment it passes 80 %, a component appears near the first mode (49 Hz) and grows with the load. In steam turbines this is called steam whirl, and the decisive evidence is that it appears when you raise the load and disappears when you lower it (the steam-turbine-specific phenomenon is covered in P8-3). The Alford force produced by blade-tip clearance in gas turbines belongs to the same family.
+In Figure 5, keep the speed fixed and raise the process load: the moment it passes 80 %, a component appears near the first mode (49 Hz) and grows with the load. In steam turbines this is called steam whirl, and the decisive evidence is that it appears when you raise the load and disappears when you lower it (the steam-turbine-specific phenomenon is covered in P8-3). The Alford force (P4-4 §7), which arises in gas turbines when the blade-tip clearance is uneven around the circumference, belongs to the same family.
 
 ---
 
@@ -111,7 +111,7 @@ Tests that change oil temperature, load or flow must stay within operating limit
 | Structural resonance | Fixed Hz | Unchanged | A line | Scattered | No response | Impact test (P9-1) |
 | Cage FTF | About 0.4X | Same ratio | — | — | Rolling-element bearings only | Envelope (P7-5) |
 
-Looking only at the two leftmost columns (position and movement), whirl, FTF, rub and stall overlap. The three columns that actually separate them are **direction** (full spectrum), **keyphasor dots** (orbit) and **what it responds to**.
+Looking only at the Frequency and "When the speed changes" columns (position and movement), whirl, FTF, rub and stall overlap. The three columns that actually separate them are **direction** (full spectrum), **keyphasor dots** (orbit) and **what it responds to**.
 
 ---
 
@@ -122,13 +122,13 @@ Looking only at the two leftmost columns (position and movement), whirl, FTF, ru
 1. Select fluid-film instability and raise the speed 4500 → 6000 → 7200 rpm, reading the Hz and the order. At which speeds does it appear and disappear?
 2. With the same cause, at 6000 rpm and at 7200 rpm, raise the oil temperature to 60 °C, or the bearing load to 1.5.
 3. At 6300 rpm, change the cause from partial rub to rotating looseness to fluid-film instability, and compare the order, the forward/reverse components and the keyphasor dots.
-4. Change the view mode to "guess the hidden cause" and hide cases 1 to 7. You may also test with the condition sliders.
+4. Change the view mode to "guess the hidden cause" and identify the cause in cases 1 to 7. You may also test with the condition sliders.
 
 </Callout>
 
 <SubsyncLab client:visible lang="en" />
 
-In 1, nothing appears at 4500 rpm; at 6000 rpm there is 45 Hz (0.45X, whirl), and at 7200 rpm 50 Hz (0.417X, whip). On run-up it appears at 4800 rpm, and on coast-down it remains down to 4200 rpm. In 2, the whirl at 6000 rpm disappears above an oil temperature of about 58 °C or at load 1.5, but the whip at 7200 rpm stays, because even when its threshold rises (6240 and 6120 rpm) it is still below the operating speed. In 3, rub and looseness are exactly 0.5X (52.5 Hz) with the dots fixed at two places; for rub the reverse component is 0.7 times the forward one, for looseness forward and reverse are equal. The fluid film is at 0.45X (47.25 Hz), a little below half, forward, with scattered dots. In 4 the cases are: 1 rub, 2 oil whirl, 3 structural resonance, 4 rotating stall, 5 oil whip, 6 rotating looseness, 7 fluid-force whirl.
+In 1, nothing appears at 4500 rpm; at 6000 rpm there is 45 Hz (0.45X, whirl), and at 7200 rpm 50 Hz (0.417X, whip). On run-up it appears at 4800 rpm, and on coast-down it remains down to 4200 rpm. In 2, the whirl at 6000 rpm disappears above an oil temperature of about 58 °C or at load 1.5, but the whip at 7200 rpm stays, because even when its threshold rises to 6240 rpm (oil temperature) or 6120 rpm (load) it is still below the operating speed. In 3, rub and looseness are exactly 0.5X (52.5 Hz) with the dots fixed at two places; for rub the reverse component is 0.7 times the forward one, for looseness forward and reverse are equal. The fluid film is at 0.45X (47.25 Hz), a little below half, forward, with scattered dots. In 4 the cases are: 1 rub, 2 oil whirl, 3 structural resonance, 4 rotating stall, 5 oil whip, 6 rotating looseness, 7 fluid-force whirl.
 
 ---
 
@@ -171,7 +171,7 @@ Different causes sometimes call for opposite responses. The detailed principle i
 <details>
 <summary><strong>Q3. A steam turbine at rated speed was being loaded up when, around 70 %, a component near the first mode appeared and grew with the load. When the load was lowered to 60 % it disappeared. Changing the oil temperature makes no difference. What do you suspect?</strong></summary>
 
-The threshold is set by the **load**, not the speed, and it is independent of oil temperature, so suspect not the oil film but <strong>fluid-force whirl (steam whirl)</strong>. Also look at cross-coupling in the blade-tip clearance and seals, and at cases where partial admission (partial arc) changed the bearing load (the ST section of Part 8).
+The threshold is set by the **load**, not the speed, and it is independent of oil temperature, so suspect not the oil film but <strong>fluid-force whirl (steam whirl)</strong>. Also look at cross-coupling in the blade-tip clearance and seals, and at cases where partial admission (partial arc), which sends steam through only part of the circumference, changed the bearing load (the ST section of Part 8).
 </details>
 
 <details>
