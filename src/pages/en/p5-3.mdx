@@ -4,7 +4,7 @@ title: P5-3 Two-channel analysis
 description: Analyzing two signals together — the cross spectrum, H1 and H2 estimates of the FRF from input and output and the effect of noise, coherence to separate trustworthy frequencies, and the full spectrum that splits forward and reverse components from X and Y sensors, with its assumptions
 sectionId: P5-3
 source: p5-3.mdx
-sourceHash: efe81752f5
+sourceHash: b8d240997a
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p5-3';
 
 # 5-3 Two-channel analysis: cross spectrum · FRF · coherence · full spectrum
 
-A pedestal rings strongly near 80 Hz while the machine runs. To check whether that is a natural frequency of the structure, you apply a force, measure the response, and try to get the frequency response function (FRF, P1-4). But if you simply divide the response spectrum by the force spectrum, the value jumps around from one measurement to the next. Meanwhile, the spectra of the shaft's X and Y sensors both show the same 1X, yet they do not tell you which way the shaft is turning.
+A pedestal rings strongly near 80 Hz while the machine runs. To check whether that is a natural frequency of the structure, you apply a force, measure the response, and try to get the frequency response function (FRF, P1-4). But if you simply divide the response spectrum by the force spectrum, the value jumps around from one measurement to the next. Meanwhile, the spectra of the shaft's X and Y sensors both show the same 1X, yet they do not tell you which way the shaft center is whirling (P4-2).
 
 What more can you learn by looking at two signals **together**? This page looks at how to measure the relationship between two channels.
 
@@ -37,7 +37,7 @@ In P1-4, the FRF was "at each frequency, how many times the force the response i
 
 <Figure {...F.ratioOneFrame} />
 
-Near a resonance the quotient is close to the true FRF. But where the response is very small — here the <strong>antiresonance</strong> between the two resonances (the frequency where the response nearly vanishes, 106 Hz) — things are different. Noise that is small overall (10 % of the mean response magnitude) is about 3 times larger than the response at this frequency, so it goes straight into the division and the true value of 0.177 comes out as 1.35. The division of a single frame cannot filter out noise. You have to average several frames, and what you average matters.
+Near a resonance the quotient is close to the true FRF. But where the response is very small — here the <strong>antiresonance</strong> between the two resonances at 80 Hz and 210 Hz (the frequency where the response nearly vanishes, 106 Hz) — things are different. Noise that is small overall (10 % of the mean response magnitude) is about 3 times larger than the response at this frequency, so it goes straight into the division and the true value of 0.177 comes out as 1.35. The division of a single frame cannot filter out noise. You have to average several frames, and what you average matters.
 
 ---
 
@@ -73,7 +73,7 @@ $$
 
 <Figure {...F.h1h2} />
 
-- **Noise on the response** is uncorrelated with the force, so it is wiped out by averaging in $G_{xy}$, but it piles up in $G_{yy}$. So $H_1$ is right and $H_2$ is too large. It is especially large at the antiresonance, where the response is small (top: the true value 0.177 becomes 3.33 with 64 averages). However many averages you take, $H_2$ does not converge to the true value but to around $\lvert H \rvert/\gamma^2 \approx 1.6$ (about 9 times the true value), and with few averages it swings widely around that.
+- **Noise on the response** is uncorrelated with the force, so it is wiped out by averaging in $G_{xy}$, but it piles up in $G_{yy}$. So $H_1$ is right and $H_2$ is too large. It is especially large at the antiresonance, where the response is small (Figure 3, top: the true value 0.177 becomes 3.33 with 64 averages). However many averages you take, $H_2$ does not converge to the true value but to around $\lvert H \rvert/\gamma^2 \approx 1.6$ (about 9 times the true value; $\gamma^2$ is the coherence of §4), and with few averages it swings widely around that.
 - **Noise on the force** does the opposite: it piles up in $G_{xx}$, so $H_1$ becomes smaller and $H_2$ is right (middle).
 
 <Callout type="example" title="H1 at 80 Hz with 30 % noise on the force">
@@ -88,7 +88,7 @@ Frequencies where $H_1$ and $H_2$ are similar can be trusted; frequencies where 
 
 <Callout type="field" title="Impact test and measurement during operation">
 
-In an impact test, where the FRF is measured by striking with a hammer (P9-1), the hammer's force-sensor signal is clean and the response side is more often noisy, so $H_1$ is the default. If you look at the cross spectrum between the responses at two locations on a running machine, you can see at which frequencies the two places move in phase or in antiphase. The axial phase on both sides of a coupling (P7-3) and the motion shape of several points (ODS, P9-1) use this method.
+In an impact test, where the FRF is measured by striking with a hammer (P9-1), the hammer's force-sensor signal is clean and the response side is more often noisy, so $H_1$ is the default. If you look at the cross spectrum between the responses at two locations on a running machine, you can see at which frequencies the two places move in phase or in antiphase. The axial phase on both sides of a coupling (P7-3) and the ODS (Operating Deflection Shape, P9-1), which shows how several points move together at one frequency during operation, use this method.
 
 </Callout>
 
@@ -135,11 +135,11 @@ In step 2, with a single frame the coherence is 1 everywhere and H1 equals H2. B
 
 ## 5. Full spectrum: seen as one signal, X and Y reveal the direction
 
-The X and Y sensors read the same 1X with the same magnitude, so which way is the shaft turning?
+The X and Y sensors read the same 1X with the same magnitude, so which way does the shaft center turn?
 
 <Figure {...F.fullIdea} />
 
-The spectra of X and Y separately (half spectra, P2-2 §3) are the same in all four cases. The direction is contained in the phase difference between X and Y, and looking at each spectrum on its own loses that information. In P4-2 we combined the two signals into one complex number $z = x + jy$ and computed the forward and reverse components $A_f$ and $A_b$ from a formula. With measured data, you simply take the FFT of $z$.
+The spectra of X and Y separately (half spectra that show only 0 to $f_s/2$, P2-2 §3) are the same for all four orbits in Figure 5 (counterclockwise circle, counterclockwise ellipse, straight line, clockwise circle). The direction is contained in the phase difference between X and Y, and looking at each spectrum on its own loses that information. In P4-2 we combined the two signals into one complex number $z = x + jy$ and computed the forward and reverse components $A_f$ and $A_b$ from a formula. With measured data, you simply take the FFT of $z$.
 
 <Callout type="term" title="Full spectrum">
 
@@ -166,11 +166,11 @@ The FFT of the complex signal $z = x + jy$, which combines $x$ (right sensor) an
 
 <Callout type="warn" title="'If a reverse bar shows, it is reverse whirl'">
 
-The calculation is correct only if the two sensors are exactly 90° apart and have the same sensitivity. A 10 % sensitivity difference creates a false reverse bar of 5 % of the radius, and a 10° mounting-angle difference one of 8.7 %. Enter the actual mounting angle (such as the ±45° layout of P3-2) and the sensitivities to correct before reading, and suspect the sensors first for a small reverse bar. Genuine reverse components often appear with anisotropic support (P4-2, elliptical orbit), and a reverse whirl, where the reverse component is larger than the forward one and the shaft actually turns backward, appears between two critical speeds (P4-2) or in a rub where the shaft touches the fixed part all the way round (P7-3).
+The calculation is correct only if the two sensors are exactly 90° apart and have the same sensitivity. A 10 % sensitivity difference creates a false reverse bar of 5 % of the radius, and a 10° mounting-angle difference one of 8.7 %. Enter the actual mounting angle (such as the layout in P3-2 Figure 6, with probes 45° on either side of vertical) and the sensitivities to correct before reading, and suspect the sensors first for a small reverse bar. Genuine reverse components often appear, together with an elliptical orbit, with anisotropic support whose horizontal and vertical stiffness differ (P4-2). A reverse whirl, where the reverse component is larger than the forward one and the shaft actually turns backward, appears at some speeds between the two critical speeds of an anisotropic support (P4-2) or in a rub where the shaft touches the fixed part all the way round (P7-3).
 
 </Callout>
 
-Here is the table above as a moving picture. $z(t) = A_f e^{j2\pi f t} + A_b e^{-j2\pi f t}$ is **two arrows turning at the same speed in opposite directions**, joined end to end (the turning arrow of P1-2). The arrow of length $\lvert A_f \rvert$ turns counterclockwise, and the arrow of length $\lvert A_b \rvert$, attached to its tip, turns clockwise. When the two arrows point the same way the tip is farthest (semi-major = sum of the lengths), and when they point opposite ways it is closest (semi-minor = difference of the lengths). So the heights of the $\pm 1$X bars of the full spectrum are the lengths of the two arrows, and the longer one decides the direction in which the orbit turns.
+Here is the earlier table of $\pm f$ bars for each orbit shape as a moving picture. $z(t) = A_f e^{j2\pi f t} + A_b e^{-j2\pi f t}$ is **two arrows turning at the same speed in opposite directions**, joined end to end (the turning arrow of P1-2). The arrow of length $\lvert A_f \rvert$ turns counterclockwise, and the arrow of length $\lvert A_b \rvert$, attached to its tip, turns clockwise. When the two arrows point the same way the tip is farthest (semi-major = sum of the lengths), and when they point opposite ways it is closest (semi-minor = difference of the lengths). So the heights of the $\pm 1$X bars of the full spectrum are the lengths of the two arrows, and the longer one decides the direction in which the orbit turns.
 
 <Callout type="try">
 
@@ -184,7 +184,7 @@ Here is the table above as a moving picture. $z(t) = A_f e^{j2\pi f t} + A_b e^{
 
 <FullSpectrumLab client:visible lang="en" />
 
-Step 1 gives $A_f$ = 50 µm, $A_b$ = 0. In step 2, 45° is a counterclockwise ellipse of 46.2 and 19.1 µm, 0° is a straight line with 35.4 µm on each side, and 270° is a clockwise circle with 50 µm only at −50 Hz. In step 3, the sensitivity error raises a false reverse bar of 2.5 µm at −50 Hz, and the angle error one of 4.4 µm. In step 4, the 0.45X is a circle turning in the same direction as the shaft, so it stands only at +22.5 Hz. The full spectrum confirms that the oil-whirl line seen in P5-2 is a forward component. In step 5, at 45° the short orange arrow (19.1 µm) turns against the long blue one (46.2 µm), so the tip moves between 65.3 µm (sum) and 27.1 µm (difference) in a counterclockwise ellipse. At 0° the two arrows have the same length of 35.4 µm, so there is a direction in which they cancel, and the tip just moves back and forth along a diagonal line.
+Step 1 gives $A_f$ = 50 µm, $A_b$ = 0. In step 2, 45° is a counterclockwise ellipse of 46.2 and 19.1 µm, 0° is a straight line with 35.4 µm on each side, and 270° is a clockwise circle with 50 µm only at −50 Hz. In step 3, the sensitivity error raises a false reverse bar of 2.5 µm at −50 Hz, and the angle error one of 4.4 µm. In step 4, the 0.45X is a circle turning in the same direction as the shaft, so it stands only at +22.5 Hz. The full spectrum confirms that the 0.45X oil-whirl line, which followed the speed below 1X in the P5-2 spectrogram, is a forward component. In step 5, at 45° the short orange arrow (19.1 µm) turns against the long blue one (46.2 µm), so the tip moves between 65.3 µm (sum) and 27.1 µm (difference) in a counterclockwise ellipse. At 0° the two arrows have the same length of 35.4 µm, so there is a direction in which they cancel, and the tip just moves back and forth along a diagonal line.
 
 ---
 

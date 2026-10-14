@@ -4,7 +4,7 @@ title: P5-4 Order Tracking
 description: Computed order tracking, which re-samples a fixed-rate record at equal shaft angles using Keyphasor times — the angle-time interpolation, equal-angle resampling, order resolution and maximum order, aliasing and interpolation error in the order domain, and how to do it without a Keyphasor using a spectrogram ridge
 sectionId: P5-4
 source: p5-4.mdx
-sourceHash: 9dfe8850c6
+sourceHash: 230b5aae81
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -45,7 +45,7 @@ Conversely, the fixed 95 Hz component, independent of speed (a structural resona
 
 <Callout type="warn" title="'The order spectrum is always better'">
 
-The order spectrum sharpens the rotating components at the price of blurring fixed-frequency components (structural resonances, the line frequency 2 f_L). For run-up data, look at both scales, and check whether a line follows the rotation with a cascade plot (P5-2).
+The order spectrum sharpens the rotating components at the price of blurring fixed-frequency components (structural resonances, the $2f_L$ component at twice the line frequency). For run-up data, look at both scales, and check whether a line follows the rotation with a cascade plot (P5-2).
 
 </Callout>
 
@@ -75,7 +75,7 @@ A method that re-samples a signal recorded at a fixed rate at equal shaft angles
 
 </Callout>
 
-Because the frame is cut at a whole number of revolutions, rotating components such as 1X and 2X repeat an exact whole number of times within the frame. There is no leakage, so you may use the **Uniform window** (P2-5). Not having to worry about amplitude correction is another advantage of the order spectrum. Note, however, that this holds only for rotating components that repeat a whole number of times within the frame. Fixed-frequency components (the 95 Hz in Figure 1), orders such as 0.43X that do not repeat a whole number of times in the frame, and components whose size changes during the frame (passing a critical speed) still smear.
+Because the frame is cut at a whole number of revolutions, rotating components such as 1X and 2X repeat an exact whole number of times within the frame. There is no leakage, so you may use the **Uniform window** (all weights 1, that is, no window at all; P2-5). Not having to worry about the window's amplitude correction (P2-5 §4) is another advantage of the order spectrum. Note, however, that this holds only for rotating components that repeat a whole number of times within the frame. Fixed-frequency components (the 95 Hz in Figure 1), orders such as 0.43X that do not repeat a whole number of times in the frame, and components whose size changes during the frame (passing a critical speed) still smear.
 
 ---
 
@@ -123,9 +123,9 @@ What should you watch out for when you reduce the samples per revolution?
 
 <Figure {...F.orderAliasing} />
 
-Sampling at $N_{spr}$ points per revolution is sampling in the angle domain. So the aliasing of P2-3 occurs just the same. Components above order $N_{spr}/2$ fold back and stand as fake lines at low orders. In the middle of Figure 3, 23X (a blade-pass example) passed the folding point of 32 points per revolution (order 16) and landed on 9X. It looks as if 9X has a real cause, which makes it a dangerous result.
+Sampling at $N_{spr}$ points per revolution is sampling in the angle domain. So the aliasing of P2-3 occurs just the same. Components above order $N_{spr}/2$ fold back and stand as fake lines at low orders. In the middle of Figure 3, 23X (an example of the blade-pass component from 23 blades, P1-8) passed the folding point of 32 points per revolution (order 16) and landed on 9X. It looks as if 9X has a real cause, which makes it a dangerous result.
 
-The remedy follows the same idea as the AAF in the time domain (P2-3). First sample **generously**, for example at 256 points per revolution, filter with a low-pass filter in the order domain, and then **decimate** to the number of points you want (decimation, P5-1). In the order domain 23X is always at order 23 whatever the speed, so a single filter handles it even when the speed changes.
+The remedy follows the same idea as the AAF in the time domain (P2-3). First sample **generously**, for example at 256 points per revolution, filter with a low-pass filter in the order domain, and then **decimate** to the number of points you want (decimation, P5-1 §6). In the order domain 23X is always at order 23 whatever the speed, so a single filter handles it even when the speed changes.
 
 <Figure {...F.interpolationLoss} />
 
@@ -152,7 +152,7 @@ Can you track orders on data that has no Keyphasor signal?
 
 <Figure {...F.tacholess} />
 
-You take the speed information out of the signal itself. If you follow the line of the clearest rotating component, such as 1X, frame by frame in the spectrogram (P5-2), you can read the rotation frequency at each instant (if you followed the line of another order such as 2X, divide by that order). Integrating this frequency over time gives the angle (the $\theta(t)$ formula above), and the instants when the angle grows by one revolution are taken as virtual Keyphasor pulses and re-sampled in the same way.
+You take the speed information out of the signal itself. If you follow the line of the clearest rotating component, such as 1X, frame by frame in the spectrogram (P5-2), you can read the rotation frequency at each instant (if you followed the line of another order such as 2X, divide by that order). Integrating this frequency over time gives the angle (the $\theta(t)$ formula of §2), and the instants when the angle grows by one revolution are taken as virtual Keyphasor pulses and re-sampled in the same way.
 
 <Callout type="term" title="Ridge">
 

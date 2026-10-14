@@ -4,7 +4,7 @@ title: P5-2 Time-Frequency Analysis
 description: The STFT, which cuts a changing signal into short frames and strings the spectra together; reading a spectrogram (rotating, fixed and locked components); the time-frequency trade-off of frame length and how to choose it; waterfall versus cascade; the wavelet idea
 sectionId: P5-2
 source: p5-2.mdx
-sourceHash: 1f357b575b
+sourceHash: 95ecce4237
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -69,13 +69,13 @@ How do you take in 119 spectra at a glance?
 
 <Callout type="term" title="Spectrogram">
 
-The STFT spectra laid out in frame-time order, with the magnitude painted as color intensity. Because magnitudes differ so much, they are usually painted in dB (P2-7 §7). In the plot on this page frequency runs horizontally and time vertically, so it is a waterfall (§4) seen from above (and because the speed in this run-up rises in proportion to time, it is also almost the same as the cascade of P3-5).
+The STFT spectra laid out in frame-time order, with the magnitude painted as color intensity. Because magnitudes differ so much, they are usually painted in dB (P2-7 §7). In the plot on this page frequency runs horizontally and time vertically, so it is a waterfall (§4) seen from above. Because the speed in this run-up rises at a steady rate, it is also almost the same as the cascade of P3-5.
 
 </Callout>
 
 What you can read from Figure 2:
 
-- **Slanted lines**: components that move with the speed, like 1X and 2X. The ratio frequency ÷ speed (Hz) is the order, and in this plot, where the vertical axis is time (speed), a higher order makes the line lie flatter.
+- **Slanted lines**: components that move with the speed, like 1X and 2X. The frequency divided by the speed (in Hz) is the order (P2-1), and in this plot, where the vertical axis is time (speed), a higher order makes the line lie flatter.
 - **Vertical lines**: components that stay in place regardless of speed, like the one at 95 Hz. A structural natural frequency (P1-2) or an electrical component looks like this.
 - **Where it gets darker**: 1X is largest, 40.7 µm, as it passes the critical speed (12 s, 1500 rpm), and 2X grows to 10.2 µm at 30 s (2850 rpm), where it crosses the 95 Hz vertical line. A rotating line resonates (P1-4) when it passes a natural frequency.
 - **Bending lines**: from 24 s (2400 rpm) a 0.45X line appears below 1X and follows it diagonally, then from 36.4 s (3333 rpm) it bends vertical at 25 Hz and rises no further.
@@ -86,7 +86,7 @@ The last line is the classic shape of an instability in a fluid-film bearing. Th
 
 ## 3. Frame length: look at time finely and frequency blurs
 
-A longer frame makes $\Delta f = 1/T$ better, so why did we use 1 second?
+A longer frame makes $\Delta f = 1/T$ better, so why did we use 1 second in §1?
 
 <Figure {...F.tradeoff} />
 
@@ -100,13 +100,13 @@ $$
 
 1. 1X: $a = 75/60 = 1.25$ Hz/s → $T_{best} = 1/\sqrt{1.25} = 0.89$ s. With $f_s = 512$ Hz, $N \approx 458$, so choose the nearest power of two, 512.
 2. 2X moves twice as fast, so $a = 2.5$ Hz/s → $T_{best} = 0.63$ s. To see higher orders sharply, cut shorter.
-3. At 20 s in Figure 3, the half-width of the 1X peak is about 8 Hz for $N$ = 128 and about 2 Hz for $N$ = 512 (a Hann peak is roughly 2Δf wide). For 4096, 1X moves 10 Hz during one frame.
+3. At 20 s in Figure 3, the half-width of the 1X peak (its width measured at half the peak height) is about 8 Hz for $N$ = 128 and about 2 Hz for $N$ = 512, because a Hann peak is roughly 2Δf wide. For 4096, 1X moves 10 Hz during one frame.
 
 </Callout>
 
 <Callout type="warn" title="'The longer you measure, the more accurate it is'">
 
-True at constant speed, but not while the speed is changing. An 8-second frame looks fine with $\Delta f$ = 0.125 Hz, yet it lowers the 1X peak from 16.1 to 3.65 µm (the smearing of P2-4). Read the amplitudes of run-up and coast-down data together with the frame length.
+True at constant speed, but not while the speed is changing. An 8-second frame ($N$ = 4096) looks fine with $\Delta f$ = 0.125 Hz, yet it lowers the 1X peak, 16.1 µm with a 1-second frame, to 3.65 µm (the smearing of P2-4). Read the amplitudes of run-up and coast-down data together with the frame length.
 
 </Callout>
 

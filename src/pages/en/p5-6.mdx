@@ -4,7 +4,7 @@ title: P5-6 Envelope Analysis · Spectral Kurtosis
 description: Envelope analysis, which demodulates the impacts of a rolling-element bearing fault that ring a kHz resonance whose size rises and falls at the fault frequency (band-pass → magnitude of the analytic signal → spectrum), why band choice matters, kurtosis and spectral kurtosis, choosing the band with a kurtogram, and the 1X sidebands of an inner-race fault
 sectionId: P5-6
 source: p5-6.mdx
-sourceHash: 05b04b899b
+sourceHash: 98fe9900e3
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -35,7 +35,7 @@ But open the acceleration spectrum and there is almost nothing at BPFO, while th
 
 ## 1. Why doesn't BPFO show up in the spectrum?
 
-Let's look at the housing acceleration of a machine whose 6205 bearing (3000 rpm, BPFO 179.2 Hz) has a defect on the outer race.
+Let's look at the housing acceleration of a machine with a defect on the outer race of the 6205 bearing whose fault frequencies we worked out in P1-8 (3000 rpm, BPFO 179.2 Hz).
 
 <Figure {...F.rawSignal} />
 
@@ -43,7 +43,7 @@ The largest thing in the acceleration of Figure 1 is the 1200 Hz gear mesh (1 g)
 
 It is not that the fault signal is missing. What a ball makes each time it passes the defect is not a smooth 179 Hz shaking but a short impact, and the impact rings a housing resonance (here 3.3 kHz) (P1-8 §4). So the fault signal is **the size of a 3.3 kHz ringing that jumps up and dies away every 5.58 ms**. In the words of P2-8, it is a 3.3 kHz carrier amplitude-modulated at BPFO.
 
-In P2-8, amplitude modulation put up sidebands on both sides of the carrier, spaced at the modulation frequency. Here too, lines spaced 179 Hz apart are hidden inside the 3.3 kHz hump. But if the balls slip a little and the rhythm wavers by just 1 %, at 3.3 kHz — around the 18th harmonic — that wavering grows 18 times and the lines smear. Reading the spacing from the hump is hard.
+In P2-8, amplitude modulation put up sidebands on both sides of the carrier, spaced at the modulation frequency. Here too, lines spaced 179 Hz apart are hidden inside the 3.3 kHz hump. But if the balls slip a little and the rhythm wavers by just 1 %, at 3.3 kHz — around the 18th harmonic of BPFO — that wavering grows 18 times and the lines smear. Reading the spacing from the hump is hard.
 
 **To read the rhythm, pull out only the change in the size of the ringing.** The size change takes the rhythm wavering only once (×1), so the BPFO lines stay sharp.
 
@@ -59,7 +59,7 @@ How do you pull out the change in the size of the ringing? In three steps.
 
 <Figure {...F.envelopeSteps} />
 
-At the top of Figure 2 the band signal (blue) jumps up at every impact, and the envelope (orange) keeps only the change in its size. In the envelope spectrum below, lines stand at BPFO 179.2 Hz with 0.11 g, and at 2× and 3× with 0.072 and 0.026 g — about 180 times the floor. At the same spot, the raw-signal spectrum of Figure 1 had 0.009 g.
+At the top of Figure 2 the band signal (blue) jumps up at every impact, and the envelope (orange) keeps only the change in its size. In the envelope spectrum below, lines stand at BPFO 179.2 Hz with 0.11 g, and at 2× and 3× with 0.072 and 0.026 g. The BPFO line is about 180 times the floor. At the same spot, the raw-signal spectrum of Figure 1 had 0.009 g.
 
 ### 2.1 The envelope is the magnitude of the analytic signal
 
@@ -135,7 +135,7 @@ How is the envelope spectrum different when the inner race has a defect?
 
 <Figure {...F.innerRace} />
 
-The outer race is stationary, so the defect always meets the balls at the same place. A defect on the inner race turns with the shaft and passes in and out of the loaded lower side (the load zone) once every 1X. In the load zone the impacts are strong; at the top they are weak. So the size of the impacts at the BPFI rhythm again rises and falls at 1X, and the envelope spectrum shows **1X-spaced sidebands on both sides of BPFI** and **1X itself** (Figure 5). The patterns of each fault are summarized in P7-5.
+The outer race is stationary, so the defect always meets the balls at the same place. A defect on the inner race turns with the shaft and passes in and out of the loaded lower side (the load zone) once per revolution. In the load zone the impacts are strong; at the top they are weak. So the size of the impacts at the BPFI rhythm again rises and falls at 1X, and the envelope spectrum shows **1X-spaced sidebands on both sides of BPFI** and **1X itself** (Figure 5). The patterns of each fault are summarized in P7-5.
 
 ---
 
@@ -181,7 +181,7 @@ $$
 
 In the average power at the top of Figure 7, the gear mesh and the 5 to 7 kHz noise are the largest, but in the SK below, the noise band is near 0, the gear mesh is negative, and only the 2.8 to 4.5 kHz band the fault rings rises positive. **The band with the largest size and the band with the impacts are different.**
 
-The frames must be shorter than the impact interval. Here they were cut to 64 points (3.9 ms), shorter than the BPFO interval of 5.58 ms. If each frame holds several impacts, all frames look alike and the spikiness disappears. But they must be longer than the time one ringing takes to die away (here about 1 ms) so that a ringing fits in one frame. In exchange, short frames have a coarse frequency step of 256 Hz (the trade-off of P5-2).
+The frames must be shorter than the impact interval. Here they were cut to 64 points (3.9 ms), shorter than the BPFO interval of 5.58 ms. If each frame holds several impacts, all frames look alike and the spikiness disappears. But they must be longer than the time one ringing takes to die away (here about 1 ms) so that a ringing fits in one frame. In exchange, short frames have a coarse frequency step of 256 Hz. This is the trade-off of P5-2 §3: the shorter the frame, the finer the time and the coarser the frequency.
 
 ---
 
@@ -193,7 +193,7 @@ Envelope analysis needs both the center and the width of the band. Can you choos
 
 The **kurtogram** is a map made by changing the band width in several steps and, at each width, moving the band from 0 Hz in half-band steps and measuring the SK of that band's envelope. Level 1 has a width of 4096 Hz, and each level deeper halves the width. The darkest cell is **the band where the impacts are clearest**.
 
-In Figure 8 the darkest cell is 2560 to 3584 Hz at level 3 (width 1024 Hz, SK 1.01), which contains the 3.3 kHz the fault rings. If the width is wider than this, other components such as the gear 2× (2400 Hz) mix in and the SK drops. If it is narrower, only two or three lines spaced at the BPFO interval (179 Hz) remain in the cell. Then each impact spreads out by 1/width and overlaps its neighbors, the envelope loses its spikes and ripples smoothly, and the SK falls to near 0 or below. Envelope analysis with this band makes the BPFO line stand about 150 times the floor.
+In Figure 8 the darkest cell is 2560 to 3584 Hz at level 3 (width 1024 Hz, SK 1.01), which contains the 3.3 kHz the fault rings. If the width is wider than this, other components such as twice the gear mesh frequency (2400 Hz) mix in and the SK drops. If it is narrower, only two or three lines spaced at the BPFO interval (179 Hz) remain in the cell. Then each impact spreads out by 1/width and overlaps its neighbors, the envelope loses its spikes and ripples smoothly, and the SK falls to near 0 or below. Envelope analysis with this band makes the BPFO line stand about 150 times the floor.
 
 <Callout type="term" title="Kurtogram">
 
@@ -211,7 +211,7 @@ A map that colors the SK of the band's envelope for each band center frequency (
 
 <KurtogramLab client:visible lang="en" />
 
-In step 1 the chosen band is 2560 to 3584 Hz (SK about 1.0), and the kurtosis of the whole raw signal is 2.31. In step 2, with a 0.1 g impact the same band is chosen but the SK drops to 0.28. With no fault, a single narrow cell at level 6 is chosen, and its SK is also 0.28. Looking only at the largest SK, you cannot tell a weak fault from no fault. In step 3, removing the gear also removes the gear 2× at 2400 Hz, so the wider 2048 to 4096 Hz (SK about 2.5) is chosen; raising it to 3 g leaves the chosen band unchanged.
+In step 1 the chosen band is 2560 to 3584 Hz (SK about 1.0), and the kurtosis of the whole raw signal is 2.31. In step 2, with a 0.1 g impact the same band is chosen but the SK drops to 0.28. With no fault, a single narrow cell at level 6 is chosen, and its SK is also 0.28. Looking only at the largest SK, you cannot tell a weak fault from no fault. In step 3, removing the gear mesh also removes its 2× (2400 Hz), so the wider 2048 to 4096 Hz (SK about 2.5) is chosen; raising it to 3 g leaves the chosen band unchanged.
 
 <Callout type="warn" title="'The band the kurtogram chose = the band the fault rings'">
 

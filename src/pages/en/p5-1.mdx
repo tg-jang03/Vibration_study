@@ -4,7 +4,7 @@ title: P5-1 Digital Filters and Integration
 description: Magnitude response and passband/stopband of a filter, how Butterworth, Chebyshev, Bessel and FIR differ, phase and group delay, forward-backward (zero-phase) filtering, integration as a filter, the ski slope and the low cutoff, drift in cumulative-sum integration, decimation
 sectionId: P5-1
 source: p5-1.mdx
-sourceHash: c07f22f1d8
+sourceHash: d2804887a9
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -34,7 +34,7 @@ What does a filter keep, and does it leave the kept part alone? This page looks 
 
 ## 1. A filter is a different gain at each frequency: the magnitude response
 
-The AAF of P2-3 was a filter that cut components above $F_{max}$ "gradually", and the higher the order, the steeper the cut (§2.2). This section widens that picture to filters in general.
+The AAF (anti-aliasing filter) of P2-3 was a filter that cut components above $F_{max}$ "gradually", and the higher the order, the steeper the cut (P2-3 §2.2). This section widens that picture to filters in general.
 
 <Figure {...F.filterSpec} />
 
@@ -46,7 +46,7 @@ What you can read in Figure 1:
 
 <Callout type="term" title="Magnitude response, passband, stopband">
 
-When a sine wave of frequency $f$ passes through a filter, its amplitude is multiplied by $\lvert H(f) \rvert$. Plotting this $\lvert H(f) \rvert$ against frequency gives the **magnitude response**. The side that stays almost unchanged is the <strong>passband</strong>, the side that is cut enough is the <strong>stopband</strong>, and the region between them is the <strong>transition band</strong>. The frequency where the magnitude falls to $1/\sqrt{2}$ (−3 dB) is called the **cutoff frequency** $f_c$ (for a Chebyshev filter, by convention it is the end of the ripple; this page uses the −1 dB point as $f_c$). A filter that keeps what is below $f_c$ is a **low-pass** filter, and one that keeps what is above is a **high-pass** filter.
+When a sine wave of frequency $f$ passes through a filter, its amplitude is multiplied by $\lvert H(f) \rvert$. Plotting this $\lvert H(f) \rvert$ against frequency gives the **magnitude response**. The side that stays almost unchanged is the <strong>passband</strong>, the side that is cut enough is the <strong>stopband</strong>, and the region between them is the <strong>transition band</strong>. The frequency where the magnitude falls to $1/\sqrt{2}$ (−3 dB) is called the **cutoff frequency** $f_c$. For a Chebyshev filter alone, by convention $f_c$ is the point where the up-and-down in the passband (ripple, §2) ends, and on this page that point is −1 dB. A filter that keeps what is below $f_c$ is a **low-pass** filter, and one that keeps what is above is a **high-pass** filter.
 
 </Callout>
 
@@ -105,9 +105,9 @@ The filters so far compute by feeding past values of the output back in (feedbac
 
 ## 3. Components that are not cut also come out late: phase and group delay
 
-1X to 3X have a magnitude of almost 1, so why did the waveform in the opening come out late?
+1X to 3X pass with a gain of almost 1, so why did the gearbox waveform in the opening, with the 150 Hz low-pass switched on, come out late?
 
-In the forced vibration of P1-4, the response lagged the force in phase (0° → 90° → 180°). A filter is also a system that takes an input and produces an output, so for each component it changes the phase along with the magnitude. The phase lag as a function of frequency is called the <strong>phase response</strong> $\varphi(f)$.
+In the forced vibration of P1-4, the response lagged the force in phase, and that lag grew from 0° through 90° to 180° as the frequency rose. A filter is also a system that takes an input and produces an output, so for each component it changes the phase along with the magnitude. The phase lag as a function of frequency is called the <strong>phase response</strong> $\varphi(f)$.
 
 <Figure {...F.familyPhase} />
 
@@ -131,11 +131,11 @@ If the group delay is the same at every frequency (if the phase is proportional 
 
 </Callout>
 
-In P2-2 §1.3, the waveform shape changed when the phase changed even though the bars had the same size. The same thing happens when a filter delays components near $f_c$ more. It shows up well in signals with many components near $f_c$, for example a sharp edge.
+In P2-2 §1.3, the waveform shape changed when the phase changed even though the harmonic bars had the same size. The same thing happens when a filter delays components near $f_c$ more. It shows up well in signals with many components near $f_c$, for example a signal with sharp edges such as a square wave.
 
 <Figure {...F.squareEdgeFig} />
 
-After the edge, the output goes past the target (<strong>overshoot</strong>) and then rings before settling. The size of this grows the more steeply the filter cuts near $f_c$ (magnitude) and the more the lateness differs between components (phase). For 4th order it is 10.9 % for Butterworth, 21.9 % for Chebyshev and 0.89 % for Bessel (Chebyshev is measured against the 0.89 level at which it settles). The FIR has perfectly even lateness but cuts steeply, so it overshoots by about 5.9 %, and because the symmetric taps mix in samples after the edge, its ringing is symmetric before and after the edge.
+After the edge, the output goes past the target (<strong>overshoot</strong>) and then rings before settling. The size of this grows the more steeply the filter cuts near $f_c$ (magnitude) and the more the lateness differs between components (phase). For 4th order it is 10.9 % for Butterworth, 21.9 % for Chebyshev and 0.89 % for Bessel. Chebyshev settles not at 1 but at 0.89 (−1 dB), lower by the ripple, so its overshoot is measured from that level. The FIR has perfectly even lateness but cuts steeply, so it overshoots by about 5.9 %. Because the symmetric taps mix in samples after the edge, its ringing is symmetric before and after the edge.
 
 Back to the vibration waveform:
 
@@ -143,7 +143,7 @@ Back to the vibration waveform:
 
 <Callout type="field" title="Filter delay and the 1X phase">
 
-In P3-3, the phase was the angle from the keyphasor pulse to the 1X peak. When the signal passes through a filter, the peak arrives late, so the phase reads larger by that amount (25° in this example). If the same filter is used on every channel, the phase differences between channels (X-Y, two bearings) stay the same, but when you compare keyphasor-referenced phase with other instruments or other settings, check which filter the signal passed through and whether the instrument compensates for that delay.
+In P3-3, the phase was the angle from the keyphasor pulse to the 1X peak. When the signal passes through a filter, the peak arrives late, so the phase reads larger by that amount (25° in this example). If the same filter is used on every channel, the phase differences between channels (between X and Y at one bearing, or between two bearings) stay the same, but when you compare keyphasor-referenced phase with other instruments or other settings, check which filter the signal passed through and whether the instrument compensates for that delay.
 
 </Callout>
 
@@ -153,7 +153,7 @@ With stored data, the lateness can be removed. Pass the filtered result through 
 
 <Figure {...F.filtfiltResponse} />
 
-The price is paid in magnitude. The signal passes through the same filter twice, so the magnitude is squared and the −3 dB at $f_c$ becomes −6 dB. The solid green line in Figure 5 overlapping the target is this method.
+The price is paid in magnitude. The signal passes through the same filter twice, so the magnitude is squared and the −3 dB at $f_c$ becomes −6 dB. The solid green line that overlaps the target in Figure 5 (the vibration waveform) is the result of this method.
 
 <Callout type="warn" title="'Forward-backward filtering can always be used'">
 
@@ -194,11 +194,11 @@ In Figure 7, the magnitude response of integration is −20 dB/decade, the same 
 
 <Figure {...F.skiSlope} />
 
-The low cutoff is chosen to satisfy two things. It must be high enough to suppress the ski slope, and low enough not to cut the lowest component of interest (here 1X at 25 Hz). For a 2nd-order high-pass, the magnitude at 1X is $1/\sqrt{1 + (f_c/f_{1X})^4}$, so if $f_c$ is set to 1/3 of 1X or lower, 1X is cut by less than 1 % ($1/\sqrt{1 + (1/3)^4} = 0.994$). In this example 5 Hz cuts 0.08 %, 10 Hz cuts 1.3 % and 20 Hz cuts 16 %.
+The low cutoff is chosen to satisfy two things. It must be high enough to suppress the ski slope, and low enough not to cut the lowest component of interest (here 1X at 25 Hz). For a 2nd-order high-pass, the magnitude at 1X is $1/\sqrt{1 + (f_c/f_{1X})^4}$, so if $f_c$ is set to 1/3 of 1X or lower, 1X is cut by less than 1 % ($1/\sqrt{1 + (1/3)^4} = 0.994$). In this example, the share of 1X that is cut is 0.08 % with a 5 Hz cutoff, 1.3 % with 10 Hz and 16 % with 20 Hz.
 
 <Callout type="warn" title="'The higher the cutoff, the cleaner'">
 
-A 20 Hz cutoff makes the spectrum the cleanest but makes you read 1X 16 % too small. If you apply a 5 Hz cutoff to a 300 rpm machine whose 1X is 5 Hz, 1X comes out at 0.71. For slow machines, lower the cutoff further, and if a ski slope still remains, use a sensor that measures low frequencies directly (P3-1).
+A 20 Hz cutoff makes the spectrum the cleanest but makes you read 1X 16 % too small. If you apply a 5 Hz cutoff to a 300 rpm machine whose 1X is 5 Hz, 1X comes out at 0.71. For slow machines, lower the cutoff further, and if a ski slope still remains, use a sensor that measures low frequencies without integration. For a shaft, a non-contact displacement sensor that measures displacement directly from 0 Hz is one example (P3-1).
 
 </Callout>
 
@@ -245,7 +245,7 @@ In step 1, below 5 Hz is 18.2 mm/s, larger than the 1X value of 3.99 mm/s. In st
 
 If you throw samples away to look at only the low frequencies in detail, what must you watch out for?
 
-The Zoom FFT of P2-4 went through "cut → throw away samples". Keeping only one sample in every $q$ and reducing $f_s$ to $1/q$ is called <strong>decimation</strong>. Components above the Nyquist frequency after reduction, $f_s/(2q)$, fold over like the aliasing of P2-3, so they must be cut by a digital low-pass **before** thinning.
+The Zoom FFT of P2-4 cut away everything outside the band of interest with a digital filter and then threw samples away. Keeping only one sample in every $q$ and reducing $f_s$ to $1/q$ is called <strong>decimation</strong>. Components above the Nyquist frequency after reduction, $f_s/(2q)$, fold over like the aliasing of P2-3, so they must be cut by a digital low-pass **before** thinning.
 
 <Figure {...F.decimationFig} />
 
