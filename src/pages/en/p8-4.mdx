@@ -4,7 +4,7 @@ title: "P8-4 GT specifics: where did the signal change?"
 description: Alford force, compressor stall and surge, spatial modes of combustion dynamic pressure, accessory gearbox TSA, FOD, and blade vibration
 sectionId: P8-4
 source: p8-4.mdx
-sourceHash: f9d4e524d3
+sourceHash: 267f92bd8b
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -18,7 +18,7 @@ import * as F from '../../figures/p8-4';
 
 # P8-4 GT specifics: where did the signal change?
 
-Changing a GT's load brings a peak onto the dynamic-pressure display. On another day, the shaft 1X amplitude barely changes, but its phase changes suddenly. Are these the same vibration problem?
+Changing the load of a gas turbine (GT) brings a peak onto the dynamic-pressure display (dynamic pressure is the rapidly varying part of pressure about its mean). On another day, the shaft 1X amplitude barely changes, but its phase changes suddenly. Are these the same vibration problem?
 
 The compressor, combustor, turbine, and accessory gearbox have different forces and measurement paths. Start with **where the signal was measured and what physical quantity it represents**, then narrow down the cause using operating conditions, spatial phase, and other channels.
 
@@ -27,8 +27,8 @@ The compressor, combustor, turbine, and accessory gearbox have different forces 
 1. Explain Alford force through the link between tip-clearance differences and cross-coupling.
 2. Find clues that distinguish compressor rotating stall from surge in spatial pressure signals.
 3. Explain why sensor position matters for longitudinal, azimuthal traveling-wave, and standing-wave combustion dynamic pressure.
-4. Explain why an accessory gearbox needs TSA referenced to each shaft.
-5. Distinguish a sudden 1X vector change suggesting FOD from local blade vibration, and choose further evidence.
+4. Explain why an accessory gearbox needs TSA (time synchronous averaging, P7-6 §4) referenced to each shaft.
+5. Distinguish a sudden 1X vector change suggesting FOD (foreign object damage) from local blade vibration, and choose further evidence.
 
 </Callout>
 
@@ -36,7 +36,7 @@ The compressor, combustor, turbine, and accessory gearbox have different forces 
 
 ## 1. Why does turbine tip clearance affect lateral vibration?
 
-When the shaft moves to one side, the clearance between blade tips and the casing changes around the circumference. If these differences change leakage and work extraction, the circumferential forces from the blade row may no longer sum evenly.
+When the shaft moves to one side, the clearance between blade tips and the casing changes around the circumference. If leakage and work extraction (the work the blades take out of the gas flow) differ between the wide-gap and narrow-gap sides, the circumferential forces from the blade row may no longer sum evenly.
 
 <Figure {...F.alford} />
 
@@ -72,11 +72,11 @@ In rotating stall, a stall cell, a region of separated flow, moves around the co
 
 The rotating-stall example in Figure 2 assigns **1 cell** moving at **0.4 times** shaft speed. At 3000 rpm the shaft frequency is 50 Hz, so the cell passes a fixed sensor at $1\times0.4\times50=20$ Hz. With 2 cells, the same cell-speed ratio gives a passage frequency of 40 Hz. Actual cell count and speed depend on the machine and operating point.
 
-The 5 Hz in the surge plot is not calculated from shaft speed. In practice, check frequency and flow fluctuations against compression-system characteristics and the operating point. Compare the circumferential lag of stall with the accompanying pressure and flow changes of surge, and align inlet conditions, variable stator vanes, bleed, and load records. <a href={withBase('/en/p7-8/')}>P7-8</a> continues with general fluid and aerodynamic causes.
+The 5 Hz in the surge plot is not calculated from shaft speed. In practice, check frequency and flow fluctuations against compression-system characteristics and the operating point. For stall, check whether the pressure fluctuation arrives later at successive circumferential positions; for surge, check whether pressure and flow change together. Also align inlet conditions, variable stator vanes, bleed (valves that release part of the compressed air), and load records. <a href={withBase('/en/p7-8/')}>P7-8</a> continues with general fluid and aerodynamic causes.
 
 <Callout type="try">
 
-1. In the lab below, read the pressure frequency and phase of the two waveforms with rotating stall, 3000 rpm, 1 cell, and B90°.
+1. In the lab's first state below (rotating stall, 3000 rpm, 1 cell, sensor B at 90° around the circumference), read the pressure frequency and phase of the two waveforms.
 2. Increase speed to 6000 rpm and see how 20 Hz changes. How does it change again when you select 2 cells?
 3. Change the phenomenon to surge and compare 3000 and 6000 rpm. Also check the pressure phase at the two circumferential locations.
 4. Press reset to return to the first state.
@@ -85,7 +85,7 @@ The 5 Hz in the surge plot is not calculated from shaft speed. In practice, chec
 
 <GasPressureLab initialKind="stall" client:visible lang="en" />
 
-In step 2, 20→40 Hz, and 2 cells give 80 Hz. In step 3, the assigned 5 Hz remains unchanged and the channels are in-phase. This lab is a sinusoidal model that isolates spatial-pressure clues; it does not calculate actual stall/surge onset or flow reversal.
+In step 2, raising speed to 6000 rpm moves 20 Hz to 40 Hz, and 2 cells give 80 Hz. In step 3, the assigned 5 Hz remains unchanged and the channels are in-phase. This lab is a sinusoidal model that isolates spatial-pressure clues; it does not calculate actual stall/surge onset or flow reversal.
 
 <Callout type="field" title="Keep operating records together with pressure channels">
 
@@ -105,7 +105,7 @@ The **longitudinal mode** in Figure 3 is an oscillation whose pressure shape var
 
 <Callout type="example" title="Producing 300 Hz in a hypothetical closed pipe">
 
-Assigning length $L=1$ m and sound speed $c=600$ m/s gives wavelength $2L$ and $f=c/(2L)=300$ Hz. At an antinode with pressure amplitude 2 kPa Peak, RMS is $2/\sqrt2=1.414$ kPa. The midpoint $x/L=0.5$ is a pressure node, a location of zero amplitude. This sound speed and length are not GT design values.
+Assigning length $L=1$ m and sound speed $c=600$ m/s gives wavelength $2L$ and $f=c/(2L)=300$ Hz. At an antinode, the location of largest pressure amplitude (2 kPa Peak), RMS is $2/\sqrt2=1.414$ kPa. The midpoint $x/L=0.5$ is a pressure node, a location of zero amplitude. This sound speed and length are not GT design values.
 
 </Callout>
 
@@ -113,16 +113,16 @@ An **azimuthal mode** has pressure that varies with circumferential angle. $m$ i
 
 <Callout type="try">
 
-1. At the initial settings of azimuthal traveling wave, 3000 rpm, azimuthal order 1, B90°, and 2 kPa Peak, read both channel amplitudes and B−A phase.
-2. Change to an azimuthal standing wave. At the same 300 Hz, how do B90° amplitude and phase change? Also check B180°.
-3. Change to longitudinal and move B's x/L from 0.5→1. Compare pressure response at the midpoint and end.
+1. At the lab's initial settings (azimuthal traveling wave, 3000 rpm, azimuthal order 1, sensor B at 90° around the circumference, 2 kPa Peak), read both channel amplitudes and the B−A phase difference.
+2. Change to an azimuthal standing wave. At the same 300 Hz, how do the amplitude and phase of B at 90° change? Also move B to 180°.
+3. Change to longitudinal and move B's x/L from 0.5 to 1. Compare pressure response at the midpoint and end.
 4. Lower amplitude to 0 kPa and check the phase display.
 
 </Callout>
 
 <GasPressureLab client:visible lang="en" />
 
-In step 1, both channels are 2 kPa Peak and B−A is −90°. In step 2, B90° is zero, so phase is undefined; B180° is 2 kPa Peak and anti-phase. Step 3 changes from a zero-amplitude node to a 2 kPa Peak antinode. When there is no signal, as in step 4, do not report phase as 0°.
+In step 1, both channels are 2 kPa Peak and B−A is −90°. In step 2, B at 90° has zero amplitude, so phase is undefined; at 180°, B is 2 kPa Peak and anti-phase with A. In step 3, B grows as it moves from the zero-amplitude node at the middle to the 2 kPa Peak antinode at the end. When there is no signal, as in step 4, do not report phase as 0°.
 
 <Callout type="warn" title="'One quiet sensor means a quiet combustor'">
 
@@ -136,7 +136,7 @@ Combustion tuning adjusts fuel distribution, fuel properties, and air conditions
 
 ## 4. Why separate four channels on the same GT?
 
-Combustion dynamic pressure can increase while main-shaft relative displacement remains unchanged. There is a transfer path between local pressure and main-shaft lateral vibration. Accessory-gearbox acceleration also has a different frequency range of interest from main-rotor 1X.
+Combustion dynamic pressure can increase while main-shaft relative displacement remains unchanged. For local pressure to appear as main-shaft lateral vibration, it must pass through a transfer path in the structure. Acceleration measured on the accessory gearbox also covers a different frequency range from main-rotor 1X.
 
 <Figure {...F.sensorChain} />
 
@@ -152,11 +152,11 @@ An **accessory gearbox** transmits power to pumps and other auxiliary equipment.
 
 <Figure {...F.accessory} />
 
-Figure 5 uses a **hypothetical 23:61 reduction gear**, not an actual GT gear ratio. With input at 1490 rpm, mesh frequency is $(1490/60)\times23=571.17$ Hz and output-shaft frequency is $571.17/61=9.3634$ Hz. As in <a href={withBase('/en/p7-6/')}>the sidebands in P7-6</a>, connect spacing with the shaft that repeats.
+Figure 5 uses a **hypothetical 23:61 reduction gear** (a 23-tooth input pinion and a 61-tooth output gear), not an actual GT gear ratio. With input at 1490 rpm, mesh frequency is $(1490/60)\times23=571.17$ Hz and output-shaft frequency is $571.17/61=9.3634$ Hz. As in <a href={withBase('/en/p7-6/')}>the sidebands in P7-6</a>, check which shaft's rotational frequency matches the sideband spacing.
 
 <Callout type="try">
 
-1. In the hypothetical reduction-gear lab below, select broken tooth, gear-shaft fault, gear-shaft averaging, 15 revolutions, and Residual. Locate the impact within a revolution.
+1. The hypothetical reduction-gear lab below starts with a broken tooth, the fault on the gear shaft, averaging referenced to the gear shaft, 15 revolutions, and the Residual signal. Locate the impact within a revolution. Residual is what remains after regular components such as gear mesh are removed from the TSA result.
 2. Change the averaging reference to the pinion shaft. Compare whether the same fault stays at one position.
 3. Return to gear-shaft averaging and select Difference to see the waveform with the regular mesh component removed.
 4. Change the fault to healthy and compare it with the repeating damaged-tooth impacts.
@@ -177,7 +177,7 @@ For repeating rolling-element-bearing impacts, also use <a href={withBase('/en/p
 
 <Figure {...F.fod} />
 
-Figure 6 is a hypothetical record with unchanged amplitude of 20 µm Peak and phase changing from 0→90°. Writing the before and after vectors as $V_A=20$, $V_B=20i$ µm Peak gives the difference $\Delta V=V_B-V_A=-20+20i$, with magnitude $\sqrt{20^2+20^2}=28.28$ µm Peak. **A flat amplitude trend can hide a large vector change.**
+Figure 6 is a hypothetical record with unchanged amplitude of 20 µm Peak and phase changing from 0° to 90°. Writing the before and after vectors as $V_A=20$, $V_B=20i$ µm Peak gives the difference $\Delta V=V_B-V_A=-20+20i$, with magnitude $\sqrt{20^2+20^2}=28.28$ µm Peak. **A flat amplitude trend can hide a large vector change.**
 
 <Callout type="warn" title="'The 28.28 µm difference vector is the new unbalance mass'">
 
@@ -193,7 +193,7 @@ A blade is a structure with its own bending and torsional modes. Flow excitation
 
 <Figure {...F.blade} />
 
-The hypothetical 12th-order excitation in Figure 7 reaches $12\times50=600$ Hz at 3000 rpm, meeting the assigned 600 Hz mode. The crossing is a resonance candidate, not a calculation of actual stress or fatigue life. Actual modes change with temperature and centrifugal stiffening, and mode shapes and excitation strength also need evaluation.
+The hypothetical 12th-order excitation in Figure 7 (a flow disturbance repeating 12 times per revolution) reaches $12\times50=600$ Hz at 3000 rpm, meeting the blade mode assigned at 600 Hz. The crossing is a resonance candidate, not a calculation of actual stress or fatigue life. Actual modes change with temperature and centrifugal stiffening, and mode shapes and excitation strength also need evaluation.
 
 Local blade response may transmit only weakly to main-shaft displacement, so small main-shaft 1X alone cannot rule it out. Connect dedicated tip timing (measurement of deviations in blade-tip passage times), strain measurements, or inspection data with the manufacturer's evaluation.
 
@@ -227,7 +227,7 @@ It is numerically 6X, but it could be a pressure acoustic mode. Check how it mov
 </details>
 
 <details>
-<summary><strong>Q3. If B90° is zero in an azimuthal m1 standing wave, is its phase 0°?</strong></summary>
+<summary><strong>Q3. If B at 90° has zero amplitude in an azimuthal order-1 standing wave, is its phase 0°?</strong></summary>
 
 At a node with zero amplitude, phase is undefined. In a traveling wave at the same 300 Hz, B is 2 kPa Peak and lags A by 90°, but a standing wave has a different spatial amplitude pattern to begin with.
 </details>
@@ -239,7 +239,7 @@ Mesh is 571.17 Hz and the output shaft is 9.3634 Hz. TSA for an output-shaft fau
 </details>
 
 <details>
-<summary><strong>Q5. With 20 µm Peak and phase changing from 0→90°, what is the response-change magnitude, and can you decide FOD?</strong></summary>
+<summary><strong>Q5. With amplitude unchanged at 20 µm Peak and phase changing from 0° to 90°, what is the response-change magnitude, and can you decide FOD?</strong></summary>
 
 The difference vector is 28.28 µm Peak. A change exists despite unchanged amplitude, and establishing FOD requires checks of sensors, references, contact, operating conditions, and damage evidence.
 </details>
@@ -247,7 +247,7 @@ The difference vector is 28.28 µm Peak. A change exists despite unchanged ampli
 <details>
 <summary><strong>Q6. Can small main-shaft 1X rule out blade resonance?</strong></summary>
 
-There is no guarantee that a local blade mode transmits strongly to main-shaft displacement. Excitation/mode crossings and dedicated measurements and inspections are needed; a single Campbell crossing does not establish damage either.
+There is no guarantee that a local blade mode transmits strongly to main-shaft displacement. You need the crossings of excitation and mode lines together with dedicated measurements and inspections; a single Campbell crossing does not establish damage either.
 </details>
 
 The next page (P8-5) covers electromagnetic excitation in generators and the shaft system connecting turbine and generator.

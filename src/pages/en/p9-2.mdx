@@ -4,7 +4,7 @@ title: P9-2 Balancing
 description: "What to check before balancing (a balance weight cannot remove every 1X), the single-plane influence coefficient method H = (V₁ − V₀)/W_t · W_c = −V₀/H and its angle convention, trial weight size, two-plane influence coefficients (a 2×2 complex system) with static and couple unbalance, the phase-free four-run method, split weights, speed dependence with flexible rotors and modal balancing, shop and field balancing, and the balance quality grade G (e_per = G/Ω)"
 sectionId: P9-2
 source: p9-2.mdx
-sourceHash: 38b895bb86
+sourceHash: 1b461d8b68
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,9 +16,9 @@ import * as F from '../../figures/p9-2';
 
 # 9-2 Balancing: One Trial Weight Measures "What 1 g Does"
 
-The rotor from P7-2 vibrates at 33.7 µm p-p at bearing 1 and 30.7 µm p-p at bearing 2 at 3000 rpm. You have checked that the two bearings have similar phase, that the vibration drops to about a quarter when the speed is halved, and that it is not a support resonance (P7-2 §7, P9-1). It is unbalance. So where on the rotor, and how many grams, should you add?
+Look again at the example rotor of P7-2, where the causes of 1X were put in one at a time. Running at 3000 rpm, this rotor vibrates at 33.7 µm p-p at bearing 1 and 30.7 µm p-p at bearing 2. You have checked that the two bearings have similar phase, that the vibration drops to about a quarter when the speed is halved, and that it is not a support resonance (the 1X diagnostic sequence of P7-2 §7, the resonance check of P9-1). It is unbalance. So where on the rotor, and how many grams, should you add?
 
-Looking at the rotor will not tell you where the unbalance is or how large it is. Instead, **attach a known weight and measure how much, and in which direction, the vibration changes**. This page extends that influence coefficient method from one plane to two, then covers tricks for when you have no phase or only fixed holes, flexible rotors, and how well you need to balance (balance quality grade).
+Looking at the rotor will not tell you where the unbalance is or how large it is. Instead, **attach a known weight and measure how much, and in which direction, the vibration changes**. This is the influence coefficient method. This page extends it from one plane (single-plane) to two (two-plane), then covers tricks for when you have no phase or only fixed holes, flexible rotors, and how well you need to balance (balance quality grade).
 
 <Callout type="idea" title="After reading this page you can">
 
@@ -39,7 +39,7 @@ A balance weight changes the mass distribution of the rotor. So it can remove **
 | Cause of 1X | With a balance weight | Do first |
 |---|---|---|
 | Unbalance (static, couple, dynamic; P7-2 §2) | Removed | This page |
-| Runout (fake 1X read by the sensor, P3-2) | Cannot be removed — trying makes the shaft move the opposite way (§4 lab task 5) | Subtract the slow roll vector first (P3-3 §5) |
+| Runout (fake 1X read by the sensor, P3-2) | Cannot be removed — trying makes the shaft move the opposite way (§4 lab task 4) | Subtract the slow roll vector first (P3-3 §5) |
 | Bow (P7-2 §3) | Covered at one speed only | Check thermal state and cause (P8-2) |
 | Structural resonance (P9-1) | Reduced, but grows again when conditions change | Impact test, stiffness |
 | Force with fixed direction (belt, pulley; P7-2 §5) | Cannot be removed | Pulley, belt |
@@ -55,10 +55,10 @@ Start with the simplest case: one weight in one plane brings the vibration at on
 
 <Figure {...F.influenceFig} />
 
-Treat both vibration and weight as arrows with magnitude and angle (vectors, P3-3 §4). Both angles are measured **from the Keyphasor mark, opposite to the direction of rotation**. This is the same direction as the vibration phase (lag angle), so the two can be drawn in one figure.
+Treat both vibration and weight as arrows with magnitude and angle (vectors, P3-3 §4). Both angles are measured **from the Keyphasor mark, opposite to the direction of rotation**. The Keyphasor mark is the spot on the rotor where the Keyphasor pulse comes from (a notch or a projection, P3-3 §1), taken as 0°. This is the same direction as the vibration phase (lag angle), so the two can be drawn in one figure.
 
 1. Measure the initial vibration $V_0$.
-2. Attach a trial weight $W_t$ of known mass and position and measure again → $V_1$.
+2. Attach a trial weight $W_t$ of known mass and position, run again and measure $V_1$. Running once with the trial weight attached like this is called a trial weight run.
 3. The change $V_1 - V_0$ is the vibration made by the trial weight. The share per 1 g of weight is the **influence coefficient**.
 
 $$
@@ -73,7 +73,7 @@ $H$ is a complex number (magnitude and angle). The correction weight $W_c$ must 
 2. Influence coefficient: magnitude $18.5 / 30 = 0.617$ µm/g, angle $4.8° - 0° = 4.8°$
 3. Correction weight: magnitude $33.7 / 0.617 = 54.7$ g, angle $45.3° + 180° - 4.8° = 220.5°$
 
-Dividing divides the magnitudes and subtracts the angles. $-V_0$ is the angle of $V_0$ plus 180°.
+When you divide complex numbers, you divide the magnitudes and subtract the angles. $-V_0$ is the angle of $V_0$ plus 180°.
 
 </Callout>
 
@@ -83,11 +83,11 @@ A complex number that says how much, and in which direction, 1 g (or 1 g·mm) at
 
 </Callout>
 
-The 4.8° angle of the influence coefficient contains two things together. One is the **lag between heavy spot and high spot** from P4-1; the other is how many degrees the sensor sits from the Keyphasor. The influence coefficient method needs no separate knowledge of either: one trial weight run measures them together.
+The 4.8° angle of the influence coefficient contains two things together. One is the **lag between heavy spot and high spot** from P4-1 §3 (the angle between where the unbalance mass is and where the shaft comes closest to the sensor); the other is how many degrees the sensor sits from the Keyphasor. The influence coefficient method needs no separate knowledge of either: one trial weight run measures them together.
 
 <Callout type="warn" title="'Put the weight opposite the high spot'">
 
-This is roughly right only when the rotor runs well below its critical speed and the sensor is at the same position as the Keyphasor. This rotor is such a case, so the angle of the influence coefficient is small at 4.8°; but for a rotor running above its critical speed, the heavy spot and high spot are nearly 180° apart and the same rule is exactly backwards (§6). Measuring the angle with a trial weight run is safer.
+This is roughly right only when the rotor runs well below its critical speed and the sensor is at the same position as the Keyphasor. This rotor is such a case, so the angle of the influence coefficient is small at 4.8°; but for a rotor running above its critical speed, the heavy spot and high spot are nearly 180° apart, so following this rule puts the weight on the same side as the unbalance (§6). Measuring the angle with a trial weight run is safer.
 
 </Callout>
 
@@ -103,8 +103,8 @@ Even when you measure twice in the same state, the 1X vector differs slightly (s
 
 <Callout type="example" title="A common starting point: trial weight centrifugal force = 10 % of the rotor weight carried by that bearing">
 
-1. Weight carried by one bearing: $800 \times 9.81 / 2 = 3924$ N; 10 % of it is 392 N
-2. At 3000 rpm, $\Omega = 314$ rad/s, radius 0.2 m: $m = 392 / (0.2 \times 314^2) = 0.0199$ kg ≈ 20 g
+1. Weight carried by one bearing (this 800 kg rotor is shared by two bearings): $800 \times 9.81 / 2 = 3924$ N; 10 % of it is 392 N
+2. At 3000 rpm, $\Omega = 314$ rad/s, weight radius 0.2 m: $m = 392 / (0.2 \times 314^2) = 0.0199$ kg ≈ 20 g
 3. Check: 20 g × 0.617 µm/g = 12.3 µm, which is 37 % of the initial 33.7 µm and exceeds the 30 % criterion.
 
 </Callout>
@@ -123,7 +123,7 @@ The single-plane correction brought bearing 1 to zero. What happened to bearing 
 
 <Figure {...F.twoPlaneFig} />
 
-The weight in plane 1 mainly shakes the nearby bearing 1, but it also shakes bearing 2 a little (0.060 µm per 1 g, on the opposite side). Even for the static-dominant rotor, bearing 2 grew from 30.7 to 33.6 µm after the single-plane correction, and for the couple-dominant rotor it stayed nearly the same, 40.5 → 36.7 µm. The couple unbalance of P7-2 had unbalances in the two planes on opposite sides, tilting the rotor. A weight in one plane cannot cancel the tilting part.
+The weight in plane 1 mainly shakes the nearby bearing 1, but it also shakes bearing 2 a little (0.060 µm per 1 g, on the opposite side). Even for the rotor dominated by static unbalance, bearing 2 grew from 30.7 to 33.6 µm after the single-plane correction, and for the rotor dominated by couple unbalance it stayed nearly the same, going from 40.5 to 36.7 µm. The couple unbalance seen in P7-2 §2.1 had unbalances in the two planes on opposite sides, tilting the rotor. A weight in one plane cannot cancel the tilting part.
 
 To set both bearings right with weights in two planes, make two trial weight runs: one with the weight in plane 1 (run 1), then remove it and put it in plane 2 (run 2). That gives four influence coefficients.
 
@@ -162,7 +162,7 @@ $$
 T^2 = \frac{A_1^2 + A_2^2 + A_3^2}{3} - A_0^2
 $$
 
-Then drawing circles as in Figure 4 gives the direction of the initial vibration, and the correction weight is placed on the opposite side with trial weight × $A_0/T$. The result in Figure 4, 54.7 g∠220.5°, is the same as the influence coefficient method. In exchange, four runs are needed, and when the circles meet at a shallow angle, a small measurement difference moves the intersection a lot<Cite ids={['R-88']} />.
+Then drawing circles as in Figure 4 gives the direction of the initial vibration, and the correction weight is placed on the opposite side with $A_0/T$ times the trial weight. The result in Figure 4, 54.7 g∠220.5°, is the same as the influence coefficient method. In exchange, four runs are needed, and when the circles meet almost tangentially, a small measurement difference moves the intersection a lot<Cite ids={['R-88']} />.
 
 ### 5.2 When the holes are fixed: the split weight
 
@@ -182,13 +182,13 @@ In Figure 5, 70 g∠20° becomes 24.3 g at 0° and 47.9 g at 30°. When attachin
 
 <Figure {...F.flexFig} />
 
-In the top of Figure 6, the vibration made by the same weight differs in both magnitude and angle with speed. The angle that was 4.8° at 3000 rpm turns to nearly 180° after passing two modes. So an influence coefficient can be used **only at the speed where it was measured**, and the trial weight run is done at the operating speed.
+In the top of Figure 6, the vibration made by the same weight differs in both magnitude and angle with speed. The angle that was 4.8° at 3000 rpm turns to nearly 180° after passing the rotor's two rigid-body modes (translational at 5000 rpm, conical at 6400 rpm). So an influence coefficient can be used **only at the speed where it was measured**, and the trial weight run is done at the operating speed.
 
 A **flexible rotor** such as a GT or ST runs past its bending critical speeds, so even if you balance it at one speed, it can grow again when it passes through another bending mode (the several modes of P8-1). So for each mode you use a weight set that excites only that mode. As in the bottom of Figure 6, a pair attached in the same direction on two planes excites only the first bending mode, and a pair in opposite directions excites only the second. Balancing one mode at a time like this is **modal balancing**, and methods that extend the influence coefficients to several speeds and several planes and solve them together are also used<Cite ids={['R-87', 'R-07']} />.
 
 <Callout type="field" title="Shop balancing and field trim balancing">
 
-In the shop, only the rotor is put on a balancing machine and balanced at low speed (rigid rotor); a flexible rotor is brought up to operating speed in a vacuum facility. In the field, the remaining share is refined at operating speed with the actual bearings, supports, and coupling attached (trim). In the field, few planes are accessible and each start-up and shutdown takes long, so a design that reduces the number of trial weight runs matters. Measuring at the same load and temperature (§1) is also harder in the field (thermal bow in P8-2).
+In the shop, only the rotor is put on a balancing machine. A rigid rotor is balanced at low speed; a flexible rotor is brought up to operating speed inside a vacuum facility. In the field, the remaining share is refined at operating speed with the actual bearings, supports, and coupling attached (trim). In the field, few planes are accessible and each start-up and shutdown takes long, so planning to reduce the number of trial weight runs matters. Measuring at the same load and temperature (§1) is also harder in the field (thermal bow in P8-2).
 
 </Callout>
 
@@ -200,7 +200,7 @@ You cannot bring the vibration to zero. How do you decide how much may remain?
 
 <Figure {...F.gradeFig} />
 
-The permissible residual unbalance of a rigid rotor is expressed by the **balance quality grade** $G$<Cite ids={['R-86']} />. $G$ is the value that the product of the distance the center of mass is off the axis (permissible eccentricity $e_{per}$) and the angular speed must not exceed, in mm/s.
+The permissible residual unbalance of a rigid rotor is expressed by the **balance quality grade** $G$<Cite ids={['R-86']} />. $G$ is the permissible eccentricity $e_{per}$ (how far the center of mass may sit off the axis) multiplied by the angular speed, in mm/s.
 
 $$
 e_{per} = \frac{G}{\Omega}, \qquad U_{per} = M\, e_{per}
@@ -221,7 +221,7 @@ The balance quality grade is a criterion for the mass distribution of the rotor.
 | Topic | What to remember |
 |---|---|
 | Before balancing | A balance weight removes only the mass-distribution 1X. Subtract runout first with the slow roll vector; treat resonance, belts, and misalignment separately |
-| Single plane | H = (V₁ − V₀)/W_t, W_c = −V₀/H. Dividing divides the magnitudes and subtracts the angles. Angles are measured from the Keyphasor, opposite to rotation |
+| Single plane | H = (V₁ − V₀)/W_t, W_c = −V₀/H. Complex division divides the magnitudes and subtracts the angles. Angles are measured from the Keyphasor, opposite to rotation |
 | Angle of the influence coefficient | Contains both the heavy–high spot lag and the sensor position. Measure it with a trial weight run |
 | Trial weight | A size that changes the amplitude by 30 % or the phase by 30° or more. Starting point: centrifugal force = 10 % of the bearing load |
 | Two planes | Two runs give the 2×2 influence coefficients, W = −A⁻¹V₀. Couple unbalance needs two planes |
@@ -245,7 +245,7 @@ When the two bearings are in opposite phase, couple unbalance is large (P7-2 §2
 </details>
 
 <details>
-<summary><strong>Q3. You attach a 5 g trial weight to the rotor of Figure 1, and the amplitude changes from 33.7 → 36.1 µm and the phase from 45° → 42°. May you compute the correction weight from this result?</strong></summary>
+<summary><strong>Q3. You attach a 5 g trial weight to the rotor of Figure 1, and the amplitude changes from 33.7 to 36.1 µm and the phase from 45° to 42°. May you compute the correction weight from this result?</strong></summary>
 
 It is not recommended. The amplitude change is about 7 % and the phase change 3°, far short of the 30 % · 30° criterion. Measuring again in the same state could scatter by this much, so the influence coefficient could be badly wrong (Figure 3). Increase the trial weight (20 g or more for this rotor) and measure again.
 </details>

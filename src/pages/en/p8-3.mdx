@@ -4,7 +4,7 @@ title: P8-3 ST specifics — steam whirl, partial admission, expansion and align
 description: Connect load-dependent stability at constant speed with partial admission, bearing centerline shifts, differential expansion, thrust position and shaft-train alignment in steam turbines.
 sectionId: P8-3
 source: p8-3.mdx
-sourceHash: e0ee76ec6c
+sourceHash: 6b743386a9
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -34,7 +34,7 @@ First, let's distinguish what **growing lateral vibration**, **static center pos
 
 ## 1. Why can a turbine become unstable at constant speed?
 
-In <a href={withBase('/en/p4-4/')}>P4-4</a>, we learned that a force perpendicular to displacement can compete with damping when it supplies energy to whirl motion. In an ST, leakage flow through blade rows and swirling steam in seals can contribute to these cross-coupled forces. Steam pressure, flow and valve states change as load rises, so the stability conditions for lateral vibration can change even at constant speed. <Cite ids={['R-30', 'R-31']} />
+In <a href={withBase('/en/p4-4/')}>P4-4</a>, we learned that a force perpendicular to displacement, a cross-coupled force, can supply energy to whirl motion and compete with damping. In an ST, leakage flow through blade rows and swirling steam in seals can contribute to these cross-coupled forces. Steam pressure, flow and valve states change as load rises, so the stability conditions for lateral vibration can change even at constant speed. <Cite ids={['R-30', 'R-31']} />
 
 <Figure {...F.steamMechanism} />
 
@@ -46,7 +46,7 @@ These terms describe phenomena in which steam-flow forces sustain or grow the ro
 
 There is more to observe than a frequency below 1X. Look at **which load and steam conditions make the component appear and grow**, which mode its frequency is close to, and how amplitude, phase and whirl direction relate across several bearings. A single view at constant speed also makes it hard to distinguish a speed-tracking component from one tied to a mode.
 
-Compare frequency lines across records, as in <a href={withBase('/en/p6-2/')}>the waterfall and cascade plots in P6-2</a>, but also label each record with its load and steam conditions during a constant-speed load test. Contact and alignment candidates continue in <a href={withBase('/en/p7-3/')}>P7-3</a>, and subsynchronous differential diagnosis continues in P7-4 (P7-4 planned).
+Compare frequency lines across records, as in <a href={withBase('/en/p6-2/')}>the waterfall and cascade plots in P6-2</a>, but also label each record with its load and steam conditions during a constant-speed load test. Contact and alignment candidates are covered in <a href={withBase('/en/p7-3/')}>P7-3</a>, and subsynchronous components below 1X are differentiated with the table in P7-4 §5.
 
 <Callout type="warn" title="It is not always 0.5X, or the cause of every high-load vibration">
 
@@ -82,7 +82,7 @@ Starting from the same initial mode amplitude of 5 µm Peak gives $A(t)=A_0e^{\s
 
 <Callout type="try" title="Try it — hold speed constant and change only load">
 
-1. With the lab's default full-arc admission, read $\delta$ and the final response amplitude at 50% load.
+1. With the lab's default full-arc admission (steam enters around the whole circumference, so the net radial steam force is 0), read $\delta$ and the final response amplitude at 50% load.
 2. Change to 60%, then 80%, and compare status, growth rate and mode frequency.
 3. Lower the damping ratio to 4% and check that the hypothetical boundary moves to 33.33%.
 4. Reset, then change only the initial amplitude to 10 µm. Check that the boundary stays the same.
@@ -94,7 +94,7 @@ Starting from the same initial mode amplitude of 5 µm Peak gives $A(t)=A_0e^{\s
 Read the lab results this way.
 
 1. The default boundary of 60% follows from the specified $q/k$ law and $\zeta$. It is not a measured operating load limit.
-2. At 80% load, a mode near 0.6006X grows. It is a separate component from 1X=50 Hz.
+2. At 80% load, a mode near 0.6006X grows. It is a separate component from 1X (50 Hz).
 3. Doubling the initial amplitude doubles the linear free response at the same time. The eigenvalues and boundary do not change.
 
 ## 3. Partial admission can also shift the shaft's mean position
@@ -139,7 +139,7 @@ This lab calculates static center position and modal stability coefficients sepa
 Read these results as separate evidence about center position and vibration.
 
 1. The upward and downward resultants are 400 and 1600 N. Force direction changes the bearing load.
-2. With the rightward resultant of 1166 N, both X and Y positions change. Check both orthogonal sensors together with the reference gap and coordinates.
+2. With the rightward resultant of 1166 N, both X and Y positions change. Check both orthogonal sensors together with the reference gap voltages (P4-3 §5) and coordinates.
 3. Keeping the default coefficients gives the same hypothetical stability boundary of 60% in all three directions. A centerline shift alone cannot establish instability or contact.
 
 ## 4. What references do expansion and thrust-position channels use?
@@ -148,7 +148,7 @@ An ST's long rotor and casing expand as temperature rises. But protection and di
 
 | Channel | Question it asks | Check alongside it |
 |---|---|---|
-| Differential expansion (DE) | How much has the relative axial position of rotor and casing changed at the sensor location? | Target and sensor positions, ramp compensation, expansion reference point, temperature history |
+| Differential expansion (DE) | How much has the relative axial position of rotor and casing changed at the sensor location? | Target and sensor positions, ramp (tapered target) compensation, expansion reference point, temperature history |
 | Thrust position | How much has the shaft moved axially near the thrust reference? | Thrust collar reference, sign and zero, thrust load and bearing condition |
 | Case expansion | How much has the casing moved relative to the foundation or fixed reference? | Fixed point and sliding supports, measurement direction, left–right difference |
 | Low-speed eccentricity | What radial periodic displacement does the sensor see at low speed? | Turning history, thermal bow, runout, measurement conditions, P8-2 |
@@ -167,7 +167,7 @@ An increase in DE does not necessarily mean movement at the thrust bearing. Conv
 
 ## 5. Alignment of a long shaft train involves several bearings
 
-A large ST has HP, IP and LP rotors coupled to a generator and supported by several bearings. Each rotor sags under its own weight, and the supports move under different thermal conditions. Matching level and gap at one cold coupling does not determine the hot alignment and bearing reactions of the whole shaft train.
+A large ST has high-pressure (HP), intermediate-pressure (IP) and low-pressure (LP) rotors coupled to a generator and supported by several bearings. Each rotor sags under its own weight, and the supports move under different thermal conditions. Matching level and gap at one coupling in the cold state does not determine the hot alignment and bearing reactions of the whole shaft train.
 
 <Figure {...F.shaftAlignment} />
 
@@ -177,9 +177,9 @@ This alignment concept considers the sag and connections of a shaft train on sev
 
 </Callout>
 
-Changing the height of one bearing can also change reactions at neighboring supports. Use the manufacturer's shaft-train model, target reactions and hot movement data alongside actual measurements. Cold offsets account for the expected hot condition; the task is not to arbitrarily put all bearings on a straight line at the same height.
+Changing the height of one bearing can also change reactions at neighboring supports. Use the manufacturer's shaft-train model, target reactions and hot movement data alongside actual measurements. Cold offsets (height or position differences deliberately left during cold alignment) account for the expected hot condition; the task is not to arbitrarily put all bearings on a straight line at the same height.
 
-Differential thermal expansion of the casing and supports, or restraint of sliding, are candidates that can change alignment and bearing loads. Some ST cases link this unloading to instability. <Cite ids={['R-32', 'R-33']} /> Figure 8 is schematic and does not calculate exact hot movements, bearing reactions or contact stresses. The single-bearing solution in the earlier lab cannot calculate reactions for a multi-rotor shaft train either.
+Differential thermal expansion of the casing and supports, or restraint of sliding, are candidates that can change alignment and bearing loads. Some ST cases link this unloading to instability. <Cite ids={['R-32', 'R-33']} /> Figure 8 is schematic and does not calculate exact hot movements, bearing reactions or contact stresses. The single-bearing static solution in the §3 lab cannot calculate reactions for a multi-rotor shaft train either.
 
 ## 6. Connect observations to responses in this order
 
@@ -253,7 +253,7 @@ No. You need measurements and a shaft-train model that includes the connected ro
 
 ---
 
-Reread the ST thermal state and low-speed records alongside <a href={withBase('/en/p8-2/')}>P8-2 on thermal bow and turning gear</a>. Next, P8-4 connects GT compressor and combustion conditions with shaft-train vibration (planned).
+Reread the ST thermal state and low-speed records alongside <a href={withBase('/en/p8-2/')}>P8-2 on thermal bow and turning gear</a>. Next, P8-4 connects gas turbine (GT) compressor and combustion conditions with shaft-train vibration.
 
 ## References
 

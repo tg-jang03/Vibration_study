@@ -4,7 +4,7 @@ title: P10-1 Vibration Evaluation Standards
 description: Pick the right ISO 20816 Part from the machine, tell non-rotating-part velocity RMS apart from shaft relative displacement p-p, and read the Zone (magnitude), the change from a baseline, the principles of setting alarms and trips, and the 1X vector change separately.
 sectionId: P10-1
 source: p10-1.mdx
-sourceHash: 562a17cbbe
+sourceHash: 9bff61b143
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -17,7 +17,7 @@ import { withBase } from '../../lib/site';
 
 # 10-1 Vibration Evaluation Standards: Magnitude and Change Are Read Separately
 
-Until last month, the overall housing vibration hovered around 2.5. This week it rose to 4. Yet the evaluation screen still says "B". Does that mean everything is fine? On the next screen the shaft vibration reads 30 µm p-p. Can these two numbers go into the same table?
+Until last month, the overall housing vibration (overall RMS, P2-7) hovered around 2.5. This week it rose to 4. Yet the zone shown on the evaluation screen (the Zone of §3) still says "B". Does that mean everything is fine? On the next screen the shaft vibration reads 30 µm p-p. Can these two numbers go into the same table?
 
 This page first pins down **which machine and which measured quantity** you are dealing with, then splits magnitude and change into two separate questions. The standards' boundary values are not reproduced here, so the boundaries in the figures and the lab (2, 5, 9, etc.) are all made-up values unrelated to any standard. For real boundaries, enter them into the lab yourself from the original text you hold.
 
@@ -42,12 +42,12 @@ ISO 20816 is not one table of numbers but a **series made of a general guideline
 What you can read in Figure 1:
 
 - **20816-1** at the top is the common foundation that defines the measurement method and the two criteria (magnitude and change). The machine-specific boundaries come from the Parts below.
-- You ask from the top down. Onshore GTs, STs and generators above 40 MW with oil-film bearings and a rated speed of 1500, 1800, 3000 or 3600 rpm go to **-2**; oil-film-bearing GTs above 3 MW (excluding aero-derivative types and those covered by -2) go to **-4**; hydro and pumped-storage plants go to **-5**; industrial machines above 15 kW running at 120 to 30 000 rpm go to **-3**.
+- You ask from the top of Figure 1 down. Onshore GTs, STs and generators above 40 MW with oil-film bearings and a rated speed of 1500, 1800, 3000 or 3600 rpm go to **-2**; oil-film-bearing GTs above 3 MW (excluding aero-derivative types and those covered by -2) go to **-4**; hydro and pumped-storage plants go to **-5**; industrial machines above 15 kW running at 120 to 30 000 rpm go to **-3**.
 - The order matters. A large power-generation GT also meets the conditions of -4, but -2 takes it first. Some machines have their own Part, such as reciprocating compressors (-8), gear units (-9) and wind turbines (-21). <Cite ids={['R-72', 'R-73', 'R-74', 'R-75']} />
 
 <Callout type="term" title="Scope and exclusions">
 
-The range of machines, measurements and operating conditions that a document targets. Even within one Part, some things are left out. For example, -2 does not cover the 2×LF vibration of a generator stator, aero-derivative GTs, or the evaluation of combustion vibration. You can use that Part's boundaries only after checking the exclusions too.
+The range of machines, measurements and operating conditions that a document targets. Even within one Part, some things are left out. For example, -2 does not cover the 2×LF vibration (twice the line frequency, P7-7) of a generator stator, aero-derivative GTs, or the evaluation of combustion vibration. You can use that Part's boundaries only after checking the exclusions too.
 
 </Callout>
 
@@ -111,7 +111,7 @@ When the conditions match, you compare the measured magnitude with the boundarie
 
 <Figure {...F.zones} />
 
-In Figure 3, the same magnitude 3 is B in machine class X and C in class Y. The meaning of the zones is the same, but **the boundaries differ with the machine class and the evaluated quantity**. -3 splits machines into groups by power and size, and then splits again by whether the support is rigid or flexible. If the lowest natural frequency of the machine plus its support, seen in the measurement direction, is sufficiently higher than the operating frequency, the support is rigid; otherwise it is flexible. <a href={withBase('/en/p9-1/')}>Identifying structural resonance in P9-1</a> is exactly what underlies this classification. <Cite ids={['R-73']} />
+In Figure 3, the same magnitude 3 is B in machine class X and C in class Y. The meaning of the zones is the same, but **the boundaries differ with the machine class and the evaluated quantity**. -3 splits machines into groups by power and size, and then splits again by whether the support is rigid or flexible. If the lowest natural frequency of the machine and its support taken together, seen in the measurement direction, is sufficiently higher than the operating frequency, the support is rigid; otherwise it is flexible. <a href={withBase('/en/p9-1/')}>Identifying structural resonance in P9-1</a> (measuring the natural frequency with an impact test) is exactly what underlies this classification. <Cite ids={['R-73']} />
 
 <Callout type="warn" title="'B means no fault, and D means unbalance'">
 
@@ -121,7 +121,7 @@ A zone speaks only about magnitude. It tells you neither the kind of fault nor t
 
 <Callout type="term" title="A value exactly on a boundary">
 
-Whether a value exactly at a boundary falls into the upper or the lower zone is something to check in the original text. The made-up example in the lab below puts the equality into the upper zone, and the user-input mode only displays "boundary".
+Whether a measured value exactly equal to a boundary falls into the upper or the lower zone is something to check in the original text. The made-up example in the lab below puts a value equal to the boundary into the upper zone, and the user-input mode only displays "boundary".
 
 </Callout>
 
@@ -129,14 +129,14 @@ Whether a value exactly at a boundary falls into the upper or the lower zone is 
 
 ## 4. Even when the zone stays the same: look at the change from the baseline
 
-Back to the opening scene. The value rose from 2.5 to 4, yet the zone stayed at B. **Magnitude and change are different questions**, and ISO 20816-1 also keeps the two criteria separate. <Cite ids={['R-08']} />
+Back to the scene at the top of this page. The housing vibration rose from 2.5 to 4, yet the zone stayed at B. **Magnitude and change are different questions**, and ISO 20816-1 also keeps the two criteria separate. <Cite ids={['R-08']} />
 
 <Figure {...F.changes} />
 
 What you can read in Figure 4:
 
 - The values stay inside zone B (2 to 5) for all 60 days. Looking at magnitude alone, nothing has happened.
-- On day 30 the value jumps from the baseline 2.5 to near 4, and leaves the purple dashed **change band** (1.5 to 3.5) that very day.
+- On day 30 the value jumps from the baseline 2.5 to near 4, and leaves the purple dashed **change band** (the change-verdict range set above and below the baseline, 1.5 to 3.5) that very day.
 
 For change, you divide the difference from the baseline by the **B/C boundary**.
 
@@ -144,19 +144,19 @@ $$
 \Delta x=x-x_0,\qquad p=100\,\frac{\lvert\Delta x\rvert}{b_{BC}}\ \%
 $$
 
-$x$ is the current magnitude, $x_0$ is a healthy baseline under the same conditions, and $b_{BC}$ is the B/C boundary. Why not divide by the baseline? For a machine whose baseline is as small as 0.5, even 0.5 → 1.0 would be a 100 % increase and trigger a false alarm. Dividing by the B/C boundary, the magnitude scale of the machine group, makes the size of a "meaningful change" the same within the same machine group regardless of the baseline. What percentage to treat as a meaningful change is something to check in the original text of the applicable Part.
+$x$ is the current magnitude, $x_0$ is a healthy baseline under the same conditions, and $b_{BC}$ is the B/C boundary. Why not divide by the baseline? For a machine whose baseline is as small as 0.5, even a rise from 0.5 to 1.0 would be a 100 % increase and trigger a false alarm. Dividing by the B/C boundary, the magnitude scale of the machine group, makes the size of a "meaningful change" the same within the same machine group regardless of the baseline. What percentage counts as a meaningful change (this page and the lab call it the comparison ratio) is something to check in the original text of the applicable Part.
 
 <Callout type="example" title="Zone B, but a 30.8 % change">
 
 1. The current magnitude is the mean of the last 5 days, 4.04 (daily values scatter, so we use the mean).
 2. $\Delta x=4.04-2.5=1.54$, $p=100\times1.54/5=30.8\ \%$.
-3. It exceeds the example comparison ratio of 20 %. The magnitude is still B.
+3. It exceeds the example comparison ratio of 20 % (a made-up value). The magnitude is still B.
 
 </Callout>
 
 <Callout type="try">
 
-1. With the defaults (step increase, baseline 2.5 → 4), see when the zone and the change verdict in the status line each change.
+1. With the defaults (step increase, baseline 2.5 to 4), see when the zone and the change verdict in the status line each change.
 2. Set the event to "gradual increase" and the post-event value to 6. Which crosses first, the change band or zone C, and by how many days?
 3. Set the event to "sudden decrease", with baseline 3 and post-event value 1.5. The zone got better, but what about the change?
 4. Go back to the step increase and set the comparison ratio to 2 % and 50 %. What are you trading off?
@@ -165,7 +165,7 @@ $x$ is the current magnitude, $x_0$ is a healthy baseline under the same conditi
 
 <SeverityLab client:visible lang="en" />
 
-In 1, the zone stays B to the end and the change leaves the band on day 30. In 2, the change band is crossed on day 39 and zone C on day 51, so the change verdict flags the same trend 12 days earlier. In 3, it looks better, B → A, but Δx ≈ −1.49 (29.7 %) is a change. In 4, at 2 % the band half-width ±0.1 equals the daily scatter, so it leaves the band from day 1, before the event (a false alarm), and at 50 % it misses the step to the very end.
+In 1, the zone stays B to the end and the change leaves the band on day 30. In 2, the change band is crossed on day 39 and zone C on day 51, so the change verdict flags the same trend 12 days earlier. In 3, the zone looks better, going from B to A, but Δx ≈ −1.49 (29.7 %) is a change. In 4, at 2 % the band half-width ±0.1 equals the daily scatter, so it leaves the band from day 1, before the event (a false alarm), and at 50 % it misses the step to the very end.
 
 <Callout type="warn" title="'It went down, so it's fine'">
 
@@ -183,8 +183,8 @@ Then, should a condition-monitoring alarm just be set at the B/C boundary? For t
 
 What you can read in Figure 5:
 
-- An **alarm** starts from that machine's own baseline and adds a margin proportional to the upper limit of zone B. The alarm for machine P, with baseline 1.0, is 2.0; for machine Q, with 4.6, it is 5.6. Even in the same class, the alarm differs from machine to machine.
-- However, a cap is set so that an alarm, like Q's with an already high baseline, does not exceed the magnitude boundary by much (the example cuts it at B/C = 5).
+- An **alarm** starts from that machine's own baseline and adds a margin proportional to the upper limit of zone B. The alarm for machine P, with baseline 1.0, is 2.0; for machine Q, with 4.6, simply adding the margin gives 5.6. Even in the same class, the alarm differs from machine to machine.
+- However, a cap is set so that an alarm, like Q's with an already high baseline, does not exceed the magnitude boundary by much (the example cuts it at B/C = 5, so Q's alarm is 5.0).
 - A **trip** is for machine protection. It is usually set within zones C and D from manufacturer data and experience, and during a start-up that passes through a critical speed it is raised for a short time by <a href={withBase('/en/p3-5/')}>the trip multiplier in P3-5</a>.
 
 This principle comes from the guidance on setting operating limits in the 20816 series (the general guideline in -1, machine-specific Parts such as -3), and the actual size of the margin and the cap is checked in the applicable Part. Acceptance evaluation under a contract is yet another purpose — it is evaluated with the test condition and the evaluated quantity that the contract specifies (P10-2 §6). <Cite ids={['R-08', 'R-72', 'R-73']} />
@@ -282,7 +282,7 @@ The amplitude change is 0, but the vector change is $3\sqrt2\approx4.24$. Invest
 No. Even with the same overall value, a new component can be evidence of a fault. Confirm it with the bearing defect frequencies and the envelope (P7-5).
 </details>
 
-On the next page (P10-2), you will look up API documents along the machine's life — design analysis, factory test, protection system.
+On the next page (P10-2), you will look up API (American Petroleum Institute) documents along the machine's life — design analysis, factory test, protection system.
 
 ## References
 

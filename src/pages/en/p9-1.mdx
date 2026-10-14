@@ -4,7 +4,7 @@ title: P9-1 Identifying Structural Resonance and the Impact Test
 description: Clues of structural resonance during operation and the speed-change test, the impact test (hammer tip and excitation bandwidth, trigger, force and exponential windows, averaging, coherence, double hit), reading damping ratio and Q from the FRF with the half-power method and its resolution condition, the running bump test (impact-synchronous time averaging), ODS, and checking soft foot, foundation and piping
 sectionId: P9-1
 source: p9-1.mdx
-sourceHash: 6ece328698
+sourceHash: d445bf9517
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,9 @@ import * as F from '../../figures/p9-1';
 
 # 9-1 Identifying Structural Resonance and the Impact Test: Turning a Suspicion into a Test
 
-Look again at the machine of P7-2 §6. At 3000 rpm only the horizontal 1X of bearing 1 was large, while the vertical direction of the same bearing and bearing 2 were quiet. In the run-up record, a peak stood up only around 2850 rpm and the phase changed a lot. The suspicion was that the pedestal's natural frequency lies near the running speed. But you cannot reinforce a pedestal on a suspicion alone. How do you confirm that a natural frequency really exists, how many Hz it is, and how much damping it has?
+Look again at the machine from P7-2 §6 (structural resonance). That machine runs at 3000 rpm, and only the horizontal 1X of bearing 1 was large, while the vertical direction of the same bearing and bearing 2 were quiet. In the 1X recorded while the machine coasted down, a peak stood up only around 2850 rpm and the phase changed a lot. So the suspicion was that the horizontal natural frequency of the bearing 1 pedestal lies near the running speed.
+
+But you cannot reinforce a pedestal on a suspicion alone. How do you confirm that a natural frequency really exists, how many Hz it is, and how much damping it has?
 
 This page goes through those confirming tests in order: changing the speed while the machine runs, the **impact test** where you stop the machine and strike it with a hammer, the half-power method that reads the damping ratio from the measured FRF, the running bump test and ODS for when you cannot stop the machine, and finally the outside conditions that change the natural frequency (feet, foundation, piping).
 
@@ -44,11 +46,11 @@ What you can read in Figure 1:
 - **The hump on the floor does not move.** The natural frequency is a property set by the pedestal's mass and stiffness, so it has nothing to do with the speed. Forces spread evenly over a wide band, such as flow, friction and neighboring machines, keep shaking that spot a little, so around 47.5 Hz it stands about 24 dB high.
 - **When the two overlap, it grows.** At 2850 rpm, where 1X comes to the hump, 1X is 2.21 mm/s, about 7 times the 0.31 mm/s at 2400 rpm. The unbalance share, which grows with the square of the speed (about 1.4 times), cannot explain it alone.
 
-Add two clues from P7-2 §6 and you have a diagnosis while running. **Is only one direction large?** (a one-direction mode of the pedestal) **Does the phase change a lot over a narrow speed range?** (passing through a resonance changes the phase by nearly 180°, P1-4). If changing the speed by a few percent moves amplitude and phase together a lot, suspect resonance; if the size moves only about with the square of the speed and the phase stays put, it is forced vibration away from resonance.
+Add the two clues seen in P7-2 §6 and you can tell them apart while running. One is whether only one direction is large (a one-direction mode of a single pedestal raises only that direction). The other is whether the phase changes a lot over a narrow speed range, because passing through a resonance changes the phase by nearly 180° (P1-4). If changing the speed by a few percent moves amplitude and phase together a lot, suspect resonance; if the size moves only about with the square of the speed and the phase stays put, it is forced vibration away from resonance.
 
 <Callout type="warn" title="'1X is large, so a balance weight will reduce it'">
 
-Near resonance even a small unbalance looks large. If you reduce 1X with a balance weight the resonance is still there, so it grows again when the operating conditions change a little. First check whether it is resonance, and if it is, consider together moving the natural frequency (stiffness, mass) or keeping it away from the running speed.
+Near resonance even a small unbalance looks large. If you reduce 1X with a balance weight the resonance is still there, so it grows again when the operating conditions change a little. First check whether it is resonance. If it is, then alongside the balance weight, consider changing the stiffness or mass to move the natural frequency, or moving the running speed away from it.
 
 </Callout>
 
@@ -72,7 +74,7 @@ A test where you strike the structure briefly with a hammer that has a force sen
 
 </Callout>
 
-In P2-2, even a sharp impulse could be expressed as a sum of sinusoids of many frequencies. The shorter the force lasts, the more evenly it carries force over a wider range of frequencies. One strike shakes all the natural frequencies a little at once, and the structure rings loudly at its natural frequencies (Figure 2, bottom). The analyzer computes $H_1 = G_{xy}/G_{xx}$ of P5-3 from the two channels. The force-sensor signal is clean and the response side is often the one that picks up noise, so $H_1$ is the default.
+In P2-2, even a sharp impulse could be expressed as a sum of sinusoids of many frequencies. The shorter the force lasts, the more evenly it carries force over a wider range of frequencies. One strike shakes all the natural frequencies a little at once, and the structure rings loudly at its natural frequencies (Figure 2, bottom). The analyzer computes $H_1 = G_{xy}/G_{xx}$ of P5-3 from the two channels: the FRF obtained by dividing the cross spectrum of force and response by the spectrum of the force. The force-sensor signal is clean and the response side is often the one that picks up noise, so $H_1$ is the default.
 
 ### 2.1 The Harder the Tip, the Shorter the Contact and the Wider the Band
 
@@ -90,7 +92,7 @@ Natural frequencies above that are not shaken well because the force is too smal
 
 1. Excitation bandwidth: $1.02 / 0.008\ \text{s} \approx 127$ Hz
 2. At 141.6 Hz the force is 13 dB below the low-frequency level, and at 290 Hz it is 32 dB below (Figure 3 bottom, green).
-3. 32 dB means the force is about 1/40. With the same noise, the FRF at that frequency gets 40 times blurrier → to see up to 290 Hz, switch to the plastic tip (510 Hz).
+3. 32 dB means the force is about 1/40. With the same noise, the noise share in the FRF at that frequency becomes 40 times larger. So to see up to 290 Hz, switch to the plastic tip (excitation bandwidth 510 Hz).
 
 </Callout>
 
@@ -102,7 +104,7 @@ That does not mean the hardest tip is always best. For the same impulse, the ste
 
 The moment of the hammer strike is decided by a person. When does the analyzer start recording?
 
-The analyzer sets the frame at **the moment the force channel crosses a threshold** (the trigger). A **pre-trigger** (10 ms on this page), which keeps a little of the record from before the threshold crossing, is needed so that the pulse is captured from its start. Then a different window is multiplied onto each of the two channels. These are the impact-specific windows whose names you only saw in P2-5 §5.
+The analyzer sets the frame at the moment the force-channel signal crosses a preset threshold. This is the trigger (P2-6). A **pre-trigger** (10 ms on this page), which keeps a little of the record from before the threshold crossing, is needed so that the pulse is captured from its start. Then a different window is multiplied onto each of the two channels. These are the impact-specific windows whose names you only saw in P2-5 §5.
 
 - **Force window** (force channel): keeps only the neighborhood of the pulse at 1 and erases the rest to 0. The force exists only for a few ms, so the rest of the record is just sensor and cable noise.
 - **Exponential window** (both channels): when the response has not fully died out by the end of the frame, multiply by $e^{-t/\tau}$ to shrink the end.
@@ -133,7 +135,7 @@ The larger result is not an error but a share to correct. If you used an exponen
 
 ## 4. Is It a Trustworthy FRF: Averaging · Coherence · Double Hit
 
-Do not stop at one strike. Hit the same spot **3 to 5 times** and average $G_{xx}$ and $G_{xy}$ (P5-3). Averaging reduces the response-side noise in $H_1$, and the coherence $\gamma^2$ tells you how far to trust each frequency. At a natural-frequency peak, 0.99 or higher is normal. Low values where the response is small, like an antiresonance, are natural, but low at a peak means something went wrong.
+Do not stop at one strike. Hit the same spot **3 to 5 times** and average $G_{xx}$ and $G_{xy}$ (P5-3). Averaging reduces the response-side noise in $H_1$, and the coherence $\gamma^2$ (P5-3) tells you how far to trust each frequency. At a natural-frequency peak, 0.99 or higher is normal. Low values where the response is small, like an antiresonance, are natural, but low at a peak means something went wrong.
 
 The most common cause is the **double hit**.
 
@@ -149,7 +151,7 @@ The second pulse was also measured by the force sensor, so in theory the FRF oug
 
 <Callout type="field" title="How to strike">
 
-Hit briefly, flicking from the wrist, and withdraw the hammer at once. Hit the same spot in the same direction (parallel to the measurement direction). Leave the interval between hits until the response has died out. Attach the accelerometer close to the strike point and firmly (screw or adhesive base, the mounting resonance of P3-1).
+Hit briefly, flicking from the wrist, and withdraw the hammer at once. Hit the same spot in the same direction (parallel to the measurement direction). Leave the interval between hits until the response has died out. Attach the accelerometer close to the strike point, firmly, with a screw or an adhesive base. A soft mounting lowers the mounting resonance (P3-1).
 
 </Callout>
 
@@ -232,11 +234,11 @@ The pedestal's natural frequency is not the pedestal's alone. It changes with ho
 
 <Figure {...F.softFootFig} />
 
-<strong>Soft foot (P7-7)</strong> is checked by loosening the bolts one at a time. Put a dial gauge on the foot and see how much that foot lifts when only its bolt is loosened. If only one foot lifts noticeably (C in Figure 9), that foot is not sitting properly on the floor, and tightening its bolt twists the frame. Correct each foot's lift with shims and measure again. Catch soft foot before shaft alignment (P9-3). An alignment made on a twisted frame changes every time the bolts are loosened and tightened.
+<strong>Soft foot (P7-7)</strong> is checked by loosening the bolts one at a time. Put a dial gauge on the foot and see how much that foot lifts when only its bolt is loosened. If only one foot lifts noticeably (C in Figure 9), that foot is not sitting properly on the floor, and tightening its bolt twists the frame. Correct each foot's lift with shims (thin plates placed under the feet) and measure again. Catch soft foot before shaft alignment (P9-3). An alignment made on a twisted frame changes every time the bolts are loosened and tightened.
 
 | Check | How | What to look at |
 |---|---|---|
-| Soft foot | Loosen one bolt per foot + dial gauge | Does only one foot lift a lot; does the vibration (especially 2×LF, P7-7) change when it is tightened |
+| Soft foot | Loosen one bolt per foot + dial gauge | Does only one foot lift a lot; does the vibration (especially 2×LF, twice the line frequency, P7-7) change when it is tightened |
 | Foundation stiffness | ODS (Figure 8), inspect foundation, grout, anchor bolts | Does the foundation move as much as the pedestal; does the phase flip at a joint |
 | Pipe strain | Change in shaft position and alignment when the flange bolts are loosened | Does the machine move when the piping is disconnected (the piping pulls on the machine) |
 | Effect of the remedy | Impact test before and after reinforcement | Is the natural frequency far enough from the running speed |

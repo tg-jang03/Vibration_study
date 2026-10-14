@@ -4,7 +4,7 @@ title: P8-2 Thermal bow · Turning gear · Morton effect
 description: Compare thermal bow during shutdown, turning gear, slow roll eccentricity, Morton-type 1X vector changes during operation, and the heat source of the Newkirk effect.
 sectionId: P8-2
 source: p8-2.mdx
-sourceHash: 512d269bb6
+sourceHash: dd8c7466ed
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -25,7 +25,7 @@ Are both records showing thermal bow? First, separate **bow that develops during
 
 1. You can explain why circumferential temperature differences can bow a stationary shaft and why turning gear is used.
 2. You can distinguish slow roll eccentricity from high-speed 1X response and check the effects of runout and thermal state.
-3. You can add fixed unbalance response and a thermal contribution as vectors to read changes in APHT and Polar plots.
+3. You can add fixed unbalance response and a thermal contribution as vectors to read changes in APHT (the time trend of 1X amplitude and phase) and Polar plots.
 4. You can distinguish the heat sources of the Morton and Newkirk effects and choose the additional evidence needed.
 
 </Callout>
@@ -46,7 +46,7 @@ This is bow caused by an uneven temperature distribution in the shaft. Along wit
 
 For a small temperature change, the change in length of one region can be thought of as $\Delta L \approx \alpha_T L\Delta T$. Here, $\alpha_T$ is the material's coefficient of thermal expansion and $L$ is its original length. Different expansions must be accommodated within the same shaft, making it difficult for the shaft to remain straight. Finding the actual bow requires solving for the temperature field, shaft geometry, and support conditions. <Cite ids={['R-25']} />
 
-On restart, the bowed shaft's geometric centerline rotates and produces periodic displacement at a low-speed sensor. As speed rises, excitation from the bow and the dynamic response of the shaft system also appear. This is why adding a hot bow in <a href={withBase('/en/p8-1/')}>P8-1</a> produced a Bode plot different from the cold case.
+On restart, the bowed shaft's centerline turns with the shaft, so the sensors see a once-per-revolution displacement even at low speed. As speed rises, excitation from the bow and the dynamic response of the shaft system also appear. This is also why adding a hot bow (an equivalent 2 µm Peak on mode 1) in P8-1 §5 produced a Bode plot different from the cold case.
 
 <Callout type="warn" title="Distinguish bow in a stationary shaft from a 1X record">
 
@@ -70,7 +70,7 @@ Record the shutdown time and thermal state, the times when turning started, stop
 
 <Callout type="example" title="The same one-hour shutdown can have different thermal states">
 
-If turning continued in one record but was interrupted in another, matching only the elapsed time makes comparison difficult. The cold run-up and hot coastdown comparison in P8-1 also required matching the thermal state and operating history along with speed.
+If turning continued in one record but was interrupted in another, matching only the elapsed time makes comparison difficult. The cold run-up and hot coastdown comparison in P8-1 §5 also required matching the thermal state and operating history along with speed.
 
 </Callout>
 
@@ -92,7 +92,7 @@ The compensation in <a href={withBase('/en/p3-3/')}>P3-3</a> is data processing:
 
 <Callout type="try" title="Before reading an eccentricity record">
 
-Check that the probe, Keyphasor, and rotation direction are the same, that Peak and p-p are consistent, and when and under what thermal state the low-speed reference was acquired. Then compare it with the manufacturer's startup conditions. The synthetic figure's 9.195 µm pp is not a startup acceptance criterion.
+Check that the probe, Keyphasor, and rotation direction are the same, that Peak and p-p are consistent, and when and under what thermal state the low-speed reference was acquired. Then compare it with the manufacturer's startup conditions. The synthetic 9.195 µm pp in Figure 3 is not a startup acceptance criterion.
 
 </Callout>
 
@@ -116,7 +116,7 @@ The defaults are $U=20$ µm Peak@350°, $B_0=12$ µm Peak, $\beta=80°$, and $\t
 
 ### Try it: decay time constant and cancellation
 
-1. Keep **Thermal bow contribution decays**, a reference time of 0 minutes, and a selected time of 60 minutes in the lab below. Read the thermal contribution, total 1X, and vector change.
+1. The lab below starts in the 'Thermal bow contribution decays' scenario. Keep the reference time at 0 minutes and the selected time at 60 minutes, and read the thermal contribution, total 1X, and vector change.
 2. Change the decay time constant $\tau$ to **60 minutes** and compare the thermal contribution and total amplitude.
 3. Return $\tau$ to 20 minutes, set the initial thermal contribution to **20 µm Peak**, its lag angle to **170°**, and the selected time to **0 minutes**.
 4. Check total 1X and the phase assessment, then move the selected time to 60 minutes.
@@ -155,7 +155,7 @@ Since $Q$ turns around the tip of fixed $U$, the sum $V$ also moves around that 
 
 ### Try it: growing loops and a closed circle
 
-1. In **Morton-type thermal vector rotation** in the lab below, with reference time 0 minutes and selected time 60 minutes, read the amplitude and angle of the thermal contribution and total 1X.
+1. The lab below starts in the 'Morton-type thermal vector rotation' scenario. With the reference time at 0 minutes and the selected time at 60 minutes, read the amplitude and angle of the thermal contribution and total 1X.
 2. Move the selected time through **0, 15, 30, and 60 minutes** and compare the selected arrow and thermal contribution arrow in Polar.
 3. Set the <strong>thermal contribution growth over 60 minutes to 0%</strong> and compare vector changes at selected times of 0, 15, and 30 minutes.
 4. Change the rotation period to **60 minutes** and check whether the selected vector returns to the starting point at 30 minutes.
@@ -166,13 +166,13 @@ Since $Q$ turns around the tip of fixed $U$, the sum $V$ also moves around that 
 
 <Callout type="field" title="Compare load and oil conditions at matching times">
 
-Read speed, load, oil supply/discharge temperatures and pressures, bearing temperatures, gap, Keyphasor status, and 1X records from multiple probes together. Oil temperature affects viscosity and heat transfer, but the effect depends on the equipment and conditions. Do not apply the direction of a corrective action from a particular published case to every machine. <Cite ids={['R-27']} />
+Read speed, load, oil supply/discharge temperatures and pressures, bearing temperatures, gap voltage (the average probe output, P3-2), Keyphasor status, and 1X records from multiple probes together. Oil temperature affects viscosity and heat transfer, but the effect depends on the equipment and conditions. Do not apply the direction of a corrective action from a particular published case to every machine. <Cite ids={['R-27']} />
 
 </Callout>
 
 ## 6. Newkirk has a different heat source
 
-The <strong>Newkirk effect</strong> is the interaction between local frictional heating from contact between rotating and stationary parts and thermal bow. Think of the thermal effects of a rub. Other waveforms and candidate causes associated with contact and rub are covered in P7-3.
+The <strong>Newkirk effect</strong> is the interaction between local frictional heating from contact between rotating and stationary parts and thermal bow. Think of the thermal effects of a rub. Other waveforms and candidate causes associated with contact and rub are covered in P7-3 §4.
 
 <Figure {...F.heatSources} />
 

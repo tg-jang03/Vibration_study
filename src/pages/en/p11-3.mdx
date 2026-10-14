@@ -4,7 +4,7 @@ title: P11-3 A Field-Data Review Guide
 description: Reviewing a past startup or shutdown by redrawing it the same way to check the call made at the time — what to keep (raw waveform, Keyphasor, operating log, the judgment), checking channels, f_s, units and sensitivity, Keyphasor pulses → speed and repairing missing or extra pulses, a 1X vector for every turn (one-revolution DFT), slow-roll compensation and redrawing Bode, polar and cascade, comparing with a reference record to rewrite the conclusion, and LAB-REV-01, which opens company data only inside the browser
 sectionId: P11-3
 source: p11-3.mdx
-sourceHash: 3e1e9ff6a6
+sourceHash: f98165d32c
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -17,7 +17,7 @@ import * as F from '../../figures/p11-3';
 
 A diagnostic report leaves a conclusion behind. "The critical-speed crossing amplitude has grown — judged to be increased unbalance; balancing recommended." But you only find out whether that call was right as time goes by. If the vibration is unchanged even after balancing, what did we miss at the time?
 
-A **review** redraws the record from back then in the same way and looks again at what the judgment rested on. This page follows two hypothetical compressor shutdown records to show what you have to keep in order to review, how to extract speed and the 1X vector again from the raw waveform, and how to use the redrawn data to check the judgment made at the time. The lab opens files only inside this browser — you can review company records on your own computer without uploading them anywhere.
+A **review** redraws the record from back then in the same way and looks again at what the judgment rested on. This page follows two shutdown records of a hypothetical compressor: record A is the shutdown a year ago, and record B is this time's shutdown, the one behind the conclusion above. With them it shows what you have to keep in order to review, how to extract speed and the 1X vector again from the raw waveform, and how to use the redrawn data to check the judgment made at the time. The lab opens files only inside this browser — you can review company records on your own computer without uploading them anywhere.
 
 <Callout type="idea" title="After reading this page">
 
@@ -37,7 +37,7 @@ A review is not a matter of reaching the conclusion again. It is **rebuilding th
 
 <Figure {...F.flow} />
 
-Step ① in Figure 1 is where people get stuck most often. To redraw, the record from back then has to still exist.
+Step ① in Figure 1, collecting the records, is where people get stuck most often. To redraw, the record from back then has to still exist.
 
 | Record to keep | Why | What is often missing |
 |---|---|---|
@@ -82,7 +82,7 @@ Speed and phase both come from the Keyphasor pulses. If a pulse time is wrong, e
 
 <Figure {...F.keyFig} />
 
-The pulse time is the instant the Keyphasor voltage crosses a **threshold**. For a notch, watch the falling edge; for a projection or a TTL signal, the rising edge. Put the threshold midway between the voltage with no notch and the voltage at the bottom of the notch (P3-3), and interpolate linearly between two samples so that the time is resolved more finely than the sample interval. After one crossing, the voltage must go back far enough past the threshold (here, 10 % of the voltage span) before the next one is accepted as a pulse — this **hysteresis** keeps noise from counting one pulse twice.
+The pulse time is the instant the Keyphasor voltage crosses a **threshold**. For a notch, watch the falling edge; for a projection or a TTL signal (a digital pulse switching between 0 V and 5 V), the rising edge. Put the threshold midway between the voltage with no notch and the voltage at the bottom of the notch (P3-3), and interpolate linearly between two samples so that the time is resolved more finely than the sample interval. After one crossing, the voltage must go back far enough past the threshold (here, 10 % of the voltage span) before the next one is accepted as a pulse — this **hysteresis** keeps noise from counting one pulse twice.
 
 When one pulse is missing, as in Figure 2, that interval doubles and the speed looks like half (1676 rpm). If noise is picked up as a pulse, the speed jumps up by a factor of several instead. So each pulse interval is compared with the median of its neighboring intervals: if it is more than 1.6 times as long, the gap is filled evenly, and if it is shorter than 0.6 times, the false pulse is removed. In record B, 3 missing pulses were filled this way and 1 extra pulse was removed.
 
@@ -126,7 +126,7 @@ Bode looks at 1X only. In a review, use the cascade (P6-2) to check also that th
 
 ## 6. Comparing with the judgment at the time: same numbers, different conclusion
 
-Now look at record B from the story. At this shutdown the critical-speed crossing amplitude was larger than a year ago, and at the time it was judged that unbalance had grown.
+Now look at record B, the record behind the conclusion quoted at the top of this page ("judged to be increased unbalance; balancing recommended"). At this shutdown the critical-speed crossing amplitude was larger than a year ago, and at the time it was judged that unbalance had grown.
 
 | Item (1X) | Record A (a year ago) | Record B (this time) |
 |---|---|---|
@@ -137,11 +137,11 @@ Now look at record B from the story. At this shutdown the critical-speed crossin
 | After compensation: 1X at top speed | 17.2 µm p-p | 16.1 µm p-p |
 | After compensation: lag angle at 3000 rpm | 80° | 130° |
 
-As measured, "it got bigger" looks right, just as the judgment at the time said. But B's slow-roll vector is 24 µm p-p, 6 times that of a year ago — a larger share of runout had been added to the amplitude, as if a flaw had appeared on the shaft surface the probe looks at during maintenance.
+As measured, "it got bigger" looks right, just as the judgment at the time said. But B's slow-roll vector is 24 µm p-p, 6 times that of a year ago (3.9 µm p-p). Runout had grown, as it would if a flaw had appeared during maintenance on the shaft surface the probe looks at, and that share had been added to the amplitude.
 
 <Figure {...F.compareFig} />
 
-After compensation the story changes. The 1X at top speed is almost the same, 17.2 → 16.1 µm p-p, so **unbalance is unchanged**. Instead the peak came down from 3299 → 3051 rpm, and at the same 3000 rpm the phase lags further, 80° → 130°. Phase lagging more at the same speed is a sign that the natural frequency has come down (P10-3 §4). Estimated from the ratio of the peak speeds, the support stiffness dropped by about 14 %.
+After compensation the story changes. The 1X at top speed is almost the same, 17.2 → 16.1 µm p-p, so **unbalance is unchanged**. Instead the peak came down from 3299 → 3051 rpm, and at the same 3000 rpm the phase lags further, 80° → 130°. Phase lagging more at the same speed is a sign that the natural frequency has come down (P10-3 §4). Estimated from the ratio of the peak speeds ($N_c\propto\sqrt{k}$), the support stiffness dropped by about 14 %.
 
 <Callout type="example" title="Review record (hypothetical compressor)">
 
@@ -173,7 +173,7 @@ The purpose of a review is to fix the judgment procedure. At the time there may 
 
 <ReviewLab client:visible lang="en" />
 
-In step 1, as measured, B's peak of 83.7 µm p-p (3051 rpm) is larger than A's 76.7 µm p-p (3350 rpm), and the top-speed 1X also looks bigger, 20.9 → 34.3 µm p-p. In step 2, the slow-roll 1X differs greatly, A 3.9 and B 24.0 µm p-p; after subtracting, B's peak is 60.0 µm p-p (A 74.7) and the top-speed 1X is almost the same, 17.2 and 16.1 µm p-p. In step 3, B's phase lags more at the same speed and the polar circle turns earlier — the natural frequency has come down. If you do not repair the pulses, as in step 4, B's speed plot shows points that drop to half or jump up by a factor of several. Averaging in 50 rpm bins hides this in Bode, but looking turn by turn or along the speed axis of the cascade, that turn lands in the wrong place.
+In step 1, as measured, B's peak of 83.7 µm p-p (3051 rpm) is larger than A's 76.7 µm p-p (3350 rpm), and the top-speed 1X also looks bigger, 20.9 → 34.3 µm p-p. In step 2, the slow-roll 1X differs greatly, A 3.9 and B 24.0 µm p-p; after subtracting, B's peak is 60.0 µm p-p (A 74.7) and the top-speed 1X is almost the same, 17.2 and 16.1 µm p-p. In step 3, B's phase lags more at the same speed, and on the polar plot B has also turned further at the same speed. This is a sign that the natural frequency has come down. If you do not repair the pulses, as in step 4, B's speed plot shows points that drop to half or jump up by a factor of several. Averaging in 50 rpm bins hides this in Bode, but looking turn by turn or along the speed axis of the cascade, that turn lands in the wrong place.
 
 ---
 
@@ -214,7 +214,7 @@ During a shutdown the speed keeps falling, so over 16 turns it passes right thro
 <details>
 <summary><strong>Q4. What happens if I set the slow-roll range to 1500 ~ 2000 rpm? (critical speed 3300 rpm)</strong></summary>
 
-The 1X in that range already contains a substantial unbalance response (r ≈ 0.45 ~ 0.6). If you take it for runout and subtract it, the compensated Bode no longer starts at zero at low speed, and the peak magnitude and phase come out wrong. Take slow roll at speeds where the unbalance response is much smaller than the runout (in this example, below 500 rpm).
+The 1X in that range already contains a substantial unbalance response (speed ratio to the critical speed r ≈ 0.45 ~ 0.6). If you take it for runout and subtract it, the compensated Bode no longer starts at zero at low speed, and the peak magnitude and phase come out wrong. Take slow roll at speeds where the unbalance response is much smaller than the runout (in this example, below 500 rpm).
 </details>
 
 <details>

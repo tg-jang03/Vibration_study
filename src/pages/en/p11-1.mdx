@@ -4,7 +4,7 @@ title: P11-1 Hypothetical Machine Cases
 description: The diagnosis order report → machine configuration table → frequency map → measurement setup → choosing data → conclusion; examples where the setup (f_max, envelope band, Δf, AAF) and the sensor path (runout) hide or create evidence; which data to pick for each question you want to separate; LAB-CASE-01, where you diagnose 11 hypothetical machines with hidden faults (single fault, look-alikes, multiple faults, measurement problems); writing a conclusion with evidence, rebuttals and confidence
 sectionId: P11-1
 source: p11-1.mdx
-sourceHash: 2c599249ea
+sourceHash: 96a29f3f4d
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -37,7 +37,7 @@ When you get a report, you want to attach the analyzer right away. But if you me
 
 <Figure {...F.flow} />
 
-Steps ① – ③ in Figure 1 are desk work. From the report you pull out **what changed, since when, and where** (①), from the machine configuration table you read speed, number of poles, bearings, tooth count and blade count (②, P1-6), and from those numbers you calculate where the line for each cause would stand (③, P7-1). In ④ you pick a sensor and setup that can see those positions (P2-9), and in ⑤ you open the data that separates the candidates (Part 6). If the candidates do not separate, you change the setup and measure again. ⑥ is written in the report format of P10-3.
+Steps ① – ③ in Figure 1 are desk work. From the report you pull out **what changed, since when, and where** (①), from the machine configuration table you read speed, number of poles, bearings, tooth count and blade count (②, P1-6), and from those numbers you calculate where the line for each cause would stand (③, P7-1). In ④ you pick a sensor and setup that can see those positions (P2-9), and in ⑤ you open the data that separates the candidates (Part 6). If the candidates do not separate, you change the setup and measure again. The conclusion in ⑥ is written in the report format of P10-3 (summary and recommendation first, observation kept apart from judgment).
 
 <Callout type="warn" title="'The cause of the largest line = the diagnosis'">
 
@@ -80,17 +80,17 @@ The routine measurement of the example pump (vertical, velocity, f_max 1 kHz) is
 
 <Figure {...F.envelopeFig} />
 
-In the top of Figure 3, the BPFO position is 0.037 mm/s, indistinguishable from noise. What an early fault produces is not a large line but **short impacts**, and those impacts ring the housing's resonance of several kHz (P5-6). So you must raise f_max above the resonance (5 kHz in the middle) for the ringing to show up, and look at the envelope of the band that contains that ringing (2.5 – 4.5 kHz, bottom) for the rhythm = BPFO to appear. The acceleration kurtosis of this measurement is 15, much larger than that of Gaussian noise (3).
+In the top of Figure 3, the BPFO position is 0.037 mm/s, indistinguishable from noise. What an early fault produces is not a large line but **short impacts**, and those impacts ring the housing's resonance of several kHz (P5-6). So you must raise f_max above the resonance (5 kHz in the middle) for the ringing to show up, and look at the envelope of the band that contains that ringing (2.5 – 4.5 kHz, bottom) for the rhythm of the impacts, that is BPFO, to appear. The acceleration kurtosis of this measurement is 15, much larger than that of Gaussian noise (3).
 
 <Callout type="warn" title="'Just run the envelope on the f_max 1 kHz record'">
 
-The AAF has already cut everything above 1 kHz, so that record contains no ringing of the housing resonance. Even if you envelope a band below 1 kHz, you only see modulation between rotating components. Measure again with a setup that captures the resonance band from the start.
+The AAF (anti-aliasing filter, P2-3) has already cut everything above 1 kHz, so that record contains no ringing of the housing resonance. Even if you envelope a band below 1 kHz, you only see modulation between rotating components. Measure again with a setup that captures the resonance band from the start.
 
 </Callout>
 
 ### 3.2 Δf: when two lines look like one
 
-In a 2-pole motor, 2X and 2×LF are less than 1 Hz apart. One is a mechanical cause (misalignment, looseness) and the other an electrical one (air gap, stator), so separating them matters.
+A 2-pole induction motor runs a little below 3600 rpm, by its slip, so 2X and 2×LF (twice the line frequency, 120 Hz on a 60 Hz grid) are less than 1 Hz apart. One is a mechanical cause (misalignment, looseness) and the other an electrical one (air gap, stator), so separating them matters.
 
 <Figure {...F.resolutionFig} />
 
@@ -100,7 +100,7 @@ At Δf 2.5 Hz, the two lines fall inside a single Hann-window peak (P2-4, P2-5).
 
 <Figure {...F.aliasFig} />
 
-The 8.6 mm/s line in the top of Figure 5 is not in the machine. It is the 2836.7 Hz gear mesh, sampled at f_s 2560 Hz without an AAF and folded in at 276.7 Hz (P2-3). The velocity spectrum is drawn by dividing acceleration by 2πf, so a small high-frequency acceleration folded to a low position looks 11 times larger.
+Figure 5 is a measurement on an example speed-increasing gearbox (motor shaft at 1480 rpm, 115-tooth bull gear). The 8.6 mm/s line in the top panel is not in this machine. It is the 2836.7 Hz gear mesh frequency (115 × 1X), sampled at f_s 2560 Hz without an AAF and folded in at 276.7 Hz (P2-3). The velocity spectrum is drawn by dividing acceleration by 2πf, so a small high-frequency acceleration folded to a low position looks 11 times larger.
 
 There are three clues that a line is fake. It **fits no position** on the machine's frequency map (11.2X), it **disappears when the AAF is turned on**, and it **moves when f_s is changed.** The real component appears in its proper place only when f_max is raised (bottom of Figure 5).
 
@@ -110,7 +110,7 @@ A proximity probe measures the distance to the shaft surface. If the track the p
 
 <Figure {...F.runoutFig} />
 
-Unbalance response grows with the square of speed, so at a low speed such as 440 rpm (slow roll) it should be almost zero. If it is already 21.9 µm at low speed, as in the gray curve of Figure 6, that part is not shaft motion but runout. When you subtract the slow roll vector (blue, P3-3), the operating-point 1X shrinks from 32.1 to 12.2 µm, leaving an ordinary unbalance response that makes a peak at the critical speed. The housing 1X being small at 0.7 mm/s points the same way.
+Unbalance response grows with the square of speed, so at a low speed such as 440 rpm (slow roll) it should be almost zero. If it is already 21.9 µm at low speed, as in the gray curve of Figure 6 (the coastdown 1X of an example compressor), that part is not shaft motion but runout. When you subtract the slow roll vector (blue, P3-3), the operating-point 1X shrinks from 32.1 to 12.2 µm, leaving an ordinary unbalance response that makes a peak at the critical speed. The housing 1X being small at 0.7 mm/s also suggests that the shaft is not really moving much.
 
 <Callout type="field" title="When to suspect the measurement first">
 
@@ -139,11 +139,11 @@ Here are two examples of separating two look-alike causes.
 
 <Figure {...F.resonanceFig} />
 
-The fan in Figure 7 has a large horizontal 1X of 9.2 mm/s and looks like unbalance. But vertical is 1.3 mm/s, one-seventh of it, and vertical lags horizontal by 306°, which differs from the roughly 90° that a rotating force produces on a stiff support. In the coastdown only the horizontal makes a peak, at 1420 rpm, with the phase changing from 28° to 176°, and the horizontal peak of the FRF taken while stopped is at 23.7 Hz — 4 % below the 1X of 24.67 Hz. **The reason the vibration is large is the horizontal resonance of the support**, and unbalance is just the exciter striking that resonance. If you only balance, it grows back even with a small change in unbalance.
+The example ventilation fan in Figure 7 has a large horizontal 1X of 9.2 mm/s and looks like unbalance. But vertical is 1.3 mm/s, one-seventh of it, and vertical lags horizontal by 306°, which differs from the roughly 90° that a rotating force produces on a stiff support. In the coastdown only the horizontal makes a peak, at 1420 rpm, with the phase changing from 28° to 176°, and the horizontal peak of the FRF taken while stopped is at 23.7 Hz — 4 % below the 1X of 24.67 Hz. **The reason the vibration is large is the horizontal resonance of the support**, and unbalance is just the exciter striking that resonance. If you only balance, it grows back even with a small change in unbalance.
 
 <Figure {...F.mortonFig} />
 
-The compressor in Figure 8 keeps the same speed and load, yet its 1X swings between 13 and 36 µm. With unbalance alone, the 1X vector would stay in one place. A vector that circles a point other than the origin on the Polar plot means that **another, slowly moving vector is being added to the machine vector**. If there are no rub traces (harmonics, ½X, truncated orbit), suspect thermal bow caused by uneven heating of the journal — the Morton type (P8-2). With a trend measured once a day, this cycle shows up only as scattered points.
+The compressor in Figure 8 keeps the same speed and load, yet its 1X swings between 13 and 36 µm. With unbalance alone, the 1X vector would stay in one place. A vector tip that circles a point other than the origin on the Polar plot (the gray dot in Figure 8, the machine vector that stays in place) means that **another, slowly turning vector is being added to that machine vector**. If there are no rub traces (harmonics, ½X, truncated orbit), suspect thermal bow caused by uneven heating of the journal — the Morton type (P8-2). With a trend measured once a day, this cycle shows up only as scattered points.
 
 ---
 

@@ -4,7 +4,7 @@ title: P10-3 Diagnostic Procedure and Reporting
 description: One hypothetical case ties together valid measurement → comparison → hypotheses and the five evidence elements → data that discriminates the hypotheses (coastdown amplitude and phase) → a report that leads with summary and recommendation → the limits of prognosis and re-verification.
 sectionId: P10-3
 source: p10-3.mdx
-sourceHash: ceb344c727
+sourceHash: 7cd16b9482
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -57,9 +57,9 @@ Amplitude having doubled is only the first observation. First separate whether t
 
 <Figure {...F.validity} />
 
-In Figure 2, the amplitude rose from 20 → 40 µm p-p over days 60 ~ 90, but the gap voltage of the same probe is unchanged. If the gap had moved along with it, as the gray dashed line shows, you would look at the probe, mounting and cable before the shaft (<a href={withBase('/en/p3-4/')}>P3-4</a>). In this case the slow roll vector was also the same as a year ago.
+In Figure 2, the amplitude rose from 20 → 40 µm p-p over days 60 ~ 90, but the gap voltage of the same probe (the DC voltage that shows the average distance to the shaft, P3-2) is unchanged. If the gap had moved along with it, as the gray dashed line shows, you would look at the probe, mounting and cable before the shaft (<a href={withBase('/en/p3-4/')}>P3-4</a>). In this case the slow roll vector (the 1X measured at low speed, which holds almost nothing but runout, P3-3) was also the same as a year ago.
 
-The information to collect before diagnosis is below. Revisit the machine map in <a href={withBase('/en/p1-6/')}>P1-6</a> and the acquisition settings in <a href={withBase('/en/p2-9/')}>P2-9</a>.
+The information to collect before diagnosis is below. Revisit the machine layout (what rotates and what supports it) in <a href={withBase('/en/p1-6/')}>P1-6</a> and the measurement and acquisition settings in <a href={withBase('/en/p2-9/')}>P2-9</a>.
 
 | Group | Information to keep | If missing |
 |---|---|---|
@@ -94,7 +94,7 @@ An observation that is hard to get if the hypothesis is right. A cell you did no
 
 ## 4. Data that discriminates the hypotheses: compare with the coastdown from a year ago
 
-Both hypotheses explain 40 µm p-p at 3000 rpm equally well. So where do they differ? At **other speeds and in phase**.
+The two remaining hypotheses, H1 (excitation increase) and H2 (natural frequency shift), explain the 40 µm p-p at 3000 rpm equally well. So where do they differ? At **other speeds and in phase**.
 
 - H1 excitation increase: if the critical speed is unchanged (3500 rpm) and only the unbalance grew, the whole curve rises by the same factor and the **phase is unchanged** (<a href={withBase('/en/p4-1/')}>P4-1</a>).
 - H2 natural frequency shift: if the support weakened and the critical speed came down toward the operating point, the 3000 rpm amplitude grows as it gets closer to resonance, and the **phase lag at the same speed increases**. Amplitude at lower speeds does not rise by a factor of two.
@@ -105,7 +105,7 @@ The coastdown record left at every shutdown makes this comparison for you. No te
 
 What you can read in Figure 4:
 
-- The current record (blue dots) follows the green dashed H2. The 2500 rpm amplitude went 8.19 → 12.5 µm p-p, not a doubling, and the 3000 rpm phase grew from 27.3° to 56.4°.
+- The current record (blue dots) follows the green dashed H2. Compared with a year ago, the 2500 rpm amplitude went from 8.19 to 12.5 µm p-p, short of a doubling, and the 3000 rpm phase grew from 27.3° to 56.4°.
 - Explained by H1 (orange dashed), the amplitude error is 3.0 µm p-p and the phase error 11.7°, far larger than the record scatter (0.39 µm p-p · 1.7°). The H2 error (0.37 µm p-p · 1.6°) is at the scatter level.
 - If H2 is right, the critical speed came down from 3500 → 3165 rpm. Support stiffness dropped by about 18 % ($N_c\propto\sqrt{k}$).
 
@@ -152,7 +152,7 @@ The strength of a judgment and the reason for it. Write "high, medium or low" ba
 
 </Callout>
 
-If you made a magnitude assessment, also write the applicable Part, classification and assessed quantity of P10-1; if the conclusion is for a test or acceptance, write the requirement → evidence → conclusion of P10-2.
+If you made a magnitude assessment, also write the assessment record of P10-1 (the ISO 20816 Part applied, the machine group and support condition, the evaluated quantity); if the conclusion is for a test or acceptance, attach the requirement, evidence and conclusion record of P10-2.
 
 ---
 
@@ -164,7 +164,7 @@ If the amplitude keeps rising, when will it reach the action limit? Drawing a li
 
 Fitting a straight line to the same 11 weekly points in Figure 6 reaches the hypothetical action limit of 80 µm p-p at 30.2 weeks, and fitting an exponential reaches it at 19.8 weeks. Within the observed range (10 weeks) the two lines nearly overlap, but dates beyond it are **decided by the model you chose**. <strong>Prognosis</strong> is a step you can speak of only when you have the degradation mechanism and its model, repeated observations, and the future operating conditions and uncertainty. <Cite ids={['R-82']} />
 
-After an action, measure again at the same location, sensor, band, speed, load and thermal state. Look at whether only 1X dropped, and how the other bearings, other components, orbit and temperature look; review the effect of the action and the possibility of recurrence, then decide whether to update the baseline (⑥ → ① in Figure 1).
+After an action, measure again at the same location, sensor, band, speed, load and thermal state. Look at whether only 1X dropped, and how the other bearings, other components, orbit and temperature look; review the effect of the action and the possibility of recurrence, then decide whether to update the baseline. In Figure 1 this is the path from ⑥ recommendation and action back to ① data collection.
 
 <Callout type="warn" title="'The value is low after the action, so make it the new baseline right away'">
 

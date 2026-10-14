@@ -4,7 +4,7 @@ title: P9-3 Alignment
 description: Offset and angularity misalignment and the two planes; what to check before measuring (soft foot, piping, runout); offset and slope from rim-face readings, the 3 o'clock + 9 o'clock = 6 o'clock check, bracket sag correction; front- and back-foot moves from similar triangles; reverse indicator method and laser; thermal growth with cold target and hot check; tolerances and work order
 sectionId: P9-3
 source: p9-3.mdx
-sourceHash: dbe47dfc12
+sourceHash: e8d5a9793c
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -16,7 +16,7 @@ import * as F from '../../figures/p9-3';
 
 # 9-3 Alignment: From Readings to Foot Moves
 
-On a motor-driven pump, the axial 1X phase on the two sides of the coupling differs by about 180°, 2X is large, and the orbit is banana-shaped (P7-3). These 1X and 2X components do not disappear with a balance weight (P9-2 §1). You suspect misalignment and shut the machine down. How do you find out whether the two shafts really are misaligned, by how much, and how many mm of shim to add or remove at which foot?
+On a motor-driven pump, the axial 1X phase on the two sides of the coupling differs by about 180°, 2X is large, and the orbit is banana-shaped. All of these are misalignment clues seen in P7-3 §2, and these 1X and 2X components do not disappear with a balance weight (P9-2 §1). You suspect misalignment and shut the machine down. How do you find out whether the two shafts really are misaligned, by how much, and how many mm of shim (a thin plate placed under a foot to set its height) to add or remove at which foot?
 
 This page treats alignment with numbers: how to write a misalignment as two numbers, how to get those numbers from dial indicator readings, the similar triangles that turn them into foot moves, and finally the cold target, which builds in the rise that heat will cause during operation.
 
@@ -64,7 +64,7 @@ What should you check first when measuring alignment? You have to remove the cau
 |---|---|---|
 | Soft foot (P9-1 §7) | With a lifted foot, the frame twists each time a bolt is tightened and the alignment values change | Loosen one bolt per foot and check the lift with a dial indicator; correct with shims before starting |
 | Pipe strain (P9-1 §7) | If the piping pulls on the machine, alignment changes when bolts are loosened and in operation | Check with a dial indicator whether the shaft moves when the flange bolts are loosened |
-| Hub runout | If the hub is mounted crooked on the shaft, it mixes into the readings | Rotate both shafts **together** and read at the same positions (hub runout cancels) |
+| Hub runout | If the hub (the coupling body fitted on the shaft end) is mounted crooked, it mixes into the readings | Rotate both shafts **together** and read at the same positions (hub runout cancels) |
 | Bolts and support | If the machine moves during measurement, the readings are wrong | Measure with all foot bolts tightened to the same torque |
 
 Rough-align first by eye or with a straightedge (rough alignment), then measure precisely with indicators. If the initial misalignment is beyond the indicator range, the readings are meaningless.
@@ -87,7 +87,7 @@ where $y(z_{rim})$ is the height of the movable machine where the indicator touc
 
 <Callout type="example" title="Finding δ and α from the Figure 2 readings (sag −0.10 mm)">
 
-1. Subtract the sag from the rim reading: $-0.50 - (-0.10) = -0.40$ mm → height at that position $y = 0.40/2 = 0.20$ mm
+1. Subtract the sag from the rim reading: $-0.50 - (-0.10) = -0.40$ mm, so the height at that position is $y = 0.40/2 = 0.20$ mm
 2. Face: $\alpha = -(-0.04)/100 = 0.0004$, that is, 0.04 mm/100 mm
 3. Move to the coupling center: $\delta = 0.20 - 0.0004 \times 50 = 0.18$ mm (the rim indicator read a hub 50 mm from the coupling)
 
@@ -101,7 +101,7 @@ If you zero at 12 o'clock, the rim readings always obey the relation **3 o'clock
 
 <Figure {...F.sagFig} />
 
-However rigid, a bracket sags a little under its own weight. At 12 o'clock the sag pushes the plunger in, and at 6 o'clock it pulls it away. So measure beforehand the 12 o'clock 0 → 6 o'clock value of the same bracket mounted on a straight pipe (−0.10 mm on this page), and subtract it from the vertical rim reading. If you do not subtract it, as in Figure 4 you see the movable machine higher by half the sag (0.05 mm) and lower both feet by that much too much. In the horizontal plane (3 o'clock and 9 o'clock) the sag enters both sides equally and cancels in $(R_3 - R_9)/2$, and the face indicator is little affected by sag.
+However rigid, a bracket sags a little under its own weight. At 12 o'clock the sag pushes the plunger in, and at 6 o'clock it pulls it away. So mount the same bracket on a straight pipe, zero it at 12 o'clock and measure the 6 o'clock value beforehand (−0.10 mm on this page), and subtract it from the vertical rim reading. If you do not subtract it, as in Figure 4 you see the movable machine higher by half the sag (0.05 mm) and lower both feet by that much too much. In the horizontal plane (3 o'clock and 9 o'clock) the sag enters both sides equally and cancels in $(R_3 - R_9)/2$, and the face indicator is little affected by sag.
 
 ---
 
@@ -121,8 +121,8 @@ For now the target is 0 (a single straight line); in §6 it is replaced by a tar
 
 <Callout type="example" title="Figure 3: front feet 300 mm, back feet 800 mm">
 
-1. Height at the front feet: $0.18 + 0.0004 \times 300 = 0.30$ mm → remove 0.30 mm of shim
-2. Height at the back feet: $0.18 + 0.0004 \times 800 = 0.50$ mm → remove 0.50 mm of shim
+1. Height at the front feet: $0.18 + 0.0004 \times 300 = 0.30$ mm, so remove 0.30 mm of shim
+2. Height at the back feet: $0.18 + 0.0004 \times 800 = 0.50$ mm, so remove 0.50 mm of shim
 3. When there is a slope, the back feet, farther from the coupling, are moved more. Because $\delta$ is added, the front-to-back ratio is 30 : 50, not the distance ratio (300 : 800).
 
 </Callout>
@@ -143,7 +143,7 @@ $$
 y_1 = -\frac{R_1}{2}, \qquad y_2 = +\frac{R_2}{2}, \qquad \alpha = \frac{y_1 - y_2}{z_1 - z_2}
 $$
 
-The sign of $R_2$ is opposite because, to an indicator mounted on the movable machine and rotating with it, the stationary machine appears displaced in the opposite direction. Since the face is not read, the method is less sensitive to axial movement, and the longer the distance between the two positions (a long spacer coupling), the more accurate the slope. A laser alignment tool works on the same principle, with a transmitter and receiver on the two shafts measuring the offset at two positions; it has no sag and does the calculation directly<Cite ids={['R-89']} />.
+The sign of $R_2$ is opposite because, to an indicator mounted on the movable machine and rotating with it, the stationary machine appears displaced in the opposite direction. Since the face is not read, the method is less sensitive to axial movement, and the longer the distance between the two positions (a long spacer coupling), the more accurate the slope. A laser alignment tool works on the same principle: a transmitter and receiver on the two shafts measure the offset at two positions, there is no bracket sag, and it does the calculation directly<Cite ids={['R-89']} />.
 
 <Callout type="try">
 
@@ -172,19 +172,19 @@ $$
 \Delta H \approx \alpha_{th}\, H\, \Delta T
 $$
 
-$\alpha_{th}$ is the thermal expansion coefficient (about $11.5 \times 10^{-6}$ /K for steel), $H$ is the height from the feet to the shaft centerline, and $\Delta T$ is the mean temperature rise of the supports and casing. The motor in Figure 6 rises $11.5 \times 10^{-6} \times 500 \times 40 = 0.23$ mm and the pump 0.10 mm. To be in a single line in operation, the motor must be set lower by that difference while stopped.
+$\alpha_{th}$ is the thermal expansion coefficient (about $11.5 \times 10^{-6}$ /K for steel), $H$ is the height from the feet to the shaft centerline, and $\Delta T$ is the mean temperature rise of the supports and casing. The motor in Figure 6 rises $11.5 \times 10^{-6} \times 500 \times 40 = 0.23$ mm and the pump 0.10 mm. To be in a single line in operation, the motor must be set lower by that difference while stopped. Writing the growth of the stationary machine (pump) as $\Delta H_S$ and that of the movable machine (motor) as $\Delta H_M$,
 
 $$
 \text{cold target} = \Delta H_S - \Delta H_M = 0.10 - 0.23 = -0.13 \text{ mm}
 $$
 
-Alignment is set to this **cold target** (in the equation of §4, target = −0.13). If the support temperatures differ front to back, there is also a slope target, and manufacturers often supply the cold target.
+Alignment is set to this **cold target** (in the equation of §4, target = −0.13). If the support temperatures differ front to back, there is also a slope target. The machine manufacturer often supplies the cold target.
 
-The calculated growth is an estimate. That is why, after running, you do a **hot alignment check** to confirm how much the shaft actually rose. If there are proximity probes near the bearings, the gap change from cold to running (P3-2; shaft centerline position, P4-3) is directly the amount the shaft moved. Optical measurement, or alignment values taken quickly right after shutdown, are also used. As below Figure 6, if the actual growth difference differs from the calculation (0.07 vs 0.13 mm), the motor is still 0.06 mm low in operation, so correct the cold target of the next alignment.
+The calculated growth is an estimate. That is why, after running, you do a **hot alignment check** to confirm how much the shaft actually rose. If there are proximity probes near the bearings, the gap change from cold to running (gap in P3-2, shaft centerline position in P4-3) is directly the amount the shaft moved. Optical measurement, or alignment values taken quickly right after shutdown, are also used. As below Figure 6, if the actual growth difference is 0.07 mm, unlike the calculated 0.13 mm, the motor is still 0.06 mm low in operation, so correct the cold target of the next alignment.
 
 <Callout type="field" title="Long shaft trains connected through many bearings">
 
-A shaft train of several shafts and bearings, such as a large ST or generator, is not finished by straight-line alignment between two machines. Bearing heights are set along the self-weight sag of each rotor (catenary), and bearing load sharing and hot movement are considered together (P8-3 §5, P8-5). The two-machine calculation on this page is one link of that.
+A shaft train of several shafts and bearings, such as a large ST or generator, is not finished by straight-line alignment between two machines. Bearing heights are set along the curve each rotor sags into under its own weight (catenary), and bearing load sharing and hot movement are considered together (P8-3 §5, P8-5). The two-machine calculation on this page corresponds to one coupling joint in that train.
 
 </Callout>
 
@@ -206,7 +206,7 @@ The tolerances for offset and angularity are **smaller at higher speeds**. This 
 
 <Callout type="warn" title="'We aligned it, so 2X should disappear'">
 
-2X or axial vibration is a clue to misalignment, not proof (P7-3, I-013). If it remains after alignment, check the condition of the coupling itself (wear, assembly), looseness, and hot misalignment (§6). You can only speak of an effect if you compare the vibration before and after alignment at the same load and temperature.
+2X or axial vibration is a clue to misalignment, not proof (P7-3). If it remains after alignment, check the condition of the coupling itself (wear, assembly), looseness, and hot misalignment (§6). You can only speak of an effect if you compare the vibration before and after alignment at the same load and temperature.
 
 </Callout>
 

@@ -4,7 +4,7 @@ title: P10-2 API Standards at a Glance
 description: Tell apart when API 670, 684 and 612/616/617 are used in a machine's life, then read the protection path, the link between AF and separation margin (prediction error), Level I/II stability analysis, the mechanical running test and conformity traceability.
 sectionId: P10-2
 source: p10-2.mdx
-sourceHash: 279410d6d8
+sourceHash: 41015ff6bb
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -81,7 +81,7 @@ For each channel, tie together the unit, direction and evaluated quantity; the A
 
 ## 3. Reading AF and Separation Margin
 
-If an analysis report says "AF 9.84, SM 16.7 %", what should you read? Let us look at the two numbers again with the example rotor of <a href={withBase('/en/p4-1/')}>P4-1</a>.
+If an analysis report says "AF 9.84, SM 16.7 %", what should you read? AF is the amplification factor (P4-1) and SM the separation margin (P1-7). Let us look at the two numbers again with the example rotor of <a href={withBase('/en/p4-1/')}>P4-1</a>, the one whose AF you calculated there (damping ratio 0.05, operating speed 3600 rpm).
 
 <Figure {...F.peak} />
 
@@ -110,8 +110,8 @@ Equipment standards ask for different separation margins depending on AF. A mode
 
 Figure 4 compares the operating-point response for the same layout (predicted critical speed 3000 rpm, operating speed 3600 rpm), assuming the actual critical speed turned out 10 % higher, at 3300 rpm.
 
-- At the sharp AF 10, the operating-point response goes from 3.16 times the eccentricity to 5.43 times, a factor of **1.72**.
-- At the flat AF 2.5, it goes from 2.21 times to 2.50 times, a factor of **1.13**.
+- At the sharp AF 10, the operating-point response (amplitude divided by the mass eccentricity e) goes from 3.16 to 5.43, a factor of **1.72**.
+- At the flat AF 2.5, it goes from 2.21 to 2.50, a factor of **1.13**.
 
 The same prediction error spreads far more at a sharp peak. So the larger the AF, the farther the operating point is placed, so that even with the error it stays on the foot of the peak.
 
@@ -138,7 +138,7 @@ Even far from a critical speed, a subsynchronous vibration could still grow. In 
 
 Figure 5 shows $\delta$ as $q$ is increased in the learning model of P4-4. At $q=0$, $\delta=0.315$, and when $q$ reaches 10 % of the stiffness $k$ ($q_0$), $\delta=0$.
 
-Since its 7th edition (2002), API 617 writes this thinking in two levels. <strong>Level I</strong> is a simplified analysis that puts in the aerodynamic cross-coupling produced by impellers and blades through estimating equations. It looks at the logarithmic decrement of the first forward mode and at how much larger the cross-coupling $q_0$ at which $\delta=0$ is than the expected value $q_a$. For the hypothetical $q_a$ in Figure 5 (4 % of k), $\delta=0.189$ and the margin is $q_0/q_a=2.5$. A machine that does not pass this simplified check, or that falls into the applicable category, goes to <strong>Level II</strong> — a detailed analysis that includes every element that changes cross-coupling and damping, such as seals and balance pistons. The acceptance criteria are checked in the edition that applies. <Cite ids={['R-90', 'R-85']} />
+Since its 7th edition (2002), API 617 writes this thinking in two levels. <strong>Level I</strong> is a simplified analysis that puts in the aerodynamic cross-coupling produced by impellers and blades through estimating equations. It looks at the logarithmic decrement of the first forward mode and at how much larger the cross-coupling $q_0$ at which $\delta=0$ is than the expected value $q_a$. For the hypothetical $q_a$ in Figure 5 (4 % of k), $\delta=0.189$ and the margin is $q_0/q_a=2.5$. A machine that does not pass this simplified check, or that meets the conditions under which the standard calls for a detailed analysis, goes to <strong>Level II</strong> — a detailed analysis that includes every element that changes cross-coupling and damping, such as seals and balance pistons. The acceptance criteria are checked in the edition that applies. <Cite ids={['R-90', 'R-85']} />
 
 <Callout type="term" title="Sensitivity study">
 

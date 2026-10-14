@@ -4,7 +4,7 @@ title: P8-1 Startup, shutdown, and crossing critical speeds
 description: Compare multi-mode 1X responses at different bearings on Bode and Polar plots, and read nodes, modal superposition, cold and hot states, slow roll compensation, and critical-speed crossings.
 sectionId: P8-1
 source: p8-1.mdx
-sourceHash: 50b52b9cd5
+sourceHash: 1f803e7ed4
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -18,7 +18,7 @@ import { withBase } from '../../lib/site';
 
 In a startup record, the 1X amplitude rises to a peak, falls, and then rises again at a higher speed. The neighboring bearing shows similar peaks, but the center sensor hardly sees the second one.
 
-It is the same shaft. Which sensor should you trust? Let us extend the single-mode response in P4-1 to several modes and compare records with sensor position and thermal state in mind.
+It is the same shaft. Which sensor should you trust? Let us extend the single-mode (one-degree-of-freedom) unbalance response from P4-1 to several modes and compare records with sensor position and thermal state in mind.
 
 <Callout type="idea" title="After reading this page">
 
@@ -26,7 +26,7 @@ It is the same shaft. Which sensor should you trust? Let us extend the single-mo
 2. Read bearing peaks, phase, and Polar plots together, and distinguish in-phase and anti-phase motion from modal nodes.
 3. Explain how modal superposition and heavy damping change peaks and phase transitions.
 4. Read differences between cold run-up and hot coastdown, and the limits of slow roll compensation.
-5. Distinguish AF and SM from protection-system records, and choose what to check during a critical-speed crossing.
+5. Distinguish AF (amplification factor) and SM (separation margin) from protection-system records, and choose what to check during a critical-speed crossing.
 
 </Callout>
 
@@ -34,7 +34,7 @@ It is the same shaft. Which sensor should you trust? Let us extend the single-mo
 
 ## 1. Two peaks: a shaft system has several modes too
 
-In P1-5, a mode was a particular shape in which several locations move together. In a shaft system, the supports and shaft move together, and each mode has a different natural frequency. Synchronous resonance occurs where the 1X excitation frequency meets that mode.
+In P1-5, a mode was a particular shape in which several locations move together. In a shaft system, the supports and shaft move together, and each mode has a different natural frequency. Synchronous resonance occurs in the speed range where the 1X excitation frequency meets a mode's natural frequency.
 
 <Figure {...F.modeShapes} />
 
@@ -64,9 +64,9 @@ What does startup look like for a shaft with two modes? The example in Figure 2 
 
 <Figure {...F.twoPeaks} />
 
-In Figure 2, the sampled peaks at bearing 1 are 1500 rpm·83.46 µm pp and 3020 rpm·78.73 µm pp. A natural speed and a measured peak do not necessarily coincide. The peak shift under unbalance excitation in P4-1 is combined with the vector of the other mode.
+In Figure 2, the sampled peaks at bearing 1 are 1500 rpm·83.46 µm pp and 3020 rpm·78.73 µm pp. A natural speed and a measured peak do not necessarily coincide. As P4-1 showed, an unbalance response peaks slightly above the natural speed, and the vector of the other mode is added on top of that.
 
-Multiply each modal response by the shape value at the sensor location, then add the results. First consider the cold case without bow.
+Multiply each modal response by the shape value at the sensor location, then add the results. First consider the cold case, where the shaft has no bow (a bent shaft, P7-2 §3).
 
 $$
 X_j(N)=\sum_{m=1}^{2}\Phi_{jm}
@@ -84,7 +84,7 @@ Adding the gray mode-1 and purple mode-2 amplitudes arithmetically in Figure 3 d
 
 <Callout type="example" title="90° for one modal contribution differs from 90° for the whole sensor response">
 
-Mode 2 alone is 75 µm pp·90° at 3000 rpm. At bearing 1, adding the tail of mode 1 gives 77.21 µm pp·99.88°. At bearing 2, the sign of mode 2 reverses, giving 75.12 µm pp·259.84°.
+Mode 2 alone is 75 µm pp·90° at 3000 rpm. At bearing 1, adding the tail of mode 1 (the mode-1 response that remains at speeds above its resonance) gives 77.21 µm pp·99.88°. At bearing 2, the sign of mode 2 reverses, giving 75.12 µm pp·259.84°.
 
 </Callout>
 
@@ -117,15 +117,15 @@ The phase difference between the two bearings at the same speed is about 2.74° 
 <Callout type="try">
 
 1. Leave the lab below at its defaults (cold, both bearings, noise 0), and compare the amplitude peaks with the 1500 and 3000 rpm regions on the Polar plots.
-2. Change 'Sensors shown' to 'Center (mode-2 node)'. How do the peak in the second window and the response near 3000 rpm change?
+2. Change 'Sensors shown' to 'Center (mode-2 node)'. How do the peak in the mode-2 window (the 0.7~1.4 $N_2$ speed range where the lab searches for the mode-2 peak) and the response near 3000 rpm change?
 3. Turn on 'Overlay isolated modal contributions'. Check that the center's mode-2 contribution is zero.
-4. Return to 'Both bearings' and change the mode-2 damping ratio from 0.04→0.20. Read the contribution peak and resultant phase together.
+4. Return to 'Both bearings' and change the mode-2 damping ratio from 0.04 to 0.20. Read the contribution peak and resultant phase together.
 
 </Callout>
 
 <MultiModeBodeLab client:visible lang="en" />
 
-In step 2, the center has no local peak in the second window, so the readout is —. In step 3, the mode-2 amplitude is exactly 0. In step 4, the isolated mode-2 amplitude at 3000 rpm falls from 75→15 µm pp, but its phase transition remains, with a gentler slope.
+In step 2, the center has no local peak in the mode-2 window, so the readout is —. In step 3, the mode-2 amplitude is exactly 0. In step 4, the isolated mode-2 amplitude at 3000 rpm falls from 75 to 15 µm pp, but its phase transition remains, with a gentler slope.
 
 ---
 
@@ -137,7 +137,7 @@ Does a peak reduced by more damping mean the same thing as two peaks merged by m
 
 The upper plot in Figure 6 is the isolated mode-2 response: greater damping makes the peak lower and wider. The lower plot is the combined response with the modes closer together, strengthening vector superposition. Nearby modes affect each other's peak positions, half-power widths, and phase changes.
 
-The $\mathrm{AF}=N_c/(N_2-N_1)$ in P4-1 is easier to interpret with an isolated peak and half-power crossings on both sides. For learning, the lab displays **AF of the isolated unbalance modal contribution**. Do not read it as a damping estimate from a measured combined curve containing bow, runout, and noise.
+The $\mathrm{AF}=N_c/(N_2-N_1)$ in P4-1 is easier to interpret with an isolated peak and half-power crossings on both sides. In that formula, $N_c$ is the peak speed and $N_1$ and $N_2$ are the half-power crossing speeds; they are not the mode-numbered $N_m$ used on this page. For learning, the lab displays **AF of the isolated unbalance modal contribution**. Do not read it as a damping estimate from a measured combined curve containing bow, runout, and noise.
 
 <Callout type="example" title="Distinguish the AF approximation from separation margin">
 
@@ -159,7 +159,7 @@ If startup and shutdown amplitudes differ at the same speed, can we immediately 
 
 Figure 7 represents hot shaft bending, or <strong>thermal bow</strong>, by adding an equivalent initial displacement $b_1=2$ µm Peak·60° to mode 1. This bow simplifies bending fixed in rotating coordinates; it is not the result of a heat-transfer calculation. P8-2 continues with how thermal bow develops and changes.
 
-The effect passes through the same denominator as unbalance, but its numerator does not decrease with $r_m^2$.
+The bow term passes through the same denominator as the unbalance term, but its numerator is not multiplied by $r_m^2$, so it does not shrink at low speed.
 
 $$
 X_j(N)=\sum_{m=1}^{2}\Phi_{jm}
@@ -184,7 +184,7 @@ As in Figure 8, constant runout is also added to the measured vector. Slow roll 
 
 <MultiModeBodeLab initialHot={true} client:visible lang="en" />
 
-In step 1, the hot response at 200 rpm is about 4.179 µm pp. In step 2, subtracting that vector makes 200 rpm zero, but changes the hot response at 1500 rpm from 103.7→100.8 µm pp, still different from the cold 83.46 µm pp. **Constant-vector compensation cannot remove the entire speed-dependent bow response.**
+In step 1, the hot response at 200 rpm is about 4.179 µm pp. In step 2, subtracting that vector makes 200 rpm zero, but changes the hot response at 1500 rpm only from 103.7 to 100.8 µm pp, still different from the cold 83.46 µm pp. **Constant-vector compensation cannot remove the entire speed-dependent bow response.**
 
 <Callout type="warn" title="'Every run-up/coastdown difference is thermal bow?'">
 
@@ -247,9 +247,9 @@ No. The mode-2 contributions in this model have exactly opposite signs, but mode
 </details>
 
 <details>
-<summary><strong>Q3. If the mode-2 damping ratio increases from 0.04→0.20, what is the isolated contribution's amplitude at N₂?</strong></summary>
+<summary><strong>Q3. If the mode-2 damping ratio increases from 0.04 to 0.20, what is the isolated contribution's amplitude at N₂?</strong></summary>
 
-Since $2e_2/(2\zeta_2)=e_2/\zeta_2$, it is $3/0.04=75$→$3/0.20=15$ µm pp. The combined sensor response may differ because it includes other modes.
+Since $2e_2/(2\zeta_2)=e_2/\zeta_2$, it falls from $3/0.04=75$ µm pp to $3/0.20=15$ µm pp. The combined sensor response may differ because it includes other modes.
 </details>
 
 <details>
