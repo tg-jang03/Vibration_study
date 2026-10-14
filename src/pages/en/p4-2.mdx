@@ -4,7 +4,7 @@ title: 'P4-2 The Jeffcott rotor: the basics of rotor response'
 description: 'Starting from spin and whirl and from rigid-body and bending modes, we calculate the circular and elliptical orbits of the Jeffcott rotor, their forward and reverse components, and the high-speed rotation about the center of mass (self-centering).'
 sectionId: P4-2
 source: p4-2.mdx
-sourceHash: 2dff224f04
+sourceHash: 6bd13bdbec
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -34,11 +34,11 @@ In P4-1 we looked at the amplitude and phase in one direction at each speed. Thi
 
 ## 1. Spin and whirl: they follow different points
 
-In P1-6, spin was the rotation of the shaft itself. If you mark a point on the face of the disk and follow it as it goes around the shaft center, you are watching <strong>spin</strong>. This time, follow the geometric center C of the shaft instead.
+In P1-6 §5, the continuous turning of the shaft itself was called <strong>spin</strong>. If you mark a point on the face of the disk and follow it as it goes around the shaft center, you are watching spin. This time, follow the geometric center C of the shaft instead.
 
 <Figure {...F.spinWhirl} />
 
-In Figure 1, the motion of C around the fixed reference point O is <strong>whirl</strong>. G is the center of mass, and the distance e from C to G is the unbalance eccentricity. The spin direction of the disk and the whirl direction of C can be stated separately.
+In Figure 1, the motion of C around the fixed reference point O is <strong>whirl</strong>. G is the center of mass, and the distance e from C to G is the unbalance eccentricity. The spin direction of the disk and the whirl direction of C may be the same or opposite, so they have to be stated separately.
 
 <Callout type="term" title="Orbit, and forward and reverse whirl">
 
@@ -62,9 +62,9 @@ The modes in P1-5 were shapes in which several locations move together. On a sha
 
 <Figure {...F.modeShapes} />
 
-In Figure 2, <strong>rigid-body translation</strong> is the shape in which the whole straight shaft shifts in the same direction (also called the cylindrical mode), and <strong>rigid-body tilt</strong> is the shape in which the straight shaft tilts (the conical mode). In these the deformation goes mainly into the support system. In a <strong>bending mode</strong>, the shaft line itself bends into a curve. The difference from rigid-body tilt is not that the displacement differs from place to place, but that the displacement does not change linearly with position.
+In Figure 2, <strong>rigid-body translation</strong> is the shape in which the whole straight shaft shifts in the same direction (also called the cylindrical mode), and <strong>rigid-body tilt</strong> is the shape in which the straight shaft tilts (the conical mode). In both rigid-body modes the shaft stays straight, and the deformation goes mainly into the support system (bearings and pedestals). In a <strong>bending mode</strong>, the shaft line itself bends into a curve. In rigid-body tilt the displacement also differs from place to place, but it varies along a straight line; what sets a bending mode apart is that the displacement does not change linearly with position.
 
-Even if the shaft is stiff, a mode close to a rigid-body mode can appear when the bearings and pedestals are flexible. Conversely, a mode in which the middle of the shaft bends can appear even when the supports hardly move. The model we use from here on is a simple example of the first bending mode, with the disk in the middle moving; the flexibility of the bearings and pedestals is lumped into the equivalent stiffness below.
+Even if the shaft is stiff, a mode close to a rigid-body mode can appear when the bearings and pedestals are flexible. Conversely, a mode in which the middle of the shaft bends can appear even when the supports hardly move. The model we use from here on is a simple example of the first bending mode, with the disk in the middle moving; the flexibility of the bearings and pedestals is lumped into the equivalent stiffness of §3.
 
 <Callout type="field" title="The path at one cross-section does not fix the whole mode">
 
@@ -76,11 +76,11 @@ Even if similar elliptical orbits appear at the same cross-section, other locati
 
 ## 3. What do we keep: one disk and an elastic shaft?
 
-Before calculating the whole shaft, let's keep only one mass disk in the middle and the elasticity of the shaft. This <strong>Jeffcott rotor</strong> concentrates the mass m in the disk and neglects the mass of the shaft. The horizontal and vertical equivalent stiffnesses kx and ky (directions fixed in space), which combine the bending stiffness of the shaft with the stiffness of the bearings and pedestals, and the damping c in fixed coordinates resist the lateral vibration of the disk. The shaft itself is taken to be axisymmetric. If the shaft itself is asymmetric, as with a keyed shaft or a two-pole generator rotor, the direction of the stiffness turns with the shaft, and that is a different problem from this one (2X excitation).
+Before calculating the whole shaft, let's keep only one mass disk in the middle and the elasticity of the shaft. This <strong>Jeffcott rotor</strong> concentrates the mass m in the disk and neglects the mass of the shaft. The horizontal and vertical equivalent stiffnesses kx and ky (directions fixed in space), which combine the bending stiffness of the shaft with the stiffness of the bearings and pedestals, and the damping c in fixed coordinates resist the lateral vibration of the disk (vibration at right angles to the shaft axis). The shaft itself is taken to be axisymmetric. If the shaft itself is asymmetric, as with a keyed shaft or a two-pole generator rotor, the direction of the stiffness turns with the shaft, and that is a different problem from this one (2X excitation).
 
 <Figure {...F.model} />
 
-The x and y in Figure 3 are displacements of the shaft center measured from the static equilibrium position. The static deflection due to gravity is included in this reference position, and we calculate only the two directional projections of the rotating unbalance force. Disk tilt, the gyroscopic moment due to rotation and the cross-coupling of the oil film are neglected here.
+The x and y in Figure 3 are displacements of the shaft center measured from the static equilibrium position. The static deflection due to gravity is already included in this reference position, and we calculate only the two directional projections of the rotating unbalance force. Disk tilt and the gyroscopic moment that comes with it (P4-4), and oil-film cross-coupling, a force that pushes in a direction different from the displacement (P4-3, P4-4), are neglected here.
 
 If the force turns counterclockwise, cos goes into the x direction and sin into the y direction. The damping coefficient c is taken to be the same in both directions.
 
@@ -113,7 +113,7 @@ j is the imaginary unit and Z is the steady-state complex amplitude. Splitting b
 
 <Figure {...F.isotropic} />
 
-In Figure 4, x and y have equal amplitudes and a phase difference of 90°. So $x^2+y^2=\lvert Z\rvert^2$ stays constant, and the orbit is a circle. Writing $r=\Omega/\omega_n$, the radius of the circle is the Peak amplitude of the P4-1 response formula. The P4-1 example used e=5 µm and pp, while here we use e=10 µm and Peak, so do not compare the numbers directly.
+In Figure 4, x and y have equal amplitudes and a phase difference of 90°. So $x^2+y^2=\lvert Z\rvert^2$ stays constant, and the orbit is a circle. Writing $r=\Omega/\omega_n$, the radius of the circle equals the Peak amplitude (from 0 to one extreme, P2-1) given by the P4-1 response formula. The P4-1 example used an eccentricity of 5 µm with amplitudes in pp (peak-to-peak), while here we use e = 10 µm with Peak values, so do not compare the numbers of the two pages directly.
 
 $$
 \frac{\lvert Z\rvert}{e}=\frac{r^2}{\sqrt{(1-r^2)^2+(2\zeta r)^2}}
@@ -133,13 +133,13 @@ If the horizontal and vertical stiffnesses differ, the supports are <strong>anis
 
 <Figure {...F.anisotropic} />
 
-The natural speeds in Figure 5 are 3000 rpm and about 3421 rpm. These two values are undamped critical speeds; the amplitude peaks of the damped unbalance response occur slightly above each of them (P4-1 §2). At 3200 rpm, X is about 65.3 µm Peak and Y about 58.6 µm Peak.
+In Figure 5 the natural speeds of the two directions are 3000 rpm for x and about 3421 rpm for y. These two values are undamped critical speeds; the amplitude peaks of the damped unbalance response occur slightly above each of them (P4-1 §2). At 3200 rpm, X is about 65.3 µm Peak and Y about 58.6 µm Peak.
 
-This speed is past the x-direction critical speed but not yet at the y-direction critical speed. Without damping, the x response would be opposite to its own excitation force and the y response in the same direction as its force, so the orbit would turn against the spin. With damping the phases change gradually, so the range in which the whirl is reverse can become narrower or disappear.
+3200 rpm is past the x-direction critical speed but not yet at the y-direction critical speed. Without damping, the x response would be opposite to its own excitation force (phase 180°) and the y response in the same direction as its force (phase 0°), so the orbit would turn against the spin. With damping the phases change gradually, so the range in which the whirl is reverse can become narrower or disappear.
 
 <Callout type="warn" title="The whole range between the two natural speeds is not always reverse">
 
-If φX and φY are the cos-referenced lags from the Keyphasor, the signed area swept in one cycle is πAXAY sin(φY−φX). A counterclockwise area is positive. In the example above, damping ratio 0.05 at 3200 rpm gives reverse whirl, but raising the damping ratio to 0.2 makes it forward. Do not decide the direction just because you are between the two peaks; check the phase relationship of the two channels or the forward and reverse components of the next section.
+If AX and AY are the amplitudes of the two channels and φX and φY their cos-referenced lags from the Keyphasor, the signed area the orbit sweeps in one cycle is πAXAY sin(φY−φX). It is positive for a counterclockwise orbit and negative for a clockwise one. In the example above, damping ratio 0.05 at 3200 rpm gives reverse whirl, but raising the damping ratio to 0.2 makes it forward. Do not decide the direction just because you are between the two peaks; check the phase relationship of the two channels or the forward and reverse components of the next section.
 
 </Callout>
 
@@ -156,7 +156,7 @@ $$
 \tilde Y=\frac{-jme\Omega^2}{k_y-m\Omega^2+jc\Omega}
 $$
 
-Like the two arrows turning in opposite directions in P2-2 §3, a real signal can be written as the sum of two complex rotating components that are conjugates of each other. We apply this decomposition to both directions.
+In P2-2 §3 a real sinusoid cos was written as the sum of two arrows of length 1/2 turning in opposite directions. In the same way, a real signal can be written as the sum of two complex rotating components that are conjugates of each other, and we apply this decomposition to both the x and y directions.
 
 The −j in the numerator of Y is there because $\sin\Omega t=\operatorname{Re}(-je^{j\Omega t})$. Expanding $z=x+jy$ then gives the following two components.
 
@@ -195,13 +195,13 @@ This lab solves for X and Y from the equations and then calculates the forward a
 
 ## 7. Where do things settle at high speed? Telling the shaft center from the center of mass
 
-In P1-7 we said that far above the critical speed, the amplitude approaches the eccentricity. Does that mean the center of mass G of the disk also swings by the same amount?
+In P1-7 §6 we said that far above the critical speed, the amplitude approaches the eccentricity. Does that mean the center of mass G of the disk also swings by the same amount?
 
 <Figure {...F.selfAlignment} />
 
-For the isotropic rotor in Figure 7, the complex displacement of the shaft center C is $z_C=Ze^{j\Omega t}$, and that of the center of mass is $z_G=(Z+e)e^{j\Omega t}$. At high speed $Z\to-e$, so C goes around on a radius of e while G approaches the static equilibrium point O. Here O is a fixed reference point; keep it apart from the O used for the geometric center in P1-7. This is called the tendency toward <strong>self-centering</strong> (rotation about the center of mass).
+For the isotropic rotor in Figure 7, the complex displacement of the shaft center C is $z_C=Ze^{j\Omega t}$, and that of the center of mass is $z_G=(Z+e)e^{j\Omega t}$. At high speed $Z\to-e$, so C goes around on a radius of e while G approaches the static equilibrium point O. Here O is the fixed reference point of Figure 1 (the static equilibrium position). P1-7 used the same letter O for the geometric center of the shaft, so do not mix the two up. This is the tendency toward <strong>self-centering</strong> (rotation about the center of mass) seen in P1-7 §6.
 
-At a speed ratio of 5 (15000 rpm), C is at 10.41 µm and G at about 0.466 µm. The figure is the steady-state solution of a linear model, not a calculation of the transient response during start-up or of real contact or bearing nonlinearity.
+At a speed ratio of 5 (15000 rpm), C goes around 10.41 µm from O and G about 0.466 µm from O. The figure is the steady-state solution of a linear model, not a calculation of the transient response during start-up or of real contact or bearing nonlinearity.
 
 <Callout type="term" title="Are rigid-body modes and rigid rotors the same classification?">
 

@@ -4,7 +4,7 @@ title: 'P1-9 From response back to cause: diagnosis is an inverse problem'
 description: 'The sum of several responses recorded by a sensor, forward and inverse problems, different causes of the same 1X amplitude, the five pieces of evidence, the cause-synthesis lab, and a map from Part 1 to measurements and plots'
 sectionId: P1-9
 source: p1-9.mdx
-sourceHash: b243c6239f
+sourceHash: e5888c68f1
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -33,15 +33,15 @@ In <a href={withBase('/en/p1-8/')}>P1-8</a> we looked at the machine elements an
 
 ## 1. The sensor does not stamp a cause label on the signal
 
-Consider a pump with 12 blades running at 3000 rpm. The rotation frequency is 50 Hz, the component that appears twice per turn is 100 Hz, and blade pass is 600 Hz. These are the counting rules from the previous page.
+Consider a pump with 12 blades running at 3000 rpm. The rotation frequency is 50 Hz, the component that appears twice per turn is 100 Hz, and blade pass is 600 Hz. This is the counting rule of P1-8 (k times per turn means k × 1X).
 
 But the sensor does not record these three separately. It records the shaking that happened at that position, added together.
 
 <Figure {...F.mixedResponse} />
 
-The top three lines in Figure 1 are the **responses** of each cause, not the forces themselves. The same force produces a response of a different size depending on mass, damping, stiffness and the sensor position (P1-4, P1-5). The bottom line is the sum of the three values above it at the same instant.
+The top three waveforms in Figure 1 are the **responses** of each cause, not the forces themselves. The same force produces a response of a different size depending on mass, damping, stiffness and the sensor position (P1-4, P1-5). The bottom line is the sum of the three values above it at the same instant.
 
-In a linear system, responses can be added like this (superposition in P1-5). The notation for combining sinusoidal responses and noise is:
+In a linear system, such as the linear model of P1-2 where the restoring force is proportional to displacement, responses can be added like this (superposition in P1-5). A signal made of several sinusoidal responses plus noise is written as:
 
 $$
 x(t)=\sum_i A_i\cos(2\pi f_i t+\phi_i)+n(t)
@@ -51,7 +51,7 @@ $$
 - $A_i$, $f_i$, $\phi_i$: the amplitude [m], frequency [Hz] and starting phase [rad] of that component
 - $n(t)$: noise. Here, irregular variation that we do not model separately
 
-A response whose size shrinks with time, like a ring-down, cannot be written as a single sinusoid with fixed $A_i$. Even then, if the system is linear, the principle is the same: **you add the instantaneous values of the responses**.
+A response whose size shrinks with time, like the ringing after an impact (P1-8 §4), cannot be written as a single sinusoid with fixed $A_i$. Even then, if the system is linear, the principle is the same: **you add the instantaneous values of the responses**.
 
 <Callout type="term" title="Signal / Component">
 
@@ -86,7 +86,7 @@ A=\frac{F_0}{k}H(r),\qquad
 H(r)=\frac{1}{\sqrt{(1-r^2)^2+(2\zeta r)^2}},\qquad r=\frac{f}{f_n}
 $$
 
-Here $F_0$ is the force amplitude [N], $k$ is the stiffness [N/m], and $H$ is the amplitude ratio relative to the static deflection. A large force × small amplification and a small force × large amplification can produce the same $A$.
+Here $F_0$ is the force amplitude [N], $k$ is the stiffness [N/m], and $H$ is the ratio of the amplitude to the deflection the same force would cause if applied steadily (the static deflection $F_0/k$). A large force with small amplification and a small force with large amplification can produce the same $A$.
 
 <Figure {...F.sameAmplitude} />
 
@@ -97,7 +97,7 @@ This example takes stiffness $k$ = 10⁶ N/m and damping ratio $\zeta$ = 0.05, a
 - $f_n$ = 100 Hz: $r$ = 0.5, $H$ = 1.330 → **30.1 N** produces 40 µm.
 - $f_n$ = 50 Hz: $r$ = 1, $H$ = 10 → **4 N** alone gives 40 µm.
 
-These are two systems with the same stiffness and different mass. The measured frequency and amplitude alone cannot determine the size of the force. In the figure, the two systems were given forces with the same starting phase, so the response phases differ.
+These are two systems with the same stiffness and different mass. The measured frequency and amplitude alone cannot determine the size of the force. In the figure both systems receive a force with the same starting phase, yet their response phases differ.
 
 </Callout>
 
@@ -105,7 +105,7 @@ The same holds for the unbalance response (P1-7). Whether 1X is large because th
 
 <Callout type="warn" title="Resonance is not a separate periodic force">
 
-Resonance is the property that the machine **responds strongly to the frequency of the input force**. For example, if a 1X force is close to the natural frequency, the 1X response is amplified. In another case, the free ringing after an impact appears near the natural frequency of the structure. Do not count the two as independent causes of the same kind.
+Resonance is the phenomenon in which the machine **responds strongly when the force frequency is close to a natural frequency**. For example, if a 1X force is close to the natural frequency, the 1X response is amplified. The free ringing after an impact also appears near the natural frequency of the structure. In either case, do not place resonance or ringing alongside forces such as unbalance or impacts and count it as one more independent cause.
 
 </Callout>
 
@@ -118,12 +118,12 @@ Instead of drawing a conclusion from one feature, check whether a candidate also
 | Evidence | Question to ask | Condition to keep when comparing |
 |---|---|---|
 | Frequency | How many Hz, how many X? Does it match the position of a machine element? | Record the actual rotation speed with it |
-| Amplitude | How large is it, and how has it changed from before? | Keep the measured quantity, unit, size notation and position the same |
+| Amplitude | How large is it, and how has it changed from before? | Keep the measured quantity, unit, size notation (peak, RMS, etc.) and position the same |
 | Phase | How far apart is the rhythm of the two signals? | Compare at the same frequency and against the same reference |
 | Direction | Which is largest: horizontal, vertical or axial? | Record the position and the sensor direction together |
 | Operating-condition dependence | How does it change with speed, load, temperature and time? | Record the changed condition and, where possible, compare one change at a time |
 
-Phase is the starting timing we saw in P1-2. You can compare it between two sensors, or against a rotation reference signal. In P3-3 later, you will learn how to set the reference for one turn of the shaft.
+Phase is the starting timing we saw in P1-2. You can compare it between two sensors, or against a rotation reference signal (a mark that arrives once every turn of the shaft). How to set up this reference is covered in P3-3.
 
 <Figure {...F.phaseChanges} />
 
@@ -131,17 +131,17 @@ Figure 4 shows why phase must not be left out. Even when the component amplitude
 
 <Callout type="field" title="Write down direction and position together">
 
-Axial is along the length of the shaft; horizontal and vertical are across it. Like the mode shape in P1-5, the response differs from position to position even on one machine. A small shake at one point does not mean the whole machine shakes little. When positions differ, a direction comparison also mixes in that difference.
+Axial is along the length of the shaft; horizontal and vertical are across it. Like the mode shape in P1-5 (the pattern in which the size and direction of shaking differ from position to position during vibration), the response differs from position to position even on one machine. A small shake at one point does not mean the whole machine shakes little. If you compare directions using values measured at different positions, the difference in position gets mixed in too.
 
 </Callout>
 
 <Figure {...F.speedEvidence} />
 
-The 120 Hz component at 3600 rpm may be 2X, or it may be the electromagnetic force $2f_L$ of the 60 Hz power supply. As in Figure 5, looking at how the frequency changes with speed lets you compare the candidates. However, in an operation that also changes the supply frequency, the electrical component moves as well.
+The 120 Hz component at 3600 rpm may be 2X, or it may be the electromagnetic force component $2f_L$ created by the 60 Hz power supply (P1-8 §6). As in Figure 5, looking at how the frequency changes with speed lets you compare the candidates. However, when the supply frequency changes along with the speed, as with an inverter (a device that sets motor speed by changing the supply frequency), the electrical component moves as well.
 
 <Callout type="warn" title="Changing operating conditions is observation, not an arbitrary test instruction">
 
-Use data recorded for speed and load changes within permitted operating procedures. Do not disable protection settings for diagnosis, or run the machine near resonance on your own. And collecting five pieces of evidence does not automatically fix the right answer.
+Use data recorded for speed and load changes within permitted operating procedures. Do not disable protection settings (the levels at which an alarm sounds or the machine is stopped when vibration grows too large) for diagnosis, or run the machine near resonance on your own. And collecting five pieces of evidence does not automatically fix the right answer.
 
 </Callout>
 
@@ -157,7 +157,7 @@ A plot with frequency on the horizontal axis and component size on the vertical 
 
 <Callout type="idea" title="Splitting it up is a step that narrows the candidates">
 
-If the 600 Hz component matches the information of 12 blades at 3000 rpm, you have grounds to examine the blade-pass response. Even so, telling normal pressure pulsation from an abnormal state needs additional evidence such as earlier amplitude and load. **A spectrum is a table of components, not a list of fault names.**
+If the 600 Hz component matches the blade-pass frequency counted for 12 blades at 3000 rpm, you have grounds to examine it as the blade-pass response. Even so, telling normal pressure pulsation from an abnormal state needs additional evidence such as earlier amplitude and load. **A spectrum is a table of components, not a list of fault names.**
 
 </Callout>
 
@@ -176,11 +176,11 @@ As in Figure 7, when the ringing after an impact repeats, even a single response
 
 <SourceSynthesisLab client:visible lang="en" />
 
-In the initial setting of step 2, there are 50, 100 and 600 Hz components, and the central bars are 40, 20 and 10 µm. The lab also shows small bars around the centers that arise during the calculation. Do not count these as separate causes either (covered in P2-5). In step 3 the 600 Hz component is removed, so the fast ripples disappear. In step 4 the three rotation-related lines move to **60, 120 and 720 Hz**, but the 85 Hz of the structural ring stays where it is.
+In the initial setting of step 2, there are 50, 100 and 600 Hz components, and the central bars are 40, 20 and 10 µm. The lab also shows small bars beside each central bar that arise during the calculation; these are not separate causes (leakage, covered in P2-5). In step 3 the 600 Hz component is removed, so the fast ripples disappear. In step 4 the three rotation-related lines move to **60, 120 and 720 Hz**, but the 85 Hz of the structural ring stays where it is.
 
 <Callout type="warn" title="The amplitudes in this lab are values set directly for the responses">
 
-Even if you change the rpm, the amplitude settings stay fixed. This is not a lab that predicts a real run-up where resonance makes the response grow (that is P1-7). The structural ring is also just an example of 85 Hz, a 25 ms decay time constant and an impact every 100 ms; it does not reproduce a specific machine fault.
+Even if you change the rpm, the amplitudes stay at the values set with the sliders. This is not a lab that predicts a real run-up where resonance makes the response grow (that kind of run-up was the unbalance run-up lab of P1-7). The structural ring is also just an example: an impact every 100 ms rings at 85 Hz and shrinks to about 37 % (1/e) every 25 ms. It does not reproduce a specific machine fault.
 
 </Callout>
 
@@ -249,7 +249,7 @@ The **phase** between the components may have changed. The values at the instant
 <details>
 <summary><strong>Q5. If a spectrum has five bars, are there five causes?</strong></summary>
 
-No. Even one repeated-impact response creates several frequency components, and noise spreads widely. Different causes at the same frequency overlap at one position. Small bars around the center can also arise during the calculation.
+No. Even one repeated-impact response creates several frequency components, and noise spreads widely. Different causes at the same frequency overlap at one position. Small bars beside each bar can also arise during the calculation.
 </details>
 
 <details>

@@ -4,12 +4,13 @@ title: 'P4-4 Stability: Cross-coupling, Whirl/Whip, Log decrement'
 description: 'The energy cross-coupling feeds into whirl, complex eigenvalues and log decrement, oil whirl vs. oil whip, and how a Campbell diagram differs from a stability test.'
 sectionId: P4-4
 source: p4-4.mdx
-sourceHash: b6ff6da7e0
+sourceHash: 354ed75f1c
 ---
 
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import References from '../../components/content/References.astro';
+import Cite from '../../components/content/Cite.astro';
 import StabilityLab from '../../components/labs/StabilityLab';
 import * as F from '../../figures/p4-4';
 import { withBase } from '../../lib/site';
@@ -18,7 +19,7 @@ import { withBase } from '../../lib/site';
 
 You keep the speed and load constant, yet a small shaft vibration keeps growing. You learned that unbalance force changes with speed, so how do you explain vibration that grows at a constant speed?
 
-In P4-3 we found the mean shaft position. This time we ask what happens when the shaft is displaced slightly from that equilibrium: does it come back, or move further away? Even when the mean point is well defined, the vibration around it can grow.
+In P4-3 we found the mean position (the equilibrium point) of the shaft floating on the oil film. This time we ask what happens when the shaft is displaced slightly from that equilibrium: does it come back, or move further away? Even when the mean point is well defined, the vibration around it can grow.
 
 <Callout type="idea" title="After reading this page">
 
@@ -34,9 +35,9 @@ In P4-3 we found the mean shaft position. This time we ask what happens when the
 
 ## 1. A cross-direction force can push the whirl
 
-In P4-3, $k_{xy}$ was the coefficient for the effect of Y displacement on X force. Of the eight oil-film coefficients, we set the direct stiffness k and direct damping c equal in both directions, and simplify the cross-coupled stiffness to $k_{xy}=q$, $k_{yx}=-q$. Here q is a positive magnitude.
+In P4-3 §7, $k_{xy}$ was the cross-coupled stiffness coefficient for the effect of Y displacement on X force. Of those eight oil-film coefficients, we set the direct stiffness k and direct damping c equal in both directions, leave out cross-coupled damping, and simplify the cross-coupled stiffness to $k_{xy}=q$, $k_{yx}=-q$. Here q is a positive magnitude.
 
-This is not the coefficient relation of every bearing. It is an <strong>antisymmetric cross-coupled stiffness</strong> model, built to look at one case where energy flows from rotation into vibration. Take +X to the right, +Y up, and shaft spin counterclockwise. The origin is the mean equilibrium position.
+Real bearing coefficients do not all follow this relation. It is an <strong>antisymmetric cross-coupled stiffness</strong> model, built to look at one case where energy flows from rotation into vibration. Take +X to the right, +Y up, and shaft spin counterclockwise. The origin is the mean equilibrium position.
 
 $$
 F_{x,\rm cross}=-qy,\qquad F_{y,\rm cross}=+qx
@@ -65,7 +66,7 @@ In <strong>self-excited vibration</strong>, the motion is tied to a force that s
 
 ## 2. Does a small disturbance come back? Free response and eigenvalues
 
-Combining the two-direction equations of motion with the complex displacement $z=x+jy$ gives the following. j is the imaginary unit.
+The two-direction equations of motion, and the equation obtained by combining them with the complex displacement $z=x+jy$ as in P4-2 §4, are as follows. j is the imaginary unit.
 
 $$
 m\ddot x+c\dot x+kx+qy=0,\qquad
@@ -76,7 +77,7 @@ $$
 m\ddot z+c\dot z+(k-jq)z=0
 $$
 
-As with the damped free vibration of P1-3, we look at the response over time. If one mode's response has the form $z(t)=A_0e^{\lambda t}$, the <strong>complex eigenvalue</strong> λ can be split as follows.
+As with the damped free vibration of P1-3, we look at the response over time when the shaft is released with no external force. If one mode's response has the form $z(t)=A_0e^{\lambda t}$, the <strong>complex eigenvalue</strong> λ can be split as follows.
 
 $$
 \lambda=\sigma+j\omega_d,\qquad
@@ -93,7 +94,7 @@ $$
 \lambda_{f,b}=\frac{-c\pm\sqrt{c^2-4mk+j4mq}}{2m}
 $$
 
-If you take the real and imaginary parts of the principal square root as positive, the + root λf is the forward mode and the − root λb is the backward mode. The two roots have different real parts, so <strong>these two roots are not a conjugate pair of each other</strong>.
+Take the square root whose real and imaginary parts are both positive (the principal square root). Then the + root λf is the forward mode and the − root λb is the backward mode. The two roots have different real parts, so <strong>these two roots are not a conjugate pair of each other</strong>.
 
 <Figure {...F.eigenvalues} />
 
@@ -101,7 +102,7 @@ The characteristic equation of the real x–y equations of motion, (mλ²+cλ+k)
 
 <Callout type="warn" title="Keep the threshold and the real amplitude apart">
 
-σ = 0 is the boundary where the linear model has zero damping margin. Beyond it, the linear response keeps growing, but contact, fluid nonlinearity and amplitude saturation in a real machine are not in this model. Do not read the amplitude where the graph ends as the real final amplitude.
+σ = 0 is the boundary where the linear model has zero damping margin. Once an eigenvalue crosses to the right side of Figure 3 (σ > 0), the linear response keeps growing, but contact, fluid nonlinearity and amplitude saturation in a real machine are not in this model. Do not read the amplitude where the graph ends as the real final amplitude.
 
 </Callout>
 
@@ -109,7 +110,7 @@ The characteristic equation of the real x–y equations of motion, (mλ²+cλ+k)
 
 ## 3. The stability threshold is where the log decrement reaches 0
 
-In P1-3 we expressed damping by taking the logarithm of the ratio of successive peaks in the same direction. After one period $T_d=2\pi/\lvert\omega_d\rvert$ of one mode, the amplitude is multiplied by $e^{\sigma T_d}$, so the <strong>log decrement</strong> δ is as follows.
+In P1-3 §5 we expressed damping by taking the natural logarithm of the ratio of two successive peaks in the same direction (the logarithmic decrement). After one period $T_d=2\pi/\lvert\omega_d\rvert$ of one mode, the amplitude is multiplied by $e^{\sigma T_d}$, so the <strong>log decrement</strong> δ is as follows.
 
 $$
 \delta=\ln\frac{A(t)}{A(t+T_d)}=-\frac{2\pi\sigma}{\lvert\omega_d\rvert}
@@ -131,14 +132,14 @@ $$
 q_{\rm crit}=c\omega_n=2\zeta k
 $$
 
-If q is held directly and c is doubled, the threshold qcrit also doubles. On the other hand, if we simplify so that the damping force is proportional to the velocity relative to a fluid turning at Ω/2, it becomes −c(ż−jΩz/2). This gives a cross-coupled stiffness q=cΩ/2. With this teaching relation the result is as follows.
+If q is entered directly as a fixed value and c is doubled while q is kept, the threshold qcrit also doubles. On the other hand, if we take the fluid around the shaft to turn at Ω/2 and simplify so that the damping force is proportional to the velocity relative to that fluid, the damping force becomes −c(ż−jΩz/2). Expanding this gives a cross-coupled stiffness q=cΩ/2. With this teaching relation the result is as follows.
 
 $$
 \frac{c\Omega_{\rm crit}}2=c\omega_n\quad\Rightarrow\quad
 \Omega_{\rm crit}=2\omega_n\qquad(c>0)
 $$
 
-Here q grows together with c. So the threshold speed of the model stays the same. This is not a general law that "adding damping does not help the stability of real equipment."
+Here q grows together with c. So the threshold speed of the model stays the same. This is not a general law that "adding damping does not help the stability of real equipment" (see the non-rotating damping at the end of §5).
 
 ---
 
@@ -154,8 +155,8 @@ For a mass of 10 kg, k = 986960 N/m and c = 314.2 N·s/m. With direct q/k = 0.05
 
 1. With the defaults Nn = 3000 rpm, ζ = 0.05, q/k = 0.05, check δ = +0.1571 and the shrinking orbit. Raise q/k to 0.10 and 0.15 and compare the boundary and the divergence.
 2. Keep q/k = 0.15 and change ζ to 0.10. The threshold q/k moves to 0.20 and the system shifts to the stable side.
-3. After a reset, choose <strong>speed-coupled q=cΩ/2</strong> and raise r to 2. δ = 0. Change ζ to 0.10 and check whether r = 2 is still the boundary.
-4. Reset, set direct q/k to 0, then turn on <strong>release from rest</strong>. It changes to a straight back-and-forth motion along Y = 0. The initial condition you choose affects the shape of the orbit.
+3. After a reset, choose <strong>speed-coupled q=cΩ/2</strong> and raise the speed ratio r = Ω/ωn to 2 (6000 rpm). δ = 0. Change ζ to 0.10 and check whether r = 2 is still the boundary.
+4. Reset, set q/k to 0 in the direct-q mode, then turn on <strong>release from rest</strong>. It changes to a straight back-and-forth motion along Y = 0. The initial condition you choose affects the shape of the orbit.
 
 </Callout>
 
@@ -167,31 +168,31 @@ If the amplitude of the default forward mode is 20 µm, it is about 17.09 µm on
 
 Item 2 (ζ=0.10, q/k=0.15) gives σf≈−7.80 1/s and δ≈+0.1564. Item 3 gives δ=0 at r=2, δ≈−0.1561 at ζ=0.05·r=3, and δ≈−0.3066 at ζ=0.10·r=3.
 
-The lab default also includes the initial velocity λfA, in order to look at the <strong>forward mode only</strong>. Release from rest uses initial velocity 0 and sums the two roots. In that case the early successive-peak ratio is not exactly the mode δ. At q = 0, Y is 0 and the response returns to the one-direction damped free response of P1-3.
+So that only the <strong>forward mode</strong> appears, the lab default gives the initial displacement A together with the matching initial velocity λfA. Release from rest sets the initial velocity to 0, so the two modes come out mixed. In that case the early successive-peak ratio is not exactly the mode δ. At q = 0, Y is 0 and the response returns to the one-direction damped free response of P1-3.
 
-For divergent conditions with large q, the display time is shortened. The plot ends, over at most 8 natural periods, before it exceeds 20 times the initial modal envelope, and the computed values are not saturated at that height. First read the fact that the real part has crossed to the right, and the growth rate.
+For divergent conditions with large q, the lab shortens the display time. It draws for at most 8 natural periods and stops before the amplitude exceeds 20 times the initial modal envelope; the computed values are not clipped (saturated) at that height. Rather than the amplitude at the end of the plot, first read the fact that the real part of the eigenvalue has become positive, and the growth rate.
 
 ---
 
 ## 5. Oil whirl follows the speed, and oil whip locks near a mode
 
-In P1-8 we saw the <strong>sub-synchronous</strong> component below 1X. If we simplify, the mean circumferential speed of fluid dragged around by the rotation is about half the shaft surface speed. The whirl frequency of a real oil film depends on the conditions, and it often appears a little below half the rotation frequency.
+In P1-8 §5 we saw that the oil film of a plain bearing can produce a line below 1X, around 0.38 to 0.48X. A component below 1X like this is called a <strong>sub-synchronous</strong> component (P2-1). Put simply, the mean circumferential speed of the oil dragged around by the shaft is about half the shaft surface speed. The whirl frequency of a real oil film depends on the conditions, and it often appears a little below half the rotation frequency.
 
 <strong>Oil whirl</strong> is a self-excited whirl that appears after the oil film becomes unstable, and its whirl frequency is roughly proportional to the speed. When it develops into <strong>oil whip</strong>, the whirl frequency stays near the resonance frequency of the relevant rotor mode, and does not climb much even if you raise the speed further. This phenomenon is called <strong>lock-in</strong>.
 
 <Figure {...F.whirlWhip} />
 
-In Figure 5 the hypothetical whirl ratio is set to 0.45X and the mode frequency to 50 Hz. At 4800 rpm, 1X is 80 Hz and the peak is at 36 Hz. At 9000 rpm the peak is placed at 50 Hz, which is about 0.3333X. <strong>Once the frequency is fixed, the order relative to speed decreases</strong>.
+Figure 5 is an example with a hypothetical whirl frequency ratio of 0.45X and a rotor mode frequency of 50 Hz. At 4800 rpm, 1X is 80 Hz and the peak is at 36 Hz. At 9000 rpm the peak stays at 50 Hz, which is about 0.3333X. <strong>Once the frequency is fixed, the order relative to speed decreases</strong>.
 
-The hypothetical crossing where 0.45X reaches 50 Hz is about 6667 rpm. You will often hear the rule of thumb "about twice the first critical speed," but the real onset depends on oil film, seal, mode and load conditions. It does not mean it must occur at exactly twice.
+The hypothetical crossing where 0.45X reaches 50 Hz is about 6667 rpm. You will often hear the rule of thumb that whip starts "at about twice the first critical speed," but the real onset depends on oil film, seal, mode and load conditions. It does not mean it must occur at exactly twice.
 
 <Callout type="warn" title="Separate what the linear model explains from what it does not">
 
-The q=cΩ/2 model has growth rate 0 and whirl frequency 50 Hz at 6000 rpm. For ζ=0.05, the mode frequencies at r=2.5 and 3 are about 50.035 and 50.078 Hz, near the natural frequency in this range, and the order falls to about 0.4003X and 0.3339X. The frequency is not exactly constant.
+The q=cΩ/2 model of §3 has growth rate 0 and whirl frequency 50 Hz at 6000 rpm. For ζ=0.05, raising the speed ratio r to 2.5 and 3 gives mode frequencies of about 50.035 and 50.078 Hz, staying near the natural frequency, and the order falls to about 0.4003X and 0.3339X. The frequency is not exactly constant, though.
 
-Generalizing to q=ηcΩ gives a threshold of Ωcrit=ωn/η, so η=0.45 gives about 6667 rpm. Figure 5 is a separate figure with the peak placed at min(0.45fr, fn). Oil whirl is also a self-excited limit cycle that appears after the oil film becomes unstable, so in practice this component is absent below the onset speed (Figure 5 is drawn only from the hypothetical onset at 4000 rpm). This one-mode linear model does not compute the 0.45X whirl above the onset speed (mainly a low mode dominated by oil-film stiffness), the transition in which its frequency reaches a mode and locks, or the nonlinear saturation amplitude.
+If we write the mean rotation-speed ratio of the fluid as η and generalize to q=ηcΩ (η = 1/2 in §3), the threshold is Ωcrit=ωn/η, so η=0.45 gives about 6667 rpm. Figure 5 is not computed with this model; it is a separate figure with the peak placed at the smaller of 0.45fr (fr: rotation frequency) and the mode frequency fn, that is, at min(0.45fr, fn). Oil whirl is also a self-excited limit cycle (a state that keeps circling at a constant amplitude instead of growing further) that appears after the oil film becomes unstable, so in practice this component is absent below the onset speed (Figure 5 is drawn only from the hypothetical onset at 4000 rpm). This one-mode linear model does not compute the 0.45X whirl above the onset speed (mainly a low mode dominated by oil-film stiffness), the transition in which its frequency reaches a mode and locks, or the nonlinear saturation amplitude.
 
-If you add non-rotating damping cs while keeping q=cΩ/2, the threshold becomes 2ωn(1+cs/c). Damping that does not grow together with the cross force raises the threshold in this model as well.
+If you add non-rotating damping cs, which has nothing to do with the rotating fluid and creates no cross-coupled stiffness, while keeping q=cΩ/2, the threshold becomes 2ωn(1+cs/c). Damping that does not grow together with the cross force raises the threshold in this model as well.
 
 </Callout>
 
@@ -209,11 +210,11 @@ A <strong>Campbell diagram</strong> puts speed on the horizontal axis and the fr
 
 <Figure {...F.campbell} />
 
-The hypothetical mode lines in Figure 6 split into forward and backward. In the tilting motion of a rotating disk, the <strong>gyroscopic effect</strong> can arise, in which the rotating angular momentum couples tilting and moments in different directions. That effect changes the mode frequencies with speed.
+The hypothetical mode lines in Figure 6 split into forward and backward as the speed rises. When a rotating disk tilts, the <strong>gyroscopic effect</strong> can arise: because of the rotating angular momentum, a tilt in one direction is coupled to a moment in another direction. This effect changes the mode frequencies with speed.
 
-The central-disk translational Jeffcott model of P4-2 and the stability lab on this page have no gyroscopic term. So Figure 6 is not the mode lines computed by the lab. It is an example of reading a Campbell diagram using a hypothetical formula stated explicitly.
+The Jeffcott model of P4-2 (the central disk only translates, without tilting) and the stability lab on this page have no gyroscopic term. So Figure 6 is not the mode lines computed by the lab; it is an example of reading a Campbell diagram, drawn with the hypothetical formula given in its caption.
 
-Even if an order line meets a mode, a large response follows only if the direction and size of the excitation match the mode shape. In particular, unbalance excitation is forward, the same direction as the spin, so with isotropic support it hardly excites the backward mode, and only with anisotropic support does some response appear. That is why Figure 6 does not mark the crossing of 1X with the backward mode line (about 2739 rpm). The real amplitude has to be computed including damping and the excitation conditions.
+Even if an order line meets a mode, a large response follows only if the direction and size of the excitation match the mode shape. In particular, unbalance excitation is forward, the same direction as the spin, so with isotropic support it hardly excites the backward mode (P4-2 §6: with isotropic support the backward component $A_b=0$), and only with anisotropic support does some response appear. That is why Figure 6 does not mark the crossing of 1X with the backward mode line (about 2739 rpm). The real amplitude has to be computed including damping and the excitation conditions.
 
 <Callout type="term" title="Resonance and instability">
 
@@ -236,11 +237,11 @@ In the lab you can move toward stability by reducing q or raising c. In a real m
 | Oil temperature, viscosity | Can change direct damping, cross-coupling and thermal conditions together, so do not assume a one-way effect |
 | Seal swirl brake | A design that reduces the circumferential flow entering the seal, weakening the supply path of the cross force |
 
-Bearings are not the only cause. The rotating flow inside a <strong>seal</strong> that reduces leakage, <strong>steam whirl</strong> from steam turbine fluid forces, and the <strong>Alford force</strong> tied to blade-tip clearance and fluid-force asymmetry can also be linked to cross forces that feed rotational energy into lateral vibration. Details of the conditions and discrimination are covered in Parts 7 and 8.
+Bearings are not the only place cross forces come from. The flow turning inside a <strong>seal</strong> that reduces leakage, <strong>steam whirl</strong> created by steam fluid forces in a steam turbine, and the <strong>Alford force</strong> that arises when the blade-tip clearance is uneven around the circumference can also become cross forces that send rotational energy into lateral vibration. Details of the conditions and discrimination are covered in Parts 7 and 8.
 
 <Callout type="field" title="A tilting pad alone does not guarantee overall stability">
 
-Even if the bearing's own cross-coupling is made small, the cross force from a seal can be large. In a published compressor case, a swirl brake also helped with instability on tilting-pad supports. After finding out which coefficients and modes are the problem, check the effect of a change against analysis and measurement of the whole shaft system.
+Even if the bearing's own cross-coupling is made small, the cross force from a seal can be large. In a published compressor case, instability appeared even with tilting-pad bearings, and adding a swirl brake to the seal helped <Cite ids={['R-59']} />. After finding out which coefficients and modes are the problem, check the effect of a change against analysis and measurement of the whole shaft system.
 
 </Callout>
 
@@ -294,7 +295,7 @@ For q > 0 their real parts differ, so they are not conjugates of each other. The
 No. The former is a frequency match between external excitation and a mode; the latter is the boundary of a mode's damping margin. Treat the resonance response and the growth condition of self-excitation separately.
 </details>
 
-In Part 4 we connected unbalance response → whirl and orbit → mean oil-film position → stability. In the next <a href={withBase('/en/parts/5/')}>Part 5 Signal-processing extensions</a>, we cover how to pull these phenomena out of data. You can continue with the first page, <a href={withBase('/en/p5-1/')}>P5-1 Digital filters and integration</a>.
+In Part 4 we started from the unbalance response and went on through whirl and orbits and the mean shaft position on the oil film to stability. In the next <a href={withBase('/en/parts/5/')}>Part 5 Signal-processing extensions</a>, we cover how to pull these phenomena out of data. You can continue with the first page, <a href={withBase('/en/p5-1/')}>P5-1 Digital filters and integration</a>.
 
 ## References
 

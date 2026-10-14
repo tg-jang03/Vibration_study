@@ -4,7 +4,7 @@ title: P1-5 Several Masses and Modes
 description: The coupled equations of motion of a two-degree-of-freedom system, its natural frequencies and mode shapes, pure-mode vibration and modal superposition, beating in weakly coupled systems, the 2-DOF frequency response (FRF) and the bending modes of a continuum, learned with the 2-DOF lab
 sectionId: P1-5
 source: p1-5.mdx
-sourceHash: 47cd32c6ad
+sourceHash: abef551616
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -17,7 +17,7 @@ import * as F from '../../figures/p1-5';
 
 Tap a long steam pipe or a gas turbine shaft and you do not hear one clean note, but several notes layered together. The single-mass systems we have seen so far (P1-1 ~ P1-4) had exactly one natural frequency. So why do real machines and structures vibrate to several rhythms?
 
-Because a machine is not one lump. It is made of many mass elements tied to each other by elasticity. As the number of masses that can move grows, so does the number of natural frequencies, and each frequency has its own characteristic vibration pattern (the <strong>mode shape</strong>).
+Because a machine is not one lump. It is made of many masses tied to each other by elasticity (the property of bending and springing back). As the number of masses that can move separately grows, so does the number of natural frequencies, and each natural frequency comes with its own pattern of motion. That pattern is called the <strong>mode shape</strong> (Section 2).
 
 <Figure {...F.twoDofModel} />
 
@@ -41,15 +41,15 @@ The number of independent coordinates needed to describe the position of a body 
 - If a single mass moves left and right, one displacement $x(t)$ is enough, so it is a <strong>single-degree-of-freedom (SDOF)</strong> system (P1-1 ~ P1-4).
 - If two masses $m_1$ and $m_2$ move side by side as in Figure 1, you need two displacements, $x_1(t)$ and $x_2(t)$, so it is a <strong>two-degree-of-freedom (2DOF)</strong> system.
 
-Between the two masses sits the middle spring $k_c$. Its deformation is the relative displacement of the two masses, $(x_2 - x_1)$. So when mass 1 moves, a force is passed through the middle spring to mass 2, and when mass 2 moves, a force acts back on mass 1. A connection through which the motions affect each other like this is called <strong>coupling</strong>.
+In Figure 1 each mass is tied to its outer wall by a spring $k$, and between the two masses sits the middle spring $k_c$. How much the middle spring stretches or shortens is the difference between the two displacements, $(x_2 - x_1)$. So when mass 1 moves, a force is passed through the middle spring to mass 2, and when mass 2 moves, a force acts back on mass 1. A connection through which the motions affect each other like this is called <strong>coupling</strong>.
 
 <Callout type="term" title="Coupling">
 
-The state in which two or more masses or vibrating degrees of freedom are tied together by springs, dampers, fluid films and so on and exchange forces. With coupling, touching one side makes the other side shake too.
+The state in which two or more masses or vibrating degrees of freedom are tied together by connections such as springs, dampers or the oil film inside a bearing, and exchange forces. With coupling, touching one side makes the other side shake too.
 
 </Callout>
 
-Let us write the equations of motion by putting the restoring force on each mass into Newton's second law ($F = ma$).
+Let us write the equations of motion (P1-2) by putting the spring forces on each mass into Newton's second law ($F = ma$).
 
 $$
 \begin{aligned}
@@ -58,27 +58,31 @@ m_2 \ddot{x}_2 &= -k_c (x_2 - x_1) - k x_2 = k_c x_1 - (k + k_c)x_2
 \end{aligned}
 $$
 
-Moving all the terms on the right to the left and writing it in matrix form gives the following.
+Read the first line in words: mass 1 receives a force $-kx_1$ from its outer spring and $k_c(x_2 - x_1)$ from the middle spring. If mass 2 is farther to the right than mass 1, the middle spring is stretched and pulls mass 1 to the right. The second line applies the same idea to mass 2.
+
+Move all the terms on the right to the left and write the two equations as one table of numbers, and you get the following. Such a table of numbers arranged in rows and columns is called a <strong>matrix</strong>. Here it is enough to think of it as a convention for writing two equations on one line.
 
 $$
 \begin{bmatrix} m_1 & 0 \\ 0 & m_2 \end{bmatrix} \begin{bmatrix} \ddot{x}_1 \\ \ddot{x}_2 \end{bmatrix} + \begin{bmatrix} k + k_c & -k_c \\ -k_c & k + k_c \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} 0 \\ 0 \end{bmatrix}
 $$
 
-In short, $\mathbf{M}\ddot{\mathbf{x}} + \mathbf{K}\mathbf{x} = \mathbf{0}$. We now have a mass matrix $\mathbf{M}$ and a stiffness matrix $\mathbf{K}$. The off-diagonal entry $-k_c$ of the stiffness matrix is exactly the coupling term that ties the two masses together.
+In short, $\mathbf{M}\ddot{\mathbf{x}} + \mathbf{K}\mathbf{x} = \mathbf{0}$. The bold $\mathbf{M}$ is the mass matrix that collects the masses, $\mathbf{K}$ is the stiffness matrix that collects the stiffnesses, and $\mathbf{x}$ stacks the two displacements in a column. In $\mathbf{K}$, the entry $-k_c$ that sits off the diagonal (the line from top left to bottom right) is the coupling term that ties the two masses together. Without the middle spring ($k_c = 0$), the two equations become two unrelated single-degree-of-freedom equations.
 
 ---
 
 ## 2. Two natural frequencies and mode shapes: in-phase and anti-phase
 
-In an SDOF system there was only one natural frequency, $\omega_n = \sqrt{k/m}$. What about a 2-DOF system? Assume both masses oscillate harmonically together at a constant angular frequency $\omega$ ($x_1 = u_1 \cos\omega t$, $x_2 = u_2 \cos\omega t$).
+In an SDOF system there was only one natural frequency, $\omega_n = \sqrt{k/m}$. What about a 2-DOF system? Assume both masses swing together as sinusoids (P1-2) with the same angular frequency $\omega$ ($x_1 = u_1 \cos\omega t$, $x_2 = u_2 \cos\omega t$). $u_1$ and $u_2$ are the amplitudes of the two masses; opposite signs mean they move in opposite directions.
 
-Substituting into the equations gives $(\mathbf{K} - \omega^2\mathbf{M})\mathbf{u} = \mathbf{0}$. For a real vibration to exist, other than the trivial solution in which both masses stand still ($\mathbf{u} = \mathbf{0}$), the determinant must be zero.
+Substituting into the equations of motion gives $(\mathbf{K} - \omega^2\mathbf{M})\mathbf{u} = \mathbf{0}$. This always holds for $\mathbf{u} = \mathbf{0}$, that is, when both masses stand still. For any other answer, one that actually vibrates, the condition below must hold. $\det$ is a calculation called the determinant; for a 2×2 matrix it is (top left × bottom right) − (top right × bottom left).
 
 $$
 \det(\mathbf{K} - \omega^2\mathbf{M}) = 0
 $$
 
-Solving this gives a quadratic equation in $\omega^2$ (the characteristic equation), which yields **exactly two** positive natural frequencies $\omega$. To make it concrete, let us solve a symmetric system with both masses $m_1 = m_2 = m = 1\text{ kg}$, both outer springs $k = 1000\text{ N/m}$ and the middle spring $k_c = 1000\text{ N/m}$.
+Writing this out gives a quadratic equation in $\omega^2$ (called the characteristic equation). It has two roots, so there are **two** positive natural frequencies $\omega$. Each natural frequency comes with its own pattern in which the two masses move; the pair of a natural frequency and its pattern is called a <strong>mode</strong>, counted from the lowest as mode 1, mode 2.
+
+To make it concrete, let us solve a symmetric system with both masses $m_1 = m_2 = m = 1\text{ kg}$, both outer springs $k = 1000\text{ N/m}$ and the middle spring $k_c = 1000\text{ N/m}$.
 
 <Figure {...F.modeShapesDiagram} />
 
@@ -87,14 +91,14 @@ $$
 \omega_1 = \sqrt{\frac{k}{m}} = \sqrt{\frac{1000}{1}} \approx 31.62\text{ rad/s} \implies f_1 \approx 5.03\text{ Hz}, \quad \mathbf{u}^{(1)} = \begin{bmatrix} +1 \\ +1 \end{bmatrix}
 $$
 
-The two masses move by the same amount in the **same direction**. If mass 1 goes 10 mm to the right, mass 2 also goes 10 mm to the right. The distance between them, $(x_2 - x_1)$, is always 0, so the middle spring $k_c$ is neither stretched nor compressed. It is as if the middle spring were not there and each mass hung only on its own wall spring $k$, so the natural frequency comes out as $\sqrt{k/m}$ unchanged.
+The two masses move by the same amount in the **same direction**. If mass 1 goes 10 mm to the right, mass 2 also goes 10 mm to the right. Moving together in the same direction like this is called in-phase. The difference between their displacements, $(x_2 - x_1)$, is always 0, so the middle spring $k_c$ is neither stretched nor compressed. It is as if the middle spring were not there and each mass hung only on its own wall spring $k$, so the natural frequency comes out as $\sqrt{k/m}$ unchanged.
 
 ### Mode 2 (anti-phase)
 $$
 \omega_2 = \sqrt{\frac{k + 2k_c}{m}} = \sqrt{\frac{1000 + 2000}{1}} \approx 54.77\text{ rad/s} \implies f_2 \approx 8.72\text{ Hz}, \quad \mathbf{u}^{(2)} = \begin{bmatrix} +1 \\ -1 \end{bmatrix}
 $$
 
-The two masses move by the same amount in **opposite directions**, toward and away from each other. When mass 1 goes right, mass 2 comes left, so the middle spring is compressed and stretched twice as much. The restoring force is stronger and the effective stiffness becomes $k + 2k_c$, so the natural frequency is higher than that of mode 1: $\sqrt{3}\,f_1 \approx 8.72\text{ Hz}$ (when $k_c = k$).
+The two masses move by the same amount in **opposite directions**, toward and away from each other. This relationship is called anti-phase. When mass 1 goes right, mass 2 comes left, so the middle spring is compressed and stretched by twice the distance either mass moves. Each mass therefore feels a stronger pull back and moves as if it hung on a spring of stiffness $k + 2k_c$ (the stiffness converted this way is called the effective stiffness). The natural frequency is higher than that of mode 1: $\sqrt{3}\,f_1 \approx 8.72\text{ Hz}$ (when $k_c = k$).
 
 <Callout type="term" title="Mode shape">
 
@@ -128,7 +132,7 @@ $$
 \begin{bmatrix} 10 \\ 0 \end{bmatrix} = 5 \begin{bmatrix} 1 \\ 1 \end{bmatrix} + 5 \begin{bmatrix} 1 \\ -1 \end{bmatrix}
 $$
 
-For a linear differential equation, the solutions of the individual modes can simply be added. This is the principle of <strong>modal superposition</strong>.
+If the equation of motion is linear (the force is proportional to displacement, as in P1-1), the motions found separately for each mode can simply be added to give the answer. This is called <strong>modal superposition</strong>. The 5 mm share of mode 1 swings at $\omega_1$ and the 5 mm share of mode 2 at $\omega_2$, so the two masses move as follows.
 
 $$
 \begin{aligned}
@@ -156,6 +160,8 @@ x_2(t) &= 10 \sin\left(\frac{\omega_2 - \omega_1}{2} t\right) \sin\left(\frac{\o
 \end{aligned}
 $$
 
+The cosine and sine multiplied in front have the tiny angular frequency $(\omega_2 - \omega_1)/2$, so they slowly raise and lower the amplitude. The cosine and sine behind them swing quickly at the average of the two angular frequencies; that is the actual rhythm of the shaking.
+
 <Figure {...F.beatEnergyExchange} />
 
 Look at Figure 5. Mass 1 (blue) shakes fast, but its amplitude gradually shrinks and it almost stops after about 1 second. Meanwhile the amplitude of mass 2 (orange) grows to 10 mm. Then mass 2 stops again and mass 1 comes back to life. Energy travels through the middle spring and swings entirely between the two masses. The period of this amplitude swell is called the <strong>beat period</strong>, and it is set by the difference of the two frequencies.
@@ -166,7 +172,7 @@ $$
 
 <Callout type="field" title="Two machines on a common frame: energy exchange and beating">
 
-When two identical machines sit on a common frame and you hit one with a hammer, the vibration slowly passes to the other and comes back. That is the energy exchange of Figure 5. The droning you hear when the two run together at slightly different speeds, on the other hand, is the beat of P1-4 (the difference between two excitation frequencies). If only one machine keeps running, the other simply shakes steadily at the same frequency and does not swell and fade.
+When two identical machines sit on a common frame and you hit one with a hammer, the vibration slowly passes to the other and comes back. That is the energy exchange of Figure 5. The droning you hear when the two run together at slightly different speeds, on the other hand, is a beat caused by the slightly different rhythms of the forces the two machines make (the way two rhythms add and cancel is the same as in P1-4 §6). If only one machine keeps running, the other simply shakes steadily at the rhythm of the running machine and does not swell and fade.
 
 </Callout>
 
@@ -200,7 +206,7 @@ A continuum is a system of infinitely many tiny masses connected to each other b
 - **Second bending mode**: the left and right halves of the shaft bend in opposite directions. One node that does not move at all appears in the middle.
 - **Third bending mode**: the shaft bends in an S shape like a wave, with two nodes inside.
 
-The higher the order, the more sharply the shaft bends, so the elastic strain energy grows and the natural frequency rises steeply. In real rotating-machinery diagnosis, you concentrate on the <strong>few lowest orders (mainly modes 1 to 3)</strong> that lie within and just above the operating speed range.
+The higher the order, the more sharply the shaft bends, so the elastic strain energy grows and the natural frequency rises steeply. A rotating machine resonates when the rhythm of the turning shaft (its rotating speed) matches a natural frequency (more in P1-7). So in diagnosis you concentrate on the <strong>few lowest orders (mainly modes 1 to 3)</strong> that lie within and just above the operating speed range.
 
 <Callout type="warn" title="'The sensor on the node sees no vibration, so it is safe?'">
 
@@ -236,9 +242,9 @@ As in step 3, if you lower the middle spring stiffness to $k_c = 100\text{ N/m}$
 
 | | Single DOF (SDOF) | Symmetric 2-DOF (2DOF) | Continuum (beam, rotor shaft, pipe) |
 |---|---|---|---|
-| **Independent coordinates** | 1 ($x$) | 2 ($x_1, x_2$) | Infinitely many ($w(x, t)$) |
+| **Independent coordinates** | 1 ($x$) | 2 ($x_1, x_2$) | Infinitely many (the displacement of every point, $w(x, t)$) |
 | **Natural frequencies** | 1 ($\omega_n = \sqrt{k/m}$) | 2 ($\omega_1, \omega_2$) | Infinitely many ($\omega_1, \omega_2, \omega_3, \dots$) |
-| **Mode shapes** | None (a single scalar) | 2: in-phase $[1, 1]$, anti-phase $[1, -1]$ | Infinitely many: 1st (0 nodes), 2nd (1 node), 3rd (2 nodes)... |
+| **Mode shapes** | None (only one mass, so no ratio) | 2: in-phase $[1, 1]$, anti-phase $[1, -1]$ | Infinitely many: 1st (0 nodes), 2nd (1 node), 3rd (2 nodes)... |
 | **Resonance peaks** | 1 frequency response peak | 2 frequency response peaks | Many resonance peaks in the band of interest |
 | **Characteristic phenomena** | Single-sinusoid free vibration | Modal superposition, beating when weakly coupled | A node for each mode, bending deformation |
 
@@ -284,11 +290,11 @@ In the second bending mode the first half and the second half of the shaft bend 
 
 ---
 
-On the next page (P1-6) we map the masses, springs and modes seen so far onto a real rotating machine and sort out what turns and what supports it. Then P1-7 covers the most common and important excitation force a rotating machine makes with its own centrifugal force, namely **unbalance and 1X vibration**, and the physics of critical speeds.
+On the next page (P1-6) we map the masses, springs and modes seen so far onto a real rotating machine and sort out what turns and what supports it. Then P1-7 covers the most common excitation force in rotating machines, <strong>unbalance</strong>. When the center of mass of the rotating part sits slightly off the axis, a centrifugal force arises; it shakes once per revolution, so the vibration it causes is called 1X vibration. P1-7 also shows why this vibration grows large at the speed where the rotation rhythm matches a natural frequency, the critical speed.
 
 <Callout type="field" title="Where this leads in Part 2">
 
-P2-2 (Fourier basics) teaches the mathematical tool that breaks a complicated waveform into a sum of pure sinusoids. Spectrum analysis is the principle of P1-5's "modal superposition (the sum of two sinusoids = a wobbling waveform)" turned upside down: separating the frequency components out of a single line of sensor signal.
+P2-2 (Fourier basics) teaches the mathematical tool that breaks a complicated waveform into a sum of pure sinusoids. The modal superposition on this page added two sinusoids to make a wobbling waveform. Doing that in reverse, separating the frequency components out of a single sensor signal, is spectrum analysis.
 
 </Callout>
 

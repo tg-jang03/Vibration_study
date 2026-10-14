@@ -4,7 +4,7 @@ title: P3-2 Proximity probe systems
 description: The probe, cable and driver of a proximity probe system and eddy currents; gap voltage, sensitivity and linear range; mean position (DC) and vibration (AC) in one signal; distortion outside the linear range; mechanical and electrical runout and slow-roll measurement; and X-Y installation
 sectionId: P3-2
 source: p3-2.mdx
-sourceHash: 25b3c83843
+sourceHash: b7e47dbe7b
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -17,7 +17,7 @@ import * as F from '../../figures/p3-2';
 
 The monitoring display of a power-generation turbine shows values such as "Gap −9.8 V" and "52 µm pp" at each bearing. How can a sensor that never touches the shaft show both its position and motion in µm? And why can it read more than 10 µm even when the shaft is turning very slowly before startup?
 
-P3-1 explained why GT/ST shafts are measured directly with proximity probes. This page looks at **how the sensor system converts distance into voltage, what you can read from that voltage, and what to watch for**.
+P3-1 explained why the shafts of power-generation gas and steam turbines (GT/ST) are measured directly with noncontact displacement sensors, commonly called proximity probes. This page looks at **how the sensor system converts distance into voltage, what you can read from that voltage, and what to watch for**.
 
 <Callout type="idea" title="After reading this page">
 
@@ -45,7 +45,7 @@ An eddy current circulates inside metal exposed to a changing magnetic field. A 
 
 </Callout>
 
-The eddy-current strength depends on **shaft material** and **cable length** as well as distance. The probe, cable and driver are therefore calibrated together for a specified length and target material (often a tool-steel grade). Replacing only one component or using a different shaft material invalidates that calibration.
+The eddy-current strength depends on **shaft material** and **cable length** as well as distance. The probe, cable and driver are therefore calibrated together for a specified cable length and target material (the target is the metal surface the probe faces; calibration targets are often a tool-steel grade). Replacing only one component or using a different shaft material invalidates that calibration.
 
 ---
 
@@ -76,7 +76,7 @@ $$
 
 </Callout>
 
-<Callout type="warn" title="'Higher voltage means a closer shaft'">
+<Callout type="warn" title="'A larger voltage number means a closer shaft'">
 
 The negative output can be confusing. −15 V means **farther away** than −5 V. As the shaft approaches the sensor, the voltage rises toward 0 V.
 
@@ -90,7 +90,7 @@ What happens to the output voltage when the shaft vibrates?
 
 <Figure {...F.dcAndAc} />
 
-The <strong>mean (DC)</strong> of the output voltage gives mean shaft position. It tells you where the shaft sits inside the bearing clearance. Combining the DC values of two sensors lets you plot how the shaft center shifts with load and speed (shaft centerline, P4-3).
+The <strong>mean (DC)</strong> of the output voltage gives mean shaft position. It tells you where the shaft sits inside the bearing clearance. Combining the DC values of two sensors 90° apart (§6) lets you plot how the shaft center shifts with load and speed (shaft centerline, P4-3).
 
 The <strong>fluctuation (AC)</strong> around the mean is vibration. Dividing it by sensitivity gives distance, and shaft vibration is usually expressed as Peak-Peak (pp), so the total span of shaft motion can be compared directly with bearing clearance (P2-1).
 
@@ -140,7 +140,7 @@ During installation, stop the shaft and use the gap voltage to set the gap near 
 
 <ProximityLab client:visible lang="en" initialGap={2.4} initialVib={300} />
 
-In steps 1·2, the signal ranges from 2.25 ~ 2.55 mm, crossing the end of the linear range (2.3 mm). The converted vibration is about 193 µm pp, 36 % below the actual 300 µm pp. Moving the gap to 1.20 mm in step 3 restores the reading to 300 µm pp. Step 4 produces an error even inside the linear range: actual sensitivity is 12 % lower, but conversion uses the calibrated sensitivity, so both vibration and mean distance are under-read by 12 %.
+In steps 1·2, the distance to the shaft swings over 2.25 ~ 2.55 mm, crossing the end of the linear range (2.3 mm). The converted vibration is about 193 µm pp, 36 % below the actual 300 µm pp. Moving the gap to 1.20 mm in step 3 restores the reading to 300 µm pp. Step 4 produces an error even inside the linear range: actual sensitivity is 12 % lower, but conversion uses the calibrated sensitivity, so both vibration and mean distance are under-read by 12 %.
 
 <Callout type="warn" title="'The calibration works on any shaft'">
 
@@ -158,7 +158,7 @@ Vibration should be almost zero when the shaft turns very slowly before startup.
 
 The sensor measures **the distance to the surface passing in front of it**, rather than shaft **motion** itself. An uneven surface therefore produces a signal even when the shaft simply rotates in place. This is called <strong>runout</strong>.
 
-- **Mechanical runout**: a slightly eccentric or elliptical surface produces 1X·2X; a scratch or dent produces a sharp pulse at one angle.
+- **Mechanical runout**: a slightly eccentric surface produces 1X and an elliptical one 2X; a scratch or dent produces a sharp pulse at one angle.
 - **Electrical runout**: uneven material, local magnetism or uneven plating changes the eddy currents and output even at a constant distance.
 
 Runout is **a pattern fixed to rotation angle**: when speed changes, it appears at the same angle with the same shape and amplitude. Unbalance vibration, however, grows and shrinks with speed (P1-7). Measuring at a very low speed where vibration is almost zero (<strong>slow roll</strong>) therefore leaves runout alone.
@@ -192,7 +192,7 @@ Why is one sensor not enough?
 
 <Figure {...F.xyProbes} />
 
-One sensor measures distance only along its viewing direction. The shaft moves in a plane inside the bearing, so **two sensors 90° apart** are needed to capture the full motion. Plotting their two signals together gives the path traced by the shaft center (orbit, P6-3), while their two DC values give shaft-center position (P4-3). A separate Keyphasor sensor near the same bearing provides the rotation-angle reference (P3-3).
+One sensor measures distance only along its viewing direction. The shaft moves in a plane inside the bearing, so **two sensors 90° apart** are needed to capture the full motion. Plotting their two signals together gives the path traced by the shaft center (orbit, P6-3), while their two DC values give shaft-center position (P4-3). A separate Keyphasor sensor near the same bearing gives one pulse per revolution, providing the rotation-angle reference (P3-3).
 
 ---
 

@@ -4,7 +4,7 @@ title: 'P1-7 Vibration of Rotating Machinery: Unbalance and 1X'
 description: 'Learn the rotating force that unbalance produces and the resulting 1X vibration, the centrifugal force that grows with the square of speed, the critical speed and passing through resonance, and the mass-center rotation (self-centering) of the supercritical range, using the unbalance run-up lab'
 sectionId: P1-7
 source: p1-7.mdx
-sourceHash: 77908f6cdd
+sourceHash: 0f92786094
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -45,8 +45,10 @@ f = \frac{\text{rpm}}{60} \quad [\text{Hz}], \quad \Omega = 2\pi f = 2\pi \left(
 $$
 
 - 1800 rpm = 30 Hz (4-pole generator on a 60 Hz grid)
-- 3000 rpm = 50 Hz (2-pole gas or steam turbine on a 50 Hz grid)
+- 3000 rpm = 50 Hz (gas or steam turbine driving a 2-pole generator on a 50 Hz grid)
 - 3600 rpm = 60 Hz (2-pole generator on a 60 Hz grid, Korea and the US)
+
+The "2-pole" and "4-pole" in parentheses are the number of magnetic poles (N and S) in the generator. The more poles, the lower the speed needed to produce the same grid frequency.
 
 In diagnostics, the vibration component that repeats once per revolution is called **1X (once-per-revolution frequency)**. At 3000 rpm, 1X is 50 Hz.
 
@@ -60,7 +62,7 @@ The vibration component that occurs at the same rate as the rotation frequency. 
 
 ## 2. A shifted center of mass: unbalance and centrifugal force
 
-However precisely a shaft is machined, its weight can never be perfectly symmetric. Machining error, internal voids, assembly deviation and weight differences between blades all push the center of mass (G) of the whole rotor slightly away from the center of rotation (O).
+However precisely a shaft is machined, its mass can never be spread perfectly evenly around the axis. Machining error, internal voids, assembly deviation and weight differences between blades all push the center of mass (G) of the whole rotor slightly away from the center of rotation (O).
 
 This offset is called **unbalance**. As in Figure 1, it can be simplified as a small unbalance mass $m_u$ attached at a distance $e$ from the center of rotation O. The box in Figure 1 is the whole machine that shakes together with the rotor, and we call its mass $M$.
 
@@ -114,7 +116,7 @@ Here $X$ is the displacement amplitude and $\varphi$ is the phase lag by which t
 
 <Callout type="warn" title="'Large 1X vibration always means unbalance?'">
 
-1X vibration is the signature of unbalance, but misalignment, a bent shaft, and vibration amplified by resonance near a natural frequency (the critical speed in the next section) also produce a large 1X. Before attaching a balancing weight based on size alone, look at the phase and the operating conditions together (P1-9, P7-2).
+1X vibration is the signature of unbalance, but misalignment (the centerlines of two joined shafts being offset), a bent shaft (a shaft that is not straight), and vibration amplified by resonance near a natural frequency (the critical speed in the next section) also produce a large 1X. Before balancing (adding weights to cancel the unbalance) based on size alone, look at the phase and the operating conditions together (P1-9, P7-2).
 
 </Callout>
 
@@ -136,7 +138,7 @@ Here $r = \Omega / \omega_n$ is the frequency ratio (P1-4), and $m_u e / M = e_{
 
 <Figure {...F.unbalanceBode} />
 
-Let us look at the three ranges along the frequency ratio $r$ in the Bode plot of Figure 4.
+Let us look at the three ranges along the frequency ratio $r$ in the Bode plot of Figure 4 (amplitude ratio and phase drawn one above the other, P1-4).
 
 ### 4.1 Subcritical range: low speed, $r \ll 1$
 
@@ -200,7 +202,7 @@ The centrifugal force keeps growing with the square of speed, but the amplitude 
 
 <Callout type="field" title="Keeping the operating speed away from the critical speed: separation margin">
 
-Many large compressors and high-speed turbines are supercritical rotors, whose rated operating speed is above the first critical speed. Such machines pass through the critical speed during start-up but never dwell near it. So the operating speed is designed to stay at least a certain ratio away from the critical speed. This gap is called the separation margin, and how large it must be depends on the damping (the amplification factor: how many times larger the amplitude gets at resonance, the same as Q in P1-4) as set by standards (see P4-1 for details).
+Many large compressors and high-speed turbines are supercritical rotors, whose rated speed (the operating speed set by design) is above the first critical speed (the lowest critical speed). Such machines pass through the critical speed during start-up but never dwell near it. So the operating speed is designed to stay at least a certain ratio away from the critical speed. This gap is called the separation margin. Standards set how large it must be according to the damping: the larger the amplification factor (how many times larger the amplitude gets at resonance, the same as Q in P1-4), the farther away the operating speed must be. See P4-1 for details.
 
 </Callout>
 
@@ -282,7 +284,7 @@ On the next page (P1-8), we count how many Hz each event that happens several ti
 
 <Callout type="field" title="Where this leads in Part 2">
 
-P2-1 reorganizes speed (rpm), 1X and order (how many times the rotation frequency) from the signal-processing viewpoint. When the speed changes during measurement, as in a run-up, the peaks in the spectrum (a picture that stands up a bar for each component's size, covered in P2-1) spread out (smearing, P2-4), and order tracking, which measures in step with the speed (P5-4), also starts from this 1X.
+P2-1 reorganizes speed (rpm), 1X and order (how many times the rotation frequency) from the signal-processing viewpoint. When the speed changes during measurement, as in a run-up, the 1X peak in the spectrum (a picture that stands up a bar for each component's size, P2-1) spreads sideways. This is smearing (P2-4), and order tracking, which measures in step with the speed to avoid it (P5-4), also starts from this 1X.
 
 </Callout>
 

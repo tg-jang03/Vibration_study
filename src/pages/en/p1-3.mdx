@@ -4,7 +4,7 @@ title: P1-3 Damping
 description: How damping drains vibration energy, the damping ratio and underdamped, critical and overdamped motion, the envelope and the logarithmic decrement, explored with a free-vibration lab
 sectionId: P1-3
 source: p1-3.mdx
-sourceHash: 704b64001e
+sourceHash: 3d793680a2
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -15,7 +15,7 @@ import * as F from '../../figures/p1-3';
 
 # 1-3 Damping: why does shaking die away?
 
-Strike a bell once and it rings for a while, then goes quiet. A car body does not keep bobbing after it passes a bump. The undamped mass-spring on the previous page kept moving with the same amplitude forever, so why does real motion shrink?
+Strike a bell once and it rings for a while, then goes quiet. A car body does not keep bobbing after it passes a bump. The undamped mass-spring on the previous page (P1-2) kept moving with the same amplitude forever, so why does real motion shrink?
 
 Vibration energy is turned into heat by air resistance, friction inside the material, the flow of oil and so on. This action of draining energy from the motion is called <strong>damping</strong>.
 
@@ -95,7 +95,7 @@ The damping ratio is a dimensionless number, so systems with different mass and 
 
 <Figure {...F.dampingRegimes} />
 
-The horizontal axis of Figure 2, $\omega_n t$, is time scaled by the natural frequency so that systems with different natural frequencies can be compared on the same footing. At the same $\omega_n t$, critical damping gets close to zero fastest among the non-oscillating responses.
+The horizontal axis of Figure 2, $\omega_n t$, is the time $t$ multiplied by the natural angular frequency $\omega_n$. This lets systems with different natural frequencies be compared on the same scale. At the same $\omega_n t$, critical damping gets close to zero fastest among the non-oscillating responses.
 
 <Callout type="field" title="A shock absorber does not replace the spring">
 
@@ -107,7 +107,7 @@ A car's spring supports the body and brings it back to its original height. The 
 
 ## 3. Underdamped: the swinging stays, the amplitude shrinks
 
-The free vibration of mechanical structures is usually underdamped, $0<\zeta<1$. The response is then a shrinking exponential multiplied by a sinusoid.
+The free vibration of mechanical structures (vibration that goes on by itself after one disturbance, with no outside force) is usually underdamped, $0<\zeta<1$. The response is then a shrinking exponential multiplied by a sinusoid.
 
 $$
 x(t)=A e^{-\zeta\omega_n t}\cos(\omega_d t+\phi)
@@ -123,7 +123,7 @@ are called the <strong>envelope</strong>. It is the boundary that wraps the tops
 
 <Figure {...F.decayingWaveform} />
 
-With no damping, the amplitude of the orange waveform stays the same. The blue waveform with $\zeta=0.05$ swings at a similar rhythm, but its amplitude gets smaller as the gray envelope shrinks.
+In Figure 3, the undamped orange waveform keeps the same amplitude. The blue waveform with $\zeta=0.05$ swings at a similar rhythm, but its amplitude gets smaller as the gray envelope shrinks.
 
 <Figure {...F.decayPerCycle} />
 
@@ -131,7 +131,7 @@ Two systems with the same damping ratio have the same amplitude ratio left after
 
 <Callout type="example" title="With ζ = 0.05, after how many cycles is the amplitude halved?">
 
-At $\zeta=0.05$, peaks in the same direction shrink to about 0.730 times per cycle.
+At $\zeta=0.05$, peaks (the tops of the waveform) in the same direction shrink to about 0.730 times per cycle.
 
 $$
 1.000\rightarrow0.730\rightarrow0.533\rightarrow0.389
@@ -183,7 +183,7 @@ $$
 \delta=\ln\left(\frac{x_i}{x_{i+1}}\right)
 $$
 
-For an underdamped single-degree-of-freedom system, it is related to the damping ratio exactly as follows.
+A system like the ones so far, in which a single mass moves in only one direction, is called a single-degree-of-freedom system (more in P1-5). For an underdamped single-degree-of-freedom system, the logarithmic decrement is related to the damping ratio exactly as follows.
 
 $$
 \delta=\frac{2\pi\zeta}{\sqrt{1-\zeta^2}}
@@ -201,7 +201,7 @@ $$
 \delta=\ln\left(\frac{10.0}{7.30}\right)=0.315
 $$
 
-and $\zeta\approx0.050$. The number of cycles $N_{1/2}$ until the amplitude is halved also follows from the peak-decay formula.
+and $\zeta\approx0.050$. The number of cycles $N_{1/2}$ until the amplitude is halved (cycles to half amplitude) also follows from the peak-decay formula.
 
 $$
 N_{1/2}=\frac{\ln 2}{\delta}
@@ -221,7 +221,7 @@ The lab below pulls a 1 kg system with zero initial velocity out by 10 mm and re
 
 <Callout type="try">
 
-1. Play with the defaults $\zeta=0.05$, $f_n=5$ Hz and initial displacement 10 mm. Watch when the green damping-force arrow is longest, when it disappears, and which way it always points. After it stops, press "Restart → Next positive peak" and read the displacement after one swing, the peak ratio, $\delta$ and the number of cycles to half amplitude.
+1. Play with the defaults $\zeta=0.05$, $f_n=5$ Hz and initial displacement 10 mm. Watch when the green damping-force arrow is longest, when it disappears, and which way it always points. After it stops, press "Restart" and then "Next positive peak", and read the displacement after one swing, the peak ratio, $\delta$ and the number of cycles to half amplitude.
 2. Raise $\zeta$ to 0.20 and play again. See which changes more: the rhythm of the waveform or how fast it shrinks.
 3. Set $\zeta=0.05$ again and raise $f_n$ from 5 Hz to 10 Hz. Compare the number of cycles to half amplitude with the decay rate in seconds.
 4. Set $\zeta$ to 1.00 and 1.50 and play. Check whether the mass crosses equilibrium to the other side.
@@ -306,7 +306,9 @@ On the next page (P1-4), we apply a repeating force to a damped system and follo
 
 <Callout type="field" title="Where this leads in Part 2">
 
-If you spread a short ringing that dies away quickly into its size at each frequency (the spectrum, covered in detail in P2-1), you do not get a thin bar at one frequency but a broad hump around the natural frequency. The shorter the pulse, the wider it spreads; we look at that in P2-2. The exponential window used in impact testing (striking a structure with a hammer and measuring its ringing, P9-1) is a processing step that presses the end of a measured waveform down with an exponential function (P2-5). It adds damping artificially, so the $\zeta$ read from that waveform must be corrected.
+If you spread a short ringing that dies away quickly into its size at each frequency, you do not get a thin bar at one frequency but a broad hump around the natural frequency. Such a spread-out picture is called a spectrum, covered in detail in P2-1. The shorter the pulse, the wider it spreads; we look at that in P2-2.
+
+Impact testing (striking a structure with a hammer and measuring its ringing, P9-1) often uses an exponential window (P2-5), a processing step that presses the end of a measured waveform down with an exponential function. It adds damping artificially, so the $\zeta$ read from that waveform must be corrected.
 
 </Callout>
 

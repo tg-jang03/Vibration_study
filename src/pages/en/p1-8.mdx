@@ -4,7 +4,7 @@ title: 'P1-8 Frequencies Made by Machine Elements: How Many Times per Turn?'
 description: 'The counting rule (k times per turn → k × 1X), harmonics of shafts and couplings, blade pass and gear mesh, the cage, outer-race and inner-race frequencies of rolling bearings, the high band that impacts ring, the sub-1X lines of belts and oil films, electrical and structural frequencies that do not follow shaft speed, and the map of frequency bands of interest'
 sectionId: P1-8
 source: p1-8.mdx
-sourceHash: fe0303fc61
+sourceHash: 8fb5e33553
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -26,8 +26,8 @@ How many times per shaft turn does each of these parts hit the machine? If you k
 1. You can calculate the frequency of an element with the counting rule "k times per turn means k × 1X".
 2. You can find the blade-pass and gear-mesh frequencies, and the speed relation between two meshing gears.
 3. You can explain why the cage, outer-race and inner-race frequencies of a rolling bearing are not integer multiples of 1X.
-4. You know that an impact rings a high frequency (several kHz), and that some lines (belt, cage, oil film) lie below 1X.
-5. You can tell lines that follow shaft speed from lines that stay put (electrical, structural), and pick the frequency bands of interest from the machine's makeup.
+4. You know that an impact rings a high frequency (several kHz), and that some elements (belt, cage, oil film) make frequencies below 1X.
+5. You can tell frequencies that follow shaft speed from frequencies that stay put (electrical, structural), and pick the frequency bands of interest from the machine's makeup.
 
 </Callout>
 
@@ -85,14 +85,14 @@ $$
 <Callout type="example" title="A 15-tooth gear drives a 60-tooth gear">
 
 1. Small gear: 3000 rpm → $f_r$ = 50 Hz. It meshes 15 × 50 = **750 times** per second → $f_{GM}$ = 750 Hz
-2. The meshing tooth pairs are the same for both gears → the large gear also has 750 teeth passing per second
+2. Each meshing tooth pair is shared by both gears, so 750 teeth of the large gear also mesh per second
 3. Rotation frequency of the large gear: 60 × $f_2$ = 750 → $f_2$ = **12.5 Hz** (750 rpm)
 
 Two meshing gears share one mesh frequency ($z_1 f_1 = z_2 f_2$), and the ratio of their speeds is the inverse of the ratio of their tooth counts.
 
 </Callout>
 
-Within one gearbox the mesh frequency stands far above 1X. A 30-tooth gear at 3600 rpm gives 30 × 60 = 1800 Hz. If the strength of the mesh fluctuates once per shaft turn, small extra lines appear on both sides of the mesh frequency; that is covered in P2-8.
+In a gearbox the mesh frequency stands far above 1X. A 30-tooth gear at 3600 rpm gives 30 × 60 = 1800 Hz. If the strength of the mesh fluctuates once per shaft turn, small extra lines appear on both sides of the mesh frequency. These small lines (sidebands) are covered in P2-8.
 
 <Callout type="warn" title="'If I see a mesh or blade-pass line, something is broken'">
 
@@ -121,7 +121,7 @@ $$
 - $d$: ball diameter, $D$: pitch diameter (diameter of the circle the ball centers trace)
 - The formula for bearings where the balls touch at an angle (bearings with a contact angle) is covered in P7-5
 
-Now apply the counting rule. During one turn of the cage, all $N_r$ balls pass a point on the outer ring once each, and a point on the inner ring turns faster than the cage by $f_r - f_{FTF}$, so it meets balls that often.
+Now apply the counting rule. Let the number of balls be $N_r$. During one turn of the cage, all $N_r$ balls pass a point on the outer ring once each. A point on the inner ring makes $f_r - f_{FTF}$ more turns per second than the cage, and it meets all $N_r$ balls on each of those turns.
 
 $$
 f_{BPFO} = N_r\,f_{FTF} \approx 0.4\,N_r f_r, \qquad f_{BPFI} = N_r\,(f_r - f_{FTF}) \approx 0.6\,N_r f_r
@@ -137,7 +137,7 @@ FTF (Fundamental Train Frequency) is the rotation frequency of the cage; BPFO (B
 
 <Callout type="example" title="A 6205 bearing at 3000 rpm">
 
-1. Dimensions: 9 balls, $d$ = 7.94 mm, $D$ = 39.04 mm → $d/D$ = 0.203
+1. Dimensions (6205 is the designation of a common small ball bearing): 9 balls, $d$ = 7.94 mm, $D$ = 39.04 mm → $d/D$ = 0.203
 2. Cage: $f_{FTF}$ = 50 ÷ 2 × (1 − 0.203) = **19.9 Hz** (0.398X)
 3. Outer ring: $f_{BPFO}$ = 9 × 19.9 = **179.2 Hz** (3.585X) — rough value 0.4 × 9 × 50 = 180 Hz
 4. Inner ring: $f_{BPFI}$ = 9 × (50 − 19.9) = **270.8 Hz** (5.415X) — rough value 0.6 × 9 × 50 = 270 Hz
@@ -145,7 +145,7 @@ FTF (Fundamental Train Frequency) is the rotation frequency of the cage; BPFO (B
 
 </Callout>
 
-As in Figure 6, all four lines stand between the dotted harmonics, because the cage does not turn at an integer fraction of the shaft speed. So a **line at a non-integer multiple** is a clue to suspect a rolling bearing. In a real bearing the balls slip a little, and the measured values can differ from the calculation by 1 – 2 %. The ball spin (BSF) is used when a ball has a flaw; the literature uses BSF as either 1× or 2× the value, so this is sorted out in P7-5.
+As in Figure 6, all four lines stand between the dotted harmonics, because the cage does not turn at an integer fraction (1/2, 1/3 …) of the shaft speed. So a **line at a non-integer multiple** is a clue to suspect a rolling bearing. In a real bearing the balls slip a little, and the measured values can differ from the calculation by 1 – 2 %. The ball spin frequency (BSF) is used when a ball has a flaw. During one spin of the ball the flaw touches both the inner and the outer ring once, so some sources use BSF as it is and others use twice BSF. P7-5 sorts out this difference.
 
 ---
 
@@ -155,7 +155,7 @@ If the outer-ring flaw frequency is 179 Hz, is it enough to look only near 179 H
 
 <Figure {...F.impactRinging} />
 
-What a ball makes when it rolls over a flaw is not a smooth 179 Hz shake but a short **impact**. Like a bell struck by a hammer, the housing that takes the impact rings at its own natural frequency and then dies away (the natural frequency of P1-2, the damped free vibration of P1-3). The natural frequencies of stiff parts such as housings are several kHz.
+What a ball makes when it rolls over a flaw is not a smooth 179 Hz shake but a short **impact**. Like a bell struck by a hammer, the housing that takes the impact rings at its own natural frequency and then dies away (the natural frequency of P1-2, the damped free vibration of P1-3). The natural frequencies of stiff parts such as housings are often several kHz.
 
 What you can read in Figure 7:
 
@@ -163,7 +163,7 @@ What you can read in Figure 7:
 - **Middle**: one ring oscillates every 0.333 ms → 3 kHz
 - **Bottom**: most of the shaking gathers near 3 kHz, and 179 Hz shows up only as the **interval** at which the ringing repeats
 
-So to see damage in rolling bearings and gear teeth, the band of interest goes far above the flaw frequency, **up to several kHz**. The sensor that measures high frequencies well is the accelerometer (P3-1), and the method that reads the repetition interval out of the ringing band (envelope analysis) is covered in P5-6.
+So to see damage in rolling bearings and gear teeth, the band of interest goes far above the flaw frequency, **up to several kHz**. The sensor that measures high frequencies well is the accelerometer, which measures the acceleration of the spot it is attached to (P3-1). The method that reads the repetition interval out of the high band where the ringing gathers (the ringing band), envelope analysis, is covered in P5-6.
 
 <Callout type="warn" title="'Looking near the flaw frequency is enough'">
 
@@ -179,17 +179,17 @@ All the lines so far were at or above 1X. Are there elements that shake at frequ
 
 <Figure {...F.beltDrive} />
 
-A belt is much longer than a pulley is round. So while the belt goes around once, the pulley turns many times. A splice or a damaged spot on the belt passes the pulley once per belt turn.
+A belt is much longer than the circumference of the pulley, the wheel it runs on. So while the belt goes around once, the pulley turns many times. A splice or a damaged spot on the belt passes the pulley once per belt turn.
 
 $$
 f_{belt} = \frac{\pi D_p\,f_r}{L}
 $$
 
-- $D_p$: pulley diameter, $L$: belt length. $\pi D_p f_r$ is the distance the belt travels per second
+- $D_p$: pulley diameter (of the same pulley as $f_r$), $L$: belt length. $\pi D_p f_r$ is the distance the belt travels per second
 
-In the fan of Figure 8, the belt makes 11.65 turns per second. That is 0.39 times the motor 1X (29.7 Hz), and even lower than the fan-shaft 1X (14.8 Hz).
+In the belt-driven fan of Figure 8 (a motor turns the fan through a belt), the belt makes 11.65 turns per second. That is 0.39 times the motor 1X (29.7 Hz), and even lower than the fan-shaft 1X (14.8 Hz).
 
-Journal (sliding) bearings can also produce lines below 1X. As on the right of Figure 5, the oil between shaft and bearing flows at the shaft surface speed on the shaft side and at zero on the bearing side, so its average speed is about half. When the oil film becomes unstable, the shaft circles at about this average oil speed, and a line stands near **0.38 – 0.48X**. The main rotors of gas turbines and steam turbines for power generation run on such bearings, so this is an important line. When it becomes unstable is covered in P4-4, and how to sort it out in P7-4.
+Journal (sliding) bearings, the fluid-film bearings of P1-6, can also produce lines below 1X. As on the right of Figure 5, the oil between shaft and bearing flows at the shaft surface speed on the shaft side and at zero on the bearing side, so its average speed is about half. When the oil film becomes unstable, the shaft center circles at about this average oil speed (whirl, P1-6), and a line stands near **0.38 – 0.48X**. The main rotors of gas turbines and steam turbines for power generation run on such bearings, so this is an important line. When it becomes unstable is covered in P4-4, and how to sort it out in P7-4.
 
 <Callout type="warn" title="'Below 1X means an oil-film problem'">
 
@@ -213,13 +213,13 @@ What you can read in Figure 9:
 
 - **Straight lines from the origin**: speed-related lines. They move right as speed rises
 - **Vertical dotted lines**: $2 f_L$ and the pedestal natural frequency. They stay put when the speed changes
-- **Meeting points**: the blade pass passes the pedestal natural frequency (85 Hz) at 729 rpm, and 2X at 2550 rpm. The same thing that happened in P1-7, where the amplitude grew as 1X passed a natural frequency, can happen at those speeds
+- **Meeting points**: the blade pass of this pump (7 blades) passes the pedestal natural frequency (85 Hz) at 729 rpm, and 2X at 2550 rpm. The same thing that happened in P1-7, where the amplitude grew as 1X passed a natural frequency, can happen at those speeds
 
 So changing the speed is a good way to find out what a line is. If it follows, it is speed-related; if it stays, it is electrical or structural. This is the "how does it change with operating conditions" item of the five pieces of evidence you will see in P1-9.
 
 <Callout type="warn" title="'2X and 120 Hz can always be told apart'">
 
-A 2-pole generator running at 60 Hz line frequency turns at 3600 rpm, so its 2X is exactly 120 Hz. Frequency alone cannot separate 2X from $2 f_L$. Even a 2-pole induction motor (3570 rpm) has its 2X at 119 Hz, only 1 Hz from 120 Hz. The measurement conditions that separate two lines this close are covered in P2-4, and ways to separate them with other evidence in P7-7.
+A 2-pole generator running at 60 Hz line frequency turns at 3600 rpm, so its 2X is exactly 120 Hz. Frequency alone cannot separate 2X from $2 f_L$. The induction motor, the common AC motor, turns a little slower than the supply. So even a 2-pole induction motor (3570 rpm) has its 2X at 119 Hz, only 1 Hz from 120 Hz. The measurement conditions that separate two lines this close are covered in P2-4, and ways to separate them with other evidence in P7-7.
 
 </Callout>
 
@@ -265,7 +265,7 @@ In the lab below you draw the map of four kinds of machine yourself.
 1. In the initial state (motor-pump, 3570 rpm, 7 blades, 9 balls), look at the map and the table below it. Which lines are in the 1X – 10X band?
 2. Lower the speed to 3000 rpm. Find the lines that move left and the lines that stay put.
 3. Change the number of balls from 9 to 12. Check in the readouts what X the BPFO and BPFI become.
-4. Change the machine to "GT-generator shaft line". Where do 2X and $2 f_L$ stand? What is the highest line?
+4. Change the machine to "GT-generator shaft line" (GT stands for gas turbine). Where do 2X and $2 f_L$ stand? What is the highest line?
 
 </Callout>
 
@@ -331,7 +331,7 @@ On the next page (P1-9) we look at what happens when these lines are added toget
 
 <Callout type="field" title="Where this leads in Part 2">
 
-The upper end of the band of interest is the basis for choosing the measurement range (F_max) (P2-3, P2-9). To separate two close lines such as 119 Hz and 120 Hz, you must measure for a long time (P2-4). The small lines beside the mesh frequency are covered in P2-8, and the sensor that measures the high band where impacts ring in P3-1.
+The upper end of the band of interest is the basis for choosing the highest frequency to measure (F_max) (P2-3, P2-9). To separate two close lines such as 119 Hz and 120 Hz, you must measure for a long time (P2-4). The small lines beside the mesh frequency are covered in P2-8, and the sensor that measures the high band where impacts ring in P3-1.
 
 </Callout>
 

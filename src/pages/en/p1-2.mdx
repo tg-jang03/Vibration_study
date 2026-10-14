@@ -4,7 +4,7 @@ title: P1-2 Natural Frequency
 description: Find the natural frequency from the equation of motion, and learn with a sine-wave lab and a mass-spring lab how mass, stiffness and initial conditions affect the rhythm and the amplitude
 sectionId: P1-2
 source: p1-2.mdx
-sourceHash: 178e73d8da
+sourceHash: 8be9e716e7
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -88,7 +88,7 @@ $$
 \ddot{x}(t)=-\omega_n^2 A\cos(\omega_n t+\varphi)=-\omega_n^2x(t)
 $$
 
-Comparing with $\ddot{x}=-(k/m)x$ in the equation of motion, we need $\omega_n^2=k/m$. Here $\omega_n$ is a number that tells how fast the system swings by itself. Its exact meaning comes below, in angular frequency and in the natural frequency of Section 3.
+Comparing with $\ddot{x}=-(k/m)x$ in the equation of motion, we need $\omega_n^2=k/m$. Here $\omega_n$ is a number that tells how fast the system (the mass and spring taken together as one object of study) swings by itself. Its exact meaning comes below, in angular frequency and in the natural frequency of Section 3.
 
 This smoothly repeating cosine or sine shape is called a <strong>sinusoid</strong> (sine wave). A sine wave is fully determined by three numbers.
 
@@ -136,7 +136,9 @@ In the lab below, change the amplitude, frequency and phase one at a time. The d
 
 In step 1, doubling the frequency halves the period from 0.2 s to 0.1 s, and the waves in the 1-second window go from 5 to 10. The amplitude stays the same. At $-90^\circ$ in step 2, the peak comes 1/4 of a period later, that is $0.2 \times 1/4 = 0.05$ s. The $180^\circ$ of step 3 is the reference flipped upside down ($-A\cos 2\pi f t$). As in step 4, changing only the amplitude changes only the height; the period stays. Phase only shifts the wave along the time axis and changes neither the height nor the rhythm. **Amplitude, frequency and phase carry different information.**
 
-At $+90^\circ$ in step 5, the arrow starts on the left, turned 90° counterclockwise from the top. It starts at height 0 and goes down as it turns counterclockwise, so the wave also goes down from 0. It has already passed the top (0°) 1/4 of a period earlier, so it is **ahead of** the reference. Conversely, $-90^\circ$ starts on the right, 1/4 turn short of the top, and is late. Once you see phase as "the starting angle of the arrow," you can read the arrow pictures in P2-8 (sidebands), the phase measurement in P3-3 and the full spectrum in P5-3 in the same way. The 0° is placed at the top so that the height of the arrow tip reads directly as the signal value. Note, however, that the phase measurement in P3-3 uses a delay angle measured in the opposite direction (clockwise), so there you only reverse the direction when reading.
+At $+90^\circ$ in step 5, the arrow starts on the left, turned 90° counterclockwise from the top. It starts at height 0 and goes down as it turns counterclockwise, so the wave also goes down from 0. It has already passed the top (0°) 1/4 of a period earlier, so it is **ahead of** the reference. Conversely, $-90^\circ$ starts on the right, 1/4 turn short of the top, and is late.
+
+Once you see phase as "the starting angle of the arrow," you can read the arrow pictures later in the site the same way: P2-8 (sidebands), P3-3 (phase measurement on rotating machines) and P5-3 (full spectrum). Each of those terms is explained on its own page. The 0° is placed at the top so that the height of the arrow tip reads directly as the signal value. Note, however, that P3-3 measures phase as a lag angle, "how late is it?" On the same arrow picture that is an angle measured clockwise, so there you only reverse the direction when reading.
 
 ---
 
@@ -176,7 +178,7 @@ f_n=\frac{31.62}{2\pi}=5.033\ \mathrm{Hz},\qquad
 T=\frac{1}{5.033}=0.1987\ \mathrm{s}
 $$
 
-This is why the mass on the previous page came back about every 0.1987 s.
+This is why the mass pulled 10 mm and released in P1-1 came back to its starting point about every 0.1987 s.
 
 </Callout>
 
@@ -200,7 +202,7 @@ Plucking the same object harder usually makes the amplitude larger, but within t
 
 ## 5. How you let go at the start sets the amplitude and the phase
 
-Let the initial position be $x_0$ and the initial velocity $v_0$. The undamped free response can be written as
+Let the initial position be $x_0$ and the initial velocity $v_0$. Without damping (the action that makes vibration die away, P1-3), the motion after the mass is left alone with no outside force, called the <strong>free response</strong>, can be written as
 
 $$
 x(t)=x_0\cos\omega_n t+\frac{v_0}{\omega_n}\sin\omega_n t
@@ -246,11 +248,11 @@ The velocity amplitude is $\omega A$ and the acceleration amplitude is $\omega^2
 | Passing equilibrium | 0 | Maximum magnitude | 0 |
 | Left end point | $-A$ | 0 | Maximum in the positive direction |
 
-In the basic model, $A=10$ mm and $\omega_n=31.62$ rad/s, so the velocity amplitude is about $0.316$ m/s and the acceleration amplitude is $10.0$ m/s².
+If the basic model used since P1-1 ($m=1$ kg, $k=1000$ N/m) is pulled 10 mm, $A=10$ mm and $\omega_n=31.62$ rad/s, so the velocity amplitude is about $0.316$ m/s and the acceleration amplitude is $10.0$ m/s².
 
 <Callout type="field" title="The numbers depend on what you measure the same vibration with">
 
-A sensor records one of displacement, velocity or acceleration. For the same sine wave, the velocity amplitude is multiplied by $\omega$ and the acceleration amplitude by $\omega^2$. How to read a measured waveform as amplitude, frequency and phase and how to measure the phase difference between two waveforms is covered in P2-1; real unit conversion and frequency-by-frequency interpretation continue in P2-7.
+A sensor records one of displacement, velocity or acceleration. For the same sine wave, the velocity amplitude is multiplied by $\omega$ and the acceleration amplitude by $\omega^2$. Which units displacement, velocity and acceleration are read in on a measurement screen is covered in P2-1, and how to convert among the three using the frequency continues in P2-7.
 
 </Callout>
 
@@ -277,7 +279,7 @@ At $t=0$ in step 4, the displacement and the acceleration are 0 and only the vel
 
 ### 7.1 Estimating the rhythm from the static sag
 
-This time, put the mass on a support, standing vertically. If the weight $mg$ of the mass ($g \approx 9.81\ \mathrm{m/s^2}$, gravitational acceleration) makes the support sag by $\delta_{st}$, then in static equilibrium
+This time, put the mass on a support, standing vertically. If the weight $mg$ of the mass ($g \approx 9.81\ \mathrm{m/s^2}$, gravitational acceleration) makes the support sag by $\delta_{st}$ and come to rest, then in this static equilibrium (balance with no motion)
 
 $$
 k\delta_{st}=mg

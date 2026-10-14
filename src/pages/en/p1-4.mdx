@@ -4,7 +4,7 @@ title: P1-4 Forced Vibration and Resonance
 description: The transient and steady-state response when a periodic force keeps pushing, how the amplitude ratio and phase depend on the frequency ratio, the role of resonance and damping, the frequency response (FRF), and beating — learned with the forced-vibration lab
 sectionId: P1-4
 source: p1-4.mdx
-sourceHash: e7c61b3a15
+sourceHash: d38c0a909a
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -62,7 +62,7 @@ When you start applying the force to a system at rest, the response is the sum o
 
 <Figure {...F.transientAndSteady} />
 
-Figure 2 shows a 5 Hz system shaken at 8 Hz. For the first second or so the two rhythms are mixed and the waveform looks ragged. The transient shrinks along the envelope $e^{-\zeta\omega_n t}$ from P1-3, so it drops to $1/e$ (about 37 %) every $\tau = 1/(\zeta\omega_n) \approx 0.64$ s. After about 1.9 s (3τ), the actual displacement almost overlaps the gray dotted line, which is the 8 Hz steady-state response.
+Figure 2 shows a system with a 5 Hz natural frequency shaken by an 8 Hz force. For the first second or so the two rhythms are mixed and the waveform looks ragged. The transient shrinks along the envelope $e^{-\zeta\omega_n t}$ from P1-3, so it drops to $1/e$ (about 37 %) every $\tau = 1/(\zeta\omega_n) \approx 0.64$ s. After about 1.9 s (3τ), the actual displacement almost overlaps the gray dotted line, which is the 8 Hz steady-state response.
 
 The displacement in steady state has this form.
 
@@ -88,7 +88,7 @@ $$
 X_{st}=\frac{F_0}{k}
 $$
 
-$X_{st}$ is the static deflection. We then compare the rhythm of the force with the natural frequency as the <strong>Frequency Ratio</strong>.
+$X_{st}$ is the deflection when the force is simply held in place, the static deflection (P1-2 §7.1). We then compare the rhythm of the force with the natural frequency as the <strong>Frequency Ratio</strong>.
 
 $$
 r=\frac{\omega}{\omega_n}=\frac{f}{f_n}
@@ -101,7 +101,7 @@ $$
 \varphi=\operatorname{atan2}\!\left(2\zeta r,\ 1-r^2\right)
 $$
 
-$\operatorname{atan2}(y, x)$ is an angle calculation that tells the angle of the point $(x, y)$ apart over the full range from 0° to 180°. The formulas look long, but once you split $r$ into three regions as in Figure 3, the meaning is simple.
+$\operatorname{atan2}(y, x)$ is the angle at which you see the point $(x, y)$ from the origin. Unlike $\tan^{-1}(y/x)$, it also handles negative $x$ (angles above 90°), so here it covers the whole range from 0° to 180°. The formulas look long, but once you split $r$ into three regions as in Figure 3, the meaning is simple.
 
 <Figure {...F.threeRegimes} />
 
@@ -137,7 +137,7 @@ $$
 
 For $\zeta = 0.05$ that is 10 times; for $\zeta = 0.01$ it is 50 times. This amplification factor is also called the Q factor. Strictly, the peak is slightly higher, $1/(2\zeta\sqrt{1-\zeta^2})$ at $r = \sqrt{1-2\zeta^2}$, but at $\zeta = 0.05$ it is 10.01, a difference of 0.1 %.
 
-The washing machine that shakes at only one moment during the spin is explained by this peak as well. Only while the drum speeds up and its rhythm passes the natural frequency of the machine body and its mount ($r \approx 1$) does it shake hard, and after passing it settles down again. However, the force made by a rotating body grows as the rotation gets faster; that case is covered separately in P1-7.
+The washing machine that shakes at only one moment during the spin is explained by this peak as well. Only while the drum speeds up and its rhythm passes the natural frequency of the machine body and its mount ($r \approx 1$) does it shake hard, and after passing it settles down again. However, like the force from laundry bunched to one side of the drum, a force made by a rotating body grows as the rotation gets faster. Such a force (unbalance) is covered separately in P1-7.
 
 <Figure {...F.phaseCurve} />
 
@@ -169,7 +169,7 @@ If you know the FRF, you can compute the response right away for a force of any 
 
 <Callout type="field" title="Measured vibration size = force × FRF">
 
-What a sensor measures is the response. If vibration at some rhythm comes out large, it may be that the force at that rhythm was large, or that the FRF at that rhythm was large (resonance). In a rotating machine this happens at the rotating speed where a force with the same rhythm as the rotation (unbalance, P1-7) meets the natural frequency. The impact test that measures a structure's FRF directly is covered in P5-3 and P9-1.
+What a sensor measures is the response. If vibration at some rhythm comes out large, it may be that the force at that rhythm was large, or that the FRF at that rhythm was large (resonance). In a rotating machine this happens at the rotating speed where a force with the same rhythm as the rotation meets the natural frequency. That force arises when the center of mass of the rotating part sits slightly off the axis of rotation, and it is called unbalance (P1-7). The impact test, which measures a structure's FRF directly by striking it with a hammer, is covered in P9-1, and computing an FRF from the two signals of force and response is covered in P5-3.
 
 </Callout>
 
@@ -193,7 +193,7 @@ The force applied in Figure 7 has a constant size from start to finish. The surg
 
 ## 7. Shake it yourself
 
-The lab below applies a force to a system with a mass of 1 kg and a natural frequency of 5 Hz, sized so that $X_{st} = 10$ mm. The orange line in the time waveform is the force divided by $k$ and drawn in mm, so you can compare its size directly with the blue displacement.
+The lab below applies a force to a system with a mass of 1 kg and a natural frequency of 5 Hz, sized so that the static deflection $X_{st}$ is 10 mm. The orange line in the time waveform is the force divided by $k$ and drawn in mm, so you can compare its size directly with the blue displacement.
 
 <Callout type="try">
 
@@ -270,7 +270,7 @@ The next page (P1-5) covers why a system with several masses has several natural
 
 <Callout type="field" title="Leading into Part 2">
 
-P2-1 separates the spectrum, which is the component list of a signal, from the FRF, which is a property of the system. The **position** of a spectrum peak is the rhythm of the cause (the force), and its **height** is "force × the FRF at that rhythm." To separate a sharp resonance peak with small damping, you need enough frequency resolution (the ability to tell two close frequencies apart, P2-4), and beating is revisited from the signal side in P2-8.
+P2-1 separates the spectrum, the component list of a signal spread out by frequency, from the FRF, which is a property of the system. The **position** of a spectrum peak is the rhythm of the cause (the force), and its **height** is "force × the FRF at that rhythm." To separate a sharp resonance peak with small damping, you need enough frequency resolution (the ability to tell two close frequencies apart, P2-4), and beating is revisited from the signal side in P2-8.
 
 </Callout>
 

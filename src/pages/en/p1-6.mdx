@@ -4,7 +4,7 @@ title: 'P1-6 What a Rotating Machine Is Made Of: What Turns and What Supports It
 description: 'Motor and rotor, driver and driven machine, shaft, coupling, bearings and support system, lateral, axial and torsional motion — laying out the machine and tying it to the MCK model.'
 sectionId: P1-6
 source: p1-6.mdx
-sourceHash: ed9266ab8e
+sourceHash: 2b34a46783
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -51,7 +51,7 @@ Here we use ordinary motor-pump and turbine-generator arrangements as examples. 
 
 ## 2. What turns and what stays still inside a motor?
 
-In simple terms, a motor has a turning **rotor** and a fixed **stator**. The electromagnetic interaction between the two produces torque — the effect that twists the shaft around. The electrical details and faults come in Part 7; here we start with where the parts are.
+In simple terms, a motor has a turning **rotor** and a fixed **stator**. The electromagnetic interaction between the two produces torque — the effect that twists the shaft around. The electrical details and faults come in Part 7 (P7-7); here we start with where the parts are.
 
 <Figure {...F.motorParts} />
 
@@ -64,7 +64,7 @@ What you can read from Figure 2:
 
 <Callout type="example" title="What is the rotor of a pump or turbine?">
 
-In a pump, the vaned wheel that does work on the fluid is the impeller; in a turbine, the vanes are blades. The shaft together with the parts attached to it and turning with it can be called the rotor. Rotor dynamics looks at the mass and deformation of this rotating assembly together.
+In a pump, the vaned wheel that does work on the fluid is the impeller; in a turbine, the vanes are blades. The shaft together with the parts attached to it and turning with it can be called the rotor. Rotor dynamics, the field that studies the vibration of turning shafts and their parts (Part 4), looks at the mass and deformation of this rotating assembly together.
 
 </Callout>
 
@@ -76,16 +76,16 @@ If the motor and pump are installed separately, the two shafts are joined by a *
 
 <Figure {...F.shaftCoupling} />
 
-In the top of Figure 3, the torque of the motor rotor passes through the coupling to the pump impeller. Below, the loads play different roles.
+In the top of Figure 3, the torque of the motor rotor passes through the coupling to the pump impeller. Below, the shaft is seen end-on to separate two kinds of load acting on it.
 
 - **Torque**: the effect that turns or twists about the shaft. Its unit is N·m.
-- **Radial force**: a force acting at right angles to the shaft axis. The rotating force produced when mass is not evenly distributed around the shaft (unbalance) belongs here.
+- **Radial force**: a force acting at right angles to the shaft axis. The force that turns with the shaft when mass is not evenly spread around it (unbalance, P1-7) belongs here.
 
-Torque being transmitted steadily is not the same phenomenon as the shaft center swaying sideways. The unbalance model in the next section, P1-7, deals mainly with the second motion.
+Torque being transmitted steadily is not the same phenomenon as the shaft center swaying sideways. The unbalance model on the next page, P1-7, deals mainly with the sideways swaying of the shaft center.
 
 <Callout type="warn" title="Having a coupling does not remove the need for alignment">
 
-A flexible coupling can allow relative displacement within a set range, but it does not absorb shaft misalignment without limit. This page looks only at how things are connected. Diagnosing misalignment continues in Part 7, and the alignment work in Part 9.
+A flexible coupling allows relative displacement within a set range, so the two shafts can still turn when they are slightly offset. But it cannot absorb shaft misalignment (the centerlines of the joined shafts being offset) without limit. This page looks only at how things are connected. Diagnosing misalignment continues in P7-3 of Part 7, and the alignment work in P9-3 of Part 9.
 
 </Callout>
 
@@ -97,7 +97,7 @@ A bearing supports the shaft, but real parts deform a little under load. The bea
 
 ### Support method: rolling elements or an oil film?
 
-A **rolling-element bearing** transmits load through rolling elements such as balls or rollers. The inner race, outer race, balls and cage make up this arrangement. How many times per revolution these parts shake the machine is counted in P1-8.
+A **rolling-element bearing** transmits load through rolling elements such as balls or rollers. It consists of an inner ring (inner race) fitted on the shaft, an outer ring (outer race) fitted in the housing, the balls rolling between them, and a cage that keeps the balls spaced apart. How many times per revolution these parts shake the machine is counted in P1-8.
 
 A **fluid-film bearing** supports the rotating part with the pressure built up by a thin film of lubricating oil. The example on this page is a fluid-film journal bearing that wraps around the cylindrical shaft portion, the **journal**.
 
@@ -128,17 +128,17 @@ Outside the bearing are the housing, the **pedestal** that the housing sits on, 
 
 <Figure {...F.supportPath} />
 
-Following the radial load path in Figure 5: shaft → bearing → housing and pedestal → foundation. If the foundation deforms or moves, the conditions supporting the shaft change too. "Fixed part" means there is no intended spinning, not that vibration is necessarily zero.
+In Figure 5 the radial load travels from the shaft through the bearing, the housing and the pedestal to the foundation. If the foundation deforms or moves, the conditions supporting the shaft change too. "Fixed part" means a part that is not meant to turn, not a part that does not vibrate.
 
 <Callout type="field" title="Where the sensor is mounted matters too">
 
-A non-contact displacement sensor that looks at the shaft reads the shaft's motion relative to the fixed part the probe is mounted on. An accelerometer on the housing reads the motion of that housing. Even on the same load path, the two values are not always the same. Measurement principles and selection are covered in <a href={withBase('/en/p3-1/')}>P3-1</a>, and the relationship between shaft and probe in <a href={withBase('/en/p3-2/')}>P3-2</a>.
+A non-contact displacement sensor measures the distance from its tip (the probe) to the shaft surface without touching the shaft. So it reads the shaft's motion relative to the fixed part the probe is mounted on. An accelerometer on the housing (a sensor that measures the acceleration of the spot it is attached to) reads the motion of that housing. Even on the same load path, the two values are not always the same. Measurement principles and selection are covered in <a href={withBase('/en/p3-1/')}>P3-1</a>, and the relationship between shaft and probe in <a href={withBase('/en/p3-2/')}>P3-2</a>.
 
 </Callout>
 
 ## 5. What is the difference between turning and vibrating?
 
-The shaft's own continuous turning is called **spin**. We then look separately at which direction of vibration is superimposed on it.
+The shaft's own continuous turning is called **spin**. The vibrations superimposed on spin are split into three by the direction of motion.
 
 <Figure {...F.motionDirections} />
 
@@ -150,17 +150,17 @@ The shaft's own continuous turning is called **spin**. We then look separately a
 
 The torsion at the bottom of Figure 6 does not mean merely that the shaft rotates. It is **a motion in which the relative angle between different positions along the shaft changes**. Even a shaft that transmits torque can have torsional vibration on top of it.
 
-<Callout type="warn" title="Repetition rate alone cannot tell you the direction of motion">
+<Callout type="warn" title="Frequency alone cannot tell you the direction of motion">
 
-Even at the same repetition rate, whether the motion is lateral, axial or torsional depends on the measurement direction and the physical quantity together. The sideways trajectory of the shaft center is not a plot of the shaft's twist angle.
+Even at the same frequency (number of repetitions per second), you can tell whether the motion is lateral, axial or torsional only by looking at the measurement direction and the physical quantity measured together. The trajectory the shaft center traces sideways is not a plot of the shaft's twist angle.
 
 </Callout>
 
-We also have to distinguish the shaft spinning from the shaft center orbiting around, called **whirl**. Whirl and the shapes of shaft bending are followed up in P4-2 with figures and a rotor model.
+We also have to distinguish the shaft spinning from the shaft center itself moving around a circle, called **whirl**. Whirl and the shapes of shaft bending are followed up in P4-2 with figures and a rotor model.
 
 ## 6. Which parts of the machine are m, c and k?
 
-The MCK in P1-1 ~ P1-5 is a model that lumps mass, damping and stiffness to compute motion. When reducing a real machine to a model, first decide **which direction and which mode it represents**.
+The MCK in P1-1 ~ P1-5 is a model that lumps mass, damping and stiffness to compute motion. When reducing a real machine to a model, first decide **which direction and which mode (P1-5) it represents**.
 
 | Model value | Link to the machine's makeup | Caution |
 |---|---|---|
@@ -189,7 +189,7 @@ $k_{sh}$ is the shaft, $k_{br}$ the bearing along this one path, and $k_{sup}$ t
 
 1. At the default mass of 100 kg and support stiffness of 1 MN/m, read the equivalent stiffness and natural frequency.
 2. Lower the support stiffness to 0.25 MN/m and see whether $f_n$ drops even though the shaft and bearing are the same.
-3. Raise the support stiffness to 4 MN/m and see how close you get to the orange dashed line.
+3. Raise the support stiffness to 4 MN/m and see how close you get to the orange dashed line (the natural frequency with an infinitely stiff support).
 4. After returning to the starting values, change only the mass to 200 kg and compare the frequency ratio.
 
 </Callout>
@@ -202,7 +202,7 @@ Conversely, raising the support stiffness to 4 MN/m gives $f_n$ of about 12.03 H
 
 <Callout type="warn" title="Do not lump the stiffness of a real machine in series without thought">
 
-A real model has to account for bearing positions, load directions, the distributed mass and bending of the shaft, and multiple support paths. This lab shows that the response can change when the support stiffness changes; it is not a lab for judging real operating amplitude, critical speed or stability with this formula. Damping and rotating effects are also left out here.
+A real model has to account for bearing positions, load directions, the distributed mass and bending of the shaft, and multiple support paths. This lab shows that the response can change when the support stiffness changes; it is not a lab for judging real operating amplitude, critical speed (P1-7) or stability with this formula. Damping and rotating effects are also left out here.
 
 </Callout>
 
@@ -216,7 +216,7 @@ A real model has to account for bearing positions, load directions, the distribu
 | Spin is distinct from lateral, axial and torsional vibration | Whirl and the rotor model in P4-2 |
 | m·c·k are model values fitted to the motion of interest | Unbalance response in P4-1, fluid-film stability in P4-4 |
 
-Here we sorted out what moves and what supports. The next section, P1-7, covers the force a turning shaft produces (unbalance), and <a href={withBase('/en/p1-8/')}>frequencies by element</a> in P1-8 covers how many times per revolution each element shakes the machine. How to measure them is left to Part 3, and the question of pinning down faults to Part 7.
+Here we sorted out what moves and what supports. The next section, P1-7, covers the force a turning shaft produces (unbalance), and <a href={withBase('/en/p1-8/')}>frequencies by element</a> in P1-8 covers how many times per revolution each element shakes the machine. How to measure this vibration is left to Part 3, and working out which fault it points to is left to Part 7.
 
 ## Review questions
 
@@ -262,7 +262,7 @@ No. You need the real modes, excitation, damping and rotating effects. The natur
 
 </details>
 
-Next is <a href={withBase('/en/p1-7/')}><strong>P1-7 Vibration of rotating machinery: unbalance and 1X</strong></a>. Now that we have sorted out what turns and what supports it, we look at the force a turning shaft produces and its vibration. Reading the response of a shaft train quantitatively (Bode/Polar, amplification factor) continues in <a href={withBase('/en/p4-1/')}>P4-1</a> of Part 4.
+Next is <a href={withBase('/en/p1-7/')}><strong>P1-7 Vibration of rotating machinery: unbalance and 1X</strong></a>. Now that we have sorted out what turns and what supports it, we look at the force a turning shaft produces and its vibration. Reading the response of a shaft train in numbers (Bode and Polar plots, which draw amplitude and phase against speed, and the amplification factor, which tells how many times the amplitude grows at resonance) continues in <a href={withBase('/en/p4-1/')}>P4-1</a> of Part 4.
 
 <Callout type="field" title="Where this leads into Part 2">
 

@@ -4,7 +4,7 @@ title: 'P4-3 Fluid-film journal bearings and shaft centerline'
 description: 'How an oil film carries the load, how to compute radial clearance, eccentricity ratio and attitude angle, and how to recover the mean shaft position at each speed from the DC voltages of two probes.'
 sectionId: P4-3
 source: p4-3.mdx
-sourceHash: c5524f7591
+sourceHash: 1b9b1cae93
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -34,13 +34,13 @@ In P4-2 we looked at the orbit that the shaft center traces during one revolutio
 
 ## 1. Where does the film pressure come from?
 
-In P1-6 we said that a fluid-film bearing carries the load with a film of oil between the shaft and the bearing. The cylindrical part of the shaft that goes into the bearing is called the <strong>journal</strong>. If the journal sits lower than the bearing center, the clearance around it is not uniform.
+In P1-6 §4 we said that a fluid-film bearing carries the load with a film of oil between the shaft and the bearing. The cylindrical part of the shaft that sits inside the bearing and is supported by it is the <strong>journal</strong>. If the journal sits lower than the bearing center, the clearance around it is not uniform.
 
 The rotating journal surface drags oil along. When the oil goes from a wide place into a narrow one, viscosity builds up pressure. When the force obtained by adding up this pressure over the journal's circumference and length balances the load acting downward, the mean position at which the shaft floats is fixed.
 
 <Figure {...F.oilWedge} />
 
-In Figure 1, the upper curve is the clearance and the lower curve is the pressure. The place of maximum pressure and the place of minimum clearance are not the same (in this example the pressure peaks at θ ≈ 155° and the clearance is smallest at 180°). So the net force from the pressure is not exactly aligned with the line of centers either. That is why the shaft does not just rise straight up but also moves sideways.
+In Figure 1, the upper curve is the clearance and the lower curve is the pressure. The place of maximum pressure and the place of minimum clearance are not the same (with θ measured from the maximum clearance in the spin direction, in this example the pressure peaks at θ ≈ 155° and the clearance is smallest at 180°). So the net force from the pressure is not exactly aligned with the line of centers either. That is why the shaft does not just rise straight up but also moves sideways.
 
 <Callout type="term" title="Hydrodynamic and hydrostatic support">
 
@@ -48,7 +48,7 @@ In Figure 1, the upper curve is the clearance and the lower curve is the pressur
 
 </Callout>
 
-The cylindrical bearing model on this page has no externally pressurized support. At 0 rpm it shows the cold reference point where the shaft rests on the bottom. At low speed and high load the minimum film can thin to a few µm, which is comparable to the surface roughness and puts you in the mixed-lubrication regime; this model does not cover that regime. Nor is it a model for calculating the start-up procedure or the allowable contact conditions of real equipment.
+The cylindrical bearing model on this page has no externally pressurized support. At 0 rpm it shows the cold reference point (the reference position taken while the machine is stopped and cool) where the shaft rests on the bottom. At low speed and high load the minimum film can thin to a few µm, which is comparable to the surface roughness and puts you in the mixed-lubrication regime; this model does not cover that regime. Nor is it a model for calculating the start-up procedure or the allowable contact conditions of real equipment.
 
 ---
 
@@ -58,7 +58,7 @@ Let the bearing center be O and the geometric center of the journal be C. The <s
 
 <Figure {...F.clearance} />
 
-The distance $e$ from O to C is the <strong>eccentricity</strong> at this section. The unbalance eccentricity in P4-2 was the distance from the geometric center of the shaft to its center of mass. The e here is the distance <strong>between the bearing center and the journal center</strong>, so it is a different quantity.
+The distance $e$ from O to C is the <strong>eccentricity</strong> at this section. The unbalance eccentricity e in P4-2 was the distance from the geometric center C of the shaft to its center of mass G. The e here is the distance <strong>between the bearing center and the journal center</strong>, so it is a different quantity.
 
 The <strong>eccentricity ratio</strong> is the eccentricity divided by the radial clearance.
 
@@ -103,11 +103,11 @@ In bearing literature the same group is often written as the <strong>Sommerfeld 
 
 <Figure {...F.equilibrium} />
 
-Changing only the speed changes both the distance and the direction of the center. If you draw it as "the shaft always rises straight up as speed increases", you miss this sideways motion.
+As Figure 3 shows, changing only the speed changes both the distance (eccentricity ratio) and the direction (attitude angle) of the journal center. If you draw it as "the shaft always rises straight up as speed increases", you miss this sideways motion.
 
 <Callout type="warn" title="Whose solution is this?">
 
-The example is a <strong>short bearing</strong> approximation with R = 50 mm, L = 25 mm and Cr = 100 µm. It assumes isothermal, constant-viscosity, incompressible, laminar flow, and uses the half-Sommerfeld condition, in which only the converging half is taken to have positive pressure. It does not replace a precise analysis of a real finite-length bearing or of a <strong>tilting-pad</strong> bearing, whose pads move.
+The example is a <strong>short bearing</strong> approximation with R = 50 mm, L = 25 mm and Cr = 100 µm. It assumes isothermal, constant-viscosity, incompressible, laminar flow, and uses the half-Sommerfeld condition, in which only the half where the clearance narrows is taken to have positive pressure and the other half is set to zero. It does not replace a precise analysis of a real finite-length bearing or of a <strong>tilting-pad</strong> bearing, whose pads tilt as they move.
 
 </Callout>
 
@@ -125,7 +125,7 @@ For the cold state we assume the shaft rests on the bottom and set $(x_{\rm cold
 
 <Callout type="field" title="A mean point does not fix a single cause">
 
-If the shaft moves closer to the center at the same speed, the load may have decreased or the viscosity may have increased. A <strong>light load</strong>, where the load on the bearing is small, is a clue to connect with a dynamic-stability check, but a small ε by itself is not a verdict of instability. You also have to look at the orbit, the vibration frequency and the operating conditions.
+If the shaft moves closer to the center at the same speed, the load may have decreased or the viscosity may have increased. A <strong>light load</strong>, where the load on the bearing is small, is a clue for checking dynamic stability (P4-4), but a small ε by itself is not a verdict of instability. You also have to look at the orbit, the vibration frequency and the operating conditions.
 
 </Callout>
 
@@ -133,13 +133,13 @@ If the shaft moves closer to the center at the same speed, the load may have dec
 
 ## 5. To turn two DC voltages into X and Y, you need a reference point
 
-The proximity sensor in P3-2 expressed the gap between the surface and the probe as a voltage. The <strong>DC component</strong>, the average over some period, is linked to the mean gap. The <strong>AC component</strong>, the deviation from the average, is linked to the vibration around that position.
+The proximity probe in P3-2 expressed the gap between the shaft surface and the probe as a voltage (§2). In that signal, the <strong>DC component</strong>, the average over some period, is linked to the mean gap (§3). The <strong>AC component</strong>, the deviation from the average, is linked to the vibration around that position.
 
-Suppose the probes are mounted at A 45° and B 135° from +X. Even though the two probes are at right angles to each other, A and B are not the horizontal X and vertical Y.
+Suppose probe A looks at the shaft from 45° and probe B from 135°, measured from +X. Even though the two probes are at right angles to each other, A and B are not the horizontal X and vertical Y.
 
 <Figure {...F.probes} />
 
-Writing the sensitivity magnitude as a positive S, the linear relation in this example is $V=-S d$, where d is the gap. When the shaft gets closer to the probe, the gap shrinks and the magnitude of the negative voltage shrinks. The change after subtracting the cold voltage is
+Writing the sensitivity magnitude as a positive S, the linear relation in this example is $V=-S d$, where d is the gap. When the shaft gets closer to the probe, the gap shrinks and the magnitude of the negative voltage shrinks. Subtracting the cold voltage and dividing by S gives the change q, which is how far the shaft has moved toward each probe:
 
 $$
 q_A=\frac{V_A-V_{A,\rm cold}}{S}=\frac{\Delta x+\Delta y}{\sqrt2},\quad
@@ -163,7 +163,7 @@ At 3000 rpm, 1000 N and μ = 20 mPa·s, the model gives X = 43.97 µm and Y = �
 
 1. At the defaults of 3000 rpm, 1000 N and 20 mPa·s, check that ε = 0.6758 and the minimum film = 32.42 µm. The two position markers should overlap.
 2. Lower the load to 500 N. You get ε = 0.5597 and a minimum film of 44.03 µm. Reset, then raise the speed to 6000 rpm and compare whether the static position is the same.
-3. After a reset, turn off <strong>Add cold shaft position</strong>. The reconstructed position shifts up by 100 µm. Reset again and set the A drift to +0.5 V to see an error of 63.5 µm.
+3. After a reset, turn off <strong>Add cold shaft position</strong>. The reconstructed position shifts up by 100 µm. Reset again and set the A voltage drift (a slow shift of the voltage after the cold record, §6) to +0.5 V to see an error of 63.5 µm.
 4. After a reset, change the cold gap to 0.30 mm. The reconstructed point disappears because it is out of range. Reset and turn on only the zero-mean runout; the DC point stays.
 
 </Callout>
@@ -174,9 +174,9 @@ At 3000 rpm, 1000 N and μ = 20 mPa·s, the model gives X = 43.97 µm and Y = �
 
 If you halve the load, you get X = 42.44 µm and Y = −36.49 µm. The distance to the origin shrinks and the film gets thicker. Instead of halving the load, doubling the speed or the viscosity gives the same ε and φ, because W and μΩ enter the equation only as the group W/(μΩ). So from a single position you cannot back out the load or the viscosity separately.
 
-The 100 µm error when the cold reference is left out equals the radial clearance Cr. When +0.5 V is put on A, an error of $0.5/S=63.5$ µm appears along the normal direction of A. In both cases the blue oil-film equilibrium point stays where it was.
+The 100 µm error when the cold reference is left out equals the radial clearance Cr. When +0.5 V is put on A, an error of $0.5/S=63.5$ µm appears along the normal direction of A (the 45° direction from which probe A looks at the shaft). In both cases the blue oil-film equilibrium point stays where it was.
 
-With a small installation gap, A drops below the linear range. If you keep drawing coordinates with the linear sensitivity then, you get a plausible wrong answer. The lab stops reconstructing the position and keeps the voltages and the true gaps.
+With a small installation gap, the gap at A drops below the linear range (P3-2 §4). If you keep drawing coordinates with the linear sensitivity then, you get a plausible wrong answer. The lab stops reconstructing the position and keeps the voltages and the true gaps.
 
 ---
 
@@ -186,11 +186,11 @@ With a small installation gap, A drops below the linear range. If you keep drawi
 
 If the probe zero, the sensitivity or the bracket position changes, or if a <strong>drift</strong> occurs, in which the voltage slowly shifts after the cold record was taken, the mean point looks like it moves even though the oil-film equilibrium is the same. A constant bias that is in both the cold and the operating records cancels in the voltage difference, but a change that arises between the records remains.
 
-The runout of P3-2 §5 also has to be examined by separating mean from vibration. In the linear range, averaging a zero-mean sinusoid over a whole number of revolutions gives a DC shift of zero. For the cold rest angle of real runout, for a surface deviation whose mean is not zero, for an average that does not fill a whole revolution, and in a nonlinear calibration region, you cannot apply the same conclusion directly.
+The runout of P3-2 §5 (a signal that appears from the surface condition even when the shaft is not moving) also has to be examined by separating mean from vibration. In the linear range, averaging a zero-mean sinusoidal runout over a whole number of revolutions gives a DC shift of zero. But for the runout value at the angle where the shaft happened to stop when the cold reference was recorded, for a surface deviation whose mean is not zero, for an average that does not fill a whole revolution, and in a nonlinear calibration region, you cannot apply the same conclusion directly.
 
 <Callout type="field" title="Record the conditions along with a long-term trend">
 
-At the same speed and a similar load, first check the voltage calibration and the reference point. Thermal expansion can change the housing and probe references and the clearance. A change in μ with temperature or a change in clearance from wear can affect the position. Misalignment (the shafts not lining up) can change the load on the bearing, and so can a design geometry that moves the center of curvature of pads or lobes, or a different external radial load. This static cylindrical model is not a diagnostic tool that tells these causes apart.
+At the same speed and a similar load, first check the voltage calibration and the reference point. Thermal expansion can change the housing and probe references and the clearance. A change in μ with temperature or a change in clearance from wear can affect the position. Misalignment (the shafts not lining up) can change the load on the bearing, and so can a design geometry that moves the center of curvature of pads or lobes (the several arc segments that make up the bearing bore), or a different external radial load. This static cylindrical model is not a diagnostic tool that tells these causes apart.
 
 </Callout>
 
@@ -269,7 +269,7 @@ Yes. A zero-mean vibration can change its AC size while keeping the DC position.
 It is how an X displacement affects the Y force. In the sign convention used here, −k<sub>yx</sub>·δx enters δF<sub>y</sub>. The actual sign and size of the coefficient come from the dynamic analysis of the bearing.
 </details>
 
-In the next page, <a href={withBase('/en/p4-4/')}>P4-4 Stability</a>, we cover cross-coupling, oil whirl and whip, and stability. You can check the learning order in the <a href={withBase('/en/parts/4/')}>Part 4 table of contents</a>.
+In the next page, <a href={withBase('/en/p4-4/')}>P4-4 Stability</a>, we cover how cross-coupling feeds energy into whirl, and oil whirl and whip. You can check the learning order in the <a href={withBase('/en/parts/4/')}>Part 4 table of contents</a>.
 
 ## References
 

@@ -4,7 +4,7 @@ title: P3-4 Measurement chain traps
 description: False signals created along the measurement chain from machine surface to screen — mounting resonance peaks, bias voltage and settling time, ski-slope amplified by integration, power-line noise (ground loops), cable and connector noise, and input overload (clipping) — and checks and a quiz to tell sensor problems from machine problems
 sectionId: P3-4
 source: p3-4.mdx
-sourceHash: 23a13425da
+sourceHash: c9ebd37506
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -39,7 +39,7 @@ What path does the signal take before a bar appears on screen?
 
 Vibration at the machine surface reaches the sensor through the mounting. The voltage the sensor produces travels along the cable, through the power supply and analyzer input, and becomes numbers. Finally, calculations such as windowing, averaging and integration turn those numbers into a plot. This sequence is called the <strong>measurement chain</strong>. Just one faulty link can create a bar that is not in the machine, or hide one that is.
 
-Every example on this page uses the same machine: a pump driven by an inverter at 2970 rpm (1X 49.5 Hz, 7 blades → 346.5 Hz), measured with an accelerometer and an analyzer set to $F_{max}$ 5 kHz. In normal operation, 1X is 1.8 mm/s and the overall velocity from 2 ~ 1000 Hz is 2.12 mm/s.
+Every example on this page uses the same machine, Pump B from the opening. It runs at 2970 rpm on an inverter (a drive that changes the supply frequency to set motor speed) and is measured with an accelerometer. 1X is 49.5 Hz, and with 7 blades the blade-pass frequency (P1-8) is 346.5 Hz. The analyzer's $F_{max}$ (the highest frequency shown on screen, P2-3) is set to 5 kHz. In normal operation, 1X is 1.8 mm/s and the overall velocity from 2 ~ 1000 Hz is 2.12 mm/s.
 
 <Callout type="field" title="Reporting a sensor problem as a machine problem">
 
@@ -93,7 +93,7 @@ An IEPE sensor's output is vibration riding on a steady DC voltage. This DC part
 
 </Callout>
 
-At power-on, the bias voltage rises like a step, and the AC-coupling capacitor takes time to filter that step out. In the example in Figure 3 (time constant 2 s), 0.67 % remains even after 10 seconds. Measuring while this tail remains inflates the very low frequencies (the next section).
+At power-on, the bias voltage rises like a step, and the AC-coupling capacitor takes time to filter that step out. In the example in Figure 3, the time constant (the time for the remaining step to fall to about 37 %) is 2 s, and 0.67 % remains even after 10 seconds. Measuring while this tail remains inflates the very low frequencies (the next section).
 
 <Callout type="field" title="Power on, wait, then check the bias first">
 
@@ -154,7 +154,7 @@ You plug a new analyzer into the factory power supply and find bars that were ab
 
 <Figure {...F.groundLoop} />
 
-The machine carrying the sensor and the outlet powering the analyzer are grounded at different locations, with a small potential difference between them. If the sensor cable shield joins the two grounds, that difference drives current around the loop, adding the power-line frequency (60 Hz) and its integer multiples (especially odd multiples) to the signal. This is called a <strong>ground loop</strong>. The clues are:
+The machine carrying the sensor and the outlet powering the analyzer are grounded at different locations, with a small potential difference between them. If the sensor cable shield (the conductor wrapped around the signal wire) joins the two grounds, that difference drives current around the loop, adding the power-line frequency (60 Hz) and its integer multiples (especially odd multiples) to the signal. This is called a <strong>ground loop</strong>. The clues are:
 
 - Frequencies are exactly 60 Hz and its integer multiples
 - They stay put when speed changes
@@ -162,7 +162,7 @@ The machine carrying the sensor and the outlet powering the analyzer are grounde
 
 <Callout type="warn" title="'Bars at 60 Hz and 120 Hz mean an electrical fault'">
 
-On a two-pole motor (about 3600 rpm), 1X is about 59.5 Hz and 2X about 119 Hz, almost overlapping the power-line frequency (60 Hz) or the electromagnetic force component at twice the line frequency ($2f_L$ = 120 Hz, P1-8). Separating two bars 0.5 Hz apart requires Δf below about 0.14 Hz ("spacing ÷ 3.5" in P2-9). First try breaking the ground loop; if the bars remain, investigate electrical causes (P7-7).
+On a two-pole motor (about 3600 rpm), 1X is about 59.5 Hz and 2X about 119 Hz, almost overlapping the power-line frequency (60 Hz) or the electromagnetic force component at twice the line frequency ($2f_L$ = 120 Hz, P1-8). Separating two bars 0.5 Hz apart requires Δf (the bin spacing) below about 0.14 Hz ("spacing ÷ 3.5" in P2-9). Before concluding there is an electrical fault, first try breaking the ground loop; if the bars remain, investigate electrical causes (P7-7).
 
 </Callout>
 
@@ -192,7 +192,7 @@ Components caused by a motor's electrical fault disappear the moment motor power
 
 <Figure {...F.cableNoise} />
 
-A loose connector intermittently loses contact and creates sharp pulses. A cable touching the machine and moving adds a low-frequency cluster. With high-impedance sensors (charge-mode accelerometers), even flexing a cable can generate charge and produce triboelectric noise. A clue is that this noise appears **in different places on each measurement**. Tighten the connectors and secure the cable so it cannot move.
+A loose connector intermittently loses contact and creates sharp pulses. A cable touching the machine and moving adds a low-frequency cluster. With sensors of high output impedance, such as charge-mode accelerometers that send out charge directly without a built-in amplifier, even flexing a cable generates charge. This is called triboelectric noise. A clue is that this noise appears **in different places on each measurement**. Tighten the connectors and secure the cable so it cannot move.
 
 ### 6.2 Input overload (clipping)
 
@@ -202,7 +202,7 @@ If the input range is smaller than the signal, its peaks are clipped (clipping i
 
 <Callout type="warn" title="'Integer multiples of 1X line up, so it must be looseness'">
 
-Before diagnosing a fault with many harmonics, such as looseness, first check the overload indicator and whether the time waveform's peaks are cut flat. In Figure 7, raising the range removes all the integer multiples.
+Before diagnosing a fault with many harmonics, such as looseness (a joint such as a support or bolt that should be tight opening and closing, P7-3), first check the overload indicator and whether the time waveform's peaks are cut flat. In Figure 7, raising the range removes all the integer multiples.
 
 </Callout>
 

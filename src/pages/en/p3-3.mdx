@@ -4,7 +4,7 @@ title: P3-3 Keyphasor · Phase · 1X Vector
 description: Use a once-per-revolution Keyphasor pulse to establish speed and an angular reference, read the phase lag of a 1X signal, compare phase conventions, combine amplitude and phase in a 1X vector and polar plot, subtract runout with slow roll compensation, and infer shaft motion from the phase difference between two sensors.
 sectionId: P3-3
 source: p3-3.mdx
-sourceHash: 8ed2452dea
+sourceHash: 65a8f56e21
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -18,7 +18,7 @@ import * as F from '../../figures/p3-3';
 
 At an inspection a month ago, the 1X vibration at one bearing was 50 µm pp. Today it is still 50 µm pp. The amplitude looks unchanged, but the "phase" shown alongside it on the monitoring system has changed from 120° to 240°. Has nothing happened to this machine?
 
-This page explains **the reference from which phase is measured**, the **1X vector** that combines amplitude and phase in one arrow, and <strong>how to subtract runout as a vector (slow roll compensation)</strong>, continuing from P3-2.
+This page explains **the reference from which phase is measured**, the **1X vector** that combines amplitude and phase in one arrow, and <strong>how to subtract runout as a vector (slow roll compensation)</strong>. Runout, seen in P3-2, is the false vibration a sensor reads because of the shaft surface's shape, scratches or material, even when the shaft is not vibrating.
 
 <Callout type="idea" title="By the end of this page">
 
@@ -42,16 +42,16 @@ Make one notch (such as a keyway) or projection on the shaft and mount an extra 
 
 <Callout type="term" title="Keyphasor">
 
-A rotational reference sensor that produces one pulse per shaft revolution. Keyphasor was originally a trademark of one manufacturer (Bently Nevada), but the name is widely used for this type of sensor. It is also called a rotational marker sensor or phase reference sensor. This is the sensor used as the trigger in P2-6.
+A rotational reference sensor that produces one pulse per shaft revolution. Keyphasor was originally a trademark of one manufacturer (Bently Nevada), but the name is widely used for this type of sensor. It is also called a rotational marker sensor or phase reference sensor. This is the sensor used in P2-6 as the trigger that starts each frame for vector averaging.
 
 </Callout>
 
 This one pulse provides two things.
 
 - **Speed**: a pulse interval $T$ = 16.7 ms means 60 revolutions per second, 60 ÷ 0.0167 s = 3600 rpm
-- **Angular reference**: the instant the pulse crosses the threshold (−13.4 V) defines 0° for that revolution
+- **Angular reference**: the instant the pulse crosses the threshold (the voltage level that counts as a pulse, −13.4 V) defines 0° for that revolution
 
-Without an angular reference, you can measure 1X amplitude but cannot tell "which direction" the vibration points. That is why balancing (the angle at which to place a weight, P9-2), rotational marks on an orbit (P6-3), and phase in a Bode plot (P1-7) all require a Keyphasor.
+Without an angular reference, you can measure 1X amplitude but cannot tell "which direction" the vibration points. That is why balancing (the angle at which to place a weight, P9-2), rotational marks on an orbit (the path traced by the shaft center, P6-3), and phase in a Bode plot (P1-7) all require a Keyphasor.
 
 <Callout type="warn" title="'There is one pulse per revolution'">
 
@@ -159,7 +159,7 @@ In step 1, the same signal with a 120° lag is expressed as −120°. In step 2,
 
 ### 4.1 The Arrow and the Polar Plot
 
-In P2-6, we viewed one bin value as an arrow. Its length was amplitude and its direction was phase. A 1X component can be expressed as the same kind of arrow, called a <strong>1X vector</strong>.
+In P2-6, while explaining vector averaging, we viewed one bin value as an arrow. Its length was amplitude and its direction was phase. A 1X component can be expressed as the same kind of arrow, called a <strong>1X vector</strong>.
 
 $$
 \vec V = A\angle\varphi = A\,e^{-j\varphi}
@@ -170,9 +170,9 @@ $$
 
 <Figure {...F.polarMeaning} />
 
-A <strong>polar plot</strong> draws this arrow. It places 0° in the sensor direction (up) and measures lag **opposite to rotation**. There is a reason for this choice. A phase of 120° means that, at the Keyphasor pulse instant, the side of the shaft with the greatest displacement toward the sensor has not yet reached it; it must turn another 120° in the direction of rotation to get there. That point is currently 120° from the sensor, opposite to rotation. The polar arrow therefore points toward **the side of greatest shaft displacement at the pulse instant**. This point is called the high spot; P4-1 explains its relation to the heavy spot (P1-7).
+A <strong>polar plot</strong> draws this arrow. It places 0° in the sensor direction (up) and measures lag **opposite to rotation**. There is a reason for this choice. A phase of 120° means that, at the Keyphasor pulse instant, the side of the shaft with the greatest displacement toward the sensor has not yet reached it; it must turn another 120° in the direction of rotation to get there. That point is currently 120° from the sensor, opposite to rotation. The polar arrow therefore points toward **the side of greatest shaft displacement at the pulse instant**. This point is the high spot introduced in §2.2; P4-1 explains its relation to the heavy spot, where the unbalance mass sits (P1-7).
 
-<Callout type="example" title="What if amplitude stays the same but phase changes from 120° → 240°? (The opening question)">
+<Callout type="example" title="What if amplitude stays the same but phase changes from 120° to 240°? (The opening question)">
 
 1. Last month $\vec V_1$ = 50 µm pp∠120°; today $\vec V_2$ = 50 µm pp∠240°
 2. Change $\vec V_2 - \vec V_1$ = **86.6 µm pp∠270°** (the arrows are 120° apart, giving 50 × √3)
@@ -192,7 +192,7 @@ When we measure a 1X vector at each speed during startup, the Bode plot in P1-7 
 
 ## 5. Slow Roll Compensation: Subtracting Runout as a Vector
 
-In P3-2, the sensor produced a signal even at 300 rpm before startup. This was runout visible while the shaft was barely vibrating. How do we subtract it from the running measurement?
+In P3-2 §5, the sensor read more than 10 µm pp even while the shaft turned slowly at 300 rpm before startup. That signal, visible while the shaft was barely vibrating, was runout. How do we subtract it from the running measurement?
 
 ### 5.1 Runout 1X Is a Fixed Vector, Independent of Speed
 
@@ -236,13 +236,13 @@ In run-up data containing runout, amplitude does not fall to 0 at low speed, and
 
 <SlowRollLab client:visible lang="en" />
 
-In step 1, the values at 3600 rpm are measured 42.1 µm pp∠151°, compensated 45.7 µm pp∠171°, and true 45.0 µm pp∠171°. The 0.7 µm residual after compensation occurs because about 0.7 µm pp of vibration is already present at 300 rpm and was subtracted along with runout. Without compensation in step 2, low-speed amplitude stays around 15 µm pp, phase points near the runout angle of 60°, and the polar curve starts at the runout vector tip. In step 3, subtracting amplitudes gives 42.1 − 15.4 = 26.7 µm pp, 41 % below the true value, while phase remains at 151°.
+In step 1, the values at 3600 rpm are measured 42.1 µm pp∠151°, compensated 45.7 µm pp∠171°, and true 45.0 µm pp∠171°. The compensated value is 0.7 µm above the true value because about 0.7 µm pp of vibration is already present at 300 rpm and was subtracted along with runout. Without compensation in step 2, low-speed amplitude stays around 15 µm pp, phase points near the runout angle of 60°, and the polar curve starts at the runout vector tip. In step 3, subtracting only the amplitude measured at 300 rpm, 15.4 µm pp, gives 42.1 − 15.4 = 26.7 µm pp, 41 % below the true value, while phase remains at 151°.
 
 ---
 
 ## 6. Where to Measure Slow Roll: Before Vibration Builds Up
 
-The slow roll vector should contain only runout. If speed is high enough for vibration to have developed, that vibration is also treated as runout and subtracted. Choose **a low-speed region where 1X amplitude and phase remain almost unchanged as speed varies slightly**. In the example rotor, vibration is 0.7 µm pp at 300 rpm, but already 17 µm pp at 1200 rpm.
+The slow roll vector should contain only runout. If speed is high enough for vibration to have developed, that vibration is also treated as runout and subtracted. Choose **a low-speed region where 1X amplitude and phase remain almost unchanged as speed varies slightly**. In this lab's example rotor, vibration is 0.7 µm pp at 300 rpm, but already 17 µm pp at 1200 rpm.
 
 <Callout type="try">
 
@@ -282,7 +282,7 @@ Comparing 1X phase in **the same direction** at two bearings on one shaft shows 
 
 <Callout type="term" title="Static Unbalance · Couple Unbalance">
 
-Static unbalance occurs when the center of mass is offset to one side of the shaft axis; even when stopped, the heavy side turns downward. Couple unbalance has equal unbalances pointing in opposite directions at the two ends. The center of mass lies on the shaft axis, so it is not apparent at rest, but rotation produces forces that tend to tilt the shaft. The correction requires weights in one plane or two planes, respectively (P9-2).
+Static unbalance occurs when the center of mass is offset to one side of the shaft axis; even without running, a rotor left free to turn rolls until the heavy side is at the bottom. Couple unbalance has equal unbalances pointing in opposite directions at the two ends. The center of mass lies on the shaft axis, so it is not apparent at rest, but rotation produces forces that tend to tilt the shaft. The correction requires weights in one plane or two planes, respectively (P9-2).
 
 </Callout>
 

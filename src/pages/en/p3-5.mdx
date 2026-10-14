@@ -4,7 +4,7 @@ title: P3-5 Transient data acquisition and protection systems
 description: Collecting data while speed changes (time-interval and speed-interval triggers, synchronous sampling and order spectra, Bode, Polar and Cascade plots from runup data), protection system channels and alarm logic (Alert and Danger levels, time delay, voting, startup trip multiply and Danger bypass), and the difference between protection and condition monitoring systems
 sectionId: P3-5
 source: p3-5.mdx
-sourceHash: c708594b00
+sourceHash: 7a7d3961f4
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -15,7 +15,7 @@ import * as F from '../../figures/p3-5';
 
 # 3-5 Transient data acquisition and protection systems: minutes to start, seconds at critical speed
 
-A turbine takes several minutes to start, but it passes through the critical-speed region, where vibration changes most, in just a few seconds. Saving data at the usual fixed time intervals can miss those seconds. And if vibration exceeds an alarm level during those same seconds, should the machine be stopped?
+A turbine takes several minutes to start, but it passes through the critical-speed region (P1-7), where vibration changes most, in just a few seconds. Saving data at the usual fixed time intervals can miss those seconds. And if vibration exceeds an alarm level during those same seconds, should the machine be stopped?
 
 This page covers **how to collect data** while speed changes, and **how a protection system decides** to stop a machine automatically when vibration grows.
 
@@ -94,7 +94,7 @@ Who stops the machine when vibration becomes dangerous, and on what basis?
 
 <Figure {...F.channels} />
 
-A <strong>machinery protection system</strong> continuously monitors sensor signals. It raises an alarm when vibration exceeds a set level, and automatically stops the machine at a higher level. Its input channels include X·Y shaft vibration sensors at each bearing, an <strong>axial position sensor</strong> at the shaft end (how far the shaft has moved back or forth — indicating thrust bearing wear), a Keyphasor, and casing sensors when needed. For critical machines such as power-generation turbines, standards (including API 670) define the basic framework of channels and logic (the standard's numerical requirements are not reproduced on this site, I-009).
+A <strong>machinery protection system</strong> continuously monitors sensor signals. It raises an alarm when vibration exceeds a set level, and automatically stops the machine at a higher level. Its input channels include X·Y shaft vibration sensors at each bearing, an <strong>axial position sensor</strong> at the shaft end (how far the shaft has moved back or forth — indicating thrust bearing wear, P1-6), a Keyphasor, and casing sensors when needed. For critical machines such as power-generation turbines, standards (including API 670) define the basic framework of channels and logic (the standard's numerical requirements are not reproduced on this site, I-009).
 
 <Callout type="term" title="Alert, Danger and trip">
 
@@ -108,7 +108,7 @@ Judging by level alone would stop the machine even for a momentary measurement-c
 
 <Callout type="try">
 
-1. In the starting state (momentary spike, delay 0 seconds, 1oo2), look at the trip time. What happened to the healthy machine?
+1. The starting state is a momentary spike, delay 0 seconds and 1oo2 voting (a trip if either of two channels exceeds the level, §5). Look at the trip time. What happened to the healthy machine?
 2. Raise the delay to 0.25 → 0.5 → 1 second. At what delay does the trip disappear?
 3. Change the scenario to **"Both channels grow gradually"**. With a 1-second delay, when do Alert and trip activate?
 
@@ -136,7 +136,7 @@ Should a machine stop based on just one sensor?
 | 1oo2 (one out of two) | Either of two channels reaches Danger | Catches problems that grow in only one direction too | A spurious trip from one failed sensor or spike |
 | 2oo2 (two out of two) | Both channels reach Danger | Spurious trips caused by one failed sensor or spike | A problem that grows in only one channel |
 
-<strong>Voting</strong> is the logic that sets how many channels must agree before issuing a trip. Grouping the X·Y channels of one bearing as "trip when both exceed the level" (2oo2) keeps the machine running if one sensor fails. It can, however, miss vibration growing in only one direction, such as the straight-line orbit seen in P3-3. Voting is a choice between spurious trips and missed faults.
+<strong>Voting</strong> is the logic that sets how many channels must agree before issuing a trip. Grouping the X·Y channels of one bearing as "trip when both exceed the level" (2oo2) keeps the machine running if one sensor fails. It can, however, miss vibration growing in only one direction, such as the straight-line orbit seen in P3-3 §7.1 (an X·Y phase difference near 0° or 180°, with the shaft moving back and forth in one direction). Voting is a choice between spurious trips and missed faults.
 
 <Callout type="try">
 
@@ -176,7 +176,7 @@ Vibration naturally exceeds its normal operating level during the few seconds sp
 
 <AlarmLab client:visible initialScenario="runup" initialDelay={1} initialVoting="2oo2" lang="en" />
 
-In step 1, amplitude rises to about 140 µm pp while passing critical speed (145 s), exceeds Danger 125 for a few seconds, and trips at 144.8 s. Turning on multiply in step 2 raises the startup level to 250 and prevents the trip; the level returns to 125 at about 306 s, when speed reaches 3500 rpm. In step 3, Y exceeds Danger for only 3.25 seconds, so a 3.5-second delay removes the 2oo2 trip. But that delay remains during normal operation and delays the response to a real fault by 3.5 seconds too. Trip multiply, which acts only during startup, is the appropriate tool.
+In step 1, amplitude rises to about 140 µm pp while passing critical speed around 145 s, exceeds the Danger level of 125 µm pp for a few seconds, and trips at 144.8 s. Turning on multiply in step 2 raises the startup level to 250 µm pp and prevents the trip; the level returns to 125 µm pp at about 306 s, when speed reaches 3500 rpm. In step 3, Y exceeds Danger for only 3.25 seconds, so a 3.5-second delay removes the 2oo2 trip. But that delay remains during normal operation and delays the response to a real fault by 3.5 seconds too. Trip multiply, which acts only during startup, is the appropriate tool.
 
 <Callout type="field" title="Always restore Danger bypass">
 

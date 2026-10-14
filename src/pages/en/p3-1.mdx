@@ -4,7 +4,7 @@ title: P3-1 Sensor principles and selection
 description: What proximity probes, velocity pickups and accelerometers measure; why the mass-spring system inside a sensor is flat below resonance for accelerometers and above resonance for velocity pickups; calculating the ±10 % flat band; how mounting narrows the band; and why power-generation turbines measure the shaft directly
 sectionId: P3-1
 source: p3-1.mdx
-sourceHash: 8aab63c086
+sourceHash: daef58443b
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -72,8 +72,8 @@ $f$ is the machine's vibration frequency, $f_n$ is the natural frequency of the 
 
 What you can read from Figure 2:
 
-- **Far below resonance** ($r \ll 1$): the mass follows the case almost exactly, and the spring extension $z$ is proportional to the case acceleration. Measured value ÷ actual acceleration = $H(r) \approx 1$ → this is where an **accelerometer** works.
-- **Far above the natural frequency** ($r \gg 1$): the mass has too much inertia to follow and stays almost in place. The motion of the case then becomes the relative motion. Measured value ÷ actual velocity = $r^2 H(r) \approx 1$ → this is where a **velocity pickup** works.
+- **Far below resonance** ($r \ll 1$): the mass follows the case almost exactly, and the spring extension $z$ is proportional to the case acceleration. The ratio of the reading to the actual acceleration, $H(r)$, is close to 1, so this is where an **accelerometer** works.
+- **Far above the natural frequency** ($r \gg 1$): the case shakes too fast for the mass to follow, so the mass stays almost in place. The motion of the case then becomes the relative motion. The ratio of the reading to the actual velocity, $r^2 H(r)$, is close to 1, so this is where a **velocity pickup** works.
 - **Near $r = 1$**: resonance amplifies both responses, so neither is trustworthy there.
 
 An accelerometer therefore uses a very stiff spring, such as a piezoelectric element (a crystal that produces voltage when pressed), to raise its natural frequency to tens of kHz. A velocity pickup uses a soft spring to lower its natural frequency to around 10 Hz.
@@ -108,7 +108,7 @@ For an accelerometer with a resonance at 25 kHz, this is $0.30 \times 25 = 7.5$ 
 
 <SensorLab client:visible lang="en" initialKind="accelerometer" initialMount="stud" />
 
-In step 1 the upper edge is about 7.5 kHz. It barely changes over the small damping range in step 2: the upper edge is mainly set by the resonance frequency. In step 3, a resonance at 10 kHz lowers it to about 3.0 kHz. In step 4 the phase lag is exactly 90° at resonance (P1-4). The animation in step 5 shows the three regions from §2.2. Below resonance (r = 0.2), the mass moves almost with the case, and the spring extends and contracts by only 0.04 times the base motion. This small extension is proportional to acceleration, so the accelerometer reads it. Near resonance (r = 1), the mass shakes 25 times more than the base (1/(2ζ), ζ = 0.02), making the reading too large. Above resonance (r = 5), the mass stays almost still in space (0.04 times the base motion), while the case moves around it. This is the region used by the velocity pickup in §4.
+In step 1 the upper edge is about 7.5 kHz. It barely changes over the small damping range in step 2: the upper edge is mainly set by the resonance frequency. In step 3, a resonance at 10 kHz lowers it to about 3.0 kHz. In step 4 the phase lag is exactly 90° at resonance (P1-4). The animation in step 5 shows the three regions from §2.2. Below resonance (r = 0.2), the mass moves almost with the case, and the spring extends and contracts by only 0.04 times the motion of the base (the machine surface the sensor is attached to). This small extension is proportional to acceleration, so the accelerometer reads it. Near resonance (r = 1), the mass shakes 25 times more than the base (1/(2ζ), ζ = 0.02), making the reading too large. Above resonance (r = 5), the mass stays almost still in space (0.04 times the base motion), while the case moves around it. This is the region used by the velocity pickup in §4.
 
 ---
 
@@ -116,7 +116,7 @@ In step 1 the upper edge is about 7.5 kHz. It barely changes over the small damp
 
 <Figure {...F.velocityResponse} />
 
-Velocity pickups work the other way around. Their ratio reaches 1 at frequencies sufficiently above the natural frequency (10 Hz in Figure 4). Small damping produces strong amplification near the natural frequency, so velocity pickups are deliberately built with a damping ratio around 0.6 (green).
+Velocity pickups work the other way around. The ratio of the reading to the actual velocity reaches 1 at frequencies sufficiently above the natural frequency (10 Hz in Figure 4). Small damping produces strong amplification near the natural frequency, so velocity pickups are deliberately built with a damping ratio around 0.6 (the green curve in Figure 4).
 
 <Callout type="warn" title="Avoid velocity pickups on slow machines">
 
@@ -134,7 +134,7 @@ Below the natural frequency, the reading falls rapidly in proportion to $r^2$, a
 
 <SensorLab client:visible lang="en" initialKind="velocity" />
 
-In step 1, 5 Hz is read at 0.26 times the actual amplitude, with a phase error of about 141°. In step 2, damping 0.1 raises the lower edge to about 33 Hz and amplifies the reading at 20 Hz to 1.3 times the actual amplitude. In step 3, damping 0.7 instead raises the lower edge to about 14 Hz. The response near the natural frequency falls below 1, so a damping ratio around 0.6 gives the widest band.
+In step 1, 5 Hz is read at 0.26 times the actual amplitude, with a phase error of about 141°. In step 2, damping 0.1 raises the lower edge to about 33 Hz and amplifies the reading at 20 Hz to 1.3 times the actual amplitude. In step 3, damping 0.7 instead raises the lower edge to about 14 Hz. With too much damping, the amplitude ratio near the natural frequency sags below 1, so a damping ratio around 0.6 gives the widest band.
 
 ---
 
@@ -190,7 +190,7 @@ A proximity probe measures displacement **relative** to the bearing on which it 
 
 ## 7. Summary
 
-The machine's components determine which band you need to measure (<a href={withBase('/en/p1-8/')}>P1-8 frequency-band map</a>). Choose a sensor to suit that band. <a href={withBase('/en/p1-8/')}>P1-8 §4</a> explains why rolling-element bearing and gear impacts require several kHz.
+The machine's components (bearings, gears, blades and so on) determine which band you need to measure (<a href={withBase('/en/p1-8/')}>P1-8 frequency-band map</a>). Choose a sensor to suit that band. <a href={withBase('/en/p1-8/')}>P1-8 §4</a> explains why rolling-element bearing and gear impacts require several kHz.
 
 | What you want to measure | Sensor to choose | Working band | Also check |
 |---|---|---|---|
