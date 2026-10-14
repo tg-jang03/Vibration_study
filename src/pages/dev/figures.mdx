@@ -4,6 +4,7 @@ title: 그림 갤러리
 description: 개발용 — 본문 예시 그림(정적 SVG)과 강조 상자 확인
 ---
 
+import MachineSpatial from '../../components/content/MachineSpatial.astro';
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import * as P01 from '../../figures/p1-1';
@@ -107,7 +108,13 @@ export const byId = (m) => Object.values(m).filter((f) => f && f.panels).sort((a
 
 ## P1-6
 
-{byId(F40).map((f) => <Figure {...f} />)}
+<Figure {...F40.machineRoles} />
+<MachineSpatial kind="motor" />
+<Figure {...F40.shaftCoupling} />
+<Figure {...F40.bearingWays} />
+<MachineSpatial kind="support" />
+<MachineSpatial kind="motion" />
+<Figure {...F40.supportModel} />
 
 ## P1-7
 

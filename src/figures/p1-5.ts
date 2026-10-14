@@ -208,7 +208,7 @@ export const beatEnergyExchange: FigureSpec = {
   ],
 };
 
-// ── 그림 6: 2자유도계 주파수응답 (FRF 봉우리 2개) ──────────────
+// ── 그림 7: 2자유도계 주파수응답 (FRF 봉우리 2개) ──────────────
 const FRF_ZETA = 0.04;
 const freqAxis = grid(1, 14, 601);
 const frfData = freqAxis.map((freq) => {
@@ -217,13 +217,13 @@ const frfData = freqAxis.map((freq) => {
 });
 
 export const twoDofFrf: FigureSpec = {
-  id: 'fig-p1-5-6',
-  caption: `그림 6. 질량 1에 진폭 1 N의 조화 외력을 가했을 때의 주파수응답(FRF, 두 모드 모두 감쇠비 ζ = ${FRF_ZETA}). 1자유도는 공진 봉우리가 1개였지만(P1-4), 2자유도는 고유진동수 f₁ = ${f(P0_5_REFERENCE.f1, 3)} Hz와 f₂ = ${f(P0_5_REFERENCE.f2, 3)} Hz 두 곳에서 각각 공진 봉우리가 솟는다. 첫 봉우리에서는 두 질량이 같은 방향(동상), 둘째 봉우리에서는 서로 반대 방향(역상)으로 크게 흔들린다.`,
+  id: 'fig-p1-5-7',
+  caption: `그림 7. 질량 1에 진폭 1 N의 조화 외력을 가했을 때의 주파수응답(FRF, 두 모드 모두 감쇠비 ζ = ${FRF_ZETA}). 1자유도는 공진 봉우리가 1개였지만(P1-4), 2자유도는 고유진동수 f₁ = ${f(P0_5_REFERENCE.f1, 3)} Hz와 f₂ = ${f(P0_5_REFERENCE.f2, 3)} Hz 두 곳에서 각각 공진 봉우리가 솟는다. 첫 봉우리에서는 두 질량이 같은 방향(동상), 둘째 봉우리에서는 서로 반대 방향(역상)으로 크게 흔들린다.`,
   panels: [
     {
       series: [
-        { x: freqAxis, y: frfData.map((d) => d.X1 * 1000), label: 'X₁ (질량 1 응답)', color: 'c1', width: 2.2 },
-        { x: freqAxis, y: frfData.map((d) => d.X2 * 1000), label: 'X₂ (질량 2 응답)', color: 'c2', width: 2 },
+        { x: freqAxis, y: frfData.map((d) => d.X1 * 1000), label: '|H₁₁| = X₁/F₁', color: 'c1', width: 2.2 },
+        { x: freqAxis, y: frfData.map((d) => d.X2 * 1000), label: '|H₂₁| = X₂/F₁', color: 'c2', width: 2 },
       ],
       annotations: [
         { type: 'vline', x: MODE1.frequencyHz, label: `1차 공진 (${f(MODE1.frequencyHz, 3)} Hz)`, color: 'c1', dash: true },
@@ -231,22 +231,22 @@ export const twoDofFrf: FigureSpec = {
       ],
       x: { range: [1, 14], label: '가진 주파수 f [Hz]' },
       // 봉우리 높이: 1차 ≈ 6.3 mm, 2차 ≈ 2.1 mm
-      y: { range: [0, 7.5], ticks: [0, 2, 4, 6], label: '진폭 [mm]' },
+      y: { range: [0, 7.5], ticks: [0, 2, 4, 6], label: '|H| [mm/N]' },
       height: 230,
     },
   ],
 };
 
-// ── 그림 7: 연속체 구조물의 고유 모드 형상 도식 ─────────────────
+// ── 그림 8: 연속체 구조물의 고유 모드 형상 도식 ─────────────────
 const xBeam = grid(0, 10, 201);
 const mode1Shape = xBeam.map((x) => Math.sin((Math.PI * x) / 10));
 const mode2Shape = xBeam.map((x) => Math.sin((2 * Math.PI * x) / 10));
 const mode3Shape = xBeam.map((x) => Math.sin((3 * Math.PI * x) / 10));
 
 export const continuumModes: FigureSpec = {
-  id: 'fig-p1-5-7',
+  id: 'fig-p1-5-8',
   caption:
-    '그림 7. 양 끝이 지지된 긴 배관이나 회전축(연속체)의 고유 모드 형상. 질량과 강성이 연속으로 퍼져 있어 모드가 1차, 2차, 3차…로 끝없이 이어진다. 1차 모드는 가운데가 가장 크게 휘고, 2차 모드는 가운데 절점(마디)을 중심으로 반대로 휘며, 3차 모드는 마디가 2개 생긴다. 실제 진단에서는 관심 주파수 대역의 낮은 차수 몇 개만 살핀다.',
+    '그림 8. 양 끝이 지지된 긴 배관이나 회전축(연속체)의 고유 모드 형상. 질량과 강성이 연속으로 퍼져 있어 모드가 1차, 2차, 3차…로 끝없이 이어진다. 1차 모드는 가운데가 가장 크게 휘고, 2차 모드는 가운데 절점(마디)을 중심으로 반대로 휘며, 3차 모드는 마디가 2개 생긴다. 실제 진단에서는 관심 주파수 대역의 낮은 차수 몇 개만 살핀다.',
   panels: [
     {
       title: '1차 굽힘 모드: 마디 0개 (가장 낮은 고유진동수)',
@@ -285,4 +285,20 @@ export const continuumModes: FigureSpec = {
       height: 110,
     },
   ],
+};
+
+export const frfLocations: FigureSpec = {
+  id:'fig-p1-5-6', caption:"그림 6. 힘은 질량 1에만 가하고, 변위는 두 질량에서 각각 읽는다. 같은 입력 F₁에 대해 H₁₁은 x₁/F₁, H₂₁은 x₂/F₁이다. 아래 그림의 파랑과 주황은 이 두 응답 위치를 뜻한다.",
+  panels:[{frame:false,height:180,x:{range:[0,12]},y:{range:[0,3.4]},series:[],annotations:[
+    {type:'ground',x1:0.4,x2:0.4,y1:0.7,y2:2.4,side:'left'},
+    {type:'spring',x1:0.4,x2:2.6,y1:1.4,y2:1.4,label:'k'},
+    {type:'rect',x1:2.6,x2:4.3,y1:0.9,y2:2,color:'c1',label:'m₁'},
+    {type:'spring',x1:4.3,x2:7.6,y1:1.4,y2:1.4,label:'k_c'},
+    {type:'rect',x1:7.6,x2:9.3,y1:0.9,y2:2,color:'c2',label:'m₂'},
+    {type:'spring',x1:9.3,x2:11.5,y1:1.4,y2:1.4,label:'k'},
+    {type:'ground',x1:11.5,x2:11.5,y1:0.7,y2:2.4,side:'right'},
+    {type:'arrow',x1:1.4,x2:3.5,y1:2.8,y2:2.8,label:'입력 F₁',color:'c3',double:false},
+    {type:'arrow',x1:3.45,x2:5,y1:0.45,y2:0.45,label:'출력 x₁',color:'c1',double:false,labelDy:19},
+    {type:'arrow',x1:8.45,x2:10,y1:0.45,y2:0.45,label:'출력 x₂',color:'c2',double:false,labelDy:19},
+  ]}],
 };

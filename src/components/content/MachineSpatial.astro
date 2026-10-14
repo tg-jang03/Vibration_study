@@ -1,0 +1,166 @@
+---
+/** P1-6: projected, static SVG illustrations. The numbered key stays readable on mobile. */
+import { langOfUrl } from '../../i18n';
+interface Props { kind: 'motor' | 'support' | 'motion'; }
+const { kind } = Astro.props;
+const en = langOfUrl(Astro.url) === 'en';
+const t = (ko: string, eng: string) => en ? eng : ko;
+type V = [number, number, number];
+type Face = { d: string; tone: string; opacity?: number };
+const project = ([x,y,z]: V): [number,number] => [x + .5*y, -.22*x + .38*y-z];
+const point = (v: V) => project(v).map(n=>n.toFixed(2)).join(',');
+const polygon = (pts: V[]) => 'M'+pts.map(point).join('L')+'Z';
+const arc = (x:number,r:number,start=0,end=2*Math.PI): V[] => Array.from({length:49},(_,i)=>[x,r*Math.cos(start+(end-start)*i/48),r*Math.sin(start+(end-start)*i/48)]);
+function cylinder(a:number,b:number,r:number,tone:string):Face[] {
+  const faces:Face[]=[{d:polygon(arc(a,r)),tone,opacity:.85}];
+  // Flat facets give depth without a bitmap or a browser-side 3D dependency.
+  for(let i=0;i<24;i++){
+    const u=i*2*Math.PI/24,v=(i+1)*2*Math.PI/24;
+    faces.push({d:polygon([[a,r*Math.cos(u),r*Math.sin(u)],[b,r*Math.cos(u),r*Math.sin(u)],[b,r*Math.cos(v),r*Math.sin(v)],[a,r*Math.cos(v),r*Math.sin(v)]]),tone:tone+' cylinder-side',opacity:.8+.2*(.5+.5*Math.sin(u))});
+  }
+  faces.push({d:polygon(arc(b,r)),tone,opacity:1});
+  return faces;
+}
+function shell(a:number,b:number,outer:number,inner:number,tone:string):Face[]{
+  // Remove the upper/front quarter so the rotor remains visible inside the stator.
+  const start=Math.PI, end=2.5*Math.PI;
+  return [
+    {d:polygon([...arc(a,outer,start,end),...arc(b,outer,start,end).reverse()]),tone,opacity:.55},
+    {d:polygon([...arc(a,inner,start,end),...arc(b,inner,start,end).reverse()]),tone,opacity:.35},
+    {d:polygon([...arc(b,outer,start,end),...arc(b,inner,start,end).reverse()]),tone},
+    ...[start,end].map(q=>({d:polygon([[a,inner*Math.cos(q),inner*Math.sin(q)],[b,inner*Math.cos(q),inner*Math.sin(q)],[b,outer*Math.cos(q),outer*Math.sin(q)],[a,outer*Math.cos(q),outer*Math.sin(q)]]),tone,opacity:.85})),
+  ];
+}
+function box(x:number,y:number,z:number,dx:number,dy:number,dz:number,tone:string):Face[]{
+  const p=(a:number,b:number,c:number):V=>[x+a*dx,y+b*dy,z+c*dz];
+  return [
+    {d:polygon([p(0,0,0),p(1,0,0),p(1,0,1),p(0,0,1)]),tone,opacity:.7},
+    {d:polygon([p(1,0,0),p(1,1,0),p(1,1,1),p(1,0,1)]),tone,opacity:.5},
+    {d:polygon([p(0,0,1),p(1,0,1),p(1,1,1),p(0,1,1)]),tone},
+  ];
+}
+const captions={
+ motor:t('그림 2. 모터의 윗부분을 걷어 낸 입체 절개도. 축과 로터는 함께 돌고, 고정자는 로터 둘레에 고정되어 있다. 양 끝 베어링은 축을 받친다. 오른쪽 정면 단면에서 같은 색의 부품과 공극을 다시 찾는다. 구조를 보여 주기 위한 개념도이며 실제 치수·권선·엔드 실드 등은 생략했다.','Figure 2. A cutaway perspective with the upper part of the motor removed. The shaft and rotor turn together inside the fixed stator, with bearings at both ends. Find the same colors and the air gap in the end section on the right. This conceptual illustration omits actual dimensions, windings and end shields.'),
+ support:t('그림 5. 축을 받치는 지지 구조의 입체도. 아래쪽 반경 하중의 전달 경로를 주황 화살표로 표시했다. 베어링 바깥의 하우징·받침대·기초도 힘을 받으며 변형될 수 있다. 베어링과 하우징은 내부가 보이도록 일부를 생략했다.','Figure 5. Perspective of the shaft support. Orange arrows trace a downward radial load through the bearing, housing, pedestal and foundation. These stationary parts can also deform under load. Parts of the bearing and housing are omitted to reveal the inside.'),
+ motion:t('그림 6. 같은 원통 축을 같은 방향에서 보며 진동을 비교한다. 점선은 기준 위치, 파란 실선은 달라진 위치다. 횡진동은 축선에 직각, 축진동은 축선을 따라 움직인다. 비틀림은 A·B 두 단면의 표시선 사이 상대 각도가 변한다. 변위와 각도는 크게 그렸다.','Figure 6. Compare vibration using the same cylindrical shaft viewed from the same direction. Dashed outlines mark the reference and blue marks the changed position. Lateral motion is perpendicular to the shaft axis; axial motion follows it. Torsion changes the relative angle between marks at sections A and B. Displacements and angles are exaggerated.'),
+};
+const ids={motor:'fig-p1-6-2',support:'fig-p1-6-5',motion:'fig-p1-6-6'};
+const motorFaces=[...box(0,-80,-125,300,160,18,'fixed'),...box(25,-55,-110,50,110,30,'fixed'),...box(220,-55,-110,50,110,30,'fixed'),...shell(35,265,88,76,'fixed'),...shell(65,235,73,51,'stator'),...cylinder(-20,335,13,'rotor'),...cylinder(72,228,43,'rotor'),...shell(15,37,36,15,'bearing'),...shell(263,285,36,15,'bearing')];
+const supportFaces=[...box(-40,-100,-180,260,200,30,'fixed'),...box(30,-60,-150,120,120,75,'fixed'),...shell(40,140,65,39,'fixed'),...shell(55,125,38,19,'bearing'),...cylinder(-35,230,17,'rotor')];
+const keys=kind==='motor' ? [
+ t('축 — 로터와 함께 돌며 회전력을 전달','Shaft — turns with the rotor and transmits torque'),
+ t('로터 — 고정자 안에서 도는 부분','Rotor — rotates inside the stator'),
+ t('고정자 — 로터를 둘러싼 고정부','Stator — fixed around the rotor'),
+ t('베어링 — 양 끝에서 축을 받침','Bearings — support the shaft at both ends'),
+ t('하우징 — 부품을 담고 지지하는 바깥 몸체','Housing — encloses and supports the components'),
+ t('공극 — 로터와 고정자 사이의 작은 틈','Air gap — clearance between rotor and stator'),
+] : [t('축','Shaft'),t('베어링','Bearing'),t('하우징','Housing'),t('받침대','Pedestal'),t('기초','Foundation')];
+const title=kind==='motor'?t('안쪽과 바깥쪽을 함께 보기','See inside and outside together'):kind==='support'?t('축의 하중은 어디로 전달될까?','Where does the shaft load go?'):t('축을 기준으로 운동 방향 비교하기','Compare motion relative to the shaft');
+---
+<figure id={ids[kind]} class="machine-spatial" aria-labelledby={`${ids[kind]}-caption`}>
+  <div class="spatial-heading">{title}<span>{t('입체 개념도','Perspective schematic')}</span></div>
+  {kind==='motor' && <div class="motor-views">
+    <div>
+      <svg viewBox="0 0 470 310" role="img" aria-label={t('상부를 절개한 모터. 축, 로터, 고정자, 베어링과 하우징의 위치.','Motor cutaway showing shaft, rotor, stator, bearings and housing.')}>
+        <g transform="translate(65 160)">
+          {motorFaces.map(f=><path d={f.d} class={f.tone} fill-opacity={f.opacity??1}/>)}
+          {[{n:1,p:[333,0,14] as V,at:[389,112]},{n:2,p:[165,-30,32] as V,at:[215,48]},{n:3,p:[180,0,73] as V,at:[330,30]},{n:4,p:[275,-20,20] as V,at:[382,187]},{n:5,p:[70,-65,-60] as V,at:[52,241]}].map(m=>{
+            const [x,y]=project(m.p);return <g transform="translate(-65 -160)"><path class="leader" d={`M${m.at[0]},${m.at[1]} L${x+65},${y+160}`}/><circle class="badge" cx={m.at[0]} cy={m.at[1]} r="12"/><text class="number" x={m.at[0]} y={m.at[1]+5}>{m.n}</text></g>;
+          })}
+        </g>
+      </svg>
+      <p class="view-label">{t('사시도 · 앞쪽 윗부분을 절개','Perspective · upper front cut away')}</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 220 240" role="img" aria-label={t('축 끝에서 본 단면. 하우징 안에 고정자, 공극, 로터, 축 순서로 놓인다.','End section: housing, stator, air gap, rotor and shaft from outside to inside.')}>
+        <circle cx="110" cy="110" r="86" class="fixed"/>
+        <circle cx="110" cy="110" r="73" class="stator"/>
+        <circle cx="110" cy="110" r="51" class="gap"/>
+        <circle cx="110" cy="110" r="43" class="rotor"/>
+        <circle cx="110" cy="110" r="13" class="rotor shaft-end"/>
+        <path class="leader" d="M158 110 L193 154 L193 193"/>
+        <circle class="badge" cx="193" cy="205" r="12"/><text class="number" x="193" y="210">6</text>
+        <text class="number" x="110" y="115">1</text><text class="number" x="110" y="84">2</text><text class="number" x="110" y="52">3</text><text class="number" x="110" y="31">5</text>
+      </svg>
+      <p class="view-label">{t('축 끝에서 본 단면','Section viewed from the shaft end')}</p>
+    </div>
+  </div>}
+  {kind==='support' && <svg class="support-view" viewBox="0 0 540 365" role="img" aria-label={captions.support}>
+    <defs><marker id="p16-load-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" class="arrow-fill"/></marker></defs>
+    <g transform="translate(140 110)">
+      {supportFaces.map(f=><path d={f.d} class={f.tone} fill-opacity={f.opacity??1}/>)}
+    </g>
+    <path class="load-path" d="M226 32 L226 72 M226 111 L226 145 M226 163 L226 198 M226 217 L226 252" marker-end="url(#p16-load-arrow)"/>
+    <text x="245" y="40" class="load-label">{t('반경 하중','Radial load')}</text>
+    {[{n:1,p:[230,0,0] as V,y:90},{n:2,p:[122,-25,-17] as V,y:137},{n:3,p:[139,-55,-25] as V,y:182},{n:4,p:[145,-25,-112] as V,y:232},{n:5,p:[205,-20,-163] as V,y:295}].map(m=>{const [x,y]=project(m.p);return <g><path class="leader" d={`M${x+140} ${y+110} L412 ${m.y} L439 ${m.y}`}/><circle class="badge" cx="453" cy={m.y} r="12"/><text class="number" x="453" y={m.y+5}>{m.n}</text></g>})}
+  </svg>}
+  {kind!=='motion' && <ol class:list={['part-key',{'support-key':kind==='support'}]}>{keys.map((key,i)=><li><span>{i+1}</span>{key}</li>)}</ol>}
+  {kind==='motion' && <div class="motion-grid">
+    {['lateral','axial','torsion'].map((motion,i)=> <section>
+      <h3>{[t('횡진동','Lateral'),t('축진동','Axial'),t('비틀림 진동','Torsional')][i]}</h3>
+      <svg viewBox="0 0 300 230" role="img" aria-label={[
+        t('횡진동: 축 중심이 축선에 직각으로 왕복','Lateral: the shaft center moves back and forth perpendicular to the shaft axis'),
+        t('축진동: 축이 길이 방향으로 왕복','Axial: the shaft moves back and forth along its axis'),
+        t('비틀림: 두 단면 A와 B의 상대 각도가 변함','Torsion: the relative angle between sections A and B changes'),
+      ][i]}>
+        <defs><marker id={`p16-${motion}-arrow`} markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto-start-reverse"><path d="M0 0L6 3L0 6" class="arrow-fill"/></marker></defs>
+        <g transform="translate(60 125)">
+          {motion!=='torsion' && <g class="reference-outline">{cylinder(0,150,25,'reference').map(f=><path d={f.d}/>)}</g>}
+          <g transform={motion==='lateral'?'translate(0 -35)':motion==='axial'?'translate(29 -6.38)':''}>
+            {cylinder(0,150,25,'rotor').map(f=><path d={f.d} class={f.tone} fill-opacity={f.opacity??1}/>)}
+            {motion==='torsion' && <>
+              <path class="section-ring" d={polygon(arc(15,26))}/><path class="section-ring" d={polygon(arc(135,26))}/>
+              <path class="reference-line" d={`M${point([15,0,27])} L${point([135,0,27])}`}/>
+              <path class="torsion-mark" d={`M${point([15,0,0])} L${point([15,0,28])} M${point([135,0,0])} L${point([135,24,14])}`}/>
+              <text x="6" y="51">A</text><text x="130" y="25">B</text>
+            </>}
+          </g>
+        </g>
+        {motion==='lateral' && <path class="load-path" d="M245 115L245 61" marker-start={`url(#p16-${motion}-arrow)`} marker-end={`url(#p16-${motion}-arrow)`}/>}
+        {motion==='axial' && <path class="load-path" d="M92 171L214 144" marker-start={`url(#p16-${motion}-arrow)`} marker-end={`url(#p16-${motion}-arrow)`}/>}
+        {motion==='torsion' && <path class="load-path" d="M186 57 Q229 52 231 89" marker-start={`url(#p16-${motion}-arrow)`} marker-end={`url(#p16-${motion}-arrow)`}/>}
+      </svg>
+      <p>{[t('축선에 직각으로 왕복','Back and forth across the shaft axis'),t('축선을 따라 왕복','Back and forth along the shaft axis'),t('A와 B 사이 비틀림각이 증감','Twist between A and B increases and decreases')][i]}</p>
+    </section>)}
+  </div>}
+  <figcaption id={`${ids[kind]}-caption`}>{captions[kind]}</figcaption>
+</figure>
+<style>
+  .machine-spatial{margin:2rem 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .spatial-heading{padding:1rem 1.2rem;display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap;font-weight:700;border-bottom:1px solid var(--border)}
+  .spatial-heading span{font-size:.75rem;font-weight:500;color:var(--text-muted)}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  svg path,svg circle{stroke-width:1;stroke-linejoin:round}
+  .fixed{fill:color-mix(in srgb,var(--text-muted) 25%,var(--bg));stroke:var(--text-muted)}
+  .stator{fill:color-mix(in srgb,var(--plot-3) 32%,var(--bg));stroke:var(--plot-3)}
+  .rotor{fill:color-mix(in srgb,var(--plot-1) 52%,var(--bg));stroke:var(--plot-1)}
+  .cylinder-side{stroke:none}
+  .bearing{fill:color-mix(in srgb,var(--plot-2) 55%,var(--bg));stroke:var(--plot-2)}
+  .gap{fill:var(--bg);stroke:var(--plot-3)}
+  .shaft-end{stroke-width:2}
+  .motor-views{display:grid;grid-template-columns:2fr 1fr;align-items:center;padding:.5rem 1rem}
+  .view-label{margin:0 0 .75rem;text-align:center;font-size:.8rem;color:var(--text-muted)}
+  .leader{fill:none;stroke:var(--text-muted);stroke-width:1.2}
+  .badge{fill:var(--bg);stroke:var(--text);stroke-width:1.3}
+  text{fill:var(--text);font:600 15px var(--font-sans, sans-serif)}
+  .number{text-anchor:middle}
+  .part-key{list-style:none;padding:.8rem 1.2rem;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:.65rem 1rem;border-top:1px solid var(--border)}
+  .part-key li{display:flex;align-items:baseline;gap:.5rem;font-size:.88rem;line-height:1.55;margin:0}
+  .part-key li span{flex-shrink:0;width:1.4rem;height:1.4rem;text-align:center;border:1px solid var(--border);border-radius:50%;font-size:.8rem;font-weight:700}
+  .support-view{max-width:650px;margin:0 auto}
+  .support-key{display:flex;flex-wrap:wrap;justify-content:center}
+  .load-path{stroke:var(--plot-2);stroke-width:3;fill:none}
+  .arrow-fill{fill:var(--plot-2);stroke:none}
+  .load-label{fill:var(--plot-2)}
+  .motion-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+  .motion-grid section{padding:1rem .5rem;text-align:center}
+  .motion-grid section+section{border-left:1px solid var(--border)}
+  .motion-grid h3{font-size:1rem;margin:0}
+  .motion-grid p{font-size:.85rem;line-height:1.6;margin:0 .5rem}
+  .reference-outline path{fill:none;stroke:var(--text-muted);stroke-dasharray:5 5;opacity:.22}.reference-outline path:not(:first-child):not(:last-child){display:none}
+  .section-ring{fill:none;stroke:var(--plot-1);stroke-width:2}
+  .reference-line{fill:none;stroke:var(--text-muted);stroke-dasharray:4 4;stroke-width:2}
+  .torsion-mark{fill:none;stroke:var(--plot-2);stroke-width:4}
+  figcaption{font-size:.875rem;color:var(--text-muted);padding:1rem 1.2rem;border-top:1px solid var(--border);line-height:1.75}
+  @media(max-width:640px){.motor-views{grid-template-columns:1fr}.motor-views>div+div{max-width:240px;justify-self:center}.part-key{grid-template-columns:1fr}.motion-grid{grid-template-columns:1fr}.motion-grid section+section{border-left:0;border-top:1px solid var(--border)}.motion-grid svg{max-width:350px;margin:auto}}
+</style>

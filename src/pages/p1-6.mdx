@@ -5,6 +5,7 @@ description: '모터와 로터의 관계, 구동기와 피동기, 축·커플링
 sectionId: P1-6
 ---
 
+import MachineSpatial from '../components/content/MachineSpatial.astro';
 import Figure from '../components/content/Figure.astro';
 import Callout from '../components/content/Callout.astro';
 import References from '../components/content/References.astro';
@@ -51,7 +52,9 @@ P1-1 ~ P1-5에서는 질량·스프링·감쇠로 물체가 왜, 어떻게 흔�
 
 모터를 간략히 나누면 도는 <strong>로터(Rotor)</strong>와 고정된 <strong>고정자(Stator)</strong>가 있습니다. 두 부분의 전자기적 작용으로 토크, 즉 축을 비틀어 돌리는 효과가 생깁니다. 전기 쪽의 자세한 원리와 결함은 Part 7(P7-7)에서 다루고, 여기서는 부품의 위치부터 보겠습니다.
 
-<Figure {...F.motorParts} />
+<MachineSpatial kind="motor" />
+
+그림 2의 입체도에서 부품 번호를 찾고, 축 끝에서 본 단면과 비교해 보세요. 작은 화면에서는 단면이 아래에 놓입니다.
 
 그림 2에서 읽을 수 있는 것:
 
@@ -124,7 +127,7 @@ P1-1 ~ P1-5에서는 질량·스프링·감쇠로 물체가 왜, 어떻게 흔�
 
 베어링 바깥에는 하우징, 하우징을 올리는 <strong>받침대(Pedestal)</strong>, 기계를 지지하는 <strong>기초(Foundation)</strong>가 있습니다. 이들을 함께 <strong>지지계(Support system)</strong>라고 부르겠습니다.
 
-<Figure {...F.supportPath} />
+<MachineSpatial kind="support" />
 
 그림 5에서 반경 하중은 축에서 베어링, 하우징·받침대를 거쳐 기초로 전달됩니다. 기초가 변형되거나 움직이면, 축을 받치는 조건도 바뀝니다. 고정부라는 말은 일부러 돌리는 부분이 아니라는 뜻이지, 진동하지 않는다는 뜻은 아닙니다.
 
@@ -138,7 +141,7 @@ P1-1 ~ P1-5에서는 질량·스프링·감쇠로 물체가 왜, 어떻게 흔�
 
 축 자체가 계속 도는 운동을 <strong>자전(Spin)</strong>이라고 합니다. 자전에 겹치는 진동은 움직이는 방향에 따라 셋으로 나눕니다.
 
-<Figure {...F.motionDirections} />
+<MachineSpatial kind="motion" />
 
 | 운동 | 무엇이 변하나? | 예 |
 |---|---|---|
@@ -146,7 +149,7 @@ P1-1 ~ P1-5에서는 질량·스프링·감쇠로 물체가 왜, 어떻게 흔�
 | 축진동(Axial vibration) | 축을 따른 위치 | 추력 방향 왕복 |
 | 비틀림 진동(Torsional vibration) | 두 단면 사이 상대 비틀림각 | 축의 비틀림이 늘었다 줄었다 함 |
 
-그림 6 아래의 비틀림 진동은 축이 돈다는 뜻이 아닙니다. <strong>축의 두 위치 사이의 상대 각도가 커졌다 작아졌다 하는 운동</strong>입니다. 토크를 전달하며 도는 축에도 이 비틀림 진동이 따로 겹칠 수 있습니다.
+그림 6의 비틀림 진동은 축이 돈다는 뜻이 아닙니다. <strong>축의 두 위치 사이의 상대 각도가 커졌다 작아졌다 하는 운동</strong>입니다. 토크를 전달하며 도는 축에도 이 비틀림 진동이 따로 겹칠 수 있습니다.
 
 <Callout type="warn" title="주파수만으로 운동 방향을 정할 수 없습니다">
 

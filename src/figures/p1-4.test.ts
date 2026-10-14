@@ -37,6 +37,18 @@ describe('P1-4 figures', () => {
     expect(late).toBeLessThan(1.25 * R.beat.amplitudeRatio);
   });
 
+  // Analytic receptance: H = 1 / (k - mω² + icω), m=1 kg, fn=5 Hz, ζ=.05.
+  it('keeps Bode readouts in mm/N and uses negative output phase', () => {
+    const [, resonance, high] = F.FRF_READOUT;
+    expect(resonance.magnitude).toBeCloseTo(10.1321183642, 8);
+    expect(resonance.phase).toBe(-90);
+    expect(high.magnitude).toBeCloseTo(0.3369892440493, 8);
+    expect(high.phase).toBeCloseTo(-176.1859251657, 8);
+    const [mag, phase] = F.bodeReadout.panels;
+    expect(mag.x).toEqual(phase.x);
+    expect(mag.x.tickLabels?.find(t => t.label === '5')?.value).toBeCloseTo(Math.log10(5));
+  });
+
   it('uses unique ids', () => {
     const figures = [
       F.forcedModel,
@@ -45,12 +57,14 @@ describe('P1-4 figures', () => {
       F.amplitudeCurve,
       F.phaseCurve,
       F.peakWidth,
+      F.frfRecipe,
+      F.bodeReadout,
       F.beatStart,
     ];
     const ids = figures.map((f) => f.id);
-    expect(ids.length).toBe(7);
+    expect(ids.length).toBe(9);
     expect(new Set(ids).size).toBe(ids.length);
     expect(F.forcedModel.id).toBe('fig-p1-4-1');
-    expect(F.beatStart.id).toBe('fig-p1-4-7');
+    expect(F.beatStart.id).toBe('fig-p1-4-9');
   });
 });

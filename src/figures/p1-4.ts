@@ -205,13 +205,13 @@ export const peakWidth: FigureSpec = {
   }],
 };
 
-// ── 그림 7: 맥놀이 ────────────────────────────────────────────
+// ── 그림 9: 맥놀이 ────────────────────────────────────────────
 const beatTime = grid(0, 8, 4001);
 const beatInput = { forceAmplitude: F0, forcingOmega: R.beat.r * OMEGA_N };
 const beatResponse = forcedResponse(systemFor(R.beat.zeta), beatInput, { x0: 0, v0: 0 }, beatTime);
 export const beatStart: FigureSpec = {
-  id: 'fig-p1-4-7',
-  caption: `그림 7. ζ = 0.01로 감쇠가 아주 작은 계(5 Hz)에 4.5 Hz(r = 0.9) 힘을 정지 상태에서 걸기 시작했다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 한동안 함께 남아, 둘이 같은 방향일 때는 더해지고 반대일 때는 상쇄된다. 그래서 진폭이 ${f(R.beat.periodS, 2)}초(= 1/(5 − 4.5) s)마다 출렁인다. 과도 응답이 사라지면 출렁임도 줄어 회색 점선(정상상태 진폭 ${f(R.beat.amplitudeRatio, 3)} × X_st)에 머문다.`,
+  id: 'fig-p1-4-9',
+  caption: `그림 9. ζ = 0.01로 감쇠가 아주 작은 계(5 Hz)에 4.5 Hz(r = 0.9) 힘을 정지 상태에서 걸기 시작했다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 한동안 함께 남아, 둘이 같은 방향일 때는 더해지고 반대일 때는 상쇄된다. 그래서 진폭이 ${f(R.beat.periodS, 2)}초(= 1/(5 − 4.5) s)마다 출렁인다. 과도 응답이 사라지면 출렁임도 줄어 회색 점선(정상상태 진폭 ${f(R.beat.amplitudeRatio, 3)} × X_st)에 머문다.`,
   panels: [{
     series: [
       { x: beatTime, y: beatResponse.map((s) => s.x / X_ST), label: '변위 x/X_st', color: 'c1', width: 1.5 },
@@ -225,4 +225,42 @@ export const beatStart: FigureSpec = {
     y: { range: [-11.5, 12], ticks: [-10, -5, 0, 5, 10], label: '변위 x/X_st' },
     height: 220,
   }],
+};
+
+
+// FRF: 입력과 출력의 비, 그리고 같은 주파수에서 크기·위상 함께 읽기.
+export const frfRecipe: FigureSpec = {
+  id: 'fig-p1-4-7', caption: "그림 7. 같은 계에 힘의 주파수를 하나씩 바꿔 가며 건다. 매번 과도 응답이 줄어든 뒤 변위 진폭을 힘 진폭으로 나누고, 힘보다 얼마나 늦는지 읽는다. 이 크기와 위상을 주파수마다 모으면 FRF가 된다.",
+  panels: [{ frame: false, height: 150, x: { range: [0, 12] }, y: { range: [0, 3] }, series: [], annotations: [
+    { type: 'rect', x1: 0.2, x2: 3.1, y1: 1, y2: 2.2, color: 'c2', label: '입력: 힘 F₀ [N]' },
+    { type: 'arrow', x1: 3.2, x2: 4.2, y1: 1.6, y2: 1.6, color: 'c2', double: false },
+    { type: 'rect', x1: 4.3, x2: 7.4, y1: 1, y2: 2.2, color: 'muted', label: '계: m · c · k' },
+    { type: 'arrow', x1: 7.5, x2: 8.5, y1: 1.6, y2: 1.6, color: 'c1', double: false },
+    { type: 'rect', x1: 8.6, x2: 11.8, y1: 1, y2: 2.2, color: 'c1', label: '출력: 변위 X [mm]' },
+    { type: 'text', x: 6, y: 0.35, text: '|H| = X/F₀ [mm/N]     ·     위상 = −φ', anchor: 'middle', bold: true },
+  ] }],
+};
+const bodeLogAxis = grid(Math.log10(0.5), Math.log10(50), 801);
+const bodeFreq = bodeLogAxis.map(v => 10 ** v);
+const bodeTicks = [0.5, 1, 2, 5, 10, 20, 50];
+const bodeX = { range: [Math.log10(0.5), Math.log10(50)] as [number, number], ticks: bodeTicks.map(Math.log10), tickLabels: bodeTicks.map(v=>({value: Math.log10(v), label: String(v)})), label: '가진 주파수 f [Hz] · 로그 눈금' };
+export const FRF_READOUT = [2.5, 5, 10].map(freq=>({frequency:freq, magnitude:1000 * at(freq/FN).amplitudeRatio / STIFFNESS, phase:-deg(at(freq/FN).phaseLag)}));
+export const bodeReadout: FigureSpec = {
+  id: 'fig-p1-4-8', caption: "그림 8. 고유진동수 5 Hz, ζ = 0.05인 계의 Bode 선도. 위는 힘 1 N당 변위 진폭, 아래는 힘에 대한 변위의 위상이다. 같은 세로 점선에서 두 값을 함께 읽는다. 가로축은 같은 배수마다 같은 간격인 로그 눈금이다. 크기는 dB 대신 mm/N으로 표시했다.",
+  panels: [
+    { title: '① 크기: 힘 1 N당 얼마나 움직이나?', height: 210, x: bodeX, y: {range:[0,12], ticks:[0,2,4,6,8,10], label:'|H| [mm/N]'},
+      series:[{x:bodeLogAxis,y:bodeFreq.map(v=>1000*at(v/FN).amplitudeRatio/STIFFNESS),color:'c1',width:2.4}],
+      annotations: FRF_READOUT.flatMap(p=>[
+        {type:'vline' as const,x:Math.log10(p.frequency),color:'muted' as const,dash:true},
+        {type:'point' as const,x:Math.log10(p.frequency),y:p.magnitude,label:f(p.magnitude,3),color:'c1' as const,dx:9,dy:-10},
+      ]),
+    },
+    { title: '② 위상: 힘보다 얼마나 늦나?', height: 170, x: bodeX, y:{range:[-190,10],ticks:[-180,-90,0],label:'위상 [°]'},
+      series:[{x:bodeLogAxis,y:bodeFreq.map(v=>-deg(at(v/FN).phaseLag)),color:'c2',width:2.4}],
+      annotations: FRF_READOUT.flatMap(p=>[
+        {type:'vline' as const,x:Math.log10(p.frequency),color:'muted' as const,dash:true},
+        {type:'point' as const,x:Math.log10(p.frequency),y:p.phase,label:f(p.phase,3)+'°',color:'c2' as const,dx:9,dy:-10},
+      ]),
+    },
+  ],
 };

@@ -85,13 +85,14 @@ describe('P1-5 figures', () => {
       F.pureModeResponses,
       F.modalSuperposition,
       F.beatEnergyExchange,
+      F.frfLocations,
       F.twoDofFrf,
       F.continuumModes,
     ];
     const ids = figures.map((f) => f.id);
-    expect(ids.length).toBe(7);
-    expect(new Set(ids).size).toBe(7);
+    expect(ids.length).toBe(8);
+    expect(new Set(ids).size).toBe(8);
     expect(F.twoDofModel.id).toBe('fig-p1-5-1');
-    expect(F.continuumModes.id).toBe('fig-p1-5-7');
+    expect(F.continuumModes.id).toBe('fig-p1-5-8');
   });
 });

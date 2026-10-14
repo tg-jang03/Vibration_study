@@ -4,7 +4,7 @@ title: P1-4 Forced Vibration and Resonance
 description: The transient and steady-state response when a periodic force keeps pushing, how the amplitude ratio and phase depend on the frequency ratio, the role of resonance and damping, the frequency response (FRF), and beating — learned with the forced-vibration lab
 sectionId: P1-4
 source: p1-4.mdx
-sourceHash: d38c0a909a
+sourceHash: 10674a34b0
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -161,11 +161,23 @@ Figures 4 and 5 do not plot a particular signal. They collect, for every rhythm,
 
 <Callout type="term" title="Frequency Response Function (FRF)">
 
-The size and phase of the output (response) per unit input (force), shown at each frequency. It is drawn as two curves, an amplitude-ratio curve and a phase curve, and the figure with the two stacked one above the other is called a <strong>Bode Plot</strong>. The FRF is a **property of the system**, set by mass, stiffness and damping alone.
+The output-to-input ratio, expressed as magnitude and phase at each frequency. Stacking magnitude and phase on the same frequency axis gives a <strong>Bode plot</strong>. The FRF is a **property of this linear system**, set by mass, stiffness, damping, and the locations and directions of the input and output.
 
 </Callout>
 
-If you know the FRF, you can compute the response right away for a force of any rhythm. "Size of the force × the FRF amplitude ratio at that rhythm" is the size of the response, and it lags by the phase of the FRF.
+<Figure {...F.frfRecipe} />
+
+Read one frequency at a time, as in Figure 7. Here the magnitude is displacement amplitude divided by force amplitude: $\lvert H\rvert=X/F_0$. In mm/N, it tells us how many millimeters of displacement we get per newton of force. The response amplitude is $X=F_0\lvert H\rvert$. The earlier dimensionless amplitude ratio $X/X_{st}$ equals $k\lvert H\rvert$, using consistent units.
+
+<Figure {...F.bodeReadout} />
+
+Figure 8 lets us practice reading both panels **at the same frequency**.
+
+1. Find **5 Hz** and follow its dotted line through both panels.
+2. Read about **10.1 mm/N** above and **−90°** below. With a force amplitude of 1 N, displacement amplitude is about 10.1 mm and displacement lags the force by a quarter period.
+3. Move to **10 Hz**: about **0.337 mm/N** and **−176°**. With the same force, both response magnitude and lag change.
+
+Figure 5 shows the lag angle $\varphi$ as positive; Figure 8 shows output phase $-\varphi$ as negative. **A +90° lag and a −90° phase describe the same delay.** The horizontal axis is forcing frequency, not time. The curve collects steady-state responses at many frequencies.
 
 <Callout type="field" title="Measured vibration size = force × FRF">
 
@@ -185,7 +197,7 @@ The transient near 5 Hz and the 4.5 Hz steady-state response have slightly diffe
 
 <Callout type="warn" title="'The amplitude surges, so the force surges'">
 
-The force applied in Figure 7 has a constant size from start to finish. The surging comes from two rhythms overlapping inside the system. When an amplitude grows and shrinks at a regular period, first suspect that two components with close rhythms are present together (see P2-8 for details).
+The force applied in Figure 9 has a constant size from start to finish. The surging comes from two rhythms overlapping inside the system. When an amplitude grows and shrinks at a regular period, first suspect that two components with close rhythms are present together (see P2-8 for details).
 
 </Callout>
 

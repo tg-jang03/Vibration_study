@@ -115,7 +115,7 @@ await mkdir(outDir, { recursive: true });
 async function captureVisuals(p, label) {
   const slug = p.replace(/^\/|\/$/g, '').replace(/\//g, '_') || 'home';
   const boxes = await ev(`(() => {
-    const selector='.fig, .plot, .anim-panel, .polar-plot, .lab-frame svg[role="img"]';
+    const selector='.fig, .machine-spatial, .plot, .anim-panel, .polar-plot, .lab-frame svg[role="img"]';
     return [...document.querySelectorAll(selector)].filter(el => {
       const r=el.getBoundingClientRect();
       return r.width>0 && r.height>0 && !el.parentElement.closest(selector);

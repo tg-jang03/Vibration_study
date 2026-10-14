@@ -4,7 +4,7 @@ title: P1-5 Several Masses and Modes
 description: The coupled equations of motion of a two-degree-of-freedom system, its natural frequencies and mode shapes, pure-mode vibration and modal superposition, beating in weakly coupled systems, the 2-DOF frequency response (FRF) and the bending modes of a continuum, learned with the 2-DOF lab
 sectionId: P1-5
 source: p1-5.mdx
-sourceHash: abef551616
+sourceHash: 27cccfdbf0
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -184,9 +184,13 @@ In P1-4 we saw the frequency response (FRF) of an SDOF system under an external 
 
 What happens if we apply a harmonic force $F_0 \cos\omega t$ to mass 1 of the 2-DOF system? The system has two natural frequencies, so resonance occurs each time the force frequency matches one of them.
 
+<Figure {...F.frfLocations} />
+
+Figure 6 has one input location and two response locations, so there are two FRFs. The following plot compares their **magnitudes only**. With a force amplitude of 1 N, the FRF in mm/N and the displacement amplitude in mm have the same numerical value.
+
 <Figure {...F.twoDofFrf} />
 
-As Figure 6 shows, the frequency response curve has **two distinct resonance peaks**.
+As Figure 7 shows, the frequency response curve has **two distinct resonance peaks**.
 1. **First resonance ($f_1 \approx 5.03\text{ Hz}$)**: when the force frequency meets the first natural frequency, the two masses swing strongly in the same direction (in-phase).
 2. **Second resonance ($f_2 \approx 8.72\text{ Hz}$)**: when the force frequency meets the second natural frequency, the two masses swing strongly in opposite directions (anti-phase), crossing each other.
 

@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import * as figures from './p1-6';
 
 describe('P1-6 machine composition figures', () => {
-  it('contains seven uniquely numbered static figures', () => {
+  it('keeps four planar diagrams alongside the three spatial illustrations', () => {
     const values = Object.values(figures);
-    expect(values).toHaveLength(7);
-    expect(new Set(values.map((f) => f.id)).size).toBe(7);
+    expect(values).toHaveLength(4);
+    expect(new Set(values.map((f) => f.id)).size).toBe(4);
     values.forEach((f) => expect(f.caption).toMatch(/^그림 [1-7]\./));
   });
   it('has finite data, valid axes, and no annotations outside schematic bounds', () => {

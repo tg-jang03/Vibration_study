@@ -4,9 +4,10 @@ title: 'P1-6 What a Rotating Machine Is Made Of: What Turns and What Supports It
 description: 'Motor and rotor, driver and driven machine, shaft, coupling, bearings and support system, lateral, axial and torsional motion — laying out the machine and tying it to the MCK model.'
 sectionId: P1-6
 source: p1-6.mdx
-sourceHash: 2b34a46783
+sourceHash: 023bba2bc5
 ---
 
+import MachineSpatial from '../../components/content/MachineSpatial.astro';
 import Figure from '../../components/content/Figure.astro';
 import Callout from '../../components/content/Callout.astro';
 import References from '../../components/content/References.astro';
@@ -53,7 +54,9 @@ Here we use ordinary motor-pump and turbine-generator arrangements as examples. 
 
 In simple terms, a motor has a turning **rotor** and a fixed **stator**. The electromagnetic interaction between the two produces torque — the effect that twists the shaft around. The electrical details and faults come in Part 7 (P7-7); here we start with where the parts are.
 
-<Figure {...F.motorParts} />
+<MachineSpatial kind="motor" />
+
+Find the numbered parts in the perspective view, then compare them with the end section. On small screens the section appears below the perspective.
 
 What you can read from Figure 2:
 
@@ -126,7 +129,7 @@ These are different classifications. Rolling-element bearings come in radial and
 
 Outside the bearing are the housing, the **pedestal** that the housing sits on, and the **foundation** that supports the machine. Together we will call them the **support system**.
 
-<Figure {...F.supportPath} />
+<MachineSpatial kind="support" />
 
 In Figure 5 the radial load travels from the shaft through the bearing, the housing and the pedestal to the foundation. If the foundation deforms or moves, the conditions supporting the shaft change too. "Fixed part" means a part that is not meant to turn, not a part that does not vibrate.
 
@@ -140,7 +143,7 @@ A non-contact displacement sensor measures the distance from its tip (the probe)
 
 The shaft's own continuous turning is called **spin**. The vibrations superimposed on spin are split into three by the direction of motion.
 
-<Figure {...F.motionDirections} />
+<MachineSpatial kind="motion" />
 
 | Motion | What changes? | Example |
 |---|---|---|
@@ -148,7 +151,7 @@ The shaft's own continuous turning is called **spin**. The vibrations superimpos
 | Axial vibration | Position along the shaft | Back-and-forth in the thrust direction |
 | Torsional vibration | Relative twist angle between two cross-sections | The shaft's twist grows and shrinks |
 
-The torsion at the bottom of Figure 6 does not mean merely that the shaft rotates. It is **a motion in which the relative angle between different positions along the shaft changes**. Even a shaft that transmits torque can have torsional vibration on top of it.
+The torsion in Figure 6 does not mean merely that the shaft rotates. It is **a motion in which the relative angle between different positions along the shaft changes**. Even a shaft that transmits torque can have torsional vibration on top of it.
 
 <Callout type="warn" title="Frequency alone cannot tell you the direction of motion">
 

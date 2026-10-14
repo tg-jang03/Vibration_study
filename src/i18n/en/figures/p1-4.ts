@@ -2,6 +2,16 @@ import type { Dict } from '../../translate';
 
 /** src/figures/p1-4.ts 그림의 영어 (D-054). 키 = 그림 데이터의 한국어 원문 — 빠진 것은 src/i18n/figures.test.ts가 보여 준다 */
 const EN: Dict = {
+  "그림 7. 같은 계에 힘의 주파수를 하나씩 바꿔 가며 건다. 매번 과도 응답이 줄어든 뒤 변위 진폭을 힘 진폭으로 나누고, 힘보다 얼마나 늦는지 읽는다. 이 크기와 위상을 주파수마다 모으면 FRF가 된다.": "Figure 7. Change the frequency of the force applied to the same system. At each frequency, wait for the transient to decay, divide displacement amplitude by force amplitude, and read the phase lag. Collecting these magnitudes and phases gives the FRF.",
+  "그림 8. 고유진동수 5 Hz, ζ = 0.05인 계의 Bode 선도. 위는 힘 1 N당 변위 진폭, 아래는 힘에 대한 변위의 위상이다. 같은 세로 점선에서 두 값을 함께 읽는다. 가로축은 같은 배수마다 같은 간격인 로그 눈금이다. 크기는 dB 대신 mm/N으로 표시했다.": "Figure 8. Bode plot of a system with a natural frequency of 5 Hz and ζ = 0.05. Top: displacement amplitude per 1 N of force. Bottom: displacement phase relative to force. Read both at the same vertical dotted line. The frequency axis is logarithmic: equal ratios take equal space. Magnitude is in mm/N rather than dB.",
+  "입력: 힘 F₀ [N]": "Input: force F₀ [N]",
+  "계: m · c · k": "System: m · c · k",
+  "출력: 변위 X [mm]": "Output: X [mm]",
+  "|H| = X/F₀ [mm/N]     ·     위상 = −φ": "|H| = X/F₀ [mm/N]     ·     Phase = −φ",
+  "가진 주파수 f [Hz] · 로그 눈금": "Frequency f [Hz] · log scale",
+  "① 크기: 힘 1 N당 얼마나 움직이나?": "① Magnitude: displacement per 1 N",
+  "② 위상: 힘보다 얼마나 늦나?": "② Phase: how far behind the force?",
+  "위상 [°]": "Phase [°]",
   // 그림 1
   '그림 1. P1-3의 질량-스프링-감쇠계에 바깥 힘 F₀ cos ωt를 계속 건다. 위는 모델, 아래는 그 힘의 시간파형(ω = 2π × 4 Hz 예)이다. 힘은 일정한 박자로 오른쪽·왼쪽을 번갈아 민다.':
     'Figure 1. An outside force F₀ cos ωt is applied continuously to the mass-spring-damper system of P1-3. Top: the model. Bottom: the time waveform of that force (example: ω = 2π × 4 Hz). The force pushes right and left in turn at a steady rhythm.',
@@ -36,8 +46,8 @@ const EN: Dict = {
   '그림 6. r = 1 근처를 확대했다. 봉우리 높이의 1/√2(약 0.707배)가 되는 두 점 사이 폭을 Half-power 폭이라 한다. ζ = 0.05(파랑)는 높이 10.01, 폭 Δr = 0.1 ≈ 2ζ. 감쇠를 절반(ζ = 0.025, 주황)으로 줄이면 높이는 20.01로 약 2배, 폭은 0.05로 약 절반이 된다. 고유진동수 5 Hz라면 파랑의 폭은 약 0.5 Hz다.':
     'Figure 6. A close-up near r = 1. The width between the two points where the height falls to 1/√2 (about 0.707 times) of the peak is called the half-power width. For ζ = 0.05 (blue), the height is 10.01 and the width is Δr = 0.1 ≈ 2ζ. Halving the damping (ζ = 0.025, orange) doubles the height to 20.01 and halves the width to 0.05. With a natural frequency of 5 Hz, the blue width is about 0.5 Hz.',
   // 그림 7
-  '그림 7. ζ = 0.01로 감쇠가 아주 작은 계(5 Hz)에 4.5 Hz(r = 0.9) 힘을 정지 상태에서 걸기 시작했다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 한동안 함께 남아, 둘이 같은 방향일 때는 더해지고 반대일 때는 상쇄된다. 그래서 진폭이 2초(= 1/(5 − 4.5) s)마다 출렁인다. 과도 응답이 사라지면 출렁임도 줄어 회색 점선(정상상태 진폭 5.24 × X_st)에 머문다.':
-    'Figure 7. A 4.5 Hz force (r = 0.9) starts acting on a system at rest (5 Hz) with very small damping, ζ = 0.01. The transient near 5 Hz and the 4.5 Hz steady-state response stay together for a while, adding when they point the same way and cancelling when they point opposite ways. So the amplitude surges every 2 seconds (= 1/(5 − 4.5) s). When the transient dies out, the surging shrinks too and settles at the gray dotted line (steady-state amplitude 5.24 × X_st).',
+  '그림 9. ζ = 0.01로 감쇠가 아주 작은 계(5 Hz)에 4.5 Hz(r = 0.9) 힘을 정지 상태에서 걸기 시작했다. 5 Hz 근처의 과도 응답과 4.5 Hz의 정상상태 응답이 한동안 함께 남아, 둘이 같은 방향일 때는 더해지고 반대일 때는 상쇄된다. 그래서 진폭이 2초(= 1/(5 − 4.5) s)마다 출렁인다. 과도 응답이 사라지면 출렁임도 줄어 회색 점선(정상상태 진폭 5.24 × X_st)에 머문다.':
+    'Figure 9. A 4.5 Hz force (r = 0.9) starts acting on a system at rest (5 Hz) with very small damping, ζ = 0.01. The transient near 5 Hz and the 4.5 Hz steady-state response stay together for a while, adding when they point the same way and cancelling when they point opposite ways. So the amplitude surges every 2 seconds (= 1/(5 − 4.5) s). When the transient dies out, the surging shrinks too and settles at the gray dotted line (steady-state amplitude 5.24 × X_st).',
 };
 
 export default EN;
