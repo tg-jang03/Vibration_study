@@ -78,7 +78,7 @@ export default function BearingCalcLab({ lang = 'ko', initial = {} }: { lang?: L
         <ParamSlider label={tr`볼 지름 d`} value={p.d} min={3} max={20} step={0.01} unit="mm" onChange={set('d')} />
         <ParamSlider label={tr`피치 지름 D`} value={p.D} min={25} max={120} step={0.01} unit="mm" onChange={set('D')} hint={`d/D = ${formatNumber(p.d / p.D, 3)}`} />
         <ParamSlider label={tr`접촉각 α`} value={p.alpha} min={0} max={40} step={1} unit="°" onChange={set('alpha')} />
-        <ParamSlider label={tr`회전수`} value={p.rpm} min={300} max={6000} step={5} unit="rpm" onChange={set('rpm')} hint={`1X = ${formatNumber(fr, 4)} Hz`} />
+        <ParamSlider label={tr`회전수`} value={p.rpm} min={300} max={6000} step={5} unit="rpm" marks={[1785, 3575]} onChange={set('rpm')} hint={`1X = ${formatNumber(fr, 4)} Hz`} />
         <ParamSlider label={tr`미끄럼`} value={p.slip} min={0} max={3} step={0.1} unit="%" onChange={set('slip')} hint={tr`케이지가 계산보다 늦게 도는 비율`} />
       </>}
       formulas={<>

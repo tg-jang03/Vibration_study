@@ -27,7 +27,7 @@ export default function SupportStiffnessLab({ lang = 'ko' }: { lang?: Lang }) {
   return (
     <LabFrame id="LAB-SUP-01" lang={lang} title={tr`받침대를 단단하게 하면 어디까지 바뀔까?`}
       controls={<>
-        <ParamSlider label={tr`지지 강성 k_sup`} value={supportMN} min={0.1} max={10} step={0.05} unit="MN/m" onChange={setSupportMN} />
+        <ParamSlider label={tr`지지 강성 k_sup`} value={supportMN} min={0.1} max={10} step={0.05} unit="MN/m" marks={[0.25]} onChange={setSupportMN} />
         <ParamSlider label={tr`질량 m`} value={mass} min={50} max={200} step={10} unit="kg" onChange={setMass} />
         <button type="button" className="lab-button" onClick={() => { setSupportMN(1); setMass(100); }}>{tr`처음 값`}</button>
       </>}

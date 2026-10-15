@@ -80,8 +80,8 @@ export default function FaultMapLab({ lang = 'ko', initial = {} }: { lang?: Lang
     <LabFrame lang={lang} id="LAB-MAP-01" title={tr`진단 주파수 지도: 주파수 → 원인 후보`}
       controls={<>
         <ParamSelect label={tr`기계`} value={p.machine} options={MACHINE_OPTIONS} onChange={(v) => setP((q) => ({ ...q, machine: v, rpm: MACHINES[v].rpm }))} />
-        <ParamSlider label={tr`회전수`} value={p.rpm} min={300} max={7200} step={5} unit="rpm" onChange={set('rpm')} hint={`1X = ${formatNumber(info.fr, 4)} Hz`} />
-        <ParamSlider label={tr`측정한 줄의 주파수`} value={p.f} min={1} max={Math.round(fMax)} step={0.1} unit="Hz" onChange={set('f')} hint={`= ${formatNumber(p.f / info.fr, 4)}X`} />
+        <ParamSlider label={tr`회전수`} value={p.rpm} min={300} max={7200} step={5} unit="rpm" marks={[1180, 1490, 3575]} onChange={set('rpm')} hint={`1X = ${formatNumber(info.fr, 4)} Hz`} />
+        <ParamSlider label={tr`측정한 줄의 주파수`} value={p.f} min={1} max={Math.round(fMax)} step={0.1} unit="Hz" marks={[43, 59.6]} onChange={set('f')} hint={`= ${formatNumber(p.f / info.fr, 4)}X`} />
         <ParamSelect label={tr`운전 조건을 바꾸면`} value={p.tracking} options={TRACK_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={set('tracking')} />
         <ParamSelect label={tr`원인 갈래`} value={p.family} options={FAMILY_OPTIONS} onChange={set('family')} />
       </>}

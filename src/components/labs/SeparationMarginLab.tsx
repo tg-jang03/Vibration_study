@@ -33,7 +33,7 @@ export default function SeparationMarginLab({ lang = 'ko' }: { lang?: Lang }) {
   const reset = () => { setAf(10); setSm(P41_SM); setSide('below'); setErr(10); };
   return <LabFrame id="LAB-SM-01" lang={lang} title={tr('AF가 크면 왜 분리여유를 더 두나')} controls={<>
     <ParamSlider label={tr('증폭계수 AF (≈ 1/(2ζ))')} value={af} min={2} max={20} step={0.5} unit="" onChange={setAf} />
-    <ParamSlider label={tr('해석이 예측한 분리여유 SM')} value={sm} min={0} max={40} step={0.1} unit="%" format={v => formatNumber(v, 3)} onChange={setSm} />
+    <ParamSlider label={tr('해석이 예측한 분리여유 SM')} value={sm} min={0} max={40} step={0.1} unit="%" format={v => formatNumber(v, 3)} marks={[16.7]} onChange={setSm} />
     <ParamSelect label={tr('임계속도 위치')} value={side} onChange={setSide} options={[{ value: 'below', label: tr('운전점 아래 (P4-1 예시 로터)') }, { value: 'above', label: tr('운전점 위') }]} />
     <ParamSlider label={tr('임계속도 예측 오차')} value={err} min={-20} max={20} step={1} unit="%" onChange={setErr} />
     <button type="button" onClick={reset}>{tr('초기화')}</button>

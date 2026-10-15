@@ -95,9 +95,9 @@ export default function UnitConverterLab({ lang = 'ko' }: { lang?: Lang }) {
         <ParamSelect label={tr('표기')} value={detector}
           options={(['pk', 'pp', 'rms'] as Detector[]).map((d) => ({ value: d, label: DETECTOR_LABEL[d] }))} onChange={setDetector} />
         <ParamSlider label={tr('값')} value={value} min={setup.min} max={setup.max} step={setup.step}
-          unit={`${UNITS[unit].label} ${DETECTOR_LABEL[detector]}`} format={(v) => v.toFixed(decimals(setup.step))} onChange={setValue} />
+          unit={`${UNITS[unit].label} ${DETECTOR_LABEL[detector]}`} format={(v) => v.toFixed(decimals(setup.step))} marks={[setup.initial]} onChange={setValue} />
         <ParamSlider label={tr('주파수')} value={freq} min={1} max={1000} step={0.5}
-          format={(v) => tr`${v.toFixed(1)} Hz (1X라면 ${Math.round(v * 60)} rpm)`} onChange={setFreq}
+          format={(v) => tr`${v.toFixed(1)} Hz (1X라면 ${Math.round(v * 60)} rpm)`} marks={[25]} onChange={setFreq}
           hint={tr('변위·속도·가속도 사이를 바꿀 때만 필요합니다')} />
       </>}
       formulas={<>

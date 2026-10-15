@@ -143,7 +143,7 @@ export default function ForcedVibrationLab({ initialFrequency = 2.5, initialZeta
       lang={lang}
       controls={
         <>
-          <ParamSlider label={tr`가진 주파수 f`} value={forcingHz} min={0} max={15} step={0.05} unit="Hz" format={(v) => v.toFixed(2)} onChange={change(setForcingHz)} />
+          <ParamSlider label={tr`가진 주파수 f`} value={forcingHz} min={0} max={15} step={0.05} unit="Hz" format={(v) => v.toFixed(2)} marks={[2.5, 4.5]} onChange={change(setForcingHz)} />
           <ParamSlider label={tr`감쇠비 ζ`} value={zeta} min={0.01} max={0.5} step={0.005} format={(v) => v.toFixed(3)} onChange={change(setZeta)} />
           <ParamSelect label={tr`시간파형`} value={display} options={DISPLAY_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={change(setDisplay)} />
           <div className="param"><span>{tr`위상 비교 — 정상상태로 선택`}</span><div style={{display:'flex',gap:'.5rem',flexWrap:'wrap'}}>

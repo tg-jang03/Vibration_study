@@ -78,7 +78,7 @@ export default function ProximityLab({ lang = 'ko', initialGap = 1.2, initialRpm
   return (
     <LabFrame lang={lang} id="LAB-PROX-01" title={tr("비접촉 변위 센서: gap 전압과 런아웃")}
       controls={<>
-        <ParamSlider label={tr("평균 gap d₀")} value={gapMm} min={0.1} max={2.8} step={0.01} unit="mm" format={(v) => v.toFixed(2)} onChange={setGapMm} />
+        <ParamSlider label={tr("평균 gap d₀")} value={gapMm} min={0.1} max={2.8} step={0.01} unit="mm" format={(v) => v.toFixed(2)} marks={[1.21]} onChange={setGapMm} />
         <ParamSlider label={tr("회전수")} value={rpm} min={100} max={4000} step={50} unit="rpm" onChange={setRpm} hint={tr`예시 로터: 임계속도 ${ROTOR.criticalRpm} rpm, 운전 ${ROTOR.operatingRpm} rpm`} />
         <ParamSlider label={tr("축 진동 (운전 3600 rpm에서)")} value={vib} min={0} max={300} step={5} unit="µm pp" onChange={setVib} hint={tr("다른 회전수의 진동은 불평형 응답으로 정해집니다 (P1-7)")} />
         <ParamSelect label={tr("런아웃")} value={runout} options={RUNOUT_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={setRunout} />
