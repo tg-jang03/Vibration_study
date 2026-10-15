@@ -5,7 +5,7 @@
 import { grid, squareYRange, type FigAnnotation, type FigureSpec } from '../lib/figure';
 import { formatNumber } from '../lib/format';
 import { freeResponseAt } from '../lib/mck';
-import { BEARING_6205, bearingFrequencies, beltFrequency, bladePass, electromagneticForce, gearPair } from '../lib/machine/frequencies';
+import { BEARING_6205, bearingFrequencies, beltFrequency, bladePass, electromagneticForce, gearPair, oilWhirlBand } from '../lib/machine/frequencies';
 import { buildMap, EXAMPLE, LINE_FREQUENCY, MAP_RANGE, PRESETS } from '../lib/machine/frequencyMap';
 
 const PX_PER_UNIT = 820 / 30; // 도식 패널 x 범위 [0, 30]의 1단위 = 27.3 px
@@ -28,6 +28,8 @@ export const P07_VALUES = (() => {
     bladePass7: bladePass(7, pumpFr),
     brg,
     brgX,
+    /** 볼 자전: 외륜 한 바퀴에 볼이 도는 바퀴 수 (D + d)/d */
+    ballTurns: (BEARING_6205.pitchDiameter + BEARING_6205.ballDiameter) / BEARING_6205.ballDiameter,
     belt: beltFrequency(EXAMPLE.motorPulley, EXAMPLE.beltLength, fanMotorFr),
     fanMotorFr,
     fanFr: (fanMotorFr * EXAMPLE.motorPulley) / EXAMPLE.fanPulley,
@@ -251,8 +253,13 @@ export const halfSpeed: FigureSpec = {
   ],
 };
 
-// 그림 6 — 베어링 줄은 하모닉 사이에 선다 (6205, 3000 rpm)
+// 그림 6 — 위: 케이지에 올라타서 센 볼 자전, 아래: 베어링 줄은 하모닉 사이에 선다 (6205, 3000 rpm)
 const bx = V.brgX;
+const X6: [number, number] = [0, 30];
+const Y6 = squareYRange(X6, 150);
+const plateTop6 = 1.3;
+const ball6 = { x: 5.5, r: 1.0 };
+const ftext = (y: number, text: string, color: 'text' | 'muted' | 'warn' = 'text', bold = false): FigAnnotation => ({ type: 'text', x: 16.8, y, text, anchor: 'start', color, bold });
 const brgStems = [
   { x: bx.ftf, h: 0.62, color: 'c3' as const, name: 'FTF' },
   { x: bx.bsf, h: 0.78, color: 'c4' as const, name: 'BSF' },
@@ -261,9 +268,32 @@ const brgStems = [
 ];
 export const bearingLines: FigureSpec = {
   id: 'fig-p1-8-6',
-  caption: `그림 6. 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 ${formatNumber(bx.ftf, 4)}X, 볼 자전 ${formatNumber(bx.bsf, 4)}X, 외륜 ${formatNumber(bx.bpfo, 4)}X, 내륜 ${formatNumber(bx.bpfi, 4)}X — 모두 점선 사이에 선다. 3000 rpm(1X = ${V.fr} Hz)이면 외륜 ${hz(V.brg.bpfo)} Hz, 내륜 ${hz(V.brg.bpfi)} Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.`,
+  caption: `그림 6. 위: 케이지에 올라타서 본 볼. 케이지와 함께 돌며 보면 볼 중심은 제자리이고, 멈춰 있던 외륜이 1초에 FTF바퀴씩 거꾸로 지나간다. 볼은 그 위를 미끄러지지 않고 구르므로, 볼이 외륜에 닿는 원의 둘레 π(D + d)가 한 번 지나가는 동안 π(D + d) ÷ πd = (D + d)/d바퀴 자전한다 → BSF = FTF × (D + d)/d. 6205는 (D + d)/d = ${formatNumber(V.ballTurns, 3)}바퀴다. 아래: 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 ${formatNumber(bx.ftf, 4)}X, 볼 자전 ${formatNumber(bx.bsf, 4)}X, 외륜 ${formatNumber(bx.bpfo, 4)}X, 내륜 ${formatNumber(bx.bpfi, 4)}X — 모두 점선 사이에 선다. 3000 rpm(1X = ${V.fr} Hz)이면 볼 자전 ${hz(V.brg.bsf)} Hz, 외륜 ${hz(V.brg.bpfo)} Hz, 내륜 ${hz(V.brg.bpfi)} Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.`,
   panels: [
     {
+      frame: false,
+      height: 150,
+      x: { range: X6 },
+      y: { range: Y6 },
+      series: [],
+      annotations: [
+        { type: 'text', x: 8.25, y: Y6[1] - 0.45, text: '케이지에 올라타서 보면 (볼 자전)', anchor: 'middle', bold: true },
+        { type: 'rect', x1: 1.0, x2: 15.5, y1: plateTop6 - 0.4, y2: plateTop6, color: 'text' },
+        { type: 'circle', x: ball6.x, y: plateTop6 + ball6.r, r: ball6.r * PX_PER_UNIT, fill: true, color: 'c1' },
+        { type: 'point', x: ball6.x, y: plateTop6 + ball6.r, color: 'text' },
+        { type: 'text', x: 7.0, y: plateTop6 + ball6.r - 0.15, text: '볼 중심 = 케이지와 함께 제자리', anchor: 'start', color: 'muted' },
+        { type: 'arrow', x1: ball6.x - 0.8, y1: plateTop6 + 2 * ball6.r + 0.45, x2: ball6.x + 0.8, y2: plateTop6 + 2 * ball6.r + 0.45, color: 'warn', double: false, label: '자전', labelDy: -8 },
+        { type: 'arrow', x1: 11.0, y1: 0.45, x2: 7.0, y2: 0.45, color: 'muted', double: false },
+        { type: 'text', x: 11.3, y: 0.3, text: '외륜: 1초에 FTF바퀴씩 거꾸로', anchor: 'start', color: 'muted' },
+        ftext(5.0, '외륜에 닿는 원의 둘레 π(D + d)'),
+        ftext(4.1, '÷ 볼 둘레 πd'),
+        ftext(3.2, '= 외륜 한 바퀴에 (D + d)/d바퀴 자전'),
+        ftext(2.3, 'BSF = FTF × (D + d)/d', 'warn', true),
+        ftext(1.4, `6205 · 3000 rpm: ${hz(V.brg.ftf)} × ${formatNumber(V.ballTurns, 3)} = ${hz(V.brg.bsf)} Hz`, 'muted'),
+      ],
+    },
+    {
+      title: '네 주파수 (6205)',
       series: brgStems.map((s) => ({ x: [s.x], y: [s.h], kind: 'stem' as const, color: s.color, width: 3 })),
       annotations: [
         ...Array.from({ length: 9 }, (_, i): FigAnnotation => ({ type: 'vline', x: i + 1, color: 'muted', dash: true })),
@@ -376,7 +406,71 @@ export const beltDrive: FigureSpec = {
   ],
 };
 
-// 그림 9 — 기동하면서 움직이는 줄과 제자리 줄 (전동기-펌프)
+// 그림 9 — 미끄럼 베어링: 셀 것이 없는 베어링에서 보는 줄 (도식 + 1X 배수 지도)
+const X9: [number, number] = [0, 30];
+const Y9 = squareYRange(X9, 210);
+const J = { x: 7, y: 4.3, rb: 3.2, rs: 2.3, e: 0.6, deg: -60 };
+const jS: [number, number] = [J.x + J.e * Math.cos(ang(J.deg)), J.y + J.e * Math.sin(ang(J.deg))];
+const jAt = (c: [number, number], r: number, deg: number): [number, number] => [c[0] + r * Math.cos(ang(deg)), c[1] + r * Math.sin(ang(deg))];
+const jTag = (y: number, text: string, target: [number, number], color: 'text' | 'c2' | 'c3' | 'warn' | 'muted' = 'text'): FigAnnotation[] => [
+  { type: 'text', x: 14.2, y: y - 0.12, text, anchor: 'start', color },
+  { type: 'line', x1: 14.0, y1: y, x2: target[0], y2: target[1], color: 'muted', width: 1.2 },
+];
+const whirlDir: [number, number] = [-Math.sin(ang(J.deg)), Math.cos(ang(J.deg))];
+const [whirlLo, whirlHi] = oilWhirlBand(1);
+export const journalBearing: FigureSpec = {
+  id: 'fig-p1-8-9',
+  caption: `그림 9. 미끄럼 베어링(유막 저널 베어링)을 축 방향에서 본 단면 — 틈새를 실제보다 크게 그렸다. 위: 축은 무게 때문에 한쪽으로 쏠려 돌고, 축 표면이 좁은 틈으로 끌고 들어간 기름의 압력이 축을 받친다. 기름은 축 둘레를 축의 절반보다 조금 느리게 돌기 때문에, 기름막이 불안정해지면 축 중심(주황 점선 원)이 그 박자(${whirlLo} ~ ${whirlHi}X)로 틈새 안을 돈다 — 선회. 볼이나 이빨처럼 한 바퀴에 몇 번 지나가는 것이 없어서 베어링 자신의 결함 주파수는 없다. 축의 움직임은 베어링에 꽂은 변위 센서로 직접 잰다. 아래: 그래서 미끄럼 베어링 기계에서는 1X(불평형), 2X(정렬 불량 등)와 기름막 선회(${whirlLo} ~ ${whirlHi}X)를 본다 — 모두 1X 아래 ~ 몇 X에 있다.`,
+  panels: [
+    {
+      frame: false,
+      height: 210,
+      x: { range: X9 },
+      y: { range: Y9 },
+      series: [],
+      annotations: [
+        { type: 'text', x: J.x, y: Y9[1] - 0.45, text: '미끄럼 베어링 단면 (틈새를 크게 그림)', anchor: 'middle', bold: true },
+        { type: 'circle', x: J.x, y: J.y, r: J.rb * PX_PER_UNIT, color: 'text' },
+        { type: 'circle', x: jS[0], y: jS[1], r: J.rs * PX_PER_UNIT, fill: true, color: 'muted' },
+        { type: 'rect', x1: J.x + J.rb, x2: J.x + J.rb + 1.6, y1: J.y - 0.2, y2: J.y + 0.2, color: 'c3' },
+        { type: 'arrow', x1: jS[0] + 1.0, y1: jS[1] + 1.5, x2: jS[0] - 1.0, y2: jS[1] + 1.5, color: 'c2', double: false },
+        { type: 'text', x: jS[0], y: jS[1] + 1.85, text: '축 f_r', anchor: 'middle', color: 'c2' },
+        { type: 'circle', x: J.x, y: J.y, r: J.e * PX_PER_UNIT, dash: true, color: 'warn' },
+        { type: 'point', x: jS[0], y: jS[1], color: 'warn' },
+        { type: 'arrow', x1: jS[0], y1: jS[1], x2: jS[0] + 0.9 * whirlDir[0], y2: jS[1] + 0.9 * whirlDir[1], color: 'warn', double: false },
+        ...jTag(8.0, '베어링 면: 멈춰 있다', jAt([J.x, J.y], J.rb, 50)),
+        ...jTag(6.7, '축: f_r로 돈다 · 기름은 평균 절반쯤 빠르기', jAt(jS, J.rs, 25), 'c2'),
+        ...jTag(5.4, '축 중심(점선 원): 0.38 ~ 0.48X로 돈다 = 선회', jAt([J.x, J.y], J.e, 60), 'warn'),
+        ...jTag(4.3, '변위 센서: 축의 움직임을 직접 잰다', [J.x + J.rb + 1.6, J.y], 'c3'),
+        ...jTag(3.0, '좁은 틈: 끌려 들어간 기름의 압력이 축을 받친다', jAt([J.x, J.y], (J.e + J.rs + J.rb) / 2, J.deg)),
+        { type: 'text', x: 14.2, y: 1.5, text: '볼·이빨이 없다 → 한 바퀴에 몇 번 칠 것이 없다', anchor: 'start', color: 'muted' },
+      ],
+    },
+    {
+      title: '미끄럼 베어링 기계에서 보는 줄',
+      series: [
+        { x: [1], y: [1.0], kind: 'stem' as const, color: 'c1', width: 3 },
+        { x: [2], y: [0.6], kind: 'stem' as const, color: 'c1', width: 3 },
+      ],
+      annotations: [
+        { type: 'band', x1: whirlLo, x2: whirlHi, color: 'warn' },
+        { type: 'text', x: (whirlLo + whirlHi) / 2, y: 0.55, text: `기름막 선회 ${whirlLo} ~ ${whirlHi}X`, anchor: 'middle', color: 'warn' },
+        { type: 'text', x: 1, y: 1.1, text: '1X 불평형', anchor: 'middle', color: 'c1' },
+        { type: 'text', x: 2, y: 0.7, text: '2X 정렬 불량 등', anchor: 'middle', color: 'c1' },
+      ],
+      x: {
+        range: [0, 3.3],
+        ticks: [0, 1, 2, 3],
+        tickLabels: [0, 1, 2, 3].map((k) => ({ value: k, label: k === 0 ? '0' : `${k}X` })),
+        label: '주파수 (1X의 배수)',
+      },
+      y: { range: [0, 1.3], ticks: 'none' },
+      height: 120,
+    },
+  ],
+};
+
+// 그림 10 — 기동하면서 움직이는 줄과 제자리 줄 (전동기-펌프)
 const rpmTop = PRESETS.motorPump.rpm;
 const rays = [
   { k: 1, color: 'c1' as const, name: '1X' },
@@ -384,8 +478,8 @@ const rays = [
   { k: 7, color: 'c4' as const, name: '날개 통과 7X' },
 ];
 export const runUpMap: FigureSpec = {
-  id: 'fig-p1-8-9',
-  caption: `그림 9. 전동기-펌프(날개 7개)를 0에서 ${rpmTop} rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = ${V.twoFL} Hz(회색 점선)와 받침대 고유진동수 ${EXAMPLE.structureNatural} Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 ${formatNumber(V.crossBp, 3)} rpm, 2X ${formatNumber(V.cross2X, 4)} rpm)에서 그 고유진동수를 지나간다 — P1-7의 임계속도와 같은 일이다. 운전 회전수에서 2X(${hz((2 * rpmTop) / 60)} Hz)와 2 f_L(${V.twoFL} Hz)은 거의 겹친다.`,
+  id: 'fig-p1-8-10',
+  caption: `그림 10. 전동기-펌프(날개 7개)를 0에서 ${rpmTop} rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = ${V.twoFL} Hz(회색 점선)와 받침대 고유진동수 ${EXAMPLE.structureNatural} Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 ${formatNumber(V.crossBp, 3)} rpm, 2X ${formatNumber(V.cross2X, 4)} rpm)에서 그 고유진동수를 지나간다 — P1-7의 임계속도와 같은 일이다. 운전 회전수에서 2X(${hz((2 * rpmTop) / 60)} Hz)와 2 f_L(${V.twoFL} Hz)은 거의 겹친다.`,
   panels: [
     {
       series: rays.map((ray) => ({ x: [0, (ray.k * rpmTop) / 60], y: [0, rpmTop], color: ray.color, width: 2.4 })),
@@ -410,7 +504,7 @@ export const runUpMap: FigureSpec = {
   ],
 };
 
-// 그림 10 — 관심 주파수 구간 지도 (전동기-펌프, LAB-FMAP-01 처음 상태)
+// 그림 11 — 관심 주파수 구간 지도 (전동기-펌프, LAB-FMAP-01 처음 상태)
 const pump = PRESETS.motorPump;
 const map10 = buildMap('motorPump', { rpm: pump.rpm, count: pump.count, balls: pump.balls ?? 9 });
 const L = Math.log10;
@@ -427,8 +521,8 @@ const laneAnnotations: FigAnnotation[] = map10.rows.flatMap((row, i) => [
   ]),
 ]);
 export const interestMap: FigureSpec = {
-  id: 'fig-p1-8-10',
-  caption: `그림 10. 전동기-펌프(${pump.rpm} rpm, 1X = ${hz(map10.fr)} Hz, 날개 ${pump.count}개, 볼 ${pump.balls}개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(${hz(map10.fr)} ~ ${hz(10 * map10.fr)} Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 ${hz(map10.highest)} Hz다.`,
+  id: 'fig-p1-8-11',
+  caption: `그림 11. 전동기-펌프(${pump.rpm} rpm, 1X = ${hz(map10.fr)} Hz, 날개 ${pump.count}개, 볼 ${pump.balls}개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(${hz(map10.fr)} ~ ${hz(10 * map10.fr)} Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 ${hz(map10.highest)} Hz다.`,
   panels: [
     {
       series: [],

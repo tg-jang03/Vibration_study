@@ -51,8 +51,16 @@ const EN: Dict = {
   'U (축 표면)': 'U (shaft surface)',
   '베어링 면 멈춤 (속도 0)': 'Bearing surface still (speed 0)',
   // 그림 6
-  '그림 6. 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 0.3983X, 볼 자전 2.357X, 외륜 3.585X, 내륜 5.415X — 모두 점선 사이에 선다. 3000 rpm(1X = 50 Hz)이면 외륜 179.2 Hz, 내륜 270.8 Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.':
-    'Figure 6. A frequency map of the four frequencies of a 6205 bearing (9 balls, d = 7.94 mm, D = 39.04 mm) — cage FTF (green), ball spin BSF (purple), outer ring BPFO (blue), inner ring BPFI (orange) — set out as multiples of 1X. The gray dotted lines are the integer multiples (harmonics) of 1X. Cage 0.3983X, ball spin 2.357X, outer ring 3.585X, inner ring 5.415X — all stand between dotted lines. At 3000 rpm (1X = 50 Hz), the outer ring is 179.2 Hz and the inner ring 270.8 Hz. Adding outer and inner ring gives exactly 9X (number of balls × 1X).',
+  '그림 6. 위: 케이지에 올라타서 본 볼. 케이지와 함께 돌며 보면 볼 중심은 제자리이고, 멈춰 있던 외륜이 1초에 FTF바퀴씩 거꾸로 지나간다. 볼은 그 위를 미끄러지지 않고 구르므로, 볼이 외륜에 닿는 원의 둘레 π(D + d)가 한 번 지나가는 동안 π(D + d) ÷ πd = (D + d)/d바퀴 자전한다 → BSF = FTF × (D + d)/d. 6205는 (D + d)/d = 5.92바퀴다. 아래: 6205 베어링(볼 9개, d = 7.94 mm, D = 39.04 mm)의 네 주파수 — 케이지 FTF(초록), 볼 자전 BSF(보라), 외륜 BPFO(파랑), 내륜 BPFI(주황) — 를 1X의 배수로 세운 주파수 지도. 회색 점선은 1X의 정수배(하모닉) 자리다. 케이지 0.3983X, 볼 자전 2.357X, 외륜 3.585X, 내륜 5.415X — 모두 점선 사이에 선다. 3000 rpm(1X = 50 Hz)이면 볼 자전 117.8 Hz, 외륜 179.2 Hz, 내륜 270.8 Hz다. 외륜과 내륜을 더하면 정확히 9X(볼 수 × 1X)다.':
+    'Figure 6. Top: a ball seen while riding on the cage. If you go around with the cage, the ball center stays put and the outer ring, which was standing still, goes backwards past you at FTF turns per second. The ball rolls on it without slipping, so while the circumference π(D + d) of the circle where the ball touches the outer ring passes once, the ball spins π(D + d) ÷ πd = (D + d)/d times → BSF = FTF × (D + d)/d. For the 6205, (D + d)/d = 5.92 spins. Bottom: a frequency map of the four frequencies of a 6205 bearing (9 balls, d = 7.94 mm, D = 39.04 mm) — cage FTF (green), ball spin BSF (purple), outer ring BPFO (blue), inner ring BPFI (orange) — set out as multiples of 1X. The gray dotted lines are the integer multiples (harmonics) of 1X. Cage 0.3983X, ball spin 2.357X, outer ring 3.585X, inner ring 5.415X — all stand between dotted lines. At 3000 rpm (1X = 50 Hz), the ball spin is 117.8 Hz, the outer ring 179.2 Hz and the inner ring 270.8 Hz. Adding outer and inner ring gives exactly 9X (number of balls × 1X).',
+  '케이지에 올라타서 보면 (볼 자전)': 'Riding on the cage (ball spin)',
+  '볼 중심 = 케이지와 함께 제자리': 'Ball center = stays put with the cage',
+  '자전': 'Spin',
+  '외륜: 1초에 FTF바퀴씩 거꾸로': 'Outer ring: FTF turns per second, backwards',
+  '외륜에 닿는 원의 둘레 π(D + d)': 'Circumference where it touches the outer ring π(D + d)',
+  '÷ 볼 둘레 πd': '÷ ball circumference πd',
+  '= 외륜 한 바퀴에 (D + d)/d바퀴 자전': '= (D + d)/d spins per pass of the outer ring',
+  '네 주파수 (6205)': 'The four frequencies (6205)',
   '주파수 (1X의 배수)': 'Frequency (multiples of 1X)',
   // 그림 7
   '그림 7. 외륜 흠집 위를 볼이 지날 때마다 짧은 충격이 생기고, 충격은 하우징을 고유진동수(예시 3 kHz, 감쇠비 0.04)로 울린다 — P1-3의 감쇠 자유진동이 BPFO 박자(179.2 Hz, 5.58 ms 간격)로 되풀이된다. 위: 25 ms 동안의 파형. 가운데: 충격 하나를 1.5 ms만 확대 — 한 번 울리는 데 0.333 ms. 아래: 주파수 지도. 흔들림의 대부분은 울림 주파수 근처(주황 띠)에 모이고, 되풀이 박자 179.2 Hz는 울림이 반복되는 간격으로만 드러난다.':
@@ -76,15 +84,30 @@ const EN: Dict = {
   '벨트 × 2 23.3': 'Belt × 2 23.3',
   '전동기 1X 29.7': 'Motor 1X 29.7',
   // 그림 9
-  '그림 9. 전동기-펌프(날개 7개)를 0에서 3570 rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = 120 Hz(회색 점선)와 받침대 고유진동수 85 Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 729 rpm, 2X 2550 rpm)에서 그 고유진동수를 지나간다 — P1-7의 임계속도와 같은 일이다. 운전 회전수에서 2X(119 Hz)와 2 f_L(120 Hz)은 거의 겹친다.':
-    'Figure 9. Starting up a motor-pump (7 blades) from 0 to 3570 rpm: for each speed on the vertical axis, where each line stands on the horizontal axis. The speed-related lines (1X blue, 2X green, blade pass purple) move right along straight lines from the origin. The line-frequency-bound 2 f_L = 120 Hz (gray dotted) and the pedestal natural frequency 85 Hz (orange dotted, example) stay put regardless of speed. At the speeds where a straight line meets the orange dotted line (blade pass 729 rpm, 2X 2550 rpm), it passes that natural frequency — the same thing as the critical speed of P1-7. At operating speed, 2X (119 Hz) and 2 f_L (120 Hz) nearly coincide.',
+  '그림 9. 미끄럼 베어링(유막 저널 베어링)을 축 방향에서 본 단면 — 틈새를 실제보다 크게 그렸다. 위: 축은 무게 때문에 한쪽으로 쏠려 돌고, 축 표면이 좁은 틈으로 끌고 들어간 기름의 압력이 축을 받친다. 기름은 축 둘레를 축의 절반보다 조금 느리게 돌기 때문에, 기름막이 불안정해지면 축 중심(주황 점선 원)이 그 박자(0.38 ~ 0.48X)로 틈새 안을 돈다 — 선회. 볼이나 이빨처럼 한 바퀴에 몇 번 지나가는 것이 없어서 베어링 자신의 결함 주파수는 없다. 축의 움직임은 베어링에 꽂은 변위 센서로 직접 잰다. 아래: 그래서 미끄럼 베어링 기계에서는 1X(불평형), 2X(정렬 불량 등)와 기름막 선회(0.38 ~ 0.48X)를 본다 — 모두 1X 아래 ~ 몇 X에 있다.':
+    'Figure 9. Cross-section of a journal bearing (fluid-film journal bearing) seen along the shaft — the clearance is drawn much larger than in reality. Top: the shaft turns pushed to one side by its weight, and the pressure of the oil the shaft surface drags into the narrow gap holds the shaft up. The oil goes around the shaft a little slower than half the shaft speed, so when the oil film becomes unstable the shaft center (orange dotted circle) circles inside the clearance at that rhythm (0.38 – 0.48X) — whirl. Nothing passes a few times per turn the way balls or teeth do, so the bearing has no flaw frequency of its own. The shaft motion is measured directly with displacement sensors mounted in the bearing. Bottom: so on a machine with journal bearings we watch 1X (unbalance), 2X (misalignment and the like) and oil whirl (0.38 – 0.48X) — all of them from below 1X up to a few X.',
+  '미끄럼 베어링 단면 (틈새를 크게 그림)': 'Journal bearing cross-section (clearance enlarged)',
+  '축 f_r': 'Shaft f_r',
+  '베어링 면: 멈춰 있다': 'Bearing surface: stands still',
+  '축: f_r로 돈다 · 기름은 평균 절반쯤 빠르기': 'Shaft: turns at f_r · oil averages about half that speed',
+  '축 중심(점선 원): 0.38 ~ 0.48X로 돈다 = 선회': 'Shaft center (dotted circle): circles at 0.38 – 0.48X = whirl',
+  '변위 센서: 축의 움직임을 직접 잰다': 'Displacement sensor: measures the shaft motion directly',
+  '좁은 틈: 끌려 들어간 기름의 압력이 축을 받친다': 'Narrow gap: pressure of the dragged-in oil holds the shaft up',
+  '볼·이빨이 없다 → 한 바퀴에 몇 번 칠 것이 없다': 'No balls or teeth → nothing that hits a few times per turn',
+  '미끄럼 베어링 기계에서 보는 줄': 'Lines to watch on a journal-bearing machine',
+  '기름막 선회 0.38 ~ 0.48X': 'Oil whirl 0.38 – 0.48X',
+  '1X 불평형': '1X unbalance',
+  '2X 정렬 불량 등': '2X misalignment etc.',
+  // 그림 10
+  '그림 10. 전동기-펌프(날개 7개)를 0에서 3570 rpm까지 기동할 때, 세로축 회전수마다 각 줄이 가로축 어디에 서는지 그렸다. 회전 관련 줄(1X 파랑, 2X 초록, 날개 통과 보라)은 원점에서 뻗는 직선을 따라 오른쪽으로 움직인다. 전원에 묶인 2 f_L = 120 Hz(회색 점선)와 받침대 고유진동수 85 Hz(주황 점선, 예시)는 회전수와 상관없이 제자리다. 직선이 주황 점선과 만나는 회전수(날개 통과 729 rpm, 2X 2550 rpm)에서 그 고유진동수를 지나간다 — P1-7의 임계속도와 같은 일이다. 운전 회전수에서 2X(119 Hz)와 2 f_L(120 Hz)은 거의 겹친다.':
+    'Figure 10. Starting up a motor-pump (7 blades) from 0 to 3570 rpm: for each speed on the vertical axis, where each line stands on the horizontal axis. The speed-related lines (1X blue, 2X green, blade pass purple) move right along straight lines from the origin. The line-frequency-bound 2 f_L = 120 Hz (gray dotted) and the pedestal natural frequency 85 Hz (orange dotted, example) stay put regardless of speed. At the speeds where a straight line meets the orange dotted line (blade pass 729 rpm, 2X 2550 rpm), it passes that natural frequency — the same thing as the critical speed of P1-7. At operating speed, 2X (119 Hz) and 2 f_L (120 Hz) nearly coincide.',
   '운전 3570 rpm': 'Running 3570 rpm',
   '받침대 85 Hz': 'Pedestal 85 Hz',
   '날개 통과 7X': 'Blade pass 7X',
   '회전수 [rpm]': 'Speed [rpm]',
-  // 그림 10
-  '그림 10. 전동기-펌프(3570 rpm, 1X = 59.5 Hz, 날개 7개, 볼 9개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(59.5 ~ 595 Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 5000 Hz다.':
-    'Figure 10. Map of the frequency bands of interest for a motor-pump (3570 rpm, 1X = 59.5 Hz, 7 blades, bearing with 9 balls), on a logarithmic horizontal axis. One row per element; blue solid lines move with speed, orange dotted lines and bands stay put. Gray bands divide the bands: below 1X / 1X – 10X (59.5 – 595 Hz) / 10X – several kHz / several kHz and above. The highest frequency of interest in this machine is 5000 Hz, the upper end of the impact-ringing band.',
+  // 그림 11
+  '그림 11. 전동기-펌프(3570 rpm, 1X = 59.5 Hz, 날개 7개, 볼 9개 베어링)의 관심 주파수 구간 지도 (가로축 로그 눈금). 요소마다 한 줄씩, 파랑 실선은 회전수를 따라 움직이는 줄, 주황 점선·띠는 제자리 줄이다. 회색 띠로 구간을 나눴다: 1X 아래 / 1X ~ 10X(59.5 ~ 595 Hz) / 10X ~ 수 kHz / 수 kHz 이상. 이 기계에서 가장 높은 관심 주파수는 충격이 울리는 대역의 위 끝 5000 Hz다.':
+    'Figure 11. Map of the frequency bands of interest for a motor-pump (3570 rpm, 1X = 59.5 Hz, 7 blades, bearing with 9 balls), on a logarithmic horizontal axis. One row per element; blue solid lines move with speed, orange dotted lines and bands stay put. Gray bands divide the bands: below 1X / 1X – 10X (59.5 – 595 Hz) / 10X – several kHz / several kHz and above. The highest frequency of interest in this machine is 5000 Hz, the upper end of the impact-ringing band.',
   '1X 아래': 'Below 1X',
   '1X ~ 10X': '1X – 10X',
   '10X ~ 수 kHz': '10X – several kHz',

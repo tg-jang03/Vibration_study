@@ -48,6 +48,6 @@ describe('P1-8 본문·그림 숫자 (PageGuide §5-5)', () => {
   it('그림 id가 겹치지 않는다', () => {
     const ids = Object.values(F).flatMap((v) => ('panels' in v ? [v.id] : []));
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids.length).toBe(10);
+    expect(ids.length).toBe(11);
   });
 });

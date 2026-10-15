@@ -4,7 +4,7 @@ title: 'P1-8 Frequencies Made by Machine Elements: How Many Times per Turn?'
 description: 'The counting rule (k times per turn → k × 1X), harmonics of shafts and couplings, blade pass and gear mesh, the cage, outer-race and inner-race frequencies of rolling bearings, the high band that impacts ring, the sub-1X lines of belts and oil films, electrical and structural frequencies that do not follow shaft speed, and the map of frequency bands of interest'
 sectionId: P1-8
 source: p1-8.mdx
-sourceHash: 8fb5e33553
+sourceHash: 380b46547d
 ---
 
 import Figure from '../../components/content/Figure.astro';
@@ -25,9 +25,10 @@ How many times per shaft turn does each of these parts hit the machine? If you k
 
 1. You can calculate the frequency of an element with the counting rule "k times per turn means k × 1X".
 2. You can find the blade-pass and gear-mesh frequencies, and the speed relation between two meshing gears.
-3. You can explain why the cage, outer-race and inner-race frequencies of a rolling bearing are not integer multiples of 1X.
+3. You can calculate the cage, ball-spin, outer-race and inner-race frequencies of a rolling bearing, and explain why they are not integer multiples of 1X.
 4. You know that an impact rings a high frequency (several kHz), and that some elements (belt, cage, oil film) make frequencies below 1X.
-5. You can tell frequencies that follow shaft speed from frequencies that stay put (electrical, structural), and pick the frequency bands of interest from the machine's makeup.
+5. You can explain why, on a machine with journal bearings where there is nothing to count, we look at 1X, 2X and 0.38 – 0.48X.
+6. You can tell frequencies that follow shaft speed from frequencies that stay put (electrical, structural), and pick the frequency bands of interest from the machine's makeup.
 
 </Callout>
 
@@ -127,13 +128,23 @@ $$
 f_{BPFO} = N_r\,f_{FTF} \approx 0.4\,N_r f_r, \qquad f_{BPFI} = N_r\,(f_r - f_{FTF}) \approx 0.6\,N_r f_r
 $$
 
-<Callout type="term" title="The four bearing frequencies (FTF · BPFO · BPFI · BSF)">
-
-FTF (Fundamental Train Frequency) is the rotation frequency of the cage; BPFO (Ball Pass Frequency, Outer race) is the frequency at which balls pass a point on the outer ring; BPFI (Ball Pass Frequency, Inner race) is the same for a point on the inner ring; BSF (Ball Spin Frequency) is the frequency at which the ball itself spins. A flaw on the outer ring produces impacts at the BPFO rhythm, and a flaw on the inner ring at the BPFI rhythm.
-
-</Callout>
+Then how many times per second does a ball spin about its own center? Again we use the counting rule, but this time we count **riding on the cage** instead of the shaft.
 
 <Figure {...F.bearingLines} />
+
+As in the top of Figure 6, if you ride around with the cage, the ball centers stay where they are, and the outer ring, which was standing still, now goes backwards past you at $f_{FTF}$ turns per second. The ball rolls on it without slipping, so the number of spins during one pass of the outer ring is "circumference of the circle where the ball touches the outer ring ÷ circumference of the ball". The circle where the ball touches the outer ring has a diameter equal to the pitch diameter plus the ball diameter, $D + d$.
+
+$$
+f_{BSF} = f_{FTF} \times \frac{\pi (D + d)}{\pi d} = f_{FTF}\,\frac{D + d}{d} = \frac{D}{2d}\,f_r\left[1 - \left(\frac{d}{D}\right)^2\right] \approx 2.4\,f_r \quad (d/D \approx 0.2)
+$$
+
+- The right-hand form comes from substituting the formula for $f_{FTF}$. With $d/D \approx 0.2$, a ball spins about 6 times per pass of the outer ring, and the cage turns at about 0.4X, so 0.4 × 6 = 2.4X
+
+<Callout type="term" title="The four bearing frequencies (FTF · BPFO · BPFI · BSF)">
+
+FTF (Fundamental Train Frequency) is the rotation frequency of the cage; BPFO (Ball Pass Frequency, Outer race) is the frequency at which balls pass a point on the outer ring; BPFI (Ball Pass Frequency, Inner race) is the same for a point on the inner ring; BSF (Ball Spin Frequency) is the frequency at which the ball itself spins. A flaw on the outer ring produces impacts at the BPFO rhythm, a flaw on the inner ring at the BPFI rhythm, and a flaw on a ball at twice the BSF.
+
+</Callout>
 
 <Callout type="example" title="A 6205 bearing at 3000 rpm">
 
@@ -142,10 +153,12 @@ FTF (Fundamental Train Frequency) is the rotation frequency of the cage; BPFO (B
 3. Outer ring: $f_{BPFO}$ = 9 × 19.9 = **179.2 Hz** (3.585X) — rough value 0.4 × 9 × 50 = 180 Hz
 4. Inner ring: $f_{BPFI}$ = 9 × (50 − 19.9) = **270.8 Hz** (5.415X) — rough value 0.6 × 9 × 50 = 270 Hz
 5. Check: 179.2 + 270.8 = 450 Hz = 9 × 50 Hz. Adding the counts from the outer and inner rings gives the number of balls × 1X
+6. Ball spin: $(D + d)/d$ = (39.04 + 7.94) ÷ 7.94 = 5.92 spins → $f_{BSF}$ = 19.9 × 5.92 = **117.8 Hz** (2.357X) — rough value 2.4 × 50 = 120 Hz
+7. If a ball has a flaw: during one spin of the ball the flaw hits the outer ring and the inner ring once each, so the impacts come at 2 × 117.8 = **235.7 Hz**
 
 </Callout>
 
-As in Figure 6, all four lines stand between the dotted harmonics, because the cage does not turn at an integer fraction (1/2, 1/3 …) of the shaft speed. So a **line at a non-integer multiple** is a clue to suspect a rolling bearing. In a real bearing the balls slip a little, and the measured values can differ from the calculation by 1 – 2 %. The ball spin frequency (BSF) is used when a ball has a flaw. During one spin of the ball the flaw touches both the inner and the outer ring once, so some sources use BSF as it is and others use twice BSF. P7-5 sorts out this difference.
+As in the bottom of Figure 6, all four lines stand between the dotted harmonics, because the cage does not turn at an integer fraction (1/2, 1/3 …) of the shaft speed. So a **line at a non-integer multiple** is a clue to suspect a rolling bearing. In a real bearing the balls slip a little, and the measured values can differ from the calculation by 1 – 2 %. The ball spin frequency is what you look at when a ball has a flaw. As in item 7 of the example, the flaw touches the rings twice per spin, so some sources quote BSF as it is (117.8 Hz) and others quote twice BSF (235.7 Hz). P7-5 sorts out this difference.
 
 ---
 
@@ -189,7 +202,25 @@ $$
 
 In the belt-driven fan of Figure 8 (a motor turns the fan through a belt), the belt makes 11.65 turns per second. That is 0.39 times the motor 1X (29.7 Hz), and even lower than the fan-shaft 1X (14.8 Hz).
 
-Journal (sliding) bearings, the fluid-film bearings of P1-6, can also produce lines below 1X. As on the right of Figure 5, the oil between shaft and bearing flows at the shaft surface speed on the shaft side and at zero on the bearing side, so its average speed is about half. When the oil film becomes unstable, the shaft center circles at about this average oil speed (whirl, P1-6), and a line stands near **0.38 – 0.48X**. The main rotors of gas turbines and steam turbines for power generation run on such bearings, so this is an important line. When it becomes unstable is covered in P4-4, and how to sort it out in P7-4.
+### Journal bearings: what to look at when there is nothing to count
+
+Journal (sliding) bearings, the fluid-film bearings of P1-6, can also produce lines below 1X. But this bearing has no balls and no cage. If nothing passes a few times per turn, which frequencies should you look at on this bearing?
+
+<Figure {...F.journalBearing} />
+
+As in the top of Figure 9, the shaft (journal) turns floating on a thin oil film inside the bearing. Its weight pushes the shaft slightly to one side, so the gap between shaft and bearing is narrow on one side and wide on the other. The shaft surface drags oil into the narrow gap, where the pressure rises and holds the shaft up.
+
+This oil goes around the shaft. As on the right of Figure 5, it flows at the shaft surface speed on the shaft side and at zero on the bearing side, so on average it moves at about half the shaft speed. In practice some oil leaks out of the bearing ends and the flow is held back by the pressure in front of the narrow gap, so it is a little slower than half. When the shaft wobbles slightly and the shape of the gap changes, the high-pressure spot travels around with this oil and pushes the shaft sideways. If the oil film cannot cope with this push (becomes unstable), the shaft center circles inside the clearance at the average oil speed (whirl, P1-6). That is why a line stands near **0.38 – 0.48X**.
+
+In short, there are three lines to watch on a machine with journal bearings (bottom of Figure 9).
+
+- **1X**: a force that pushes once per turn, such as unbalance (P1-7)
+- **2X**: a force that pushes and pulls several times per turn, such as misalignment (section 1)
+- **0.38 – 0.48X**: a sign that the oil film has started to push the shaft sideways instead of only holding it up
+
+The bearing has no flaw frequency of its own, and there are hardly any impacts from flaws hitting one at a time. So the several-kHz ringing band of section 4 tells you little about this bearing, and the band of interest gathers **below 1X to a few X**. The shaft's motion becomes smaller as it passes through the oil film and the heavy casing, so instead of the casing we watch the shaft directly. Displacement sensors mounted in the bearing do that job (P3-1, P3-2).
+
+There is a reason to keep a particular eye on the 0.38 – 0.48X line. As the speed rises this line follows it upward, but once it reaches a natural frequency of the rotor (the frequency that made the critical speed in P1-7), it can stop there and grow large (oil whip). A line that used to follow the speed turns into a line that stays put, like those of section 6. The main rotors of gas turbines and steam turbines for power generation run on such bearings, so this is a line you must not miss. When it becomes unstable is covered in P4-4, and how to sort it out in P7-4.
 
 <Callout type="warn" title="'Below 1X means an oil-film problem'">
 
@@ -209,7 +240,7 @@ Every line counted so far is $k \times f_r$, so when the speed changes they move
 
 <Figure {...F.runUpMap} />
 
-What you can read in Figure 9:
+What you can read in Figure 10:
 
 - **Straight lines from the origin**: speed-related lines. They move right as speed rises
 - **Vertical dotted lines**: $2 f_L$ and the pedestal natural frequency. They stay put when the speed changes
@@ -236,7 +267,7 @@ If you know what is inside a machine, you can decide which band to look at befor
 | Shaft · coupling | 1, 2, 3 times | 1X, 2X, 3X | 60, 120, 180 Hz | Follows |
 | Blades (7) | 7 times | $N_b \times$ 1X | 420 Hz | Follows |
 | Gear (30 teeth) | 30 times | $z \times$ 1X | 1800 Hz | Follows |
-| Rolling bearing (6205) | cage ≈ 0.4, outer ring ≈ 0.4 $N_r$, inner ring ≈ 0.6 $N_r$ | 0.398X · 3.585X · 5.415X | 23.9 · 215 · 325 Hz | Follows |
+| Rolling bearing (6205) | cage ≈ 0.4, ball spin ≈ 2.4, outer ring ≈ 0.4 $N_r$, inner ring ≈ 0.6 $N_r$ | 0.398X · 2.357X · 3.585X · 5.415X | 23.9 · 141 · 215 · 325 Hz | Follows |
 | Journal-bearing oil film | a bit under 0.4 – 0.5 times | 0.38 – 0.48X | 23 – 29 Hz | Follows |
 | Belt | less than 1 time | $\pi D_p f_r / L$ | depends on pulley and belt dimensions | Follows |
 | Impact ringing | — | housing natural frequency | several kHz | Stays |
@@ -281,9 +312,10 @@ For item 1, the 1X – 10X band (59.5 – 595 Hz) holds 2X and 3X, the rolling-b
 |---|---|
 | Counting rule | k times per turn → $f = k\,f_r$. An integer gives a harmonic position, otherwise it falls between |
 | Blades · gears | blade pass $N_b f_r$, mesh $z f_r$. Two meshing gears obey $z_1 f_1 = z_2 f_2$. Present in healthy machines too |
-| Rolling bearing | cage ≈ 0.4X, outer ring $N_r f_{FTF}$ ≈ 0.4 $N_r$X, inner ring ≈ 0.6 $N_r$X. Not integer multiples |
+| Rolling bearing | cage ≈ 0.4X, ball spin $f_{FTF}(D + d)/d$ ≈ 2.4X, outer ring $N_r f_{FTF}$ ≈ 0.4 $N_r$X, inner ring ≈ 0.6 $N_r$X. Not integer multiples. A ball flaw shows at 2 × BSF |
 | Impact ringing | a flaw's impact rings a natural frequency of several kHz → look far above the flaw frequency |
 | Below 1X | cage, belt ($\pi D_p f_r / L$), oil film (0.38 – 0.48X) |
+| Journal bearing | Hardly any flaw frequency to count or kHz ringing → watch 1X, 2X and 0.38 – 0.48X as shaft displacement. A whirl that reaches a natural frequency stops there and grows (whip) |
 | Lines that stay put | magnetic force $2 f_L$ (120 Hz), structural natural frequencies. Changing the speed tells them apart |
 | Bands of interest | machine makeup → list of lines → how far to look: below 1X / 1X – 10X / 10X – several kHz / several kHz and above |
 
@@ -302,9 +334,9 @@ $f_{GM}$ = 20 × 30 = **600 Hz**. The large gear has the same mesh frequency, so
 </details>
 
 <details>
-<summary><strong>Q3. A bearing with 8 balls and ball diameter ÷ pitch diameter = 0.2 turns at 1500 rpm. What are the FTF, BPFO and BPFI?</strong></summary>
+<summary><strong>Q3. A bearing with 8 balls and ball diameter ÷ pitch diameter = 0.2 turns at 1500 rpm. What are the FTF, BPFO, BPFI and BSF?</strong></summary>
 
-$f_r$ = 25 Hz. $f_{FTF}$ = 25 ÷ 2 × (1 − 0.2) = **10 Hz** (0.4X), $f_{BPFO}$ = 8 × 10 = **80 Hz** (3.2X), $f_{BPFI}$ = 8 × (25 − 10) = **120 Hz** (4.8X). Adding them gives 200 Hz = 8 × 25 Hz, which checks out.
+$f_r$ = 25 Hz. $f_{FTF}$ = 25 ÷ 2 × (1 − 0.2) = **10 Hz** (0.4X), $f_{BPFO}$ = 8 × 10 = **80 Hz** (3.2X), $f_{BPFI}$ = 8 × (25 − 10) = **120 Hz** (4.8X). Adding them gives 200 Hz = 8 × 25 Hz, which checks out. A ball spins $(D + d)/d$ = 1 ÷ 0.2 + 1 = 6 times per pass of the outer ring, so $f_{BSF}$ = 10 × 6 = **60 Hz** (2.4X).
 </details>
 
 <details>
@@ -323,6 +355,12 @@ It is not enough. The impact of a flaw rings the housing's natural frequency (se
 <summary><strong>Q6. In a 2-pole generator at 60 Hz line frequency (3600 rpm), the 120 Hz line has grown. Can you decide the cause from frequency alone?</strong></summary>
 
 You cannot. 120 Hz is both the speed-related 2X and the electromagnetic force $2 f_L$. Both lines stand at the same position, so you need other evidence, such as how it changes when operating conditions change (P1-9, P7-7).
+</details>
+
+<details>
+<summary><strong>Q7. On a 3600 rpm steam turbine supported by journal bearings, a new 26 Hz line has appeared. What X is it, and what do you suspect first? What should you measure this machine with, and over which band?</strong></summary>
+
+26 ÷ 60 = **0.43X**, inside the oil-whirl band (0.38 – 0.48X). This turbine has no balls, cage or belt, so you suspect oil whirl first. A journal bearing has hardly any flaw frequency to count or kHz ringing band, so you watch the shaft motion below 1X to a few X with displacement sensors mounted in the bearing (P3-1). If you can change the speed, also check whether the line follows the speed or stops at a natural frequency (P4-4, P7-4).
 </details>
 
 ---

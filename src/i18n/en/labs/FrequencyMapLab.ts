@@ -56,6 +56,7 @@ const EN: Dict = {
   '읽음값': 'Readouts',
   '외륜 BPFO ({0}X)': 'Outer ring BPFO ({0}X)',
   '내륜 BPFI ({0}X)': 'Inner ring BPFI ({0}X)',
+  '볼 자전 BSF ({0}X)': 'Ball spin BSF ({0}X)',
   '전자기력 2 f_L': 'Magnetic force 2 f_L',
   '지도에서 가장 높은 주파수 (측정 범위의 위 끝 후보)': 'Highest frequency on the map (candidate for the upper end of the measurement range)',
   '전동기-펌프에서 회전수를 3570 → 3000 rpm으로 내리면 어떤 줄이 제자리에 있나요?': 'In the motor-pump, if you lower the speed from 3570 to 3000 rpm, which lines stay put?',

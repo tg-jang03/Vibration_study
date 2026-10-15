@@ -88,7 +88,9 @@ export default function FrequencyMapLab({ initialPreset = 'motorPump', lang = 'k
   ]);
 
   // 기계별 대표 식
-  const brg = bearingFrequencies(exampleBearing(balls), preset === 'beltFan' ? (fr * EXAMPLE.motorPulley) / EXAMPLE.fanPulley : fr);
+  const brgGeom = exampleBearing(balls);
+  const brg = bearingFrequencies(brgGeom, preset === 'beltFan' ? (fr * EXAMPLE.motorPulley) / EXAMPLE.fanPulley : fr);
+  const ballTurns = (brgGeom.pitchDiameter + brgGeom.ballDiameter) / brgGeom.ballDiameter;
   const frTex = `f_r = \\frac{${texNumber(rpm, 4)}}{60} = ${texNumber(fr, 4)}\\ \\mathrm{Hz}`;
   const formulas: string[] = [frTex];
   if (preset === 'motorPump') {
@@ -102,6 +104,7 @@ export default function FrequencyMapLab({ initialPreset = 'motorPump', lang = 'k
   }
   if (p.balls !== null) {
     formulas.push(`f_{BPFO} = N_r f_{FTF} = ${balls} \\times ${texNumber(brg.ftf, 4)} = ${texNumber(brg.bpfo, 4)}\\ \\mathrm{Hz},\\quad f_{BPFI} = N_r (f_r - f_{FTF}) = ${texNumber(brg.bpfi, 4)}\\ \\mathrm{Hz}`);
+    formulas.push(`f_{BSF} = f_{FTF}\\,\\frac{D + d}{d} = ${texNumber(brg.ftf, 4)} \\times ${texNumber(ballTurns, 3)} = ${texNumber(brg.bsf, 4)}\\ \\mathrm{Hz}`);
   }
 
   const mainRow = map.rows.find((row) => [k('펌프 날개'), k('기어 맞물림'), k('압축기 날개'), k('벨트'), k('팬 날개')].includes(row.element));
@@ -111,7 +114,7 @@ export default function FrequencyMapLab({ initialPreset = 'motorPump', lang = 'k
     <LabFrame id="LAB-FMAP-01" lang={lang} title={tr`주파수 지도: 요소마다 어디에 줄이 서나`}
       controls={<>
         <ParamSelect label={tr`기계`} value={preset} options={PRESET_OPTIONS.map((o) => ({ ...o, label: tr(o.label) }))} onChange={choosePreset} />
-        <ParamSlider label={tr`회전수 (${tr(p.shaftLabel)})`} value={rpm} min={300} max={6000} step={10} unit="rpm" onChange={setRpm} hint={tr`전원 주파수 60 Hz와 구조 고유진동수는 그대로 둔 채 회전수만 바꿉니다`} />
+        <ParamSlider label={tr`회전수 (${tr(p.shaftLabel)})`} value={rpm} min={300} max={6000} step={10} unit="rpm" marks={[1780, 3570]} onChange={setRpm} hint={tr`전원 주파수 60 Hz와 구조 고유진동수는 그대로 둔 채 회전수만 바꿉니다`} />
         <ParamSlider label={tr(p.countLabel)} value={count} min={p.countRange[0]} max={p.countRange[1]} step={1} onChange={setCount} />
         <ParamSlider label={tr`베어링 볼 수 N_r`} value={balls} min={6} max={16} step={1} disabled={p.balls === null} onChange={setBalls}
           hint={p.balls === null ? tr`이 축계의 로터는 미끄럼 베어링 위에서 돕니다` : tr`볼 지름 ÷ 피치 지름은 6205와 같게 (≈ 0.2)`} />
@@ -126,6 +129,7 @@ export default function FrequencyMapLab({ initialPreset = 'motorPump', lang = 'k
         ...(p.balls !== null ? [
           { label: tr`외륜 BPFO (${formatNumber(brg.bpfo / fr, 4)}X)`, value: brg.bpfo, unit: 'Hz' },
           { label: tr`내륜 BPFI (${formatNumber(brg.bpfi / fr, 4)}X)`, value: brg.bpfi, unit: 'Hz' },
+          { label: tr`볼 자전 BSF (${formatNumber(brg.bsf / fr, 4)}X)`, value: brg.bsf, unit: 'Hz' },
         ] : []),
         { label: tr`전자기력 2 f_L`, value: 2 * LINE_FREQUENCY, unit: 'Hz' },
         { label: tr`지도에서 가장 높은 주파수 (측정 범위의 위 끝 후보)`, value: map.highest, unit: 'Hz' },
